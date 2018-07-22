@@ -18,6 +18,7 @@
     },
     "homepage": "https://github.com/gnehs/PokaPlayer#readme",
     "dependencies": {
+        "base-64": "^0.1.0",
         "body-parser": "^1.18.3",
         "express": "^4.16.3",
         "express-session": "^1.15.6",

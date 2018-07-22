@@ -1,6 +1,7 @@
 const fs = require('fs'); //檔案系統
 const config = require('./config.json'); // 設定檔
 const schedule = require('node-schedule'); // 很會計時ㄉ朋友
+const base64 = require('base-64');
 //express
 const express = require('express');
 const session = require('express-session');
@@ -56,19 +57,28 @@ app.get('/', (req, res) => {
         res.render('index') //有登入給首頁吼吼
 })
 
+function pp_decode(str) {
+    return base64.decode(decodeURIComponent(str))
+}
 // Reverse Proxy
 app.get('/nas/:url', (req, res) => {
     if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
         res.send('請登入')
     else {
-        var url = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}/${decodeURIComponent(req.params.url)}`
-        request.get(url).pipe(res);
+        var url = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}/${pp_decode(req.params.url)}`
+        console.log(url)
+        request.get(url).pipe(res).on('error', function(err) {
+            res.send('未知的錯誤')
+        });
+
     }
 })
 
 // api
 app.get('/api/:apireq', async(req, res) => {
+    console.log(`localhost:3000/api/${req.params.apireq}`)
     var apireq = JSON.parse(req.params.apireq)
+    console.log(apireq)
         /*
         should be like this
         {
@@ -77,16 +87,16 @@ app.get('/api/:apireq', async(req, res) => {
             "METHOD":"",
             "PARAMS":"",
             "VERSION":2,
-            "PARAMS":{
-                "aaa":"bbb",
-                "ccc":"ddd"
-            }
+            "PARAMS":"&AAA=AAA&BBB=CCC"
         }
         */
-    if (req.session.pass == config.PokaPlayer.password && !config.PokaPlayer.passwordSwitch)
-        res.send(await syno.api(config.DSM, apireq.CGI_PATH, apireq.API_NAME, apireq.METHOD, apireq.VERSION, apireq.PARAMS))
-    else
+    if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
         res.send('請登入')
+    else {
+        var getRes = await api(config.DSM, apireq.CGI_PATH, apireq.API_NAME, apireq.METHOD, apireq.VERSION, apireq.PARAMS)
+        console.log(getRes)
+        res.send(getRes)
+    }
 })
 
 // 登入
