@@ -1,0 +1,10 @@
+extends _layout.pug
+block content
+    form.mdui-valign(method='post',role='form',action=post,style="margin-top:25vh")
+        .mdui-center.mdui-shadow-3(style="width: 400px;")
+            h1.mdui-center PokaPlayer
+            .mdui-textfield.mdui-textfield-floating-label
+                i.mdui-icon.material-icons lock
+                label.mdui-textfield-label 密碼
+                input.mdui-textfield-input(type='password',id='userPASS', name='userPASS',required)
+            button.mdui-btn.mdui-btn-block.mdui-color-theme-accent.mdui-ripple(type='submit') 登入

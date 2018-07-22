@@ -7,14 +7,15 @@ html
         link(href='/css/style.css',rel='stylesheet')
         script(src='//cdnjs.cloudflare.com/ajax/libs/mdui/0.4.1/js/mdui.min.js')
         block head
-    body.mdui-drawer-body-left
+    body.mdui-drawer-body-left.mdui-theme-primary-indigo.mdui-theme-accent-pink
         header.mdui-appbar.mdui-appbar-fixed
             .mdui-toolbar.mdui-color-theme
                 a.mdui-btn.mdui-btn-icon(mdui-drawer="{target: '#drawer', swipe: true}")
                     i.mdui-icon.material-icons menu 
                 .mdui-typo-title PokaPlayer
                 .mdui-toolbar-spacer
-                a.mdui-btn.mdui-btn-icon
+                block appbar
+                //-a.mdui-btn.mdui-btn-icon
                     i.mdui-icon.material-icons search 
         #drawer.mdui-drawer.mdui-appbar-with-toolbar
             .mdui-list
@@ -22,5 +23,5 @@ html
                     i.mdui-list-item-icon.mdui-icon.material-icons home
                     .mdui-list-item-content 首頁
                 block drawer
-        #content.mdui-container
+        #content.mdui-container-fluid
             block content
