@@ -1,0 +1,9 @@
+{
+    "DSM": {
+        "protocol": "https",
+        "host": "localhost",
+        "port": 5001,
+        "account": "",
+        "password": ""
+    }
+}

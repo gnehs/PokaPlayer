@@ -1,0 +1,7 @@
+header.mdui-appbar.mdui-appbar-fixed {
+    z-index: 5001;
+}
+
+#content {
+    padding-top: 64px;
+}
