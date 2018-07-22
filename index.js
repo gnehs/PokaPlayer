@@ -77,7 +77,7 @@ app.get('/nas/:url', (req, res) => {
 // api
 app.get('/api/:apireq', async(req, res) => {
     console.log(`localhost:3000/api/${req.params.apireq}`)
-    var apireq = JSON.parse(req.params.apireq)
+    var apireq = JSON.parse(pp_decode(req.params.apireq))
     console.log(apireq)
         /*
         should be like this
