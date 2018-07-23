@@ -48,6 +48,19 @@ app.listen(3000, async() => {
     }
 })
 
+// 隨機圖圖
+app.get('/og/og.png', (req, res) => {
+    var files = fs.readdirSync("./ogimage/").filter(function(i, n) {
+        if (i.toString().indexOf('.png') > -1 && i.toString().indexOf('._') < 0)
+            return i
+    });
+    //og
+    var imgnum = Math.floor(Math.random() * files.length);
+    var img = __dirname + "/ogimage/" + files[imgnum]
+    try {
+        res.sendFile(img)
+    } catch (err) {}
+});
 // 首頁
 app.get('/', (req, res) => {
     // 沒登入的快去啦
