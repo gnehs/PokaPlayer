@@ -13,6 +13,21 @@ ap.on("play", function() {
     $('#player .song-info .name').text(name)
     $('#player .song-info .artist').text(artist)
     $('#player img').attr('src', img)
+
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: name,
+            artist: artist,
+            artwork: [{ src: img, type: 'image/png' }]
+        });
+        navigator.mediaSession.setActionHandler('play', function() { ap.play() });
+        navigator.mediaSession.setActionHandler('pause', function() { ap.pause() });
+        navigator.mediaSession.setActionHandler('seekbackward', function() { ap.seek(-10) });
+        navigator.mediaSession.setActionHandler('seekforward', function() { ap.seek(10) });
+        navigator.mediaSession.setActionHandler('previoustrack', function() { ap.skipBack() });
+        navigator.mediaSession.setActionHandler('nexttrack', function() { ap.skipForward() });
+    }
+
 })
 ap.on("pause", function() {
     $('#player button.play[onclick="ap.toggle()"] i').text("play_arrow")

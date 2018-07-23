@@ -91,7 +91,6 @@ app.get('/api/:apireq', async(req, res) => {
         res.send('請登入')
     else {
         var getRes = await api(config.DSM, apireq.CGI_PATH, apireq.API_NAME, apireq.METHOD, apireq.VERSION, apireq.PARAMS)
-        console.log(getRes)
         res.send(getRes)
     }
 })
@@ -117,7 +116,7 @@ app.get('/logout/', (req, res) => {
 });
 var updateCookie = schedule.scheduleJob("'* */12 * * *'", async function() {
     //請求登入 Cookie
-    console.log("正在自動更新令牌")
+    //console.log("正在自動更新令牌")
     var a = await syno.login(config.DSM)
 });
 
