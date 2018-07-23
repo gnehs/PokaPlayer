@@ -38,16 +38,22 @@ header.mdui-appbar.mdui-appbar-fixed {
     line-height: 1.6em;
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 1256px) {
     .album {
         font-size: 12px;
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .album {
+        font-size: 10px;
     }
 }
 
 @media screen and (max-width: 768px) {
     .album {
         width: calc(33.3% - 1em);
-        font-size: 12px;
+        font-size: 10px;
     }
 }
 
@@ -139,6 +145,9 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 @media screen and (max-width: 768px) {
+    #player {
+        border-radius: 0;
+    }
     #player .song-info .name,
     #player .song-info .artist {
         width: calc(100vw - 64px - 144px - 6px);
