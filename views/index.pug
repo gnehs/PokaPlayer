@@ -1,10 +1,6 @@
 extends _layout.pug
 block head
-    script(src='//cdnjs.cloudflare.com/ajax/libs/cplayer/3.2.1/cplayer-noview.js')
-    script(src='//cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js')
-    script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js')
-    script(src='/js/base64.js')
-    script(src='/js/script.js')
+    link(href='//cdnjs.cloudflare.com/ajax/libs/aplayer/1.10.1/APlayer.min.css',rel='stylesheet')
 block drawer
     a.mdui-list-item.mdui-ripple(href='#',data-link='home')
         i.mdui-list-item-icon.mdui-icon.material-icons home
@@ -16,7 +12,18 @@ block drawer
     a.mdui-list-item.mdui-ripple(href='#',data-link='random')
         i.mdui-list-item-icon.mdui-icon.material-icons queue_music
         .mdui-list-item-content 隨機播放
+    .mdui-subheader 現正播放
+    a.mdui-list-item.mdui-ripple(href='#',data-link='now')
+        i.mdui-list-item-icon.mdui-icon.material-icons queue_music
+        .mdui-list-item-content 現正播放
     //-.mdui-subheader 帳號
     //-a.mdui-list-item.mdui-ripple(href='/logout/')
         i.mdui-list-item-icon.mdui-icon.material-icons account_circle
         .mdui-list-item-content 登出
+block body
+    #aplayer
+    script(src='//cdnjs.cloudflare.com/ajax/libs/aplayer/1.10.1/APlayer.min.js')
+    script(src='//cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js')
+    script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js')
+    script(src='/js/base64.js')
+    script(src='/js/script.js')

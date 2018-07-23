@@ -14,3 +14,57 @@ header.mdui-appbar.mdui-appbar-fixed {
     padding-left: 0;
     padding-right: 0;
 }
+
+.albums {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    margin: -0.875em -0.5em;
+}
+
+.album {
+    width: calc(25% - 1em);
+    display: flex;
+    margin: .875em 0.5em;
+    flex-direction: column;
+    position: relative;
+    break-inside: avoid;
+    box-sizing: border-box;
+}
+
+.album .mdui-card-primary-title {
+    font-size: 1.5em;
+    line-height: 1.6em;
+}
+
+@media screen and (max-width: 1024px) {
+    .album {
+        font-size: 12px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .album {
+        width: calc(33.3% - 1em);
+        font-size: 12px;
+    }
+}
+
+@media screen and (max-width: 512px) {
+    .album {
+        width: calc(50% - 1em);
+        font-size: 9px;
+    }
+}
+
+.album>.mdui-card-media>img {
+    object-fit: cover;
+    align-items: center;
+    justify-content: center;
+    max-width: 100%;
+    height: 16em;
+}
+
+.aplayer.aplayer-fixed {
+    z-index: 9999 !important;
+}

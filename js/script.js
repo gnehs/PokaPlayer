@@ -1,10 +1,23 @@
+//宣告全域變數
+songList = [];
+// 初始化播放器
+const ap = new APlayer({
+    container: document.getElementById('aplayer'),
+    fixed: true
+});
+
 $(function() { //初始化
     show_home()
     $('[data-link="home"]').click(function() { show_home() })
     $('[data-link="album"]').click(function() { show_album() })
+    $('[data-link="random"]').click(function() { show_random() })
+    $('[data-link="now"]').click(function() { show_now() })
+    $('[data-link]').click(function() {
+        $('[data-link]').removeClass('mdui-list-item-active')
+        $(this).addClass('mdui-list-item-active')
+    })
 });
 //-- 加解密
-
 function pp_encode(str) {
     return encodeURIComponent(base64.encode(str))
 }
@@ -20,7 +33,8 @@ function HTML_getHeader(title) {
 }
 
 function HTML_showAlbums(items) {
-    var album = '<div class="mdui-row-md-4 mdui-row-sm-3 mdui-row-xs-2">'
+    //var album = '<div class="mdui-row-md-4 mdui-row-sm-3 mdui-row-xs-2">'
+    var album = '<div class="albums">'
     for (i = 0; i < items.length; i++) {　
         let albumData = items[i]
         var artist = albumData.album_artist || albumData.display_artist || ''
@@ -32,8 +46,7 @@ function HTML_showAlbums(items) {
             var name = name || albumData.criteria.album || ''
         }
         //await getAlbumSong(albumData.criteria.album, albumData.criteria.album_artist, albumData.criteria.artist)
-        album += `<div class="mdui-col">
-            <div class="mdui-card mdui-ripple mdui-hoverable" data-album="${name}" data-artist="${artist}" data-album-artist="${album_artist}">
+        album += `<div class="mdui-card mdui-ripple mdui-hoverable album" data-album="${name}" data-artist="${artist}" data-album-artist="${album_artist}">
                 <div class="mdui-card-media">
                 <img src=".${getAlbumCover(name, album_artist, artist)}"/>
                 <div class="mdui-card-media-covered mdui-card-media-covered-gradient">
@@ -43,11 +56,28 @@ function HTML_showAlbums(items) {
                     </div>
                 </div>
                 </div>
-            </div>
-        </div>`
+            </div>`
     }
     album += "</div>"
     return album
+}
+
+function HTML_showSongs(songs) {
+    songList = JSON.stringify(songs)
+    var html = `<ul class="mdui-list songs">`
+    for (i = 0; i < songs.length; i++) {
+        let song = songs[i]
+        let title = song.title
+        let artist = song.additional.song_tag.artist
+        html += `<li class="mdui-list-item mdui-ripple" data-song-id="${song.id}">
+            <div class="mdui-list-item-content">
+                <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
+                <div class="mdui-list-item-text mdui-list-item-one-line">${artist}</div>
+            </div>
+        </li>`　
+    }
+    html += '</ul>'
+    return html
 }
 // 首頁
 async function show_home() {
@@ -66,18 +96,68 @@ async function show_album() {
         { key: "sort_direction", "value": "ASC" },
     ]
     var data = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3),
-        header = HTML_getHeader("專輯清單"),
+        header = HTML_getHeader("專輯"),
         album = HTML_showAlbums(data.data.albums)
     $("#content").html(header + album)
-
+}
+//- 隨機播放
+async function show_random() {
+    var PARAMS_JSON = [
+        { key: "additional", "value": "song_tag,song_audio,song_rating" },
+        { key: "library", "value": "shared" },
+        { key: "limit", "value": 100 },
+        { key: "sort_by", "value": "random" }
+    ]
+    var data = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "list", PARAMS_JSON, 1),
+        header = HTML_getHeader("隨機播放"),
+        album = HTML_showSongs(data.data.songs)
+    $("#content").html(header + album)
+    $(".songs [data-song-id]").click(function() {
+        var song = $(this).attr('data-song-id') // 馬上播放
+        playSongs(JSON.parse(songList), song)
+    })
+}
+//- 現正播放
+async function show_now() {
+    var header = HTML_getHeader("現正播放")
+    $("#content").html(header)
 }
 
+function playSongs(songlist, song) {
+    ap.list.clear()
+    var playlist = []
+    var songtoplay = 0
+    for (i = 0; i < songlist.length; i++) {
+        let nowsong = songlist[i]
+        let src = getSong(nowsong.id)
+        let name = nowsong.title
+        let artist = nowsong.additional.song_tag.artist
+        let album = nowsong.additional.song_tag.album
+        let poster = getAlbumCover(album, nowsong.additional.song_tag.album_artist, artist)
+        playlist.push({
+            url: src,
+            cover: poster,
+            name: name,
+            artist: artist,
+            album: album
+        })
+        if (nowsong.id == song) { songtoplay = i }
+    }
+    ap.list.add(playlist)
+    ap.list.switch(songtoplay)
+    ap.play()
+}
 
 function getAlbumCover(album_name, album_artist_name, artist_name) {
     var url = "webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&_dc=1532262672737&method=getcover&view=album"
     url += album_name ? `&album_name=${encodeURIComponent(album_name)}` : ``
     url += artist_name ? `&artist_name=${encodeURIComponent(artist_name)}` : ``
     url += album_artist_name ? `&album_artist_name=${encodeURIComponent(album_artist_name)}` : `&album_artist_name=`
+    return '/nas/' + pp_encode(url)
+}
+
+function getSong(id) {
+    var url = "webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=mp3&id=" + id
     return '/nas/' + pp_encode(url)
 }
 async function getAlbumSong(album_name, album_artist_name, artist_name) {
