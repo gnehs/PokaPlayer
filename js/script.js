@@ -27,7 +27,7 @@ function pp_decode(str) {
 }
 //-- 常用 HTML
 function HTML_getHeader(title) {
-    return `<div class="mdui-container-fluid mdui-valign mdui-typo" style="height: 300px;background-image:url(https://i.imgur.com/ErJMEsh.jpg)" id="header-wrapper">
+    return `<div class="mdui-container-fluid mdui-valign mdui-typo" style="height: 300px;background-image:url(https://i.imgur.com/ErJMEsh.jpg);background-size: cover;" id="header-wrapper">
     <h1 class="mdui-center mdui-text-color-white">${title}</h1>
 </div>`
 }
@@ -124,6 +124,7 @@ async function show_now() {
 }
 
 function playSongs(songlist, song) {
+    ap.pause()
     ap.list.clear()
     var playlist = []
     var songtoplay = 0
