@@ -151,6 +151,7 @@ async function show_random() {
     $("#content").html(header + album)
     $(".songs [data-song-id].mdui-list-item-content").click(function() {
         playSongs(JSON.parse(songList), $(this).attr('data-song-id'))
+        show_now()
     })
     $(".songs [data-song-id].add").click(function() {
         addSong(JSON.parse(songList), $(this).attr('data-song-id'))
@@ -158,6 +159,8 @@ async function show_random() {
 }
 //- 現正播放
 async function show_now() {
+    $('[data-link]').removeClass('mdui-list-item-active')
+    $('[data-link="now"]').addClass('mdui-list-item-active')
     $("#title").text("現正播放")
     var header = HTML_getHeader("現正播放")
     var html = `<ul class="mdui-list songs">`
@@ -204,6 +207,7 @@ async function show_album_songs(artist, album, album_artist) {
     $("#content").html(header + html)
     $(".songs [data-song-id].mdui-list-item-content").click(function() {
         playSongs(JSON.parse(songList), $(this).attr('data-song-id'))
+        show_now()
     })
     $(".songs [data-song-id].add").click(function() {
         addSong(JSON.parse(songList), $(this).attr('data-song-id'))
