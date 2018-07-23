@@ -189,6 +189,11 @@ async function show_now() {
         ap.list.remove(song)
         show_now()
     })
+
+    ap.on("play", function() {
+        $(".songs>li.song").removeClass('mdui-list-item-active')
+        $(".songs>li.song").eq(ap.list.index).addClass('mdui-list-item-active')
+    })
 }
 //- 展示專輯歌曲
 async function show_album_songs(artist, album, album_artist) {
