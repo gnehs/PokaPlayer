@@ -20,7 +20,7 @@ ap.on("play", function() {
             artist: artist,
             artwork: [{ src: img, type: 'image/png' }]
         });
-        navigator.mediaSession.setActionHandler('play', function() { ap.play() });
+        navigator.mediaSession.setActionHandler('play', function() { ap.toggle() });
         navigator.mediaSession.setActionHandler('pause', function() { ap.pause() });
         navigator.mediaSession.setActionHandler('seekbackward', function() { ap.seek(-10) });
         navigator.mediaSession.setActionHandler('seekforward', function() { ap.seek(10) });
