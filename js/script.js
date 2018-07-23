@@ -139,11 +139,13 @@ async function show_now() {
 //- 展示專輯歌曲
 async function show_album_songs(artist, album, album_artist) {
     var data = await getAlbumSong(album, album_artist, artist),
-        header = HTML_getHeader(album + (artist ? ' / ' + artist)),
-        html = HTML_showSongs(data.data.songs) $("#content").html(header + html) $(".songs [data-song-id]").click(function() {
-            var song = $(this).attr('data-song-id') // 馬上播放
-            playSongs(JSON.parse(songList), song)
-        })
+        header = HTML_getHeader(album + (artist ? ' / ' + artist : '')),
+        html = HTML_showSongs(data.data.songs)
+    $("#content").html(header + html)
+    $(".songs [data-song-id]").click(function() {
+        var song = $(this).attr('data-song-id') // 馬上播放
+        playSongs(JSON.parse(songList), song)
+    })
 }
 
 
