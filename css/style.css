@@ -105,26 +105,42 @@ header.mdui-appbar.mdui-appbar-fixed {
     color: #363636;
 }
 
-#player .song-info .name {
+#player .song-info .name,
+#player .song-info .artist {
     line-height: 24px;
     color: #545252;
     font-size: 20px;
     height: 24px;
     overflow: hidden;
     text-overflow: ellipsis;
-    height: 24px;
+    white-space: nowrap;
+    width: 100%;
 }
 
 #player .song-info .artist {
     font-size: 14px;
-    line-height: 24px;
     color: #545252;
-    height: 24px;
+}
+
+#player .ctrl {
+    width: 144px;
+    display: inline-block;
 }
 
 @media screen and (min-width: 768px) {
     #player {
         width: 400px;
         margin: 0 auto;
+    }
+    #player .song-info .name,
+    #player .song-info .artist {
+        width: calc(400px - 64px - 144px - 6px);
+    }
+}
+
+@media screen and (max-width: 768px) {
+    #player .song-info .name,
+    #player .song-info .artist {
+        width: calc(100vw - 64px - 144px - 6px);
     }
 }
