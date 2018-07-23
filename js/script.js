@@ -17,6 +17,12 @@ ap.on("play", function() {
 ap.on("pause", function() {
     $('#player button.play[onclick="ap.toggle()"] i').text("play_arrow")
 })
+ap.on("error", function() {
+    mdui.snackbar({
+        message: '播放器發生了錯誤：（',
+        position: 'top'
+    });
+})
 $(function() { //初始化
     show_home()
     $('[data-link="home"]').click(function() { show_home() })
