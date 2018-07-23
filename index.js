@@ -51,7 +51,7 @@ app.listen(3000, async() => {
 // 隨機圖圖
 app.get('/og/og.png', (req, res) => {
     var files = fs.readdirSync("./ogimage/").filter(function(i, n) {
-        if (i.toString().indexOf('.png') > -1 && i.toString().indexOf('._') < 0)
+        if ((i.toString().indexOf('.png') > -1 || i.toString().indexOf('.jpg') > -1) && i.toString().indexOf('._') < 0)
             return i
     });
     //og
