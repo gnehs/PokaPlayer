@@ -80,11 +80,14 @@ function HTML_showSongs(songs) {
         let song = songs[i]
         let title = song.title
         let artist = song.additional.song_tag.artist
-        html += `<li class="mdui-list-item mdui-ripple" data-song-id="${song.id}">
-            <div class="mdui-list-item-content">
+        html += `<li class="mdui-list-item mdui-ripple">
+            <div class="mdui-list-item-content" data-song-id="${song.id}">
                 <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
                 <div class="mdui-list-item-text mdui-list-item-one-line">${artist}</div>
             </div>
+            <button class="mdui-btn mdui-btn-icon mdui-ripple add" data-song-id="${song.id}">
+                <i class="mdui-icon material-icons">add</i>
+            </button>
         </li>`　
     }
     html += '</ul>'
@@ -140,9 +143,11 @@ async function show_random() {
         header = HTML_getHeader("隨機播放"),
         album = HTML_showSongs(data.data.songs)
     $("#content").html(header + album)
-    $(".songs [data-song-id]").click(function() {
-        var song = $(this).attr('data-song-id') // 馬上播放
-        playSongs(JSON.parse(songList), song)
+    $(".songs [data-song-id].mdui-list-item-content").click(function() {
+        playSongs(JSON.parse(songList), $(this).attr('data-song-id'))
+    })
+    $(".songs [data-song-id].add").click(function() {
+        addSong(JSON.parse(songList), $(this).attr('data-song-id'))
     })
 }
 //- 現正播放
@@ -154,21 +159,29 @@ async function show_now() {
         let focus = ap.list.index == i ? 'mdui-list-item-active' : ''
         let title = ap.list.audios[i].name
         let artist = ap.list.audios[i].artist
-        html += `<li class="mdui-list-item mdui-ripple ${focus}" data-now-play-id="${i}">
-            <div class="mdui-list-item-content">
+        html += `<li class="mdui-list-item mdui-ripple song ${focus}" >
+            <div class="mdui-list-item-content songinfo" data-now-play-id="${i}">
                 <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
                 <div class="mdui-list-item-text mdui-list-item-one-line">${artist}</div>
             </div>
+            <button class="mdui-btn mdui-btn-icon mdui-ripple close" data-now-play-id="${i}">
+                <i class="mdui-icon material-icons">close</i>
+            </button>
         </li>`　
     }
     html += `</ul>`
 
     $("#content").html(header + html)
-    $(".songs [data-now-play-id]").click(function() {
-        $(".songs [data-now-play-id]").removeClass('mdui-list-item-active')
-        $(this).addClass('mdui-list-item-active')
+    $(".songs [data-now-play-id].songinfo").click(function() {
+        $(".songs>li.song").removeClass('mdui-list-item-active')
+        $(this).parent().eq(0).addClass('mdui-list-item-active')
         var song = $(this).attr('data-now-play-id')
         ap.list.switch(song)
+    })
+    $(".songs [data-now-play-id].close").click(function() {
+        var song = $(this).attr('data-now-play-id')
+        ap.list.remove(song)
+        show_now()
     })
 }
 //- 展示專輯歌曲
@@ -178,16 +191,17 @@ async function show_album_songs(artist, album, album_artist) {
         header = HTML_getHeader(album + (artist ? ' / ' + artist : '')),
         html = HTML_showSongs(data.data.songs)
     $("#content").html(header + html)
-    $(".songs [data-song-id]").click(function() {
-        var song = $(this).attr('data-song-id') // 馬上播放
-        playSongs(JSON.parse(songList), song)
+    $(".songs [data-song-id].mdui-list-item-content").click(function() {
+        playSongs(JSON.parse(songList), $(this).attr('data-song-id'))
+    })
+    $(".songs [data-song-id].add").click(function() {
+        addSong(JSON.parse(songList), $(this).attr('data-song-id'))
     })
 }
 
 
-function playSongs(songlist, song) {
-    ap.pause()
-    ap.list.clear()
+function playSongs(songlist, song, clear = true) {
+    if (clear) ap.list.clear()
     var playlist = []
     var songtoplay = 0
     for (i = 0; i < songlist.length; i++) {
@@ -207,8 +221,31 @@ function playSongs(songlist, song) {
         if (nowsong.id == song) { songtoplay = i }
     }
     ap.list.add(playlist)
-    ap.list.switch(songtoplay)
-    ap.play()
+    if (song) ap.list.switch(songtoplay)
+    if (clear) ap.play()
+}
+
+function addSong(songlist, songID) {
+    var playlist = []
+    for (i = 0; i < songlist.length; i++) {
+        let nowsong = songlist[i]
+        if (nowsong.id == songID) {
+            let src = getSong(nowsong.id)
+            let name = nowsong.title
+            let artist = nowsong.additional.song_tag.artist
+            let album = nowsong.additional.song_tag.album
+            let poster = getAlbumCover(album, nowsong.additional.song_tag.album_artist, artist)
+            playlist.push({
+                url: src,
+                cover: poster,
+                name: name,
+                artist: artist,
+                album: album
+            })
+        }
+    }
+    ap.list.add(playlist)
+    if (ap.list.audios.length == 1) ap.play() //如果只有一首直接開播
 }
 
 function getAlbumCover(album_name, album_artist_name, artist_name) {
