@@ -27,7 +27,6 @@ ap.on("play", function() {
         navigator.mediaSession.setActionHandler('previoustrack', function() { ap.skipBack() });
         navigator.mediaSession.setActionHandler('nexttrack', function() { ap.skipForward() });
     }
-
 })
 ap.on("pause", function() {
     $('#player button.play[onclick="ap.toggle()"] i').text("play_arrow")
