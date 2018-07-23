@@ -66,7 +66,6 @@ app.get('/nas/:url', (req, res) => {
         res.send('請登入')
     else {
         var url = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}/${pp_decode(req.params.url)}`
-        console.log(url)
         request.get(url).pipe(res).on('error', function(err) {
             res.send('未知的錯誤')
         });
@@ -76,11 +75,9 @@ app.get('/nas/:url', (req, res) => {
 
 // api
 app.get('/api/:apireq', async(req, res) => {
-    console.log(`localhost:3000/api/${req.params.apireq}`)
     var apireq = JSON.parse(pp_decode(req.params.apireq))
-    console.log(apireq)
         /*
-        should be like this
+        apireq should be like this
         {
             "CGI_PATH":"",
             "API_NAME","",

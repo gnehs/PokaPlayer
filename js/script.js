@@ -5,7 +5,18 @@ const ap = new APlayer({
     container: document.getElementById('aplayer'),
     fixed: true
 });
-
+ap.on("play", function() {
+    $('#player button.play[onclick="ap.toggle()"] i').text("pause")
+    var name = ap.list.audios[ap.list.index].name || ""
+    var artist = ap.list.audios[ap.list.index].artist || ""
+    var img = ap.list.audios[ap.list.index].cover || "https://i.imgur.com/ErJMEsh.jpg"
+    $('#player .song-info .name').text(name)
+    $('#player .song-info .artist').text(artist)
+    $('#player img').attr('src', img)
+})
+ap.on("pause", function() {
+    $('#player button.play[onclick="ap.toggle()"] i').text("play_arrow")
+})
 $(function() { //初始化
     show_home()
     $('[data-link="home"]').click(function() { show_home() })
@@ -81,6 +92,7 @@ function HTML_showSongs(songs) {
 }
 // 首頁
 async function show_home() {
+    $("#title").text("首頁")
     var data = await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "list", [{ key: "limit", "value": -1 }, { key: "offset", "value": 0 }]),
         header = HTML_getHeader("PokaPlayer"),
         album = HTML_showAlbums(data.data.items)
@@ -95,6 +107,7 @@ async function show_home() {
 }
 //- 列出專輯
 async function show_album() {
+    $("#title").text("專輯")
     var PARAMS_JSON = [
         { key: "additional", "value": "avg_rating" },
         { key: "library", "value": "shared" },
@@ -116,6 +129,7 @@ async function show_album() {
 }
 //- 隨機播放
 async function show_random() {
+    $("#title").text("隨機播放")
     var PARAMS_JSON = [
         { key: "additional", "value": "song_tag,song_audio,song_rating" },
         { key: "library", "value": "shared" },
@@ -133,11 +147,33 @@ async function show_random() {
 }
 //- 現正播放
 async function show_now() {
+    $("#title").text("現正播放")
     var header = HTML_getHeader("現正播放")
-    $("#content").html(header)
+    var html = `<ul class="mdui-list songs">`
+    for (i = 0; i < ap.list.audios.length; i++) {
+        let focus = ap.list.index == i ? 'mdui-list-item-active' : ''
+        let title = ap.list.audios[i].name
+        let artist = ap.list.audios[i].artist
+        html += `<li class="mdui-list-item mdui-ripple ${focus}" data-now-play-id="${i}">
+            <div class="mdui-list-item-content">
+                <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
+                <div class="mdui-list-item-text mdui-list-item-one-line">${artist}</div>
+            </div>
+        </li>`　
+    }
+    html += `</ul>`
+
+    $("#content").html(header + html)
+    $(".songs [data-now-play-id]").click(function() {
+        $(".songs [data-now-play-id]").removeClass('mdui-list-item-active')
+        $(this).addClass('mdui-list-item-active')
+        var song = $(this).attr('data-now-play-id')
+        ap.list.switch(song)
+    })
 }
 //- 展示專輯歌曲
 async function show_album_songs(artist, album, album_artist) {
+    $("#title").text('專輯 / ' + album)
     var data = await getAlbumSong(album, album_artist, artist),
         header = HTML_getHeader(album + (artist ? ' / ' + artist : '')),
         html = HTML_showSongs(data.data.songs)

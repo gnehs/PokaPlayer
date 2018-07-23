@@ -4,6 +4,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 #content {
     padding-top: 64px;
+    padding-bottom: 96px;
 }
 
 #header-wrapper {
@@ -65,6 +66,65 @@ header.mdui-appbar.mdui-appbar-fixed {
     height: 16em;
 }
 
-.aplayer.aplayer-fixed {
-    z-index: 9999 !important;
+#aplayer {
+    visibility: hidden;
+}
+
+#player {
+    width: 100vw;
+    height: 64px;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    z-index: 1999;
+    background: #fff;
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+    align-items: center;
+    border-radius: 10px 10px 0 0;
+    overflow: hidden;
+    box-shadow: 0 0 10px #0000004d;
+}
+
+#player .mdui-btn {
+    width: 48px;
+    height: 48px;
+    margin: 8px 0;
+}
+
+#player img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+}
+
+#player .song-info {
+    margin-left: 6px;
+    color: #363636;
+}
+
+#player .song-info .name {
+    line-height: 24px;
+    color: #545252;
+    font-size: 20px;
+    height: 24px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 24px;
+}
+
+#player .song-info .artist {
+    font-size: 14px;
+    line-height: 24px;
+    color: #545252;
+    height: 24px;
+}
+
+@media screen and (min-width: 768px) {
+    #player {
+        width: 400px;
+        margin: 0 auto;
+    }
 }
