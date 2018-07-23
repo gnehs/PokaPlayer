@@ -200,6 +200,7 @@ async function show_now() {
         $(this).parent().eq(0).addClass('mdui-list-item-active')
         var song = $(this).attr('data-now-play-id')
         ap.list.switch(song)
+        ap.play()
     })
     $(".songs [data-now-play-id].close").click(function() {
         var song = $(this).attr('data-now-play-id')
