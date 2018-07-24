@@ -5,7 +5,7 @@ $(function() {
         mdui.snackbar({
             message: '偵測到已儲存的密碼，正在嘗試登入',
         });
-        $.post("/login/", { userPASS: "owo", time: "2pm" }, function(data) {
+        $.post("/login/", { userPASS: userPASS }, function(data) {
             if (data == 'success') {
                 mdui.snackbar({ message: '登入成功' });
                 document.location.href = "/";
