@@ -283,7 +283,7 @@ async function show_now() {
 
         $('[data-player] button.play[onclick="ap.toggle()"] i').text("pause")
         var nowPlaying = ap.list.audios[ap.list.index]
-        var name = nowPlaying ? nowPlaying.name : "尚未開始播放"
+        var name = nowPlaying ? nowPlaying.name : "PokaPlayer"
         var artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點擊播放鍵開始隨機播放"
         var img = nowPlaying ? nowPlaying.cover : "https://i.imgur.com/ErJMEsh.jpg" //一定會有圖片
         $('[data-player]>.mdui-card img').attr('src', img)
