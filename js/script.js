@@ -123,7 +123,6 @@ function HTML_showSongs(songs) {
 }
 // 首頁
 async function show_home() {
-    $("#title").text("首頁")
     var data = await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "list", [{ key: "limit", "value": -1 }, { key: "offset", "value": 0 }]),
         header = HTML_getHeader("PokaPlayer"),
         album = HTML_showAlbums(data.data.items)
@@ -138,7 +137,6 @@ async function show_home() {
 }
 //- 列出專輯
 async function show_album() {
-    $("#title").text("專輯")
     var PARAMS_JSON = [
         { key: "additional", "value": "avg_rating" },
         { key: "library", "value": "shared" },
@@ -160,7 +158,6 @@ async function show_album() {
 }
 //- 隨機播放
 async function show_random() {
-    $("#title").text("隨機播放")
     var PARAMS_JSON = [
         { key: "additional", "value": "song_tag,song_audio,song_rating" },
         { key: "library", "value": "shared" },
@@ -290,7 +287,6 @@ async function show_now() {
 }
 //- 展示專輯歌曲
 async function show_album_songs(artist, album, album_artist) {
-    $("#title").text('專輯 / ' + album)
     var data = await getAlbumSong(album, album_artist, artist),
         header = HTML_getHeader(album + (artist ? ' / ' + artist : '')),
         html = HTML_showSongs(data.data.songs)
