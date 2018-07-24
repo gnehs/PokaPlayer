@@ -48,7 +48,6 @@ $(function() {
     $('[data-link="album"]').click(function() { show_album() })
     $('[data-link="random"]').click(function() { show_random() })
     $('[data-link="now"]').click(function() { show_now() })
-    $('[data-link="player"]').click(function() { show_player() })
 });
 //-- 加解密
 function pp_encode(str) {
@@ -185,7 +184,6 @@ async function show_now() {
     $('[data-link]').removeClass('mdui-list-item-active')
     $('[data-link="now"]').addClass('mdui-list-item-active')
     $("#title").text("現正播放")
-    var header = HTML_getHeader("現正播放")
     var html = `<ul class="mdui-list songs">`
     for (i = 0; i < ap.list.audios.length; i++) {
         let focus = ap.list.index == i ? 'mdui-list-item-active' : ''
@@ -203,28 +201,6 @@ async function show_now() {
     }
     html += `</ul>`
 
-    $("#content").html(header + html)
-    $(".songs [data-now-play-id].songinfo").click(function() {
-        $(".songs>li.song").removeClass('mdui-list-item-active')
-        $(this).parent().eq(0).addClass('mdui-list-item-active')
-        var song = $(this).attr('data-now-play-id')
-        ap.list.switch(song)
-        ap.play()
-    })
-    $(".songs [data-now-play-id].close").click(function() {
-        var song = $(this).attr('data-now-play-id')
-        ap.list.remove(song)
-        show_now()
-    })
-
-    ap.on("play", function() {
-        $(".songs>li.song").removeClass('mdui-list-item-active')
-        $(".songs>li.song").eq(ap.list.index).addClass('mdui-list-item-active')
-    })
-}
-//- 播放器
-async function show_player() {
-    $("#title").text('播放器')
     var nowPlaying = ap.list.audios[ap.list.index]
     var name = nowPlaying ? nowPlaying.name : "尚未開始播放"
     var artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "未知的歌手"
@@ -252,10 +228,12 @@ async function show_player() {
                 <div class="timer mdui-typo-body-1-opacity mdui-text-right">0:00/0:00</div>
             </div>
         </div>
-    </div>`
-    $("#content").html(info)
-    mdui.mutation() //初始化滑塊
-        // 確認播放鈕狀態
+    </div>`;
+    // 輸出
+    $("#content").html(info + html);
+    //初始化滑塊
+    mdui.mutation();
+    // 確認播放鈕狀態
     if (ap.audio.paused)
         $('[data-player] button.play[onclick="ap.toggle()"] i').text("play_arrow")
     else
@@ -265,6 +243,10 @@ async function show_player() {
         $('[data-player] button.play[onclick="ap.toggle()"] i').text("play_arrow")
     })
     ap.on("play", function() {
+        $(".songs>li.song").removeClass('mdui-list-item-active')
+        $(".songs>li.song").eq(ap.list.index).addClass('mdui-list-item-active')
+            //- 播放器
+
         $('[data-player] button.play[onclick="ap.toggle()"] i').text("pause")
         var nowPlaying = ap.list.audios[ap.list.index]
         var name = nowPlaying ? nowPlaying.name : "尚未開始播放"
@@ -286,10 +268,23 @@ async function show_player() {
         $("[data-player]>.info>.player-bar input[type=range]").val(cent);
         mdui.updateSliders()
     });
-    // 時間調整
+
     $("[data-player]>.info>.player-bar input[type=range]").on("input", function() {
         var time = $("[data-player]>.info>.player-bar input[type=range]").val() / 100 * ap.audio.duration
         ap.seek(time);
+    })
+
+    $(".songs [data-now-play-id].songinfo").click(function() {
+        $(".songs>li.song").removeClass('mdui-list-item-active')
+        $(this).parent().eq(0).addClass('mdui-list-item-active')
+        var song = $(this).attr('data-now-play-id')
+        ap.list.switch(song)
+        ap.play()
+    })
+    $(".songs [data-now-play-id].close").click(function() {
+        var song = $(this).attr('data-now-play-id')
+        ap.list.remove(song)
+        show_now()
     })
 
 }
