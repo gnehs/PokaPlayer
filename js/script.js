@@ -299,16 +299,18 @@ async function show_now() {
         var cent = ap.audio.currentTime / ap.audio.duration * 100
         $('[data-player]>.info>.player-bar>.timer').text(currentTime + '/' + duration);
         // 更新 timer
-        var range = $("[data-player]>.info>.player-bar input[type=range]:not(:hover)").val();
-        if (range != cent) {
-            $("[data-player]>.info>.player-bar input[type=range]:not(:hover)").val(cent);
+        if (!$('[data-player]>.info>.player-bar input[type=range]').is(":hover")) {
+            $("[data-player]>.info>.player-bar input[type=range]").val(cent);
             mdui.updateSliders()
         }
+
     });
 
     $("[data-player]>.info>.player-bar input[type=range]").on("input", function() {
         var time = $("[data-player]>.info>.player-bar input[type=range]").val() / 100 * ap.audio.duration
+        console.log(time)
         ap.seek(time);
+        ap.audio.currentTime = time
     })
 
     $(".songs [data-now-play-id].songinfo").click(function() {
@@ -406,7 +408,7 @@ function getAlbumCover(album_name, album_artist_name, artist_name) {
 }
 
 function getSong(id) {
-    var url = "webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=mp3&id=" + id
+    var url = "webapi/AudioStation/stream.cgi/0.wav?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=wav&id=" + id
     return '/nas/' + pp_encode(url)
 }
 async function getAlbumSong(album_name, album_artist_name, artist_name) {

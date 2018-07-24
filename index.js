@@ -74,13 +74,26 @@ function pp_decode(str) {
     return base64.decode(decodeURIComponent(str))
 }
 // Reverse Proxy
-app.get('/nas/:url', (req, res) => {
+app.get('/nas/:url', async(req, res) => {
     if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
         res.send('請登入')
     else {
         var url = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}/${pp_decode(req.params.url)}`
         try {
-            request.get(url).pipe(res)
+            request.get({
+                url: url,
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'
+                }
+            }).on('response', function(response) {
+                if (response.headers['content-length'])
+                    res.writeHead(206, {
+                        "Content-Length": response.headers['content-length'],
+                        "Content-Range": `bytes 0-${response.headers['content-length']-1}/${response.headers['content-length']}`,
+                        "Content-Type": response.headers['content-type']
+                    })
+            }).pipe(res)
+
         } catch (e) { console.log(e) }
 
     }
@@ -114,7 +127,7 @@ app.get('/login/', (req, res) => {
         res.redirect("/")
     else
         res.render('login')
-})
+});
 app.post('/login/', (req, res) => {
     req.session.pass = req.body['userPASS']
     if (req.body['userPASS'] != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
