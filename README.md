@@ -17,4 +17,5 @@ PokaPlayer 是 Synology Audio Ststion 的新朋友！
 - 專輯
 - 密碼保護
 - MediaSession
-![](https://i.imgur.com/x4cEjrx.png)
+
+<img src="https://i.imgur.com/x4cEjrx.png" width="500px">
