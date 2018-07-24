@@ -4,6 +4,7 @@ PokaPlayer 是 Synology Audio Ststion 的新朋友！
 功能正在慢慢補齊 ❤️
 ## 截圖
 <img src="https://i.imgur.com/n6MLHLU.png" width="500px">
+
 ## 開始使用
 1. 下載 Docker 映像 (https://hub.docker.com/r/gnehs/pokaplayer/)
 2. 掛載修改好的 `config.json` 到 `/app/config.json` (參考 `config-simple.json`)
