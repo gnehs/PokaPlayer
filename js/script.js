@@ -6,6 +6,9 @@ const ap = new APlayer({
     fixed: true
 });
 ap.on("play", function() {
+    //沒歌就隨機播放
+    if (ap.list.index == 0) { play_random(); return; }
+
     $('#player button.play[onclick="ap.toggle()"] i').text("pause")
     var name = ap.list.audios[ap.list.index].name || ""
     var artist = ap.list.audios[ap.list.index].artist || ""
@@ -124,8 +127,11 @@ function HTML_showSongs(songs) {
 }
 // 首頁
 async function show_home() {
+    // 展示讀取中
+    var header = HTML_getHeader("PokaPlayer")
+    $("#content").html(header)
+
     var data = await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "list", [{ key: "limit", "value": -1 }, { key: "offset", "value": 0 }]),
-        header = HTML_getHeader("PokaPlayer"),
         album = HTML_showAlbums(data.data.items)
     $("#content").html(header + album)
 
@@ -138,6 +144,10 @@ async function show_home() {
 }
 //- 列出專輯
 async function show_album() {
+    // 展示讀取中
+    var header = HTML_getHeader("專輯")
+    $("#content").html(header)
+
     var PARAMS_JSON = [
         { key: "additional", "value": "avg_rating" },
         { key: "library", "value": "shared" },
@@ -146,7 +156,6 @@ async function show_album() {
         { key: "sort_direction", "value": "ASC" },
     ]
     var data = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3),
-        header = HTML_getHeader("專輯"),
         album = HTML_showAlbums(data.data.albums)
     $("#content").html(header + album)
 
@@ -159,6 +168,10 @@ async function show_album() {
 }
 //- 隨機播放
 async function show_random() {
+    // 展示讀取中
+    var header = HTML_getHeader("隨機播放")
+    $("#content").html(header)
+
     var PARAMS_JSON = [
         { key: "additional", "value": "song_tag,song_audio,song_rating" },
         { key: "library", "value": "shared" },
@@ -166,7 +179,6 @@ async function show_random() {
         { key: "sort_by", "value": "random" }
     ]
     var data = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "list", PARAMS_JSON, 1),
-        header = HTML_getHeader("隨機播放"),
         album = HTML_showSongs(data.data.songs)
     $("#content").html(header + album)
     $(".songs [data-song-id].mdui-list-item-content").click(function() {
@@ -176,6 +188,17 @@ async function show_random() {
     $(".songs [data-song-id].add").click(function() {
         addSong(JSON.parse(songList), $(this).attr('data-song-id'))
     })
+}
+async function play_random() {
+    var PARAMS_JSON = [
+        { key: "additional", "value": "song_tag,song_audio,song_rating" },
+        { key: "library", "value": "shared" },
+        { key: "limit", "value": 100 },
+        { key: "sort_by", "value": "random" }
+    ]
+    var data = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "list", PARAMS_JSON, 1)
+    playSongs(data.data.songs, false, false)
+    show_now()
 }
 //- 現正播放
 async function show_now() {
@@ -254,7 +277,7 @@ async function show_now() {
         $('[data-player] button.play[onclick="ap.toggle()"] i').text("pause")
         var nowPlaying = ap.list.audios[ap.list.index]
         var name = nowPlaying ? nowPlaying.name : "尚未開始播放"
-        var artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "未知的歌手"
+        var artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點擊播放鍵開始隨機播放"
         var img = nowPlaying ? nowPlaying.cover : "https://i.imgur.com/ErJMEsh.jpg" //一定會有圖片
         $('[data-player]>.mdui-card img').attr('src', img)
         $('[data-player]>.info>.title').text(name)
@@ -316,7 +339,7 @@ async function show_album_songs(artist, album, album_artist) {
 }
 
 
-function playSongs(songlist, song, clear = true) {
+function playSongs(songlist, song = false, clear = true) {
     if (clear) ap.list.clear()
     var playlist = []
     var songtoplay = 0
