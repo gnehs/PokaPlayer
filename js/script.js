@@ -228,6 +228,8 @@ async function show_now() {
     </div>`;
     // 輸出
     $("#content").html(info + html);
+    // 隱藏原本ㄉ播放器
+    $("#player").addClass('hide');
     //初始化滑塊
     mdui.mutation();
     // 確認播放鈕狀態
@@ -284,9 +286,21 @@ async function show_now() {
         show_now()
     })
 
+    $('[data-link]:not[data-link="now"]').click(function() {
+        $("#player").removeClass('hide')
+    })
+    window.addEventListener("scroll", function() {
+        if (window.scrollY > 280) $("#player").removeClass('hide')
+        if (window.scrollY < 20) $("#player").addClass('hide')
+    });
+
 }
 //- 展示專輯歌曲
 async function show_album_songs(artist, album, album_artist) {
+    //如果從首頁按進去頁籤沒切換
+    $('[data-link]').removeClass('mdui-list-item-active')
+    $('[data-link="album"]').addClass('mdui-list-item-active')
+
     var data = await getAlbumSong(album, album_artist, artist),
         header = HTML_getHeader(album + (artist ? ' / ' + artist : '')),
         html = HTML_showSongs(data.data.songs)

@@ -92,6 +92,13 @@ header.mdui-appbar.mdui-appbar-fixed {
     border-radius: 10px 10px 0 0;
     overflow: hidden;
     box-shadow: 0 0 10px #0000004d;
+    transform: translateY(0);
+}
+
+#player.hide {
+    visibility: hidden;
+    transition: .3s ease;
+    transform: translateY(64px);
 }
 
 #player .mdui-btn {
