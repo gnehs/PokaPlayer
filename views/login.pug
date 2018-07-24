@@ -1,6 +1,10 @@
 extends _layout.pug
+
+block body
+    script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js')
+    script(src='/js/login.js')
 block content
-    form.mdui-valign(method='post',role='form',action=post,style="margin-top:25vh")
+    form.mdui-valign(method='post',role='form',action=post,style="margin-top:25vh",onsubmit='return check()')
         .mdui-center.mdui-shadow-3(style="width: 400px;")
             h1.mdui-typo-display-2(style='text-align:center') PokaPlayer
             .mdui-typo
@@ -9,4 +13,5 @@ block content
                 i.mdui-icon.material-icons lock
                 label.mdui-textfield-label 密碼
                 input.mdui-textfield-input(type='password',id='userPASS', name='userPASS',required)
+            #savedPW.mdui-text-center.mdui-invisible(style="padding:5px;") 喵喵喵
             button.mdui-btn.mdui-btn-block.mdui-color-theme-accent.mdui-ripple(type='submit') 登入

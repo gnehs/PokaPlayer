@@ -118,9 +118,9 @@ app.get('/login/', (req, res) => {
 app.post('/login/', (req, res) => {
     req.session.pass = req.body['userPASS']
     if (req.body['userPASS'] != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
-        res.render('login')
+        res.send('fail')
     else
-        res.redirect("/")
+        res.send('success')
 });
 // 登出
 app.get('/logout/', (req, res) => {
