@@ -86,7 +86,7 @@ app.get('/nas/:url', async(req, res) => {
                     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'
                 }
             }).on('response', function(response) {
-                if (response.headers['content-length'])
+                if (response.headers['content-type'].match(/wav|mp3|flac/))
                     res.writeHead(206, {
                         "Content-Length": response.headers['content-length'],
                         "Content-Range": `bytes 0-${response.headers['content-length']-1}/${response.headers['content-length']}`,

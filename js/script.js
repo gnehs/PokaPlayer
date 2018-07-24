@@ -6,18 +6,24 @@ const ap = new APlayer({
     fixed: true
 });
 ap.on("play", function() {
+
     //沒歌就隨機播放
     if (ap.list.index == 0) { play_random(); return; }
 
-    $('#player button.play[onclick="ap.toggle()"] i').text("pause")
     var name = ap.list.audios[ap.list.index].name || ""
     var artist = ap.list.audios[ap.list.index].artist || ""
     var img = ap.list.audios[ap.list.index].cover || "https://i.imgur.com/ErJMEsh.jpg"
+    $('#player button.play[onclick="ap.toggle()"] i').text("pause")
     $('#player .song-info .name').text(name)
     $('#player .song-info .artist').text(artist)
     $('#player img').attr('src', img)
-
+})
+ap.on("timeupdate", function() {
+    var name = ap.list.audios[ap.list.index].name || ""
+    var artist = ap.list.audios[ap.list.index].artist || ""
+    var img = ap.list.audios[ap.list.index].cover || "https://i.imgur.com/ErJMEsh.jpg"
     if ('mediaSession' in navigator) {
+        console.log('mediaSession', 'mediaSession' in navigator)
         navigator.mediaSession.metadata = new MediaMetadata({
             title: name,
             artist: artist,
@@ -68,6 +74,7 @@ function secondToTime(second) {
     SS = SS < 10 ? '0' + SS : SS
     return MM + ":" + SS
 }
+
 //-- 常用 HTML
 function HTML_getHeader(title) {
     return `<div class="mdui-container-fluid mdui-valign mdui-typo" style="height: 300px;background-image:url(/og/og.png);background-size: cover;" id="header-wrapper">
