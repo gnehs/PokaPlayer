@@ -22,8 +22,8 @@ ap.on("play", function() {
         });
         navigator.mediaSession.setActionHandler('play', function() { ap.toggle() });
         navigator.mediaSession.setActionHandler('pause', function() { ap.pause() });
-        navigator.mediaSession.setActionHandler('seekbackward', function() { ap.seek(-10) });
-        navigator.mediaSession.setActionHandler('seekforward', function() { ap.seek(10) });
+        navigator.mediaSession.setActionHandler('seekbackward', function() { ap.seek(ap.audio.currentTime - 10) });
+        navigator.mediaSession.setActionHandler('seekforward', function() { ap.seek(ap.audio.currentTime + 10) });
         navigator.mediaSession.setActionHandler('previoustrack', function() { ap.skipBack() });
         navigator.mediaSession.setActionHandler('nexttrack', function() { ap.skipForward() });
     }
