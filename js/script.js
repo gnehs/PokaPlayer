@@ -75,6 +75,10 @@ function HTML_getHeader(title) {
 </div>`
 }
 
+function HTML_getSpinner() {
+    return `<div class="mdui-spinner mdui-spinner-colorful mdui-center" style="margin-top:80px"></div>`
+}
+
 function HTML_showAlbums(items) {
     //var album = '<div class="mdui-row-md-4 mdui-row-sm-3 mdui-row-xs-2">'
     var album = '<div class="albums">'
@@ -129,7 +133,8 @@ function HTML_showSongs(songs) {
 async function show_home() {
     // 展示讀取中
     var header = HTML_getHeader("PokaPlayer")
-    $("#content").html(header)
+    $("#content").html(header + HTML_getSpinner())
+    mdui.mutation()
 
     var data = await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "list", [{ key: "limit", "value": -1 }, { key: "offset", "value": 0 }]),
         album = HTML_showAlbums(data.data.items)
@@ -146,7 +151,8 @@ async function show_home() {
 async function show_album() {
     // 展示讀取中
     var header = HTML_getHeader("專輯")
-    $("#content").html(header)
+    $("#content").html(header + HTML_getSpinner())
+    mdui.mutation()
 
     var PARAMS_JSON = [
         { key: "additional", "value": "avg_rating" },
@@ -170,7 +176,8 @@ async function show_album() {
 async function show_random() {
     // 展示讀取中
     var header = HTML_getHeader("隨機播放")
-    $("#content").html(header)
+    $("#content").html(header + HTML_getSpinner())
+    mdui.mutation()
 
     var PARAMS_JSON = [
         { key: "additional", "value": "song_tag,song_audio,song_rating" },
