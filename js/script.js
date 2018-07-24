@@ -43,6 +43,7 @@ $(function() {
     $('[data-link]').click(function() {
         $('[data-link]').removeClass('mdui-list-item-active')
         $(this).addClass('mdui-list-item-active')
+        $("#player").removeClass('hide')
     })
     $('[data-link="home"]').click(function() { show_home() })
     $('[data-link="album"]').click(function() { show_album() })
@@ -290,13 +291,6 @@ async function show_now() {
         show_now()
     })
 
-    $('[data-link]:not[data-link="now"]').click(function() {
-        $("#player").removeClass('hide')
-    })
-    window.addEventListener("scroll", function() {
-        if (window.scrollY > 280) $("#player").removeClass('hide')
-        if (window.scrollY < 20) $("#player").addClass('hide')
-    });
 
 }
 //- 展示專輯歌曲
