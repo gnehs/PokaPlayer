@@ -299,8 +299,11 @@ async function show_now() {
         var cent = ap.audio.currentTime / ap.audio.duration * 100
         $('[data-player]>.info>.player-bar>.timer').text(currentTime + '/' + duration);
         // 更新 timer
-        $("[data-player]>.info>.player-bar input[type=range]").val(cent);
-        mdui.updateSliders()
+        var range = $("[data-player]>.info>.player-bar input[type=range]:not(:hover)").val();
+        if (range != cent) {
+            $("[data-player]>.info>.player-bar input[type=range]:not(:hover)").val(cent);
+            mdui.updateSliders()
+        }
     });
 
     $("[data-player]>.info>.player-bar input[type=range]").on("input", function() {
