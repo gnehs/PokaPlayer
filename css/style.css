@@ -107,7 +107,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 #player .song-info {
-    margin-left: 6px;
+    padding: 8px 0 8px 6px;
     color: #363636;
 }
 
@@ -154,4 +154,64 @@ header.mdui-appbar.mdui-appbar-fixed {
     #player .song-info .artist {
         width: calc(100vw - 64px - 144px - 6px);
     }
+}
+
+
+/* 播放器 */
+
+[data-player] {
+    margin-top: 30px;
+}
+
+@media screen and (min-width: 768px) {
+    [data-player] {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    [data-player]>.mdui-card {
+        display: flex;
+    }
+    [data-player]>.footer {
+        display: flex;
+    }
+    [data-player]>.info {
+        flex: 1;
+        flex-direction: column;
+        padding-left: 15px;
+        display: flex;
+    }
+    [data-player]>.info>.grow {
+        flex-grow: 1
+    }
+}
+
+@media screen and (max-width: 768px) {
+    [data-player]>.mdui-card {
+        margin: 0 auto;
+    }
+    [data-player]>.info {
+        margin-top: 10px;
+    }
+}
+
+[data-player]>.mdui-card {
+    width: 300px;
+    height: 300px;
+}
+
+[data-player]>.mdui-card .mdui-card-media img {
+    min-height: 300px;
+    min-width: 300px;
+}
+
+[data-player]>.info .ctrl {
+    text-align: center;
+    margin-top: 10px;
+}
+
+[data-player]>.info .ctrl .mdui-btn-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 48px;
 }

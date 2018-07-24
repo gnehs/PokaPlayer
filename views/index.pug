@@ -3,16 +3,19 @@ block head
     link(href='//cdnjs.cloudflare.com/ajax/libs/aplayer/1.10.1/APlayer.min.css',rel='stylesheet')
 block drawer
     .mdui-subheader 音樂庫
-    a.mdui-list-item.mdui-ripple(href='#',data-link='album')
+    a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='album')
         i.mdui-list-item-icon.mdui-icon.material-icons album
         .mdui-list-item-content 專輯
-    a.mdui-list-item.mdui-ripple(href='#',data-link='random')
+    a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='random')
         i.mdui-list-item-icon.mdui-icon.material-icons playlist_play
         .mdui-list-item-content 隨機播放
     .mdui-subheader 現正播放
-    a.mdui-list-item.mdui-ripple(href='#',data-link='now')
+    a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='now')
         i.mdui-list-item-icon.mdui-icon.material-icons queue_music
         .mdui-list-item-content 現正播放
+    a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='player')
+        i.mdui-list-item-icon.mdui-icon.material-icons play_circle_filled
+        .mdui-list-item-content 播放器
     //-.mdui-subheader 帳號
     //-a.mdui-list-item.mdui-ripple(href='/logout/')
         i.mdui-list-item-icon.mdui-icon.material-icons account_circle
@@ -20,8 +23,9 @@ block drawer
 block body
     #aplayer
     #player
-        img(src='https://i.imgur.com/ErJMEsh.jpg')
-        .song-info
+        .mdui-ripple
+            img(src='https://i.imgur.com/ErJMEsh.jpg')
+        .song-info.mdui-ripple
             .name
             .artist
         .mdui-toolbar-spacer
@@ -35,5 +39,6 @@ block body
     script(src='//cdnjs.cloudflare.com/ajax/libs/aplayer/1.10.1/APlayer.min.js')
     script(src='//cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js')
     script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js')
+    script(src='/js/xback.js')
     script(src='/js/base64.js')
     script(src='/js/script.js')

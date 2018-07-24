@@ -1,4 +1,4 @@
-//宣告全域變數
+// 宣告全域變數
 songList = [];
 // 初始化播放器
 const ap = new APlayer({
@@ -36,17 +36,19 @@ ap.on("error", function() {
         message: '播放器發生了錯誤：（',
         position: 'top'
     });
-})
-$(function() { //初始化
+});
+// 初始化網頁
+$(function() {
     show_home()
-    $('[data-link="home"]').click(function() { show_home() })
-    $('[data-link="album"]').click(function() { show_album() })
-    $('[data-link="random"]').click(function() { show_random() })
-    $('[data-link="now"]').click(function() { show_now() })
     $('[data-link]').click(function() {
         $('[data-link]').removeClass('mdui-list-item-active')
         $(this).addClass('mdui-list-item-active')
     })
+    $('[data-link="home"]').click(function() { show_home() })
+    $('[data-link="album"]').click(function() { show_album() })
+    $('[data-link="random"]').click(function() { show_random() })
+    $('[data-link="now"]').click(function() { show_now() })
+    $('[data-link="player"]').click(function() { show_player() })
 });
 //-- 加解密
 function pp_encode(str) {
@@ -55,6 +57,13 @@ function pp_encode(str) {
 
 function pp_decode(str) {
     return decodeURIComponent(base64.decode(str))
+}
+//-- 秒數轉時間
+function secondToTime(second) {
+    let MM = Math.floor(second / 60)
+    let SS = Math.floor(second % 60)
+    SS = SS < 10 ? '0' + SS : SS
+    return MM + ":" + SS
 }
 //-- 常用 HTML
 function HTML_getHeader(title) {
@@ -213,6 +222,77 @@ async function show_now() {
         $(".songs>li.song").eq(ap.list.index).addClass('mdui-list-item-active')
     })
 }
+//- 播放器
+async function show_player() {
+    $("#title").text('播放器')
+    var nowPlaying = ap.list.audios[ap.list.index]
+    var name = nowPlaying ? nowPlaying.name : "尚未開始播放"
+    var artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "未知的歌手"
+    var img = nowPlaying ? nowPlaying.cover : "https://i.imgur.com/ErJMEsh.jpg" //一定會有圖片
+    var info = `
+    <div data-player>
+        <div class="mdui-card">
+            <div class="mdui-card-media">
+                <img src="${img}"/>
+            </div>
+        </div>
+        <div class="info">
+            <div class="title mdui-typo-display-2">${name}</div>
+            <div class="artist mdui-typo-display-1-opacity">${artist}</div>
+            <div class="grow"></div>
+            <div class="ctrl">
+                <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="ap.skipBack()"><i class="mdui-icon material-icons">skip_previous</i></button>
+                <button class="mdui-btn mdui-btn-icon mdui-ripple mdui-color-theme-accent play" onclick="ap.toggle()"><i class="mdui-icon material-icons">play_arrow</i></button>
+                <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="ap.skipForward()"><i class="mdui-icon material-icons">skip_next</i></button>
+            </div>
+            <div class="player-bar">
+                <label class="mdui-slider">
+                    <input type="range" step="0.000001" min="0" max="100"/>
+                </label>
+                <div class="timer mdui-typo-body-1-opacity mdui-text-right">0:00/0:00</div>
+            </div>
+        </div>
+    </div>`
+    $("#content").html(info)
+    mdui.mutation() //初始化滑塊
+        // 確認播放鈕狀態
+    if (ap.audio.paused)
+        $('[data-player] button.play[onclick="ap.toggle()"] i').text("play_arrow")
+    else
+        $('[data-player] button.play[onclick="ap.toggle()"] i').text("pause")
+
+    ap.on("pause", function() {
+        $('[data-player] button.play[onclick="ap.toggle()"] i').text("play_arrow")
+    })
+    ap.on("play", function() {
+        $('[data-player] button.play[onclick="ap.toggle()"] i').text("pause")
+        var nowPlaying = ap.list.audios[ap.list.index]
+        var name = nowPlaying ? nowPlaying.name : "尚未開始播放"
+        var artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "未知的歌手"
+        var img = nowPlaying ? nowPlaying.cover : "https://i.imgur.com/ErJMEsh.jpg" //一定會有圖片
+        $('[data-player]>.mdui-card img').attr('src', img)
+        $('[data-player]>.info>.title').text(name)
+        $('[data-player]>.info>.artist').text(artist)
+            // 更新 timer
+        $("[data-player]>.info>.player-bar input[type=range]").val(0);
+        mdui.updateSliders()
+    })
+    ap.on("timeupdate", function() {
+        currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00"
+        duration = ap.audio.currentTime ? secondToTime(ap.audio.duration) : "0:00"
+        var cent = ap.audio.currentTime / ap.audio.duration * 100
+        $('[data-player]>.info>.player-bar>.timer').text(currentTime + '/' + duration);
+        // 更新 timer
+        $("[data-player]>.info>.player-bar input[type=range]").val(cent);
+        mdui.updateSliders()
+    });
+    // 時間調整
+    $("[data-player]>.info>.player-bar input[type=range]").on("input", function() {
+        var time = $("[data-player]>.info>.player-bar input[type=range]").val() / 100 * ap.audio.duration
+        ap.seek(time);
+    })
+
+}
 //- 展示專輯歌曲
 async function show_album_songs(artist, album, album_artist) {
     $("#title").text('專輯 / ' + album)
@@ -227,6 +307,9 @@ async function show_album_songs(artist, album, album_artist) {
     $(".songs [data-song-id].add").click(function() {
         addSong(JSON.parse(songList), $(this).attr('data-song-id'))
     })
+    XBack.listen(function() {
+        show_album()
+    });
 }
 
 

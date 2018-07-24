@@ -79,9 +79,9 @@ app.get('/nas/:url', (req, res) => {
         res.send('請登入')
     else {
         var url = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}/${pp_decode(req.params.url)}`
-        request.get(url).pipe(res).on('error', function(err) {
-            res.send('未知的錯誤')
-        });
+        try {
+            request.get(url).pipe(res)
+        } catch (e) { console.log(e) }
 
     }
 })
