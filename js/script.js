@@ -308,9 +308,7 @@ async function show_now() {
 
     $("[data-player]>.info>.player-bar input[type=range]").on("input", function() {
         var time = $("[data-player]>.info>.player-bar input[type=range]").val() / 100 * ap.audio.duration
-        console.log(time)
         ap.seek(time);
-        ap.audio.currentTime = time
     })
 
     $(".songs [data-now-play-id].songinfo").click(function() {
@@ -422,9 +420,7 @@ async function getAlbumSong(album_name, album_artist_name, artist_name) {
     if (album_name) PARAMS_JSON.push({ key: "album", "value": album_name })
     if (album_artist_name) PARAMS_JSON.push({ key: "album_artist", "value": album_artist_name })
     if (artist_name) PARAMS_JSON.push({ key: "artist", "value": artist_name })
-    console.log(PARAMS_JSON)
     var info = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "list", PARAMS_JSON, 3)
-    console.log(info)
     return info
 }
 
