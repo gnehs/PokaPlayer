@@ -429,9 +429,7 @@ function addSong(songlist, songID) {
 }
 
 function getAlbumCover(album_name, album_artist_name, artist_name) {
-    //webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&_dc=1532485763755&method=getsongcover&view=large&id=music_682
-    //webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&_dc=1532485763755&method=getsongcover&view=large&id=music_1574
-    var url = "webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getcover&view=large"
+    var url = "webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getcover&view=album"
     url += album_name ? `&album_name=${encodeURIComponent(album_name)}` : ``
     url += artist_name ? `&artist_name=${encodeURIComponent(artist_name)}` : ``
     url += album_artist_name ? `&album_artist_name=${encodeURIComponent(album_artist_name)}` : `&album_artist_name=`
@@ -439,8 +437,6 @@ function getAlbumCover(album_name, album_artist_name, artist_name) {
 }
 
 function getSongCover(id) {
-    //webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&_dc=1532485763755&method=getsongcover&view=large&id=music_682
-    //webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&_dc=1532485763755&method=getsongcover&view=large&id=music_1574
     var url = "webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getsongcover&view=large&id=" + id
     return '/nas/' + pp_encode(url)
 }
