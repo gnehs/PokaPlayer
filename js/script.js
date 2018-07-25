@@ -276,6 +276,10 @@ async function show_now() {
     var name = nowPlaying ? nowPlaying.name : "PokaPlayer"
     var artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點擊播放鍵開始隨機播放"
     var img = nowPlaying ? nowPlaying.cover : "https://i.imgur.com/ErJMEsh.jpg" //一定會有圖片
+
+    var currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00"
+    var duration = ap.audio.currentTime ? secondToTime(ap.audio.duration) : "0:00"
+    var timer = currentTime + '/' + duration
     var info = `
     <div data-player>
         <div class="mdui-card" style="background-image:url(${img});">
@@ -293,9 +297,9 @@ async function show_now() {
             </div>
             <div class="player-bar">
                 <label class="mdui-slider">
-                    <input type="range" step="0.000001" min="0" max="100" value="0"/>
+                    <input type="range" step="0.000001" min="0" max="100" value="${ap.audio.currentTime / ap.audio.duration * 100}"/>
                 </label>
-                <div class="timer mdui-typo-body-1-opacity mdui-text-right">0:00/0:00</div>
+                <div class="timer mdui-typo-body-1-opacity mdui-text-right">${timer}</div>
             </div>
         </div>
     </div>`;
@@ -326,10 +330,10 @@ async function show_now() {
         $('[data-player] button.play[onclick="ap.toggle()"] i').text("play_arrow")
     })
     ap.on("play", function() {
+        //- list 切換 active
         $(".songs>li.song").removeClass('mdui-list-item-active')
-        $(".songs>li.song").eq(ap.list.index).addClass('mdui-list-item-active')
-            //- 播放器
-
+        $(".songs>li.song").eq(ap.list.index).addClass('mdui-list-item-active');
+        //- 播放器
         $('[data-player] button.play[onclick="ap.toggle()"] i').text("pause")
         var nowPlaying = ap.list.audios[ap.list.index]
         var name = nowPlaying ? nowPlaying.name : "PokaPlayer"

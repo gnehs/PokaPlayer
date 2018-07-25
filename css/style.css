@@ -240,7 +240,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     }
 }
 
-@media screen and (min-width: 850px)and (min-height: 560px) {
+@media screen and (min-width: 850px) and (min-height: 560px) {
     [data-player-container] {
         display: flex;
         margin-bottom: -100px;
@@ -272,6 +272,9 @@ header.mdui-appbar.mdui-appbar-fixed {
     }
     [data-player]>.mdui-card {
         --main-size: 300px;
+    }
+    .mdui-slider input[type="range"] {
+        left: 0
     }
 }
 
