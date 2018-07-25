@@ -408,11 +408,8 @@ async function show_now() {
         var cent = ap.audio.currentTime / ap.audio.duration * 100
         $('[data-player]>.info>.player-bar>.timer').text(currentTime + '/' + duration);
         // 更新 timer
-        if (!$('[data-player]>.info>.player-bar input[type=range]').is(":hover")) {
-            $("[data-player]>.info>.player-bar input[type=range]").val(cent);
-            mdui.updateSliders()
-        }
-
+        $("[data-player]>.info>.player-bar input[type=range]").val(cent);
+        mdui.updateSliders()
     });
 
     $("[data-player]>.info>.player-bar input[type=range]").on("input", function() {
