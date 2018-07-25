@@ -322,10 +322,13 @@ async function show_now() {
     mdui.mutation();
     // 確認播放鈕狀態
     if (ap.audio.paused)
-        $('[data-player] button.play[onclick="ap.toggle()"] i').text("play_arrow")
+        $('[data-player] button.play[onclick="ap.toggle()"] i').text("play_arrow");
     else
-        $('[data-player] button.play[onclick="ap.toggle()"] i').text("pause")
-
+        $('[data-player] button.play[onclick="ap.toggle()"] i').text("pause");
+    //捲動清單
+    if ($(window).width() > 850 && $(window).height() > 560) {
+        $('.mdui-list.songs').scrollTop(72 * ap.list.index - 100);
+    }
     ap.on("pause", function() {
         $('[data-player] button.play[onclick="ap.toggle()"] i').text("play_arrow")
     })
@@ -347,6 +350,10 @@ async function show_now() {
         $("[data-player]>.info>.player-bar input[type=range]").val(0);
         mdui.updateSliders()
 
+        //卷軸轉轉
+        if ($(window).width() > 850 && $(window).height() > 560) {
+            $('.mdui-list.songs').animate({ scrollTop: 72 * ap.list.index - 100 }, 400);
+        }
         // 找找看歌詞
         //ap.list.audios[ap.list.index].lrc 
         //lyrics = await getLrc(artist, name)
