@@ -221,5 +221,15 @@ header.mdui-appbar.mdui-appbar-fixed {
 [data-player]>.info .ctrl .mdui-btn-icon {
     width: 64px;
     height: 64px;
-    font-size: 48px;
+}
+
+[data-player]>.info>.ctrl>.random,
+[data-player]>.info>.ctrl>.loop {
+    font-size: 32px;
+}
+
+[data-player]>.info>.ctrl>.mdui-btn svg {
+    height: 24px;
+    width: 24px;
+    font-size: 32px;
 }

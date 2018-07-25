@@ -266,9 +266,11 @@ async function show_now() {
             <div class="artist mdui-typo-display-1-opacity">${artist}</div>
             <div class="grow"></div>
             <div class="ctrl">
+                <button class="mdui-btn mdui-btn-icon mdui-ripple random"><i class="mdui-icon material-icons">skip_previous</i></button>
                 <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="ap.skipBack()"><i class="mdui-icon material-icons">skip_previous</i></button>
                 <button class="mdui-btn mdui-btn-icon mdui-ripple mdui-color-theme-accent play" onclick="ap.toggle()"><i class="mdui-icon material-icons">play_arrow</i></button>
                 <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="ap.skipForward()"><i class="mdui-icon material-icons">skip_next</i></button>
+                <button class="mdui-btn mdui-btn-icon mdui-ripple loop"><i class="mdui-icon material-icons">skip_previous</i></button>
             </div>
             <div class="player-bar">
                 <label class="mdui-slider">
@@ -282,6 +284,17 @@ async function show_now() {
     $("#content").html(info + html);
     // 隱藏原本ㄉ播放器
     $("#player").addClass('hide');
+    // random＆loop
+    $("[data-player]>.info>.ctrl>.random").html($('.aplayer-icon.aplayer-icon-order').html())
+    $("[data-player]>.info>.ctrl>.loop").html($('.aplayer-icon.aplayer-icon-loop').html())
+    $("[data-player]>.info>.ctrl>.random").click(function() {
+        $('#aplayer .aplayer-icon.aplayer-icon-order').click()
+        $(this).html($('.aplayer-icon.aplayer-icon-order').html())
+    })
+    $("[data-player]>.info>.ctrl>.loop").click(function() {
+        $('#aplayer .aplayer-icon.aplayer-icon-loop').click()
+        $(this).html($('.aplayer-icon.aplayer-icon-loop').html())
+    });
     //初始化滑塊
     mdui.mutation();
     // 確認播放鈕狀態
