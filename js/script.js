@@ -61,7 +61,7 @@ $(function() {
     })
     $('[data-link="home"]').click(function() { show_home() })
     $('[data-link="album"]').click(function() { show_album() })
-    $('[data-link="recentlyAlbum"]').click(function() { show_recentlyAlbum()() })
+    $('[data-link="recentlyAlbum"]').click(function() { show_recentlyAlbum() })
     $('[data-link="random"]').click(function() { show_random() })
     $('[data-link="now"]').click(function() { show_now() })
 
