@@ -278,14 +278,11 @@ async function show_now() {
     var img = nowPlaying ? nowPlaying.cover : "https://i.imgur.com/ErJMEsh.jpg" //一定會有圖片
     var info = `
     <div data-player>
-        <div class="mdui-card">
-            <div class="mdui-card-media">
-                <img src="${img}"/>
-            </div>
+        <div class="mdui-card" style="background-image:url(${img});">
         </div>
         <div class="info">
-            <div class="title mdui-typo-display-2">${name}</div>
-            <div class="artist mdui-typo-display-1-opacity">${artist}</div>
+            <div class="title  mdui-text-truncate">${name}</div>
+            <div class="artist mdui-text-truncate">${artist}</div>
             <div class="grow"></div>
             <div class="ctrl">
                 <button class="mdui-btn mdui-btn-icon mdui-ripple random"><i class="mdui-icon material-icons">skip_previous</i></button>
@@ -296,14 +293,14 @@ async function show_now() {
             </div>
             <div class="player-bar">
                 <label class="mdui-slider">
-                    <input type="range" step="0.000001" min="0" max="100"/>
+                    <input type="range" step="0.000001" min="0" max="100" value="0"/>
                 </label>
                 <div class="timer mdui-typo-body-1-opacity mdui-text-right">0:00/0:00</div>
             </div>
         </div>
     </div>`;
     // 輸出
-    $("#content").html(info + html);
+    $("#content").html(`<div data-player-container>${info+html}</div>`);
     // 隱藏原本ㄉ播放器
     $("#player").addClass('hide');
     // random＆loop
@@ -338,9 +335,9 @@ async function show_now() {
         var name = nowPlaying ? nowPlaying.name : "PokaPlayer"
         var artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點擊播放鍵開始隨機播放"
         var img = nowPlaying ? nowPlaying.cover : "https://i.imgur.com/ErJMEsh.jpg" //一定會有圖片
-        $('[data-player]>.mdui-card img').attr('src', img)
-        $('[data-player]>.info>.title').text(name)
-        $('[data-player]>.info>.artist').text(artist)
+        $('[data-player]>.mdui-card').attr('style', `background-image:url(${img});`)
+        $('[data-player]>.info .title').text(name)
+        $('[data-player]>.info .artist').text(artist)
             // 更新 timer
         $("[data-player]>.info>.player-bar input[type=range]").val(0);
         mdui.updateSliders()

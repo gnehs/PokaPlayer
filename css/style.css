@@ -131,6 +131,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 #player .song-info .name {
     color: rgba(0, 0, 0, .87);
+    font-size: 15px;
 }
 
 #player .song-info .artist {
@@ -182,11 +183,48 @@ header.mdui-appbar.mdui-appbar-fixed {
     margin-top: 10px;
 }
 
-@media screen and (min-width: 768px) {
+[data-player] .info .title {
+    color: rgba(0, 0, 0, .87);
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 20px;
+}
+
+[data-player] .info .artist {
+    margin-top: 5px;
+    font-size: 17.5px;
+    color: rgba(0, 0, 0, .54);
+}
+
+[data-player]>.mdui-card {
+    --main-size: 150px;
+    width: var(--main-size);
+    height: var(--main-size);
+    background-size: cover;
+    background-color: beige;
+}
+
+[data-player]>.mdui-card .mdui-card-media img {
+    min-height: 100%;
+    min-height: 100%;
+    height: auto;
+    width: auto;
+    object-fit: cover;
+}
+
+@media screen and (min-width: 460px) {
     [data-player] {
+        margin-top: 32px;
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
+    }
+    [data-player]>.info {
+        margin-top: 10px;
+        flex: 1;
+        flex-direction: column;
+        padding-left: 15px;
+        display: flex;
     }
     [data-player]>.mdui-card {
         display: flex;
@@ -194,31 +232,53 @@ header.mdui-appbar.mdui-appbar-fixed {
     [data-player]>.footer {
         display: flex;
     }
-    [data-player]>.info {
-        flex: 1;
-        flex-direction: column;
-        padding-left: 15px;
-        display: flex;
-    }
     [data-player]>.info>.grow {
         flex-grow: 1
     }
-}
-
-@media screen and (max-width: 768px) {
     [data-player]>.mdui-card {
-        margin: 0 auto;
+        --main-size: 200px;
     }
 }
 
-[data-player]>.mdui-card {
-    width: 300px;
-    height: 300px;
+@media screen and (min-width: 850px)and (min-height: 560px) {
+    [data-player-container] {
+        display: flex;
+        margin-bottom: -100px;
+    }
+    [data-player-container]>ul {
+        flex: 1;
+        flex-direction: column;
+        height: calc(100vh - 64px - 20px);
+        overflow-y: scroll;
+        margin-bottom: -64px;
+    }
+    [data-player] {
+        margin-top: 32px;
+        display: block;
+        width: 320px;
+        padding: 0 10px
+    }
+    [data-player]>.info {
+        margin-top: 10px;
+        padding-left: 0;
+        display: block;
+        text-align: center;
+    }
+    [data-player]>.mdui-card {
+        display: block;
+    }
+    [data-player]>.footer {
+        display: block;
+    }
+    [data-player]>.mdui-card {
+        --main-size: 300px;
+    }
 }
 
-[data-player]>.mdui-card .mdui-card-media img {
-    min-height: 300px;
-    min-width: 300px;
+@media screen and (max-width: 460px) {
+    [data-player]>.mdui-card {
+        margin: 0 auto;
+    }
 }
 
 [data-player]>.info .ctrl {
@@ -227,33 +287,17 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 [data-player]>.info .ctrl .mdui-btn-icon {
-    width: 64px;
-    height: 64px;
+    width: 48px;
+    height: 48px;
 }
 
 [data-player]>.info>.ctrl>.random,
 [data-player]>.info>.ctrl>.loop {
-    font-size: 32px;
+    font-size: 0;
 }
 
 [data-player]>.info>.ctrl>.mdui-btn svg {
     height: 24px;
     width: 24px;
-    font-size: 32px;
-}
-
-@media screen and (max-width: 512px) {
-    [data-player]>.info .ctrl .mdui-btn-icon {
-        width: 48px;
-        height: 48px;
-    }
-    [data-player]>.info>.ctrl>.random,
-    [data-player]>.info>.ctrl>.loop {
-        font-size: auto;
-    }
-    [data-player]>.info>.ctrl>.mdui-btn svg {
-        height: 24px;
-        width: 24px;
-        font-size: 24px;
-    }
+    font-size: 24px;
 }
