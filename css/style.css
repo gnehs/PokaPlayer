@@ -93,12 +93,13 @@ header.mdui-appbar.mdui-appbar-fixed {
     overflow: hidden;
     box-shadow: 0 0 10px #0000004d;
     transform: translateY(0);
-    transition: transform .3s ease, width .4s ease-in, border-radius .4s ease-in;
+    transition: transform .3s ease, width .4s ease-in, border-radius .4s ease-in, box-shadow .3s ease;
+    margin: 0 auto;
 }
 
 #player.hide {
-    visibility: hidden;
     transform: translateY(64px);
+    box-shadow: none
 }
 
 #player .mdui-btn {
@@ -154,7 +155,6 @@ header.mdui-appbar.mdui-appbar-fixed {
 @media screen and (min-width: 768px) {
     #player {
         width: 400px;
-        margin: 0 auto;
     }
     #player .song-info .name,
     #player .song-info .artist {
@@ -201,7 +201,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     width: var(--main-size);
     height: var(--main-size);
     background-size: cover;
-    background-color: beige;
+    background-color: #0000;
 }
 
 [data-player]>.mdui-card .mdui-card-media img {
@@ -212,7 +212,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     object-fit: cover;
 }
 
-@media screen and (min-width: 460px) {
+@media screen and (min-width: 510px) {
     [data-player] {
         margin-top: 32px;
         display: flex;
@@ -278,9 +278,12 @@ header.mdui-appbar.mdui-appbar-fixed {
     }
 }
 
-@media screen and (max-width: 460px) {
+@media screen and (max-width: 509px) {
     [data-player]>.mdui-card {
         margin: 0 auto;
+    }
+    [data-player]>.info {
+        text-align: center;
     }
 }
 

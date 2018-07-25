@@ -329,7 +329,7 @@ async function show_now() {
     ap.on("pause", function() {
         $('[data-player] button.play[onclick="ap.toggle()"] i').text("play_arrow")
     })
-    ap.on("play", function() {
+    ap.on("play", async function() {
         //- list 切換 active
         $(".songs>li.song").removeClass('mdui-list-item-active')
         $(".songs>li.song").eq(ap.list.index).addClass('mdui-list-item-active');
@@ -342,9 +342,14 @@ async function show_now() {
         $('[data-player]>.mdui-card').attr('style', `background-image:url(${img});`)
         $('[data-player]>.info .title').text(name)
         $('[data-player]>.info .artist').text(artist)
-            // 更新 timer
+
+        // 更新 timer
         $("[data-player]>.info>.player-bar input[type=range]").val(0);
         mdui.updateSliders()
+
+        // 找找看歌詞
+        //ap.list.audios[ap.list.index].lrc 
+        //lyrics = await getLrc(artist, name)
     })
     ap.on("timeupdate", function() {
         currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00"
@@ -458,6 +463,23 @@ function getAlbumCover(album_name, album_artist_name, artist_name) {
     url += artist_name ? `&artist_name=${encodeURIComponent(artist_name)}` : ``
     url += album_artist_name ? `&album_artist_name=${encodeURIComponent(album_artist_name)}` : `&album_artist_name=`
     return '/nas/' + pp_encode(url)
+}
+
+async function getLrc(artist, title) {
+    //webapi/AudioStation/lyrics_search.cgi
+    /*additional	full_lyrics
+artist	喜多修平
+limit	1
+title	あたりまえのような奇跡
+version	2*/
+    var PARAMS_JSON = [
+        { key: "additional", "value": "full_lyrics" },
+        { key: "limit", "value": 1 }
+    ]
+    if (artist) PARAMS_JSON.push({ key: "artist", "value": artist })
+    if (title) PARAMS_JSON.push({ key: "title", "value": title })
+    var lrc = await getAPI("AudioStation/lyrics_search.cgi", "SYNO.AudioStation.LyricsSearch", "searchlyrics", PARAMS_JSON, 2)
+    return lrc.data
 }
 
 function getSongCover(id) {
