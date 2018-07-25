@@ -7,7 +7,7 @@ const ap = new APlayer({
 });
 ap.on("play", function() {
     //沒歌就隨機播放
-    if (ap.list.index == 0) { play_random(); return; }
+    if (ap.list.audios.length == 0) play_random();
 })
 ap.on("timeupdate", function() {
     var name = ap.list.audios[ap.list.index].name || ""
