@@ -139,7 +139,11 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 #player .ctrl {
+    position: absolute;
     width: 144px;
+    right: 0;
+    top: 0;
+    bottom: 0;
 }
 
 #player .ctrl button {
