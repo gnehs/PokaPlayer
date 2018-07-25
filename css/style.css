@@ -171,6 +171,10 @@ header.mdui-appbar.mdui-appbar-fixed {
     margin-top: 30px;
 }
 
+[data-player]>.info {
+    margin-top: 10px;
+}
+
 @media screen and (min-width: 768px) {
     [data-player] {
         display: flex;
@@ -197,9 +201,6 @@ header.mdui-appbar.mdui-appbar-fixed {
 @media screen and (max-width: 768px) {
     [data-player]>.mdui-card {
         margin: 0 auto;
-    }
-    [data-player]>.info {
-        margin-top: 10px;
     }
 }
 
@@ -232,4 +233,20 @@ header.mdui-appbar.mdui-appbar-fixed {
     height: 24px;
     width: 24px;
     font-size: 32px;
+}
+
+@media screen and (max-width: 512px) {
+    [data-player]>.info .ctrl .mdui-btn-icon {
+        width: 48px;
+        height: 48px;
+    }
+    [data-player]>.info>.ctrl>.random,
+    [data-player]>.info>.ctrl>.loop {
+        font-size: auto;
+    }
+    [data-player]>.info>.ctrl>.mdui-btn svg {
+        height: 24px;
+        width: 24px;
+        font-size: 24px;
+    }
 }
