@@ -63,6 +63,11 @@ $(function() {
     $('[data-link="album"]').click(function() { show_album() })
     $('[data-link="random"]').click(function() { show_random() })
     $('[data-link="now"]').click(function() { show_now() })
+
+    $('#player>*:not(.ctrl)').click(function() {
+        show_now()
+    })
+
 });
 //-- 加解密
 function pp_encode(str) {
