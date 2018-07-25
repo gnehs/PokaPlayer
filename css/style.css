@@ -175,7 +175,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 /* 播放器 */
 
 [data-player] {
-    margin-top: 30px;
+    margin-top: 32px;
 }
 
 [data-player]>.info {
