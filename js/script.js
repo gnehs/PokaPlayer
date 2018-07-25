@@ -65,6 +65,7 @@ $(function() {
     $('[data-link="recentlyAlbum"]').click(function() { show_recentlyAlbum() })
     $('[data-link="random"]').click(function() { show_random() })
     $('[data-link="now"]').click(function() { show_now() })
+    $('[data-link="settings"]').click(function() { show_settings() })
 
     $('#player>*:not(.ctrl)').click(function() {
         show_now()
@@ -90,7 +91,8 @@ function secondToTime(second) {
 //-- 常用 HTML
 function HTML_getHeader(title) {
     return `<div class="mdui-container-fluid mdui-valign mdui-typo" style="height: 300px;background-image:url(/og/og.png);background-size: cover;background-color: #3f51b5;" id="header-wrapper">
-    <h1 class="mdui-center mdui-text-color-white">${title}</h1>
+    <h1 class="mdui-center mdui-text-color-white" style="
+    text-shadow: 0 1px 8px #000000ad;">${title}</h1>
 </div>`
 }
 
@@ -431,8 +433,81 @@ async function show_now() {
         ap.list.remove(song)
         show_now()
     })
+}
+//- 設定
+function show_settings() {
+    // 展示讀取中
+    var header = HTML_getHeader("設定")
+    var title = (title) => `<h2 class="mdui-text-color-theme">${title}</h2>`
+    var subtitle = (subtitle) => `<h4>${subtitle}</h4>`
+    var colors = [
+        'red',
+        'pink',
+        'purple',
+        'deep-purple',
+        'indigo',
+        'blue',
+        'light-blue',
+        'cyan',
+        'teal',
+        'green',
+        'light-green',
+        'lime',
+        'yellow',
+        'amber',
+        'orange',
+        'deep-orange',
+        'brown',
+        'grey',
+        'blue-grey'
+    ]
+    var colorOption = (colors, accent = false) => {
+        var option = ''
+        for (i = 0; i < colors.length; i++) {
+            let color = colors[i]
+            if (accent)
+                var checked = window.localStorage["mdui-theme-accent"] == color ? " checked" : ''
+            else
+                var checked = window.localStorage["mdui-theme-primary"] == color ? " checked" : ''
+            option += `<div class="mdui-col"><label class="mdui-radio mdui-text-color-${color}${accent?"-accent":''}">
+            <input type="radio" name="group${accent?"1":"2"}" value="${color}"${checked}/>
+            <i class="mdui-radio-icon"></i>${color}</label></div>`
+        }
+        return option
+    }
+    var setting_theme = title("主題") +
+        subtitle("主色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-6" id="PP_Primary">${colorOption(colors)}</form>` +
+        subtitle("強調色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-6" id="PP_Accent">${colorOption(colors,true)}</form>`
+    var about = title("關於") + `<p>PokaPlayer by gnehs</p>`
 
+    var html = header + setting_theme + about
+    $("#content").html(html)
 
+    $("#PP_Primary input").change(function() {
+        var classStr = $('body').attr('class');
+        var classs = classStr.split(' ');
+        for (i = 0, len = classs.length; i < len; i++) {
+            if (classs[i].indexOf('mdui-theme-primary-') === 0) {
+                $('body').removeClass(classs[i])
+            }
+        }
+        $('body').addClass(`mdui-theme-primary-${$(this).val()}`)
+        window.localStorage["mdui-theme-primary"] = $(this).val()
+            //設定顏色
+        var metaThemeColor = document.querySelector("meta[name=theme-color]");
+        metaThemeColor.setAttribute("content", $('header>div:first-child').css("background-color"));
+    })
+    $("#PP_Accent input").change(function() {
+        var classStr = $('body').attr('class');
+        var classs = classStr.split(' ');
+        for (i = 0, len = classs.length; i < len; i++) {
+            if (classs[i].indexOf('mdui-theme-accent-') === 0) {
+                $('body').removeClass(classs[i])
+            }
+        }
+        window.localStorage["mdui-theme-accent"] = $(this).val()
+        $('body').addClass(`mdui-theme-accent-${$(this).val()}`)
+    })
 }
 //- 展示專輯歌曲
 async function show_album_songs(artist, album, album_artist) {
