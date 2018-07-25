@@ -61,6 +61,7 @@ $(function() {
     })
     $('[data-link="home"]').click(function() { show_home() })
     $('[data-link="album"]').click(function() { show_album() })
+    $('[data-link="recentlyAlbum"]').click(function() { show_recentlyAlbum()() })
     $('[data-link="random"]').click(function() { show_random() })
     $('[data-link="now"]').click(function() { show_now() })
 
@@ -177,6 +178,31 @@ async function show_album() {
         { key: "limit", "value": 1000 },
         { key: "sort_by", "value": "display_artist" },
         { key: "sort_direction", "value": "ASC" },
+    ]
+    var data = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3),
+        album = HTML_showAlbums(data.data.albums)
+    $("#content").html(header + album)
+
+    $('[data-album]').click(function() {
+        show_album_songs(
+            $(this).attr('data-artist'),
+            $(this).attr('data-album'),
+            $(this).attr('data-album-artist'))
+    })
+}
+// 最近加入ㄉ專輯
+async function show_recentlyAlbum() {
+    // 展示讀取中
+    var header = HTML_getHeader("最近加入的專輯")
+    $("#content").html(header + HTML_getSpinner())
+    mdui.mutation()
+    var PARAMS_JSON = [
+        { key: "additional", "value": "avg_rating" },
+        { key: "library", "value": "shared" },
+        { key: "limit", "value": 100 },
+        { key: "method", "value": 'list' },
+        { key: "sort_by", "value": "time" },
+        { key: "sort_direction", "value": "desc" },
     ]
     var data = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3),
         album = HTML_showAlbums(data.data.albums)
