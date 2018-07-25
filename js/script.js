@@ -226,10 +226,6 @@ async function play_random() {
 }
 //- 現正播放
 async function show_now() {
-    var $body = (window.opera) ? (document.compatMode == "CSS1Compat" ? $('html') : $('body')) : $('html,body');
-    $body.animate({
-        scrollTop: 0
-    }, 600);
     $('[data-link]').removeClass('mdui-list-item-active')
     $('[data-link="now"]').addClass('mdui-list-item-active')
     $("#title").text("現正播放")
@@ -420,7 +416,8 @@ function addSong(songlist, songID) {
                 cover: poster,
                 name: name,
                 artist: artist,
-                album: album
+                album: album,
+                id: nowsong.id
             })
         }
     }
