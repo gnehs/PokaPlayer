@@ -93,7 +93,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     overflow: hidden;
     box-shadow: 0 0 10px #0000004d;
     transform: translateY(0);
-    transition: transform .3s ease;
+    transition: transform .3s ease, width .2s ease;
 }
 
 #player.hide {
@@ -140,7 +140,10 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 #player .ctrl {
     width: 144px;
-    display: inline-block;
+}
+
+#player .ctrl button {
+    transition: none !important;
 }
 
 @media screen and (min-width: 768px) {
