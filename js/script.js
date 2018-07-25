@@ -41,10 +41,18 @@ ap.on("pause", function() {
     $('#player button.play[onclick="ap.toggle()"] i').text("play_arrow")
 })
 ap.on("error", function() {
-    mdui.snackbar({
-        message: '播放器發生了錯誤：（',
-        position: 'top'
-    });
+    if (window.localStorage["userPASS"]) { //如果有存到密碼就嘗試登入
+        $.post("/login/", { userPASS: window.localStorage["userPASS"] }, function(data) {
+            if (data == 'success') {
+                //mdui.snackbar({ message: 'Session 過期，重新登入成功', timeout: 1000 });
+            } else {
+                mdui.snackbar({ message: 'Session 過期，請重新登入', timeout: 1000 });
+                document.location.href = "/login/";
+            }
+        });
+    } else {
+        mdui.snackbar({ message: '播放器發生了未知錯誤', timeout: 1000 });
+    }
 });
 // 初始化網頁
 $(function() {
@@ -412,8 +420,12 @@ function getAlbumCover(album_name, album_artist_name, artist_name) {
     return '/nas/' + pp_encode(url)
 }
 
-function getSong(id) {
-    var url = "webapi/AudioStation/stream.cgi/0.wav?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=wav&id=" + id
+function getSong(id, loadLowRes) {
+    if (loadLowRes) {
+        var url = "webapi/AudioStation/stream.cgi/0.wav?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=wav&id=" + id
+    } else {
+        var url = "webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=stream&id=" + id
+    }
     return '/nas/' + pp_encode(url)
 }
 async function getAlbumSong(album_name, album_artist_name, artist_name) {

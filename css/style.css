@@ -110,6 +110,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 #player img {
     width: 64px;
     height: 64px;
+    margin-top: 3px;
     object-fit: cover;
 }
 
