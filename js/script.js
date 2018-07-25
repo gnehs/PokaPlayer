@@ -60,6 +60,7 @@ $(function() {
         $("#player").removeClass('hide')
     })
     $('[data-link="home"]').click(function() { show_home() })
+    $('[data-link="search"]').click(function() { show_search() })
     $('[data-link="album"]').click(function() { show_album() })
     $('[data-link="recentlyAlbum"]').click(function() { show_recentlyAlbum() })
     $('[data-link="random"]').click(function() { show_random() })
@@ -164,6 +165,49 @@ async function show_home() {
             $(this).attr('data-album'),
             $(this).attr('data-album-artist'))
     })
+}
+//- 列出專輯
+async function show_search(keyword) {
+    var html = `<div class="mdui-row">
+        <div class="mdui-col-md-6 mdui-col-offset-md-3">
+            <div class="mdui-textfield">
+                <i class="mdui-icon material-icons">search</i>
+                <input class="mdui-textfield-input" id="search" type="text" placeholder="搜尋" value="${$('#search').val()||''}" required/>
+                <div class="mdui-textfield-error">尚未輸入關鍵字</div>
+                <div class="mdui-textfield-helper">輸入完後按下 Enter 開始搜尋音樂</div>
+            </div>
+        </div>
+    </div>`
+    var noResultText = [
+        '嘿，我們沒聽說過那首歌！',
+        '也許試試其他關鍵字',
+        '找不到啦QQQ',
+        '找不到，也許搜尋結果幻化成泡影了也說不定。',
+        '找不到，就讓搜尋結果隨風飄揚吧。',
+        '茫茫歌海，就是找不到你要的歌'
+    ]
+    var noResult = `<div class="mdui-valign" style="height:150px"><p class="mdui-center">${noResultText[Math.floor(Math.random() * noResultText.length)]}</p></div>`
+    if (keyword) {
+        var result = await searchSong(keyword)
+        if (result.length == 0)
+            $("#content").html(html + noResult)
+        else {
+            var resultHTML = HTML_showSongs(result)
+            $("#content").html(html + resultHTML)
+        }
+    } else
+        $("#content").html(html)
+    mdui.mutation() //初始化
+    $(".songs [data-song-id].mdui-list-item-content").click(function() {
+        playSongs(JSON.parse(songList), $(this).attr('data-song-id'))
+        show_now()
+    })
+    $(".songs [data-song-id].add").click(function() {
+        addSong(JSON.parse(songList), $(this).attr('data-song-id'))
+    })
+    $('#search').change(async function() {
+        show_search($(this).val())
+    });
 }
 //- 列出專輯
 async function show_album() {
@@ -515,6 +559,23 @@ async function getAlbumSong(album_name, album_artist_name, artist_name) {
     if (artist_name) PARAMS_JSON.push({ key: "artist", "value": artist_name })
     var info = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "list", PARAMS_JSON, 3)
     return info
+}
+async function searchSong(keyword) {
+    /*
+    title=a keyword=a
+    
+    */
+    var PARAMS_JSON = [
+        { key: "additional", "value": "song_tag,song_audio,song_rating" },
+        { key: "library", "value": "shared" },
+        { key: "limit", "value": 1000 },
+        { key: "sort_by", "value": "track" },
+        { key: "sort_direction", "value": "ASC" },
+        { key: "title", "value": keyword },
+        { key: "keyword", "value": keyword },
+    ]
+    var result = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "search", PARAMS_JSON, 3)
+    return result.data.songs
 }
 
 async function getAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 1) {
