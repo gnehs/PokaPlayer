@@ -59,6 +59,11 @@ $(function() {
         $(this).addClass('mdui-list-item-active')
         $("#player").removeClass('hide')
     })
+    if ($(window).width() < 1024) {
+        $('[data-link]').attr("mdui-drawer", "{target: '#drawer', swipe: true}")
+        mdui.mutation()
+    }
+
     $('[data-link="home"]').click(function() { show_home() })
     $('[data-link="search"]').click(function() { show_search() })
     $('[data-link="album"]').click(function() { show_album() })
