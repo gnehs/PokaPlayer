@@ -8,7 +8,8 @@ PokaPlayer 是 Synology Audio Ststion 的新朋友！
 ## 開始使用
 1. 下載 Docker 映像 (https://hub.docker.com/r/gnehs/pokaplayer/)
 2. 掛載修改好的 `config.json` 到 `/app/config.json` (參考 `config-simple.json`)
-3. 啟動囉(##
+3. (選用)掛載 `/ogimage/` 來替換隨機的 header 圖片
+4. 啟動囉(##
 *建議使用 Chrome
 ## 兩步驟
 沒有打算支援兩步驟，**強烈建議開一個只能播音樂的帳號**

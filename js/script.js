@@ -333,7 +333,7 @@ async function show_now() {
         </div>
         <div class="info">
             <div class="title  mdui-text-truncate mdui-text-color-theme-accent">${name}</div>
-            <div class="artist mdui-text-truncate mdui-text-color-theme">${artist+album}</div>
+            <div class="artist mdui-text-truncate mdui-text-color-theme-text">${artist+album}</div>
             <div class="grow"></div>
             <div class="ctrl">
                 <button class="mdui-btn mdui-btn-icon mdui-ripple random"><i class="mdui-icon material-icons">skip_previous</i></button>
@@ -481,8 +481,8 @@ function show_settings() {
 
     var setting_theme = title("主題") +
         subtitle("主題色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-6" id="PP_Theme">${themecolor(window.localStorage["mdui-theme-color"])}</form>` +
-        subtitle("主色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-6" id="PP_Primary">${colorOption(colors)}</form>` +
-        subtitle("強調色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-6" id="PP_Accent">${colorOption(colors,true)}</form>`
+        subtitle("主色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-6" id="PP_Primary" style="text-transform:capitalize;">${colorOption(colors)}</form>` +
+        subtitle("強調色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-6" id="PP_Accent" style="text-transform:capitalize;">${colorOption(colors,true)}</form>`
     var about = title("關於") + `<p>PokaPlayer by gnehs</p>`
 
     var html = header + setting_theme + about
