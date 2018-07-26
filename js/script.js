@@ -65,6 +65,7 @@ $(function() {
     $('[data-link="recentlyAlbum"]').click(function() { show_recentlyAlbum() })
     $('[data-link="random"]').click(function() { show_random() })
     $('[data-link="now"]').click(function() { show_now() })
+    $('[data-link="lrc"]').click(function() { show_lrc() })
     $('[data-link="settings"]').click(function() { show_settings() })
 
     $('#player>*:not(.ctrl)').click(function() {
@@ -435,8 +436,12 @@ async function show_now() {
     })
 }
 //- 設定
+function show_lrc() {
+    var header = HTML_getHeader("歌詞")
+    $("#content").html(header)
+}
+//- 設定
 function show_settings() {
-    // 展示讀取中
     var header = HTML_getHeader("設定")
     var title = (title) => `<h2 class="mdui-text-color-theme">${title}</h2>`
     var subtitle = (subtitle) => `<h4>${subtitle}</h4>`
@@ -480,9 +485,9 @@ function show_settings() {
   <div class="mdui-col"><label class="mdui-radio"><input type="radio" name="themecolor" value="true" ${s=="true"?"checked":""}/><i class="mdui-radio-icon"></i>Dark</label></div>` }
 
     var setting_theme = title("主題") +
-        subtitle("主題色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-6" id="PP_Theme">${themecolor(window.localStorage["mdui-theme-color"])}</form>` +
-        subtitle("主色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-6" id="PP_Primary" style="text-transform:capitalize;">${colorOption(colors)}</form>` +
-        subtitle("強調色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-6" id="PP_Accent" style="text-transform:capitalize;">${colorOption(colors,true)}</form>`
+        subtitle("主題色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Theme">${themecolor(window.localStorage["mdui-theme-color"])}</form>` +
+        subtitle("主色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Primary" style="text-transform:capitalize;">${colorOption(colors)}</form>` +
+        subtitle("強調色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Accent" style="text-transform:capitalize;">${colorOption(colors,true)}</form>`
     var about = title("關於") + `<p>PokaPlayer by gnehs</p>`
 
     var html = header + setting_theme + about
