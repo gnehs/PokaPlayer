@@ -144,7 +144,7 @@ function HTML_showPins(items) {
                 var img = getCover(type, pin.criteria.genre)
                 var title = pin.name
                 var subtitle = '類型'
-                var onclickActions = `mdui.snackbar({message: '製作中',position:'top',timeout:500});`
+                var onclickActions = `mdui.snackbar({message: '沒打算做喔，不過資料都給了就給你看一下啦',position:'top',timeout:500});`
                 break;
             case "folder":
                 //資料夾
@@ -188,33 +188,35 @@ function HTML_showFolder(items) {
     for (i = 0; i < items.length; i++) {　
         let item = items[i]
         let type = item.type
-        let titie = item.title
+        let title = item.title
         let id = item.id
         let icon = type == "folder" ? "folder" : type == "file" ? "music_note" : "help"
         if (type == "file") {
-            var codec = item.additional.song_audio.codec.toUpperCase()
-            if (item.additional.song_tag.album && item.additional.song_tag.album)
-                var subtitle = item.additional.song_tag.album + " / " + item.additional.song_tag.artist
-            else if (item.additional.song_tag.album)
-                var subtitle = item.additional.song_tag.album
-            else if (item.additional.song_tag.artist)
-                var subtitle = item.additional.song_tag.artist
-            else
-                var subtitle = ''
+            let codec = item.additional.song_audio.codec.toUpperCase()
+            let bitrate = item.additional.song_audio.bitrate / 1000 + 'K'
+            let size = Math.round(item.additional.song_audio.filesize / 100000) / 10 + 'MB'
+            let filedetail = codec + " " + bitrate + " " + size
+            let artist = item.additional.song_tag.artist
+            let album_artist = item.additional.song_tag.album_artist
+            let album_album = item.additional.song_tag.album
+            let img = getAlbumCover(album_album, album_artist, artist)
+            let subtitle = ''
+            subtitle += artist ? artist : ''
+            subtitle += album_album ? (artist ? ' / ' + album_album : album_album) : ''
 
             html += `<li class="mdui-list-item mdui-ripple">
-            <i class="mdui-list-item-avatar mdui-icon material-icons">${icon}</i>
+            <div class="mdui-list-item-avatar"><img src=".${img}"/></div>
             <div class="mdui-list-item-content" onclick="playSongs(songList,'${id}')">
-                <div class="mdui-list-item-title">${titie}</div>
+                <div class="mdui-list-item-title">${title}</div>
                 <div class="mdui-list-item-text">${subtitle}</div>
-                <div class="mdui-list-item-text">${codec}</div>
+                <div class="mdui-list-item-text">${filedetail}</div>
             </div>
             <button class="mdui-btn mdui-btn-icon mdui-ripple add" onclick="addSong(songList,'${id}')"><i class="mdui-icon material-icons">add</i></button>
         </li>`
         } else {
             html += `<li class="mdui-list-item mdui-ripple" onclick="show_folder('${id}')">
             <i class="mdui-list-item-avatar mdui-icon material-icons">${icon}</i>
-            <div class="mdui-list-item-content">${titie}</div>
+            <div class="mdui-list-item-content">${title}</div>
         </li>`
         }
     }
@@ -259,7 +261,11 @@ function HTML_showSongs(songs) {
         let song = songs[i]
         let title = song.title
         let artist = song.additional.song_tag.artist
+        let album_artist = song.additional.song_tag.album_artist
+        let album = song.additional.song_tag.album
+        let img = getAlbumCover(album, album_artist, artist)
         html += `<li class="mdui-list-item mdui-ripple">
+            <div class="mdui-list-item-avatar"><img src=".${img}"/></div>
             <div class="mdui-list-item-content" data-song-id="${song.id}">
                 <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
                 <div class="mdui-list-item-text mdui-list-item-one-line">${artist}</div>
@@ -280,7 +286,7 @@ function HTML_showArtist(artists) {
         let artist = artists[i]
         let name = artist.name ? artist.name : "未知"
         html += `<li class="mdui-list-item mdui-ripple" onclick="show_artist('${name}')">
-            <i class="mdui-list-item-avatar mdui-icon material-icons">mic</i>
+            <div class="mdui-list-item-avatar"><img src=".${getCover("artist", name)}"/></div>
             <div class="mdui-list-item-content">
                ${name}
             </div>
@@ -296,7 +302,7 @@ function HTML_showComposer(composers) {
         let composer = composers[i]
         let name = composer.name ? composer.name : "未知"
         html += `<li class="mdui-list-item mdui-ripple" onclick="show_composer('${name}')">
-            <i class="mdui-list-item-avatar mdui-icon material-icons">music_note</i>
+            <div class="mdui-list-item-avatar"><img src=".${getCover("composer", name)}"/></div>
             <div class="mdui-list-item-content">
                ${name}
             </div>
@@ -548,7 +554,11 @@ async function show_now() {
         let focus = ap.list.index == i ? 'mdui-list-item-active' : ''
         let title = ap.list.audios[i].name
         let artist = ap.list.audios[i].artist
+        let album_artist = ap.list.audios[i].album_artist
+        let album = ap.list.audios[i].album
+        let img = getAlbumCover(album, album_artist, artist)
         html += `<li class="mdui-list-item mdui-ripple song ${focus}" >
+            <div class="mdui-list-item-avatar"><img src=".${img}"/></div>
             <div class="mdui-list-item-content songinfo" data-now-play-id="${i}">
                 <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
                 <div class="mdui-list-item-text mdui-list-item-one-line">${artist}</div>
@@ -801,6 +811,7 @@ function playSongs(songlist, song = false, clear = true) {
         let name = nowsong.title
         let artist = nowsong.additional.song_tag.artist
         let album = nowsong.additional.song_tag.album
+        let album_artist = nowsong.additional.song_tag.album_artist
         let poster = getSongCover(nowsong.id)
         playlist.push({
             url: src,
@@ -808,7 +819,8 @@ function playSongs(songlist, song = false, clear = true) {
             name: name,
             artist: artist,
             album: album,
-            id: nowsong.id
+            id: nowsong.id,
+            album_artist: album_artist
         })
         if (nowsong.id == song) { songtoplay = i }
     }
@@ -828,6 +840,7 @@ function addSong(songlist, songID) {
             let name = nowsong.title
             let artist = nowsong.additional.song_tag.artist
             let album = nowsong.additional.song_tag.album
+            let album_artist = nowsong.additional.song_tag.album_artist
             let poster = getAlbumCover(album, nowsong.additional.song_tag.album_artist, artist)
             playlist.push({
                 url: src,
@@ -835,7 +848,8 @@ function addSong(songlist, songID) {
                 name: name,
                 artist: artist,
                 album: album,
-                id: nowsong.id
+                id: nowsong.id,
+                album_artist: album_artist
             })
         }
     }
