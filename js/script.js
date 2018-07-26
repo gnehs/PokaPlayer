@@ -322,7 +322,7 @@ async function show_now() {
     var nowPlaying = ap.list.audios[ap.list.index]
     var name = nowPlaying ? nowPlaying.name : "PokaPlayer"
     var artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點擊播放鍵開始隨機播放"
-    var album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>:D"
+    var album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>"
     var img = nowPlaying ? nowPlaying.cover : "https://i.imgur.com/ErJMEsh.jpg" //一定會有圖片
 
     var currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00"
@@ -403,7 +403,7 @@ async function show_now() {
         var nowPlaying = ap.list.audios[ap.list.index]
         var name = nowPlaying ? nowPlaying.name : "PokaPlayer"
         var artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點擊播放鍵開始隨機播放"
-        var album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>:D"
+        var album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>"
         var img = nowPlaying ? nowPlaying.cover : "https://i.imgur.com/ErJMEsh.jpg" //一定會有圖片
         $('[data-player]>.mdui-card').attr('style', `background-image:url(${img});`)
         $('[data-player]>.info .title').text(name)
