@@ -86,14 +86,11 @@ app.get('/nas/:url', async(req, res) => {
                 'range': req.headers.range
             }
         }).on('response', function(response) {
-            var contentType = response.headers['content-type']
-            if (contentType && contentType.match(/wav|mp3|flac|audio/)) {
-                res.writeHead(206, {
-                    "Content-Length": response.headers['content-length'],
-                    "Content-Range": response.headers['content-range'],
-                    "Content-Type": response.headers['content-type']
-                })
-            }
+            res.writeHead(206, {
+                "Content-Length": response.headers['content-length'] ? response.headers['content-length'] : '',
+                "Content-Range": response.headers['content-range'] ? response.headers['content-range'] : '',
+                "Content-Type": response.headers['content-type'] ? response.headers['content-type'] : ''
+            })
         }).pipe(res)
 
 

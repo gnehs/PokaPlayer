@@ -714,6 +714,9 @@ function show_lrc() {
 }
 //- 設定
 function show_settings() {
+    ///給定預設值
+    if (!window.localStorage["musicRes"]) window.localStorage["musicRes"] = "wav"
+        ///
     var header = HTML_getHeader("設定")
     var title = (title) => `<h2 class="mdui-text-color-theme">${title}</h2>`
     var subtitle = (subtitle) => `<h4>${subtitle}</h4>`
@@ -755,16 +758,44 @@ function show_settings() {
     }
     var themecolor = (s) => { return `<div class="mdui-col"><label class="mdui-radio"><input type="radio" name="themecolor" value="false" ${s=="true"?"":"checked"}/><i class="mdui-radio-icon"></i>Light</label></div>
   <div class="mdui-col"><label class="mdui-radio"><input type="radio" name="themecolor" value="true" ${s=="true"?"checked":""}/><i class="mdui-radio-icon"></i>Dark</label></div>` }
+    var musicRes = (s) => { return `<div class="mdui-col">
+        <label class="mdui-radio">
+            <input type="radio" name="musicres" value="mp3" ${s=="mp3"?"checked":""}/>
+            <i class="mdui-radio-icon"></i>
+            MP3
+        </label>
+        <div class="mdui-typo-caption-opacity">128K，夭壽靠北，在網路夭壽慢的情況下請選擇此選項</div>
+    </div>
+    <div class="mdui-col">
+        <label class="mdui-radio">
+            <input type="radio" name="musicres" value="wav" ${s=="wav"?"checked":""}/>
+            <i class="mdui-radio-icon"></i>
+            WAV
+        </label>
+        <div class="mdui-typo-caption-opacity">較高音質，音質較原始音質略差，可在 4G 網路下流暢的串流</div>
+    </div>
+    <div class="mdui-col">
+        <label class="mdui-radio">
+            <input type="radio" name="musicres" value="original" ${s=="original"?"checked":""}/>
+            <i class="mdui-radio-icon"></i>
+            Original
+        </label>
+        <div class="mdui-typo-caption-opacity">原始音質，在網路狀況許可下，建議選擇此選項聆聽高音質音樂</div>
+    </div>` }
 
     var setting_theme = title("主題") +
         subtitle("主題色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Theme">${themecolor(window.localStorage["mdui-theme-color"])}</form>` +
         subtitle("主色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Primary" style="text-transform:capitalize;">${colorOption(colors)}</form>` +
         subtitle("強調色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Accent" style="text-transform:capitalize;">${colorOption(colors,true)}</form>`
+    var musicRes = title("音質") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Res">${musicRes(window.localStorage["musicRes"])}</form>`
     var about = title("關於") + `<p>PokaPlayer by gnehs</p>`
-
-    var html = header + setting_theme + about
+        //window.localStorage["musicRes"]
+    var html = header + setting_theme + musicRes + about
     $("#content").html(html)
 
+    $("#PP_Res input").change(function() {
+        window.localStorage["musicRes"] = $(this).val()
+    })
     $("#PP_Theme input").change(function() {
         window.localStorage["mdui-theme-color"] = $(this).val()
         if ($(this).val() == "true")
@@ -921,9 +952,13 @@ function getSongCover(id) {
     return '/nas/' + pp_encode(url)
 }
 
-function getSong(id, loadLowRes) {
-    if (loadLowRes) {
+function getSong(id) {
+    var res = window.localStorage["musicRes"]
+    if (res == "wav") {
         var url = "webapi/AudioStation/stream.cgi/0.wav?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=wav&id=" + id
+    } else if (res == "mp3") {
+        //webapi/AudioStation/stream.cgi/0.mp3?sid=IzbAJBa3dmabM1820PEN591901&api=SYNO.AudioStation.Stream&version=2&method=transcode&id=music_1877&format=mp3&position=0&_dc=1532626955658&SynoToken=NzRH.c1gUa6W2
+        var url = "webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=mp3&id=" + id
     } else {
         var url = "webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=stream&id=" + id
     }
