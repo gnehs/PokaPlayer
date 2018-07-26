@@ -64,6 +64,8 @@ $(function() {
     $('[data-link="album"]').click(function() { show_album() })
     $('[data-link="recentlyAlbum"]').click(function() { show_recentlyAlbum() })
     $('[data-link="folder"]').click(function() { show_folder() })
+    $('[data-link="artist"]').click(function() { show_artist() })
+    $('[data-link="composer"]').click(function() { show_composer() })
     $('[data-link="random"]').click(function() { show_random() })
     $('[data-link="now"]').click(function() { show_now() })
     $('[data-link="lrc"]').click(function() { show_lrc() })
@@ -115,13 +117,20 @@ function HTML_showPins(items) {
                 var img = getCover(type, pin.criteria.artist)
                 var title = pin.name
                 var subtitle = '演出者'
-                var onclickActions = `mdui.snackbar({message: '製作中',position:'top',timeout:500});`
+                var onclickActions = `show_artist('${pin.criteria.artist}')`
                 break;
             case "composer":
                 //作曲者
                 var img = getCover(type, pin.criteria.composer)
                 var title = pin.name
                 var subtitle = '作曲者'
+                var onclickActions = `show_composer('${pin.criteria.composer}')`
+                break;
+            case "genre":
+                //作曲者
+                var img = getCover(type, pin.criteria.genre)
+                var title = pin.name
+                var subtitle = '類型'
                 var onclickActions = `mdui.snackbar({message: '製作中',position:'top',timeout:500});`
                 break;
             case "folder":
@@ -200,7 +209,7 @@ function HTML_showAlbums(items) {
             var name = name || albumData.criteria.album || ''
         }
         //await getAlbumSong(albumData.criteria.album, albumData.criteria.album_artist, albumData.criteria.artist)
-        album += `<div class="mdui-card mdui-ripple mdui-hoverable album" data-album="${name}" data-artist="${artist}" data-album-artist="${album_artist}">
+        album += `<div class="mdui-card mdui-ripple mdui-hoverable album" onclick="show_album_songs('${artist}','${name}','${album_artist}')">
                 <div class="mdui-card-media">
                 <img src=".${getAlbumCover(name, album_artist, artist)}"/>
                 <div class="mdui-card-media-covered mdui-card-media-covered-gradient">
@@ -236,6 +245,39 @@ function HTML_showSongs(songs) {
     html += '</ul>'
     return html
 }
+
+
+function HTML_showArtist(artists) {
+    var html = `<ul class="mdui-list">`
+    for (i = 0; i < artists.length; i++) {
+        let artist = artists[i]
+        let name = artist.name ? artist.name : "未知"
+        html += `<li class="mdui-list-item mdui-ripple" onclick="show_artist('${name}')">
+            <i class="mdui-list-item-avatar mdui-icon material-icons">mic</i>
+            <div class="mdui-list-item-content">
+               ${name}
+            </div>
+        </li>`　
+    }
+    html += '</ul>'
+    return html
+}
+
+function HTML_showComposer(composers) {
+    var html = `<ul class="mdui-list">`
+    for (i = 0; i < composers.length; i++) {
+        let composer = composers[i]
+        let name = composer.name ? composer.name : "未知"
+        html += `<li class="mdui-list-item mdui-ripple" onclick="show_composer('${name}')">
+            <i class="mdui-list-item-avatar mdui-icon material-icons">music_note</i>
+            <div class="mdui-list-item-content">
+               ${name}
+            </div>
+        </li>`　
+    }
+    html += '</ul>'
+    return html
+}
 // 首頁
 async function show_home() {
     // 展示讀取中
@@ -246,13 +288,6 @@ async function show_home() {
     var data = await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "list", [{ key: "limit", "value": -1 }, { key: "offset", "value": 0 }]),
         album = HTML_showPins(data.data.items)
     $("#content").html(header + album)
-
-    /*$('[data-album]').click(function() {
-        show_album_songs(
-            $(this).attr('data-artist'),
-            $(this).attr('data-album'),
-            $(this).attr('data-album-artist'))
-    })*/
 }
 //- 列出專輯
 async function show_search(keyword) {
@@ -303,7 +338,6 @@ async function show_album() {
     var header = HTML_getHeader("專輯")
     $("#content").html(header + HTML_getSpinner())
     mdui.mutation()
-
     var PARAMS_JSON = [
         { key: "additional", "value": "avg_rating" },
         { key: "library", "value": "shared" },
@@ -314,13 +348,6 @@ async function show_album() {
     var data = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3),
         album = HTML_showAlbums(data.data.albums)
     $("#content").html(header + album)
-
-    $('[data-album]').click(function() {
-        show_album_songs(
-            $(this).attr('data-artist'),
-            $(this).attr('data-album'),
-            $(this).attr('data-album-artist'))
-    })
 }
 // 最近加入ㄉ專輯
 async function show_recentlyAlbum() {
@@ -339,13 +366,6 @@ async function show_recentlyAlbum() {
     var data = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3),
         album = HTML_showAlbums(data.data.albums)
     $("#content").html(header + album)
-
-    $('[data-album]').click(function() {
-        show_album_songs(
-            $(this).attr('data-artist'),
-            $(this).attr('data-album'),
-            $(this).attr('data-album-artist'))
-    })
 }
 // 資料夾
 async function show_folder(folder) {
@@ -368,6 +388,74 @@ async function show_folder(folder) {
     var data = await getAPI("AudioStation/folder.cgi", "SYNO.AudioStation.Folder", "list", PARAMS_JSON, 2),
         folderHTML = HTML_showFolder(data.data.items)
     $("#content").html(header + folderHTML)
+}
+async function show_artist(artist) {
+    var header = HTML_getHeader("演出者")
+    $('[data-link]').removeClass('mdui-list-item-active')
+    $('[data-link="artist"]').addClass('mdui-list-item-active')
+    $("#content").html(header + HTML_getSpinner())
+    mdui.mutation()
+    if (artist) {
+        var header = HTML_getHeader("演出者 / " + artist)
+        var PARAMS_JSON = [
+            { key: "additional", "value": "avg_rating" },
+            { key: "library", "value": "shared" },
+            { key: "limit", "value": 1000 },
+            { key: "method", "value": 'list' },
+            { key: "sort_by", "value": "display_artist" },
+            { key: "sort_direction", "value": "ASC" },
+            { key: "artist", "value": artist != "未知" ? artist : '' },
+        ]
+        var data = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3),
+            albumHTML = HTML_showAlbums(data.data.albums)
+        $("#content").html(header + albumHTML)
+    } else {
+        //請求資料囉
+        var PARAMS_JSON = [
+            { key: "limit", "value": 1000 },
+            { key: "library", "value": "shared" },
+            { key: "additional", "value": "avg_rating" },
+            { key: "sort_by", "value": "name" },
+            { key: "sort_direction", "value": "ASC" }
+        ]
+        var data = await getAPI("AudioStation/artist.cgi", "SYNO.AudioStation.Artist", "list", PARAMS_JSON, 4),
+            artistsHTML = HTML_showArtist(data.data.artists)
+        $("#content").html(header + artistsHTML)
+    }
+}
+async function show_composer(composer) {
+    var header = HTML_getHeader("作曲者")
+    $('[data-link]').removeClass('mdui-list-item-active')
+    $('[data-link="composer"]').addClass('mdui-list-item-active')
+    $("#content").html(header + HTML_getSpinner())
+    mdui.mutation()
+    if (composer) {
+        var header = HTML_getHeader("作曲者 / " + composer)
+        var PARAMS_JSON = [
+            { key: "additional", "value": "avg_rating" },
+            { key: "library", "value": "shared" },
+            { key: "limit", "value": 1000 },
+            { key: "method", "value": 'list' },
+            { key: "sort_by", "value": "display_artist" },
+            { key: "sort_direction", "value": "ASC" },
+            { key: "composer", "value": composer != "未知" ? composer : '' },
+        ]
+        var data = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3),
+            albumHTML = HTML_showAlbums(data.data.albums)
+        $("#content").html(header + albumHTML)
+    } else {
+        //請求資料囉
+        var PARAMS_JSON = [
+            { key: "limit", "value": 1000 },
+            { key: "library", "value": "shared" },
+            { key: "additional", "value": "avg_rating" },
+            { key: "sort_by", "value": "name" },
+            { key: "sort_direction", "value": "ASC" }
+        ]
+        var data = await getAPI("AudioStation/composer.cgi", "SYNO.AudioStation.Composer", "list", PARAMS_JSON, 2),
+            composersHTML = HTML_showComposer(data.data.composers)
+        $("#content").html(header + composersHTML)
+    }
 }
 //- 隨機播放
 async function show_random() {
@@ -746,6 +834,10 @@ function getCover(type, info) {
         case "composer":
             //作曲者
             url += info ? `&composer_name=${encodeURIComponent(info)}` : ``
+            break;
+        case "genre":
+            //作曲者
+            url += info ? `&genre_name=${encodeURIComponent(info)}` : ``
             break;
         case "folder":
             //資料夾
