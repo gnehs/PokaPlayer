@@ -192,9 +192,23 @@ function HTML_showFolder(items) {
         let id = item.id
         let icon = type == "folder" ? "folder" : type == "file" ? "music_note" : "help"
         if (type == "file") {
+            var codec = item.additional.song_audio.codec.toUpperCase()
+            if (item.additional.song_tag.album && item.additional.song_tag.album)
+                var subtitle = item.additional.song_tag.album + " / " + item.additional.song_tag.artist
+            else if (item.additional.song_tag.album)
+                var subtitle = item.additional.song_tag.album
+            else if (item.additional.song_tag.artist)
+                var subtitle = item.additional.song_tag.artist
+            else
+                var subtitle = ''
+
             html += `<li class="mdui-list-item mdui-ripple">
             <i class="mdui-list-item-avatar mdui-icon material-icons">${icon}</i>
-            <div class="mdui-list-item-content" onclick="playSongs(songList,'${id}')">${titie}</div>
+            <div class="mdui-list-item-content" onclick="playSongs(songList,'${id}')">
+                <div class="mdui-list-item-title">${titie}</div>
+                <div class="mdui-list-item-text">${subtitle}</div>
+                <div class="mdui-list-item-text">${codec}</div>
+            </div>
             <button class="mdui-btn mdui-btn-icon mdui-ripple add" onclick="addSong(songList,'${id}')"><i class="mdui-icon material-icons">add</i></button>
         </li>`
         } else {
