@@ -469,7 +469,8 @@ function show_settings() {
                 var checked = window.localStorage["mdui-theme-accent"] == color ? " checked" : ''
             else
                 var checked = window.localStorage["mdui-theme-primary"] == color ? " checked" : ''
-            option += `<div class="mdui-col"><label class="mdui-radio mdui-text-color-${color}${accent?"-accent":''}">
+            if (i <= (colors.length - 3 - 1) && accent || !accent)
+                option += `<div class="mdui-col"><label class="mdui-radio mdui-text-color-${color}${accent?"-accent":''}">
             <input type="radio" name="group${accent?"1":"2"}" value="${color}"${checked}/>
             <i class="mdui-radio-icon"></i>${color}</label></div>`
         }
