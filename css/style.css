@@ -81,6 +81,9 @@ header.mdui-appbar.mdui-appbar-fixed {
     visibility: hidden;
 }
 
+
+/* 底部吸附播放器 */
+
 #player {
     width: 100vw;
     height: 64px;
@@ -194,12 +197,14 @@ header.mdui-appbar.mdui-appbar-fixed {
     font-size: 20px;
     font-weight: bold;
     line-height: 20px;
+    min-height: 20px;
 }
 
 [data-player] .info .artist {
     margin-top: 5px;
     font-size: 17.5px;
     color: rgba(0, 0, 0, .54);
+    min-height: calc(5px + 17.5px * 2);
 }
 
 [data-player]>.mdui-card {
@@ -247,6 +252,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 @media screen and (min-width: 850px) and (min-height: 560px) {
+    /* 超大兩欄檢視模式 */
     [data-player-container] {
         display: flex;
         margin-bottom: -100px;
@@ -284,6 +290,29 @@ header.mdui-appbar.mdui-appbar-fixed {
     }
 }
 
+[data-player]>.info>[data-lrc] {
+    display: none;
+    /* 1390 *600*/
+}
+
+@media screen and (min-width: 850px) and (min-height: 640px) {
+    [data-player]>.info {
+        display: flex;
+        max-width: 320px;
+        height: calc(100vh - 64px - 350px);
+    }
+    [data-player]>.info>[data-lrc] {
+        margin: 5px 0;
+        max-width: 320px;
+        overflow-x: hidden;
+        overflow-y: scroll;
+        flex-grow: 1;
+        display: block;
+        min-height: 55px;
+        /* 1390 * 640*/
+    }
+}
+
 @media screen and (max-width: 509px) {
     [data-player]>.mdui-card {
         margin: 0 auto;
@@ -316,4 +345,14 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 .mdui-theme-layout-dark [data-player]>.info>.ctrl>.mdui-btn svg {
     filter: Invert(1);
+}
+
+
+/* 歌詞頁籤 */
+
+#content>[data-lrc] {
+    text-align: center;
+    height: calc(100vh - 96px - 20px - 150px - 32px);
+    overflow-y: scroll;
+    margin-bottom: -64px;
 }

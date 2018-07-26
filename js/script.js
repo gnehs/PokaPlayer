@@ -335,7 +335,17 @@ async function show_now() {
         <div class="info">
             <div class="title  mdui-text-truncate mdui-text-color-theme-accent">${name}</div>
             <div class="artist mdui-text-truncate mdui-text-color-theme-text">${artist+album}</div>
-            <div class="grow"></div>
+            <!--<div data-lrc>
+                <p>作詞：佐香智久・天月-あまつき-</p>
+                <p>作曲：佐香智久</p>
+                <p>獨りよがりじゃなくて</p>
+                <p class="mdui-text-color-theme-accent">自分より大切なあなたに宿るもの</p>
+                <p>あぁもしも僕たちがあの映畫の</p>
+                <p>主人公とヒロインなら</p>
+                <p>どんな起承転結もフィナーレには</p>
+                <p>ドラマティックなキスをして</p>
+                <p>なんて言ってもうまくはいかない</p>
+            </div>-->
             <div class="ctrl">
                 <button class="mdui-btn mdui-btn-icon mdui-ripple random"><i class="mdui-icon material-icons">skip_previous</i></button>
                 <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="ap.skipBack()"><i class="mdui-icon material-icons">skip_previous</i></button>
@@ -434,10 +444,22 @@ async function show_now() {
         show_now()
     })
 }
-//- 設定
+//- 歌詞
 function show_lrc() {
     var header = HTML_getHeader("歌詞")
-    $("#content").html(header)
+    var lyricHTML = `
+    <!--<div data-lrc>
+        <p>作詞：佐香智久・天月-あまつき-</p>
+        <p>作曲：佐香智久</p>
+        <p>獨りよがりじゃなくて</p>
+        <p class="mdui-text-color-theme-accent">自分より大切なあなたに宿るもの</p>
+        <p>あぁもしも僕たちがあの映畫の</p>
+        <p>主人公とヒロインなら</p>
+        <p>どんな起承転結もフィナーレには</p>
+        <p>ドラマティックなキスをして</p>
+        <p>なんて言ってもうまくはいかない</p>
+    </div>-->`
+    $("#content").html(header + lyricHTML)
 }
 //- 設定
 function show_settings() {
@@ -607,12 +629,9 @@ function getAlbumCover(album_name, album_artist_name, artist_name) {
 }
 
 async function getLrc(artist, title) {
-    //webapi/AudioStation/lyrics_search.cgi
-    /*additional	full_lyrics
-artist	喜多修平
-limit	1
-title	あたりまえのような奇跡
-version	2*/
+    /*
+    DSM 請求
+    */
     var PARAMS_JSON = [
         { key: "additional", "value": "full_lyrics" },
         { key: "limit", "value": 1 }
@@ -621,6 +640,7 @@ version	2*/
     if (title) PARAMS_JSON.push({ key: "title", "value": title })
     var lrc = await getAPI("AudioStation/lyrics_search.cgi", "SYNO.AudioStation.LyricsSearch", "searchlyrics", PARAMS_JSON, 2)
     return lrc.data
+
 }
 
 function getSongCover(id) {
