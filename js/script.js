@@ -63,6 +63,7 @@ $(function() {
     $('[data-link="search"]').click(function() { show_search() })
     $('[data-link="album"]').click(function() { show_album() })
     $('[data-link="recentlyAlbum"]').click(function() { show_recentlyAlbum() })
+    $('[data-link="folder"]').click(function() { show_folder() })
     $('[data-link="random"]').click(function() { show_random() })
     $('[data-link="now"]').click(function() { show_now() })
     $('[data-link="lrc"]').click(function() { show_lrc() })
@@ -99,6 +100,90 @@ function HTML_getHeader(title) {
 
 function HTML_getSpinner() {
     return `<div class="mdui-spinner mdui-spinner-colorful mdui-center" style="margin-top:80px"></div>`
+}
+
+function HTML_showPins(items) {
+    //var album = '<div class="mdui-row-md-4 mdui-row-sm-3 mdui-row-xs-2">'
+    var html = '<div class="albums">'
+    for (i = 0; i < items.length; i++) {　
+        let pin = items[i]
+        var title = pin.name
+        var type = pin.type
+        switch (type) {
+            case "artist":
+                //演出者
+                var img = getCover(type, pin.criteria.artist)
+                var title = pin.name
+                var subtitle = '演出者'
+                var onclickActions = `mdui.snackbar({message: '製作中',position:'top',timeout:500});`
+                break;
+            case "composer":
+                //作曲者
+                var img = getCover(type, pin.criteria.composer)
+                var title = pin.name
+                var subtitle = '作曲者'
+                var onclickActions = `mdui.snackbar({message: '製作中',position:'top',timeout:500});`
+                break;
+            case "folder":
+                //資料夾
+                var img = getCover(type, pin.criteria.folder)
+                var title = pin.name
+                var subtitle = '資料夾'
+                var onclickActions = `show_folder('${pin.criteria.folder}')`
+                break;
+            case "album":
+                //專輯
+                var artist = pin.criteria.artist || pin.criteria.album_artist || ''
+                var album_artist = pin.criteria.album_artist || ''
+                var name = pin.criteria.album || '';
+                // 輸出資料
+                var img = getAlbumCover(name, album_artist, artist)
+                var title = name
+                var subtitle = artist
+                var onclickActions = `show_album_songs('${artist}','${name}','${album_artist}')`
+                break;
+        }
+        //await getAlbumSong(albumData.criteria.album, albumData.criteria.album_artist, albumData.criteria.artist)
+        html += `<div class="mdui-card mdui-ripple mdui-hoverable album" onclick="${onclickActions}">
+                <div class="mdui-card-media">
+                <img src=".${img}"/>
+                <div class="mdui-card-media-covered mdui-card-media-covered-gradient">
+                    <div class="mdui-card-primary">
+                    <div class="mdui-card-primary-title">${title}</div>
+                    <div class="mdui-card-primary-subtitle">${subtitle}</div>
+                    </div>
+                </div>
+                </div>
+            </div>`
+    }
+    html += "</div>"
+    return html
+}
+
+function HTML_showFolder(items) {
+    songList = items;
+    var html = `<ul class="mdui-list">`
+    for (i = 0; i < items.length; i++) {　
+        let item = items[i]
+        let type = item.type
+        let titie = item.title
+        let id = item.id
+        let icon = type == "folder" ? "folder" : type == "file" ? "music_note" : "help"
+        if (type == "file") {
+            html += `<li class="mdui-list-item mdui-ripple">
+            <i class="mdui-list-item-avatar mdui-icon material-icons">${icon}</i>
+            <div class="mdui-list-item-content" onclick="playSongs(songList,'${id}')">${titie}</div>
+            <button class="mdui-btn mdui-btn-icon mdui-ripple add" onclick="addSong(songList,'${id}')"><i class="mdui-icon material-icons">add</i></button>
+        </li>`
+        } else {
+            html += `<li class="mdui-list-item mdui-ripple" onclick="show_folder('${id}')">
+            <i class="mdui-list-item-avatar mdui-icon material-icons">${icon}</i>
+            <div class="mdui-list-item-content">${titie}</div>
+        </li>`
+        }
+    }
+    html += `</ul>`
+    return html
 }
 
 function HTML_showAlbums(items) {
@@ -159,15 +244,15 @@ async function show_home() {
     mdui.mutation()
 
     var data = await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "list", [{ key: "limit", "value": -1 }, { key: "offset", "value": 0 }]),
-        album = HTML_showAlbums(data.data.items)
+        album = HTML_showPins(data.data.items)
     $("#content").html(header + album)
 
-    $('[data-album]').click(function() {
+    /*$('[data-album]').click(function() {
         show_album_songs(
             $(this).attr('data-artist'),
             $(this).attr('data-album'),
             $(this).attr('data-album-artist'))
-    })
+    })*/
 }
 //- 列出專輯
 async function show_search(keyword) {
@@ -261,6 +346,28 @@ async function show_recentlyAlbum() {
             $(this).attr('data-album'),
             $(this).attr('data-album-artist'))
     })
+}
+// 資料夾
+async function show_folder(folder) {
+    // 展示讀取中
+    var header = HTML_getHeader("資料夾")
+
+    $('[data-link]').removeClass('mdui-list-item-active')
+    $('[data-link="folder"]').addClass('mdui-list-item-active')
+    $("#content").html(header + HTML_getSpinner())
+    mdui.mutation()
+    var PARAMS_JSON = [
+        { key: "additional", "value": "song_tag,song_audio,song_rating" },
+        { key: "library", "value": "shared" },
+        { key: "limit", "value": 1000 },
+        { key: "method", "value": 'list' },
+        { key: "sort_by", "value": "title" },
+        { key: "sort_direction", "value": "ASC" },
+    ]
+    if (folder) PARAMS_JSON.push({ key: "id", "value": folder })
+    var data = await getAPI("AudioStation/folder.cgi", "SYNO.AudioStation.Folder", "list", PARAMS_JSON, 2),
+        folderHTML = HTML_showFolder(data.data.items)
+    $("#content").html(header + folderHTML)
 }
 //- 隨機播放
 async function show_random() {
@@ -576,6 +683,7 @@ function playSongs(songlist, song = false, clear = true) {
     var songtoplay = 0
     for (i = 0; i < songlist.length; i++) {
         let nowsong = songlist[i]
+        if (nowsong.id.match(/dir_/)) continue; //這是資料夾
         let src = getSong(nowsong.id)
         let name = nowsong.title
         let artist = nowsong.additional.song_tag.artist
@@ -592,7 +700,9 @@ function playSongs(songlist, song = false, clear = true) {
         if (nowsong.id == song) { songtoplay = i }
     }
     ap.list.add(playlist)
-    if (song) ap.list.switch(songtoplay)
+    if (song)
+        for (i = 0; i < ap.list.audios.length; i++)
+            if (ap.list.audios[i].id == song) ap.list.switch(i)
     if (clear) ap.play()
 }
 
@@ -618,6 +728,38 @@ function addSong(songlist, songID) {
     }
     ap.list.add(playlist)
     if (ap.list.audios.length == 1) ap.play() //如果只有一首直接開播
+}
+
+function getCover(type, info) {
+    // 資料夾
+    // &id=dir_447
+    // 歌手
+    // &artist_name=RADWIMPS
+    // 作曲
+    // &composer_name=Crispy%E8%84%86%E6%A8%82%E5%9C%98
+    var url = "webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getcover&view=default"
+    switch (type) {
+        case "artist":
+            //演出者
+            url += info ? `&artist_name=${encodeURIComponent(info)}` : ``
+            break;
+        case "composer":
+            //作曲者
+            url += info ? `&composer_name=${encodeURIComponent(info)}` : ``
+            break;
+        case "folder":
+            //資料夾
+            url = "webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getfoldercover&view=default"
+            url += info ? `&id=${encodeURIComponent(info)}` : ``
+            break;
+        case "album":
+            //專輯
+            url += info.album_name ? `&album_name=${encodeURIComponent(album_name)}` : ``
+            url += info.artist_name ? `&artist_name=${encodeURIComponent(artist_name)}` : ``
+            url += info.album_artist_name ? `&album_artist_name=${encodeURIComponent(album_artist_name)}` : `&album_artist_name=`
+            break;
+    }
+    return '/nas/' + pp_encode(url)
 }
 
 function getAlbumCover(album_name, album_artist_name, artist_name) {
@@ -672,9 +814,9 @@ async function getAlbumSong(album_name, album_artist_name, artist_name) {
 }
 async function searchSong(keyword) {
     /*
-    title=a keyword=a
+        title=a keyword=a
     
-    */
+        */
     var PARAMS_JSON = [
         { key: "additional", "value": "song_tag,song_audio,song_rating" },
         { key: "library", "value": "shared" },

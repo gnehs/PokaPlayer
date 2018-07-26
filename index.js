@@ -57,9 +57,8 @@ app.get('/og/og.png', (req, res) => {
     //og
     var imgnum = Math.floor(Math.random() * files.length);
     var img = __dirname + "/ogimage/" + files[imgnum]
-    try {
-        res.sendFile(img)
-    } catch (err) {}
+
+    res.sendFile(img)
 });
 // 首頁
 app.get('/', (req, res) => {
@@ -79,25 +78,25 @@ app.get('/nas/:url', async(req, res) => {
         res.send('請登入')
     else {
         var url = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}/${pp_decode(req.params.url)}`
-        try {
-            request.get({
-                url: url,
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36',
-                    'range': req.headers.range
-                }
-            }).on('response', function(response) {
-                var contentType = response.headers['content-type']
-                if (contentType && contentType.match(/wav|mp3|flac|audio/)) {
-                    res.writeHead(206, {
-                        "Content-Length": response.headers['content-length'],
-                        "Content-Range": response.headers['content-range'],
-                        "Content-Type": response.headers['content-type']
-                    })
-                }
-            }).pipe(res)
 
-        } catch (e) { console.log(e) }
+        request.get({
+            url: url,
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36',
+                'range': req.headers.range
+            }
+        }).on('response', function(response) {
+            var contentType = response.headers['content-type']
+            if (contentType && contentType.match(/wav|mp3|flac|audio/)) {
+                res.writeHead(206, {
+                    "Content-Length": response.headers['content-length'],
+                    "Content-Range": response.headers['content-range'],
+                    "Content-Type": response.headers['content-type']
+                })
+            }
+        }).pipe(res)
+
+
 
     }
 })
@@ -175,3 +174,7 @@ async function api(dsm, CGI_PATH, API_NAME, METHOD, VERSION = 1, PARAMS) {
         });
     });
 }
+// 報錯處理
+process.on('uncaughtException', function(err) {
+    console.log(err);
+});
