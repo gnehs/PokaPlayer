@@ -369,11 +369,10 @@ async function show_recentlyAlbum() {
 }
 // 資料夾
 async function show_folder(folder) {
-    // 展示讀取中
-    var header = HTML_getHeader("資料夾")
-
     $('[data-link]').removeClass('mdui-list-item-active')
     $('[data-link="folder"]').addClass('mdui-list-item-active')
+        // 展示讀取中
+    var header = HTML_getHeader("資料夾")
     $("#content").html(header + HTML_getSpinner())
     mdui.mutation()
     var PARAMS_JSON = [
@@ -384,7 +383,9 @@ async function show_folder(folder) {
         { key: "sort_by", "value": "title" },
         { key: "sort_direction", "value": "ASC" },
     ]
-    if (folder) PARAMS_JSON.push({ key: "id", "value": folder })
+    if (folder) {
+        PARAMS_JSON.push({ key: "id", "value": folder })
+    }
     var data = await getAPI("AudioStation/folder.cgi", "SYNO.AudioStation.Folder", "list", PARAMS_JSON, 2),
         folderHTML = HTML_showFolder(data.data.items)
     $("#content").html(header + folderHTML)
@@ -759,11 +760,7 @@ async function show_album_songs(artist, album, album_artist) {
     $(".songs [data-song-id].add").click(function() {
         addSong(JSON.parse(songList), $(this).attr('data-song-id'))
     })
-    XBack.listen(function() {
-        show_album()
-    });
 }
-
 
 function playSongs(songlist, song = false, clear = true) {
     if (clear) ap.list.clear()
