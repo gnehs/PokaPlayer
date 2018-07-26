@@ -381,6 +381,10 @@ async function show_now() {
         $('[data-player] button.play[onclick="ap.toggle()"] i').text("play_arrow")
     })
     ap.on("play", async function() {
+        //卷軸轉轉
+        if ($(window).width() > 850 && $(window).height() > 560) {
+            $('.mdui-list.songs').animate({ scrollTop: 72 * ap.list.index - 100 }, 400);
+        }
         //- list 切換 active
         $(".songs>li.song").removeClass('mdui-list-item-active')
         $(".songs>li.song").eq(ap.list.index).addClass('mdui-list-item-active');
@@ -398,14 +402,9 @@ async function show_now() {
         // 更新 timer
         $("[data-player]>.info>.player-bar input[type=range]").val(0);
         mdui.updateSliders()
-
-        //卷軸轉轉
-        if ($(window).width() > 850 && $(window).height() > 560) {
-            $('.mdui-list.songs').animate({ scrollTop: 72 * ap.list.index - 100 }, 400);
-        }
-        // 找找看歌詞
-        //ap.list.audios[ap.list.index].lrc 
-        //lyrics = await getLrc(artist, name)
+            // 找找看歌詞
+            //ap.list.audios[ap.list.index].lrc 
+            //lyrics = await getLrc(artist, name)
     })
     ap.on("timeupdate", function() {
         currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00"
