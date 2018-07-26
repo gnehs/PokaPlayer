@@ -25,5 +25,8 @@ $(function() {
         }
         $('body').addClass(`mdui-theme-accent-${window.localStorage["mdui-theme-accent"]}`)
     } else window.localStorage["mdui-theme-accent"] = pink
+    if (window.localStorage["mdui-theme-color"] == "true") {
+        $('body').addClass("mdui-theme-layout-dark")
+    }
 
 });

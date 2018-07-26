@@ -102,6 +102,10 @@ header.mdui-appbar.mdui-appbar-fixed {
     margin: 0 auto;
 }
 
+.mdui-theme-layout-dark #player {
+    background-color: #303030;
+}
+
 #player.hide {
     transform: translateY(64px);
     box-shadow: none
@@ -122,7 +126,6 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 #player .song-info {
     padding: 8px 0 8px 6px;
-    color: #363636;
 }
 
 #player .song-info .name,
@@ -136,13 +139,11 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 #player .song-info .name {
-    color: rgba(0, 0, 0, .87);
     font-size: 15px;
 }
 
 #player .song-info .artist {
     font-size: 14px;
-    color: rgba(0, 0, 0, .54);
 }
 
 #player .ctrl {
@@ -311,4 +312,8 @@ header.mdui-appbar.mdui-appbar-fixed {
     height: 24px;
     width: 24px;
     font-size: 24px;
+}
+
+.mdui-theme-layout-dark [data-player]>.info>.ctrl>.mdui-btn svg {
+    filter: Invert(1);
 }

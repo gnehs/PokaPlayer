@@ -332,8 +332,8 @@ async function show_now() {
         <div class="mdui-card" style="background-image:url(${img});">
         </div>
         <div class="info">
-            <div class="title  mdui-text-truncate">${name}</div>
-            <div class="artist mdui-text-truncate">${artist+album}</div>
+            <div class="title  mdui-text-truncate mdui-text-color-theme-accent">${name}</div>
+            <div class="artist mdui-text-truncate mdui-text-color-theme">${artist+album}</div>
             <div class="grow"></div>
             <div class="ctrl">
                 <button class="mdui-btn mdui-btn-icon mdui-ripple random"><i class="mdui-icon material-icons">skip_previous</i></button>
@@ -472,11 +472,15 @@ function show_settings() {
             if (i <= (colors.length - 3 - 1) && accent || !accent)
                 option += `<div class="mdui-col"><label class="mdui-radio mdui-text-color-${color}${accent?"-accent":''}">
             <input type="radio" name="group${accent?"1":"2"}" value="${color}"${checked}/>
-            <i class="mdui-radio-icon"></i>${color}</label></div>`
+            <i class="mdui-radio-icon"></i>${color.replace("-"," ")}</label></div>`
         }
         return option
     }
+    var themecolor = (s) => { return `<div class="mdui-col"><label class="mdui-radio"><input type="radio" name="themecolor" value="false" ${s=="true"?"":"checked"}/><i class="mdui-radio-icon"></i>Light</label></div>
+  <div class="mdui-col"><label class="mdui-radio"><input type="radio" name="themecolor" value="true" ${s=="true"?"checked":""}/><i class="mdui-radio-icon"></i>Dark</label></div>` }
+
     var setting_theme = title("主題") +
+        subtitle("主題色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-6" id="PP_Theme">${themecolor(window.localStorage["mdui-theme-color"])}</form>` +
         subtitle("主色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-6" id="PP_Primary">${colorOption(colors)}</form>` +
         subtitle("強調色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-6" id="PP_Accent">${colorOption(colors,true)}</form>`
     var about = title("關於") + `<p>PokaPlayer by gnehs</p>`
@@ -484,6 +488,13 @@ function show_settings() {
     var html = header + setting_theme + about
     $("#content").html(html)
 
+    $("#PP_Theme input").change(function() {
+        window.localStorage["mdui-theme-color"] = $(this).val()
+        if ($(this).val() == "true")
+            $('body').addClass("mdui-theme-layout-dark")
+        else
+            $('body').removeClass("mdui-theme-layout-dark")
+    })
     $("#PP_Primary input").change(function() {
         var classStr = $('body').attr('class');
         var classs = classStr.split(' ');
