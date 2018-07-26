@@ -73,8 +73,16 @@ $(function() {
 
     $('#player>*:not(.ctrl)').click(function() {
         show_now()
-    })
-
+    });
+    //返回攔截
+    /* window.history.pushState(null, null, "#");
+     window.addEventListener("popstate", function(e) {
+         //show_album()
+         window.history.pushState(null, null, "#");
+         mdui.snackbar({
+             message: "點擊返回"
+         });
+     })*/
 });
 //-- 加解密
 function pp_encode(str) {
@@ -366,6 +374,24 @@ async function show_recentlyAlbum() {
     var data = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3),
         album = HTML_showAlbums(data.data.albums)
     $("#content").html(header + album)
+}
+//- 展示專輯歌曲
+async function show_album_songs(artist, album, album_artist) {
+    //如果從首頁按進去頁籤沒切換
+    $('[data-link]').removeClass('mdui-list-item-active')
+    $('[data-link="album"]').addClass('mdui-list-item-active')
+
+    var data = await getAlbumSong(album, album_artist, artist),
+        header = HTML_getHeader(album + (artist ? ' / ' + artist : '')),
+        html = HTML_showSongs(data.data.songs)
+    $("#content").html(header + html)
+    $(".songs [data-song-id].mdui-list-item-content").click(function() {
+        playSongs(JSON.parse(songList), $(this).attr('data-song-id'))
+        show_now()
+    })
+    $(".songs [data-song-id].add").click(function() {
+        addSong(JSON.parse(songList), $(this).attr('data-song-id'))
+    })
 }
 // 資料夾
 async function show_folder(folder) {
@@ -743,24 +769,7 @@ function show_settings() {
         $('body').addClass(`mdui-theme-accent-${$(this).val()}`)
     })
 }
-//- 展示專輯歌曲
-async function show_album_songs(artist, album, album_artist) {
-    //如果從首頁按進去頁籤沒切換
-    $('[data-link]').removeClass('mdui-list-item-active')
-    $('[data-link="album"]').addClass('mdui-list-item-active')
 
-    var data = await getAlbumSong(album, album_artist, artist),
-        header = HTML_getHeader(album + (artist ? ' / ' + artist : '')),
-        html = HTML_showSongs(data.data.songs)
-    $("#content").html(header + html)
-    $(".songs [data-song-id].mdui-list-item-content").click(function() {
-        playSongs(JSON.parse(songList), $(this).attr('data-song-id'))
-        show_now()
-    })
-    $(".songs [data-song-id].add").click(function() {
-        addSong(JSON.parse(songList), $(this).attr('data-song-id'))
-    })
-}
 
 function playSongs(songlist, song = false, clear = true) {
     if (clear) ap.list.clear()
