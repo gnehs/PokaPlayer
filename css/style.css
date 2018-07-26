@@ -171,7 +171,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     }
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 767px) {
     #player {
         border-radius: 0;
     }
