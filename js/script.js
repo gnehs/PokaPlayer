@@ -797,9 +797,10 @@ async function show_settings() {
         subtitle("主色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Primary" style="text-transform:capitalize;">${colorOption(colors)}</form>` +
         subtitle("強調色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Accent" style="text-transform:capitalize;">${colorOption(colors,true)}</form>`
     var musicRes = title("音質") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Res">${musicRes(window.localStorage["musicRes"])}</form>`
+    var info = title("Audio Station 狀態") + `<div id="DSMinfo">讀取中</div>`
     var about = title("關於") + `<p>PokaPlayer by gnehs</p>`
         //window.localStorage["musicRes"]
-    var html = header + setting_theme + musicRes + about
+    var html = header + setting_theme + musicRes + info + about
     $("#content").html(html)
 
     $("#PP_Res input").change(function() {
@@ -838,6 +839,9 @@ async function show_settings() {
         window.localStorage["mdui-theme-accent"] = $(this).val()
         $('body').addClass(`mdui-theme-accent-${$(this).val()}`)
     })
+    var getinfo = await getAPI("AudioStation/info.cgi", "SYNO.AudioStation.Info", "getinfo", [], 4)
+    $("#DSMinfo").html(`<p>${getinfo.success?"狀態：正常":"狀態：錯誤"}</p>
+    <p>${getinfo.data.version_string?`版本：${getinfo.data.version_string}`:"版本：未知"}</p>`)
 }
 
 
