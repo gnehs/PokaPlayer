@@ -20,7 +20,6 @@ ap.on("timeupdate", function() {
         $('#player img').attr('src', img)
     }
     if ('mediaSession' in navigator) {
-        console.log('mediaSession', 'mediaSession' in navigator)
         navigator.mediaSession.metadata = new MediaMetadata({
             title: name,
             artist: artist,
