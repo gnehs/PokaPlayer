@@ -700,7 +700,7 @@ async function show_now() {
     $(".songs [data-now-play-id].close").click(function() {
         var song = $(this).attr('data-now-play-id')
         ap.list.remove(song)
-        if (song == ap.list.index) ap.skipBack()
+        if (song == ap.list.index) ap.skipForward()
         show_now()
     })
 }
@@ -722,7 +722,7 @@ function show_lrc() {
     $("#content").html(header + lyricHTML)
 }
 //- 設定
-function show_settings() {
+async function show_settings() {
     ///給定預設值
     if (!window.localStorage["musicRes"]) window.localStorage["musicRes"] = "wav"
         ///
