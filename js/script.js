@@ -414,6 +414,12 @@ async function show_album_songs(artist, album, album_artist) {
     $('[data-link]').removeClass('mdui-list-item-active')
     $('[data-link="album"]').addClass('mdui-list-item-active')
 
+    // 展示讀取中
+    var header = HTML_getHeader(album)
+    $("#content").html(header + HTML_getSpinner())
+    mdui.mutation()
+
+    //抓資料
     var data = await getAlbumSong(album, album_artist, artist),
         header = HTML_getHeader(album + (artist ? ' / ' + artist : '')),
         html = HTML_showSongs(data.data.songs)
