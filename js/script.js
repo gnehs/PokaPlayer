@@ -37,18 +37,7 @@ ap.on("pause", function() {
     $('#player button.play[onclick="ap.toggle()"] i').text("play_arrow")
 })
 ap.on("error", function() {
-    if (window.localStorage["userPASS"]) { //如果有存到密碼就嘗試登入
-        $.post("/login/", { userPASS: window.localStorage["userPASS"] }, function(data) {
-            if (data == 'success') {
-                //mdui.snackbar({ message: 'Session 過期，重新登入成功', timeout: 1000 });
-            } else {
-                mdui.snackbar({ message: 'Session 過期，請重新登入', timeout: 1000 });
-                document.location.href = "/login/";
-            }
-        });
-    } else {
-        mdui.snackbar({ message: '播放器發生了未知錯誤', timeout: 1000 });
-    }
+
 });
 // 初始化網頁
 $(function() {
@@ -78,6 +67,8 @@ $(function() {
     $('#player>*:not(.ctrl)').click(function() {
         show_now()
     });
+    //圖片讀取錯誤
+    $("img").on('error', function() { tryRelogin() }).attr('src', "/img/PokaPlayer.png");
     //返回攔截
     /* window.history.pushState(null, null, "#");
      window.addEventListener("popstate", function(e) {
@@ -88,6 +79,24 @@ $(function() {
          });
      })*/
 });
+
+var count = 0
+
+function tryRelogin() {
+    if (window.localStorage["userPASS"] || count <= 10) { //如果有存到密碼或是嘗試次數少於 10 次就嘗試登入
+        $.post("/login/", { userPASS: window.localStorage["userPASS"] }, function(data) {
+            if (data == 'success') {
+                count = 0
+                    //mdui.snackbar({ message: 'Session 過期，重新登入成功', timeout: 1000 });
+            } else {
+                mdui.snackbar({ message: 'Session 過期，請重新登入', timeout: 1000 });
+                document.location.href = "/login/";
+            }
+        });
+    } else if (count > 10) {
+        mdui.snackbar({ message: '發生了未知錯誤', timeout: 1000 });
+    }
+}
 //-- 加解密
 function pp_encode(str) {
     return encodeURIComponent(base64.encode(str))
@@ -691,6 +700,7 @@ async function show_now() {
     $(".songs [data-now-play-id].close").click(function() {
         var song = $(this).attr('data-now-play-id')
         ap.list.remove(song)
+        if (song == ap.list.index) ap.skipBack()
         show_now()
     })
 }
