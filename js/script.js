@@ -69,6 +69,10 @@ $(function() {
     });
     //圖片讀取錯誤
     $("img").on('error', function() { tryRelogin() }).attr('src', "/img/PokaPlayer.png");
+    // 下拉重新載入攔截
+    $("html").css({
+        "touch-action": "pan-down"
+    });
     //返回攔截
     /* window.history.pushState(null, null, "#");
      window.addEventListener("popstate", function(e) {
