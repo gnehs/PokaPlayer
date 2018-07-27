@@ -86,11 +86,14 @@ app.get('/nas/:url', async(req, res) => {
                 'range': req.headers.range
             }
         }).on('response', function(response) {
-            res.writeHead(206, {
-                "Content-Length": response.headers['content-length'] ? response.headers['content-length'] : '',
-                "Content-Range": response.headers['content-range'] ? response.headers['content-range'] : '',
-                "Content-Type": response.headers['content-type'] ? response.headers['content-type'] : ''
-            })
+            if (response.headers['content-type'].match(/audio/)) {
+                //針對 Audio 寫入 Header 避免 Chrome 時間軸不能跳
+                res.writeHead(206, {
+                    "Content-Length": response.headers['content-length'] ? response.headers['content-length'] : '',
+                    "Content-Range": response.headers['content-range'] ? response.headers['content-range'] : '',
+                    "Content-Type": response.headers['content-type'] ? response.headers['content-type'] : ''
+                })
+            }
         }).pipe(res)
 
 

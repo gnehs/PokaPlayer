@@ -606,7 +606,7 @@ async function show_now() {
             </div>
             <div class="player-bar">
                 <label class="mdui-slider">
-                    <input type="range" step="0.000001" min="0" max="100" value="${ap.audio.currentTime / ap.audio.duration * 100}"/>
+                    <input type="range" step="0.000001" min="0" max="100" value="${ap.audio.currentTime / ap.audio.duration * 100||0}"/>
                 </label>
                 <div class="timer mdui-typo-body-1-opacity mdui-text-right">${timer}</div>
             </div>
