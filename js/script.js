@@ -804,6 +804,7 @@ function show_settings() {
 
     $("#PP_Res input").change(function() {
         window.localStorage["musicRes"] = $(this).val()
+        mdui.snackbar({ message: `音質已設定為 ${$(this).val().toUpperCase()}，該設定並不會在現正播放中生效，請重新加入歌曲`, position: 'top', timeout: 1500 });
     })
     $("#PP_Theme input").change(function() {
         window.localStorage["mdui-theme-color"] = $(this).val()
