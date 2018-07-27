@@ -235,6 +235,7 @@ header.mdui-appbar.mdui-appbar-fixed {
         flex-direction: column;
         padding-left: 15px;
         display: flex;
+        width: calc(100vw - 80px);
     }
     [data-player]>.mdui-card {
         display: flex;
