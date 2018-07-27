@@ -115,7 +115,7 @@ function secondToTime(second) {
 
 //-- 常用 HTML
 function HTML_getHeader(title) {
-    return `<div class="mdui-container-fluid mdui-valign mdui-typo mdui-color-theme" style="padding: 0 30px;height: 150px;background-image:url(/og/og.png);background-size: cover;" id="header-wrapper">
+    return `<div class="mdui-container-fluid mdui-valign mdui-typo mdui-color-theme" style="padding: 0 30px;min-height: 150px;background-image:url(/og/og.png);background-size: cover;" id="header-wrapper">
     <h1 class="mdui-center mdui-text-color-white" style="
     text-shadow: 0 1px 8px #000000ad;">${title}</h1>
 </div>`
