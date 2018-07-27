@@ -12,7 +12,7 @@ ap.on("play", function() {
 ap.on("timeupdate", function() {
     var name = ap.list.audios[ap.list.index].name || ""
     var artist = ap.list.audios[ap.list.index].artist || ""
-    var img = ap.list.audios[ap.list.index].cover || "https://i.imgur.com/ErJMEsh.jpg"
+    var img = ap.list.audios[ap.list.index].cover
     $('#player button.play[onclick="ap.toggle()"] i').text("pause")
     if (name != $('#player .song-info .name').text()) { //歌名有變才更新
         $('#player .song-info .name').text(name)
