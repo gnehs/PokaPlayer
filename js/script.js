@@ -271,7 +271,7 @@ function HTML_showSongs(songs) {
         let artist = song.additional.song_tag.artist
         let album_artist = song.additional.song_tag.album_artist
         let album = song.additional.song_tag.album
-        let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src=".${getAlbumCover(album_album, album_artist, artist)}"/></div>`
+        let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src=".${getAlbumCover(album, album_artist, artist)}"/></div>`
         html += `<li class="mdui-list-item mdui-ripple">
             ${img}
             <div class="mdui-list-item-content" data-song-id="${song.id}">
@@ -572,7 +572,7 @@ async function show_now() {
         let artist = ap.list.audios[i].artist
         let album_artist = ap.list.audios[i].album_artist
         let album = ap.list.audios[i].album
-        let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src=".${getAlbumCover(album_album, album_artist, artist)}"/></div>`
+        let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src=".${getAlbumCover(album, album_artist, artist)}"/></div>`
         html += `<li class="mdui-list-item mdui-ripple song ${focus}" >
             ${img}
             <div class="mdui-list-item-content songinfo" data-now-play-id="${i}">
@@ -962,6 +962,7 @@ function getCover(type, info) {
             break;
         case "song":
             //歌曲
+            url = "webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getsongcover&view=large&id=" + info
             url += info ? `&id=${encodeURIComponent(info)}` : ``
             break;
         case "folder":
