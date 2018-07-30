@@ -69,10 +69,6 @@ $(function() {
     });
     //圖片讀取錯誤
     $("img").on('error', function() { tryRelogin() }).attr('src', "/img/PokaPlayer.png");
-    // 下拉重新載入攔截
-    $("html").css({
-        "touch-action": "pan-down"
-    });
     //返回攔截
     /* window.history.pushState(null, null, "#");
      window.addEventListener("popstate", function(e) {
@@ -815,7 +811,7 @@ async function show_settings() {
 
     $("#PP_Res input").change(function() {
         window.localStorage["musicRes"] = $(this).val()
-        mdui.snackbar({ message: `音質已設定為 ${$(this).val().toUpperCase()}，該設定並不會在現正播放中生效，請重新加入歌曲`, position: 'top', timeout: 1500 });
+        mdui.snackbar({ message: `音質已設定為 ${$(this).val().toUpperCase()}，該設定並不會在現正播放中生效，請重新加入歌曲`, position: getSnackbarPosition(), timeout: 1500 });
     })
     $("#PP_Theme input").change(function() {
         window.localStorage["mdui-theme-color"] = $(this).val()
@@ -911,6 +907,11 @@ function addSong(songlist, songID) {
             })
         }
     }
+    mdui.snackbar({
+        message: `已添加 ${playlist[0].name}`,
+        timeout: 400,
+        position: getSnackbarPosition()
+      });
     ap.list.add(playlist)
     if (ap.list.audios.length == 1) ap.play() //如果只有一首直接開播
 }
@@ -1038,4 +1039,10 @@ async function getAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 1)
     req_json = JSON.stringify(req_json)
     const response = await axios.get('/api/' + pp_encode(req_json));
     return response.data
+}
+function getSnackbarPosition(){
+    if ($(window).width() < 768) 
+        return "left-top"
+    else 
+        return "left-bottom"
 }
