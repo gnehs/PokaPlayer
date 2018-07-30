@@ -797,21 +797,42 @@ async function show_settings() {
         </label>
         <div class="mdui-typo-caption-opacity">原始音質，在網路狀況許可下，建議選擇此選項聆聽高音質音樂</div>
     </div>` }
+    var imgRes = (s) => { return `<div class="mdui-col">
+        <label class="mdui-radio">
+            <input type="radio" name="musicres" value="true" ${s=="true"?"checked":""}/>
+            <i class="mdui-radio-icon"></i>
+            開啟
+        </label>
+        <div class="mdui-typo-caption-opacity">停止載入所有圖片，音樂仍會按照您所設定的音質播放</div>
+    </div>
+    <div class="mdui-col">
+        <label class="mdui-radio">
+            <input type="radio" name="musicres" value="false" ${s=="true"?"":"checked"}/>
+            <i class="mdui-radio-icon"></i>
+            關閉
+        </label>
+        <div class="mdui-typo-caption-opacity">載入所有圖片，就像平常那樣</div>
+    </div>` }
 
     var setting_theme = title("主題") +
         subtitle("主題色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Theme">${themecolor(window.localStorage["mdui-theme-color"])}</form>` +
         subtitle("主色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Primary" style="text-transform:capitalize;">${colorOption(colors)}</form>` +
         subtitle("強調色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Accent" style="text-transform:capitalize;">${colorOption(colors,true)}</form>`
     var musicRes = title("音質") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Res">${musicRes(window.localStorage["musicRes"])}</form>`
+    var imgRes = title("圖片流量節省") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_imgRes">${imgRes(window.localStorage["imgRes"])}</form>`
     var info = title("Audio Station 狀態") + `<div id="DSMinfo">讀取中</div>`
     var about = title("關於") + `<p>PokaPlayer by gnehs</p>`
         //window.localStorage["musicRes"]
-    var html = header + setting_theme + musicRes + info + about
+    var html = header + setting_theme + musicRes + imgRes + info + about
     $("#content").html(html)
 
     $("#PP_Res input").change(function() {
         window.localStorage["musicRes"] = $(this).val()
         mdui.snackbar({ message: `音質已設定為 ${$(this).val().toUpperCase()}，該設定並不會在現正播放中生效，請重新加入歌曲`, position: getSnackbarPosition(), timeout: 1500 });
+    })
+    $("#PP_imgRes input").change(function() {
+        window.localStorage["imgRes"] = $(this).val()
+        mdui.snackbar({ message: `圖片流量節省已${$(this).val()=="true"?"開啟":"關閉"}`, position: getSnackbarPosition(), timeout: 1500 });
     })
     $("#PP_Theme input").change(function() {
         window.localStorage["mdui-theme-color"] = $(this).val()
@@ -866,7 +887,7 @@ function playSongs(songlist, song = false, clear = true) {
         let artist = nowsong.additional.song_tag.artist
         let album = nowsong.additional.song_tag.album
         let album_artist = nowsong.additional.song_tag.album_artist
-        let poster = getSongCover(nowsong.id)
+        let poster = getCover("song", nowsong.id) 
         playlist.push({
             url: src,
             cover: poster,
@@ -937,6 +958,10 @@ function getCover(type, info) {
             //作曲者
             url += info ? `&genre_name=${encodeURIComponent(info)}` : ``
             break;
+        case "song":
+            //歌曲
+            url += info ? `&id=${encodeURIComponent(info)}` : ``
+            break;
         case "folder":
             //資料夾
             url = "webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getfoldercover&view=default"
@@ -949,7 +974,10 @@ function getCover(type, info) {
             url += info.album_artist_name ? `&album_artist_name=${encodeURIComponent(album_artist_name)}` : `&album_artist_name=`
             break;
     }
-    return '/nas/' + pp_encode(url)
+    if (window.localStorage["imgRes"] == "true")
+        return "/og/og.png"
+    else 
+        return '/nas/' + pp_encode(url)
 }
 
 function getAlbumCover(album_name, album_artist_name, artist_name) {
@@ -957,7 +985,10 @@ function getAlbumCover(album_name, album_artist_name, artist_name) {
     url += album_name ? `&album_name=${encodeURIComponent(album_name)}` : ``
     url += artist_name ? `&artist_name=${encodeURIComponent(artist_name)}` : ``
     url += album_artist_name ? `&album_artist_name=${encodeURIComponent(album_artist_name)}` : `&album_artist_name=`
-    return '/nas/' + pp_encode(url)
+    if (window.localStorage["imgRes"] == "true")
+        return "/og/og.png"
+    else 
+        return '/nas/' + pp_encode(url)
 }
 
 async function getLrc(artist, title) {
@@ -975,15 +1006,10 @@ async function getLrc(artist, title) {
 
 }
 
-function getSongCover(id) {
-    var url = "webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getsongcover&view=large&id=" + id
-    return '/nas/' + pp_encode(url)
-}
-
 function getSong(song) {
     var id = song.id
     var res = window.localStorage["musicRes"]
-    var bitrate = song.additional.song_audio.bitrate/1000
+    var bitrate = song.additional.song_audio.bitrate / 1000
     if (res == "wav"&& bitrate > 320) {
         var url = "webapi/AudioStation/stream.cgi/0.wav?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=wav&id=" + id
     } else if (res == "mp3") {
