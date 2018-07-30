@@ -810,7 +810,7 @@ async function show_settings() {
             <i class="mdui-radio-icon"></i>
             開啟
         </label>
-        <div class="mdui-typo-caption-opacity">停止載入所有圖片，音樂仍會按照您所設定的音質播放</div>
+        <div class="mdui-typo-caption-opacity">停止載入所有圖片，以節省流量及讀取時間，音樂仍會按照您所設定的音質播放</div>
     </div>
     <div class="mdui-col">
         <label class="mdui-radio">
