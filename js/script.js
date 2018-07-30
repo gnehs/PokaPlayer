@@ -823,6 +823,9 @@ async function show_settings() {
             $('body').addClass("mdui-theme-layout-dark")
         else
             $('body').removeClass("mdui-theme-layout-dark")
+            //設定顏色
+        var metaThemeColor = document.querySelector("meta[name=theme-color]");
+        metaThemeColor.setAttribute("content", $('header>div:first-child').css("background-color"));
     })
     $("#PP_Primary input").change(function() {
         var classStr = $('body').attr('class');
