@@ -8,22 +8,31 @@ const ap = new APlayer({
 ap.on("play", function() {
     //沒歌就隨機播放
     if (ap.list.audios.length == 0) play_random();
+    updateMediaSession()
 })
 ap.on("timeupdate", function() {
     var name = ap.list.audios[ap.list.index].name || ""
     var artist = ap.list.audios[ap.list.index].artist || ""
-    var img = ap.list.audios[ap.list.index].cover
+
+    var img = window.localStorage["imgRes"] != "true" ? ap.list.audios[ap.list.index].cover : "/og/og.png" //一定會有圖片
     $('#player button.play[onclick="ap.toggle()"] i').text("pause")
     if (name != $('#player .song-info .name').text()) { //歌名有變才更新
         $('#player .song-info .name').text(name)
         $('#player .song-info .artist').text(artist)
         $('#player img').attr('src', img)
     }
+    updateMediaSession()
+})
+ap.on("pause", function() {
+    $('#player button.play[onclick="ap.toggle()"] i').text("play_arrow")
+})
+
+function updateMediaSession() {
     if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
-            title: name,
-            artist: artist,
-            artwork: [{ src: img, type: 'image/png' }]
+            title: $('#player .song-info .name').text(),
+            artist: $('#player .song-info .artist').text(),
+            artwork: [{ src: $('#player img').attr('src'), type: 'image/png' }]
         });
         navigator.mediaSession.setActionHandler('play', function() { ap.toggle() });
         navigator.mediaSession.setActionHandler('pause', function() { ap.pause() });
@@ -32,13 +41,7 @@ ap.on("timeupdate", function() {
         navigator.mediaSession.setActionHandler('previoustrack', function() { ap.skipBack() });
         navigator.mediaSession.setActionHandler('nexttrack', function() { ap.skipForward() });
     }
-})
-ap.on("pause", function() {
-    $('#player button.play[onclick="ap.toggle()"] i').text("play_arrow")
-})
-ap.on("error", function() {
-
-});
+}
 // 初始化網頁
 $(function() {
     show_home()
@@ -78,6 +81,8 @@ $(function() {
              message: "點擊返回"
          });
      })*/
+    // 初始化 MediaSession
+    updateMediaSession()
 });
 
 var count = 0
@@ -590,7 +595,7 @@ async function show_now() {
     var name = nowPlaying ? nowPlaying.name : "PokaPlayer"
     var artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點擊播放鍵開始隨機播放"
     var album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>"
-    var img = nowPlaying ? nowPlaying.cover : "/og/og.png" //一定會有圖片
+    var img = (nowPlaying && window.localStorage["imgRes"] != "true") ? nowPlaying.cover : "/og/og.png" //一定會有圖片
 
     var currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00"
     var duration = ap.audio.currentTime ? secondToTime(ap.audio.duration) : "0:00"
@@ -671,7 +676,7 @@ async function show_now() {
         var name = nowPlaying ? nowPlaying.name : "PokaPlayer"
         var artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點擊播放鍵開始隨機播放"
         var album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>"
-        var img = nowPlaying ? nowPlaying.cover : "/og/og.png" //一定會有圖片
+        var img = (nowPlaying && window.localStorage["imgRes"] != "true") ? nowPlaying.cover : "/og/og.png" //一定會有圖片
         $('[data-player]>.mdui-card').attr('style', `background-image:url(${img});`)
         $('[data-player]>.info .title').text(name)
         $('[data-player]>.info .artist').html(artist + album)
@@ -820,11 +825,15 @@ async function show_settings() {
         subtitle("主題色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Theme">${themecolor(window.localStorage["mdui-theme-color"])}</form>` +
         subtitle("主色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Primary" style="text-transform:capitalize;">${colorOption(colors)}</form>` +
         subtitle("強調色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Accent" style="text-transform:capitalize;">${colorOption(colors,true)}</form>`
+
     var musicRes = title("音質") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Res">${musicRes(window.localStorage["musicRes"])}</form>`
+
     var imgRes = title("圖片流量節省") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_imgRes">${imgRes(window.localStorage["imgRes"])}</form>`
+
     var info = title("Audio Station 狀態") + `<div id="DSMinfo">讀取中</div>`
+
     var about = title("關於") + `<p>PokaPlayer by gnehs</p>`
-        //window.localStorage["musicRes"]
+
     var html = header + setting_theme + musicRes + imgRes + info + about
     $("#content").html(html)
 
