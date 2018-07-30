@@ -3,7 +3,7 @@
 PokaPlayer 是 Synology Audio Ststion 的新朋友！
 功能正在慢慢補齊 ❤️
 ## 截圖
-<img src="https://i.imgur.com/HAC55i3.png" width="500px">
+<img src="https://i.imgur.com/KnrvGup.jpg" width="500px">
 
 ## 開始使用
 1. 下載 Docker 映像 (https://hub.docker.com/r/gnehs/pokaplayer/)
