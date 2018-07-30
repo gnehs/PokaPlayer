@@ -861,7 +861,7 @@ function playSongs(songlist, song = false, clear = true) {
     for (i = 0; i < songlist.length; i++) {
         let nowsong = songlist[i]
         if (nowsong.id.match(/dir_/)) continue; //這是資料夾
-        let src = getSong(nowsong.id)
+        let src = getSong(nowsong)
         let name = nowsong.title
         let artist = nowsong.additional.song_tag.artist
         let album = nowsong.additional.song_tag.album
@@ -890,7 +890,7 @@ function addSong(songlist, songID) {
     for (i = 0; i < songlist.length; i++) {
         let nowsong = songlist[i]
         if (nowsong.id == songID) {
-            let src = getSong(nowsong.id)
+            let src = getSong(nowsong)
             let name = nowsong.title
             let artist = nowsong.additional.song_tag.artist
             let album = nowsong.additional.song_tag.album
@@ -980,13 +980,14 @@ function getSongCover(id) {
     return '/nas/' + pp_encode(url)
 }
 
-function getSong(id) {
+function getSong(song) {
+    var id = song.id
     var res = window.localStorage["musicRes"]
-    if (res == "wav") {
+    var bitrate = song.additional.song_audio.bitrate/1000
+    if (res == "wav"&& bitrate > 320) {
         var url = "webapi/AudioStation/stream.cgi/0.wav?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=wav&id=" + id
     } else if (res == "mp3") {
-        //webapi/AudioStation/stream.cgi/0.mp3?sid=IzbAJBa3dmabM1820PEN591901&api=SYNO.AudioStation.Stream&version=2&method=transcode&id=music_1877&format=mp3&position=0&_dc=1532626955658&SynoToken=NzRH.c1gUa6W2
-        var url = "webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=mp3&id=" + id
+       var url = "webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=mp3&id=" + id
     } else {
         var url = "webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=stream&id=" + id
     }
