@@ -7,7 +7,7 @@ const express = require('express');
 const session = require('express-session');
 const helmet = require('helmet'); // 防範您的應用程式出現已知的 Web 漏洞
 const bodyParser = require('body-parser'); // 讀入 post 請求
-var FileStore = require('session-file-store')(session); // session 儲存
+const FileStore = require('session-file-store')(session); // session 儲存
 const app = express(); // Node.js Web 架構
 app.set('views', __dirname + '/views');
 app.set('view engine', 'pug')
