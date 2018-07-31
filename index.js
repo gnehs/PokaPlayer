@@ -7,15 +7,17 @@ const express = require('express');
 const session = require('express-session');
 const helmet = require('helmet'); // 防範您的應用程式出現已知的 Web 漏洞
 const bodyParser = require('body-parser'); // 讀入 post 請求
+var FileStore = require('session-file-store')(session); // session 儲存
 const app = express(); // Node.js Web 架構
 app.set('views', __dirname + '/views');
 app.set('view engine', 'pug')
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(helmet.hidePoweredBy({ setTo: 'PHP/5.2.1' }));
 app.use(session({
-    secret: 'ㄐㄐ讚' + Math.random().toString(36).substr(2),
-    resave: false,
-    saveUninitialized: false,
+    store: new FileStore,
+    secret: config.PokaPlayer.sessionSecret,
+    resave: true,
+    saveUninitialized: true
 }));
 // 時間處理
 const moment = require('moment-timezone');
