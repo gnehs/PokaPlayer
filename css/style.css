@@ -25,6 +25,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 .album {
     width: calc(25% - 1em);
+    font-size: 10px;
     display: flex;
     margin: .875em 0.5em;
     flex-direction: column;
@@ -38,22 +39,15 @@ header.mdui-appbar.mdui-appbar-fixed {
     line-height: 1.6em;
 }
 
-@media screen and (max-width: 1256px) {
+@media screen and (min-width: 1256px) {
     .album {
-        font-size: 12px;
-    }
-}
-
-@media screen and (max-width: 1024px) {
-    .album {
-        font-size: 10px;
+        width: calc(16.666% - 1em);
     }
 }
 
 @media screen and (max-width: 768px) {
     .album {
         width: calc(33.3% - 1em);
-        font-size: 10px;
     }
 }
 
