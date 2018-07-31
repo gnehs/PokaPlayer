@@ -268,8 +268,13 @@ function HTML_showAlbums(items) {
 }
 
 function HTML_showSongs(songs) {
-    songList = JSON.stringify(songs)
-    var html = `<ul class="mdui-list songs">`
+    songList = songs
+    var actions = `<div class="mdui-clearfix" style="margin-bottom:16px;margin-top:-24px;">
+            <button class="mdui-btn mdui-color-theme-accent mdui-ripple mdui-float-right" onclick="addSong(songList)">
+                加入所有歌曲
+            </button>
+      </div>`
+    var html = actions + `<ul class="mdui-list songs">`
     for (i = 0; i < songs.length; i++) {
         let song = songs[i]
         let title = song.title
@@ -370,11 +375,11 @@ async function show_search(keyword) {
         $("#content").html(html)
     mdui.mutation() //初始化
     $(".songs [data-song-id].mdui-list-item-content").click(function() {
-        playSongs(JSON.parse(songList), $(this).attr('data-song-id'))
+        playSongs(songList, $(this).attr('data-song-id'))
         show_now()
     })
     $(".songs [data-song-id].add").click(function() {
-        addSong(JSON.parse(songList), $(this).attr('data-song-id'))
+        addSong(songList, $(this).attr('data-song-id'))
     })
     $('#search').change(async function() {
         show_search($(this).val())
@@ -432,11 +437,11 @@ async function show_album_songs(artist, album, album_artist) {
         html = HTML_showSongs(data.data.songs)
     $("#content").html(header + html)
     $(".songs [data-song-id].mdui-list-item-content").click(function() {
-        playSongs(JSON.parse(songList), $(this).attr('data-song-id'))
+        playSongs(songList, $(this).attr('data-song-id'))
         show_now()
     })
     $(".songs [data-song-id].add").click(function() {
-        addSong(JSON.parse(songList), $(this).attr('data-song-id'))
+        addSong(songList, $(this).attr('data-song-id'))
     })
 }
 // 資料夾
@@ -547,11 +552,11 @@ async function show_random() {
         album = HTML_showSongs(data.data.songs)
     $("#content").html(header + album)
     $(".songs [data-song-id].mdui-list-item-content").click(function() {
-        playSongs(JSON.parse(songList), $(this).attr('data-song-id'))
+        playSongs(songList, $(this).attr('data-song-id'))
         show_now()
     })
     $(".songs [data-song-id].add").click(function() {
-        addSong(JSON.parse(songList), $(this).attr('data-song-id'))
+        addSong(songList, $(this).attr('data-song-id'))
     })
 }
 async function play_random() {
@@ -917,11 +922,11 @@ function playSongs(songlist, song = false, clear = true) {
     if (clear) ap.play()
 }
 
-function addSong(songlist, songID) {
+function addSong(songlist, songID=0) {
     var playlist = []
     for (i = 0; i < songlist.length; i++) {
         let nowsong = songlist[i]
-        if (nowsong.id == songID) {
+        if (nowsong.id == songID||songID==0) {
             let src = getSong(nowsong)
             let name = nowsong.title
             let artist = nowsong.additional.song_tag.artist
@@ -938,12 +943,16 @@ function addSong(songlist, songID) {
                 album_artist: album_artist
             })
         }
-    }
+    }if(songID==0){mdui.snackbar({
+        message: `已添加 ${songlist.length} 首歌`,
+        timeout: 400,
+        position: getSnackbarPosition()
+      });}else{
     mdui.snackbar({
         message: `已添加 ${playlist[0].name}`,
         timeout: 400,
         position: getSnackbarPosition()
-      });
+      });}
     ap.list.add(playlist)
     if (ap.list.audios.length == 1) ap.play() //如果只有一首直接開播
 }
