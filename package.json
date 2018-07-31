@@ -4,7 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "test": "nodemon index.js --ignore 'js/*.js' --watch 'index.js'",
+        "test": "nodemon index.js --ignore '*' --watch 'index.js'",
         "start": "node index.js"
     },
     "repository": {

@@ -791,7 +791,7 @@ async function show_settings() {
             <i class="mdui-radio-icon"></i>
             MP3
         </label>
-        <div class="mdui-typo-caption-opacity">128K，夭壽靠北，在網路夭壽慢的情況下請選擇此選項</div>
+        <div class="mdui-typo-caption-opacity">128K，夭壽靠北，在網路夭壽慢的情況下請選擇此選項</br>（bitrate 在 320K 以下的歌曲也會被轉換）</div>
     </div>
     <div class="mdui-col">
         <label class="mdui-radio">
@@ -799,7 +799,7 @@ async function show_settings() {
             <i class="mdui-radio-icon"></i>
             WAV
         </label>
-        <div class="mdui-typo-caption-opacity">較高音質，音質較原始音質略差，可在 4G 網路下流暢的串流</div>
+        <div class="mdui-typo-caption-opacity">較高音質，音質較原始音質略差，可在 4G 網路下流暢的串流</br>（bitrate 在 320K 以下的歌曲會以原始音質播放）</div>
     </div>
     <div class="mdui-col">
         <label class="mdui-radio">

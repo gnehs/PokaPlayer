@@ -97,9 +97,6 @@ app.get('/nas/:url', async(req, res) => {
                 })
             }
         }).pipe(res)
-
-
-
     }
 })
 
