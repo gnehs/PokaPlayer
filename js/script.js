@@ -274,7 +274,7 @@ function HTML_showSongs(songs) {
                 加入所有歌曲
             </button>
       </div>`
-    var html = actions + `<ul class="mdui-list songs">`
+    var html = actions + `<ul class="songs"><div class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4">`
     for (i = 0; i < songs.length; i++) {
         let song = songs[i]
         let title = song.title
@@ -282,7 +282,7 @@ function HTML_showSongs(songs) {
         let album_artist = song.additional.song_tag.album_artist
         let album = song.additional.song_tag.album
         let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src=".${getAlbumCover(album, album_artist, artist)}"/></div>`
-        html += `<li class="mdui-list-item mdui-ripple">
+        html += `<div class="mdui-col"><li class="mdui-list-item mdui-ripple">
             ${img}
             <div class="mdui-list-item-content" data-song-id="${song.id}">
                 <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
@@ -291,7 +291,7 @@ function HTML_showSongs(songs) {
             <button class="mdui-btn mdui-btn-icon mdui-ripple add" data-song-id="${song.id}">
                 <i class="mdui-icon material-icons">add</i>
             </button>
-        </li>`　
+        </li></div>`　
     }
     html += '</ul>'
     return html
@@ -574,7 +574,6 @@ async function play_random() {
 async function show_now() {
     $('[data-link]').removeClass('mdui-list-item-active')
     $('[data-link="now"]').addClass('mdui-list-item-active')
-    $("#title").text("現正播放")
     var html = `<ul class="mdui-list songs">`
     for (i = 0; i < ap.list.audios.length; i++) {
         let focus = ap.list.index == i ? 'mdui-list-item-active' : ''
@@ -894,7 +893,6 @@ async function show_settings() {
 function playSongs(songlist, song = false, clear = true) {
     if (clear) ap.list.clear()
     var playlist = []
-    var songtoplay = 0
     for (i = 0; i < songlist.length; i++) {
         let nowsong = songlist[i]
         if (nowsong.id.match(/dir_/)) continue; //這是資料夾
