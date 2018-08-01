@@ -116,10 +116,11 @@ app.get('/api/:apireq', async(req, res) => {
         */
     if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
         res.send('請登入')
-    else {
+    else if (apireq.API_NAME.match(/SYNO.AudioStation/)) {
         var getRes = await api(config.DSM, apireq.CGI_PATH, apireq.API_NAME, apireq.METHOD, apireq.VERSION, apireq.PARAMS)
         res.send(getRes)
-    }
+    } else
+        res.status(403).send('Permission Denied Desu')
 })
 
 // 登入

@@ -1,5 +1,8 @@
 {
-    "PokaPlayer": { "password": "CUSTOM_PASSWORD_HERE", "passwordSwitch": true },
+    "PokaPlayer": {
+        "password": "CUSTOM_PASSWORD_HERE",
+        "passwordSwitch": true
+    },
     "DSM": {
         "protocol": "https",
         "host": "192.168.x.x",
