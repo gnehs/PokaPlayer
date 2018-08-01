@@ -1,7 +1,8 @@
 {
     "PokaPlayer": {
         "password": "CUSTOM_PASSWORD_HERE",
-        "passwordSwitch": true
+        "passwordSwitch": true,
+        "sessionSecret": "hello!!"
     },
     "DSM": {
         "protocol": "https",
