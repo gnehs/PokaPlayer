@@ -269,12 +269,7 @@ function HTML_showAlbums(items) {
 
 function HTML_showSongs(songs) {
     songList = songs
-    var actions = `<div class="mdui-clearfix" style="margin-bottom:16px;margin-top:-24px;">
-            <button class="mdui-btn mdui-color-theme-accent mdui-ripple mdui-float-right" onclick="addSong(songList)">
-                加入所有歌曲
-            </button>
-      </div>`
-    var html = actions + `<ul class="songs"><div class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4">`
+    var html = `<div class="songs"><div class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4">`
     for (i = 0; i < songs.length; i++) {
         let song = songs[i]
         let title = song.title
@@ -284,16 +279,16 @@ function HTML_showSongs(songs) {
         let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src=".${getAlbumCover(album, album_artist, artist)}"/></div>`
         html += `<div class="mdui-col"><li class="mdui-list-item mdui-ripple">
             ${img}
-            <div class="mdui-list-item-content" data-song-id="${song.id}">
+            <div class="mdui-list-item-content" onclick="playSongs(songList,'${song.id}');show_now()">
                 <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
                 <div class="mdui-list-item-text mdui-list-item-one-line">${artist}</div>
             </div>
-            <button class="mdui-btn mdui-btn-icon mdui-ripple add" data-song-id="${song.id}">
+            <button class="mdui-btn mdui-btn-icon mdui-ripple add" onclick="addSong(songList,'${song.id}')">
                 <i class="mdui-icon material-icons">add</i>
             </button>
         </li></div>`　
     }
-    html += '</ul>'
+    html += '</div>'
     return html
 }
 
@@ -374,13 +369,7 @@ async function show_search(keyword) {
     } else
         $("#content").html(html)
     mdui.mutation() //初始化
-    $(".songs [data-song-id].mdui-list-item-content").click(function() {
-        playSongs(songList, $(this).attr('data-song-id'))
-        show_now()
-    })
-    $(".songs [data-song-id].add").click(function() {
-        addSong(songList, $(this).attr('data-song-id'))
-    })
+
     $('#search').change(async function() {
         show_search($(this).val())
     });
@@ -425,24 +414,41 @@ async function show_album_songs(artist, album, album_artist) {
     //如果從首頁按進去頁籤沒切換
     $('[data-link]').removeClass('mdui-list-item-active')
     $('[data-link="album"]').addClass('mdui-list-item-active')
+    var albumInfo = `<div class="album-info">
+        <div class="cover" style="background-image:url(.${getAlbumCover(album, album_artist, artist)})"></div>
+        <div class="info">
+            <div class="album-name mdui-text-truncate mdui-text-color-theme-text">${album}</div>
+            <div class="artist-name mdui-text-truncate mdui-text-color-theme-secondary">${artist}</div>
+            <div class="grow"></div>
+            <div class="footer">
+                <div class="time mdui-text-color-theme-disabled mdui-text-truncate"></div>
+                <div class="actions">
+                    <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="addSong(songList)">
+                        <i class="mdui-icon material-icons">add</i>
+                    </button>
+                    <button class="mdui-btn mdui-btn-icon mdui-ripple mdui-color-theme-accent" onclick="playSongs(songList,false,true)">
+                        <i class="mdui-icon material-icons">play_arrow</i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mdui-divider" style="margin: 10px 0"></div>`
 
     // 展示讀取中
-    var header = HTML_getHeader(album)
-    $("#content").html(header + HTML_getSpinner())
+    $("#content").html(albumInfo + HTML_getSpinner())
     mdui.mutation()
 
     //抓資料
     var data = await getAlbumSong(album, album_artist, artist),
-        header = HTML_getHeader(album + (artist ? ' / ' + artist : '')),
         html = HTML_showSongs(data.data.songs)
-    $("#content").html(header + html)
-    $(".songs [data-song-id].mdui-list-item-content").click(function() {
-        playSongs(songList, $(this).attr('data-song-id'))
-        show_now()
-    })
-    $(".songs [data-song-id].add").click(function() {
-        addSong(songList, $(this).attr('data-song-id'))
-    })
+    $("#content").html(albumInfo + html)
+
+    // 獲取總時間
+    var time = 0
+    for (i = 0; i < data.data.songs.length; i++) time += data.data.songs[i].additional.song_audio.duration
+    $("#content .album-info .time").html(`${data.data.songs.length} 首樂曲 / ${secondToTime(time)}`)
+
 }
 // 資料夾
 async function show_folder(folder) {
@@ -551,13 +557,7 @@ async function show_random() {
     var data = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "list", PARAMS_JSON, 1),
         album = HTML_showSongs(data.data.songs)
     $("#content").html(header + album)
-    $(".songs [data-song-id].mdui-list-item-content").click(function() {
-        playSongs(songList, $(this).attr('data-song-id'))
-        show_now()
-    })
-    $(".songs [data-song-id].add").click(function() {
-        addSong(songList, $(this).attr('data-song-id'))
-    })
+
 }
 async function play_random() {
     var PARAMS_JSON = [
@@ -790,7 +790,7 @@ async function show_settings() {
             <i class="mdui-radio-icon"></i>
             MP3
         </label>
-        <div class="mdui-typo-caption-opacity">128K，夭壽靠北，在網路夭壽慢的情況下請選擇此選項</br>（bitrate 在 320K 以下的歌曲也會被轉換）</div>
+        <div class="mdui-typo-caption-opacity">128K，夭壽靠北，在網路夭壽慢的情況下請選擇此選項</div>
     </div>
     <div class="mdui-col">
         <label class="mdui-radio">
@@ -798,7 +798,7 @@ async function show_settings() {
             <i class="mdui-radio-icon"></i>
             WAV
         </label>
-        <div class="mdui-typo-caption-opacity">較高音質，音質較原始音質略差，可在 4G 網路下流暢的串流</br>（bitrate 在 320K 以下的歌曲會以原始音質播放）</div>
+        <div class="mdui-typo-caption-opacity">較高音質，音質較原始音質略差，可在 4G 網路下流暢的串流</div>
     </div>
     <div class="mdui-col">
         <label class="mdui-radio">
@@ -830,9 +830,9 @@ async function show_settings() {
         subtitle("主色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Primary" style="text-transform:capitalize;">${colorOption(colors)}</form>` +
         subtitle("強調色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Accent" style="text-transform:capitalize;">${colorOption(colors,true)}</form>`
 
-    var musicRes = title("音質") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Res">${musicRes(window.localStorage["musicRes"])}</form>`
+    var musicRes = title("音質") + `<form class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4" id="PP_Res">${musicRes(window.localStorage["musicRes"])}</form>`
 
-    var imgRes = title("圖片流量節省") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_imgRes">${imgRes(window.localStorage["imgRes"])}</form>`
+    var imgRes = title("圖片流量節省") + `<form class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4" id="PP_imgRes">${imgRes(window.localStorage["imgRes"])}</form>`
 
     var info = title("Audio Station 狀態") + `<div id="DSMinfo">讀取中</div>`
 

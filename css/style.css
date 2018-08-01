@@ -71,6 +71,96 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 
+/* 專輯簡介 */
+
+.album-info {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    overflow: hidden;
+}
+
+.album-info * {
+    transition: all .3s ease;
+}
+
+.album-info>.cover {
+    height: 200px;
+    width: 200px;
+    align-content: center;
+    flex-direction: column;
+    background-size: cover;
+}
+
+.album-info>.info {
+    flex: 1;
+    flex-direction: column;
+    display: flex;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 8px;
+    overflow: hidden;
+}
+
+.album-info>.info>.album-name {
+    font-size: 40px;
+    line-height: 48px;
+    font-weight: bold;
+}
+
+.album-info>.info>.artist-name {
+    font-size: 32px;
+    line-height: 40px;
+}
+
+.album-info>.info>.grow {
+    flex: 1;
+}
+
+.album-info>.info>.footer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.album-info>.info>.footer>.time {
+    flex: 1;
+}
+
+.album-info>.info .time {
+    font-size: 20px;
+    line-height: 42px;
+}
+
+.album-info>.info .actions .mdui-btn {
+    height: 42px;
+    width: 42px;
+}
+
+@media screen and (max-width: 768px) {
+    .album-info>.info {
+        padding-left: 12px;
+        padding-right: 0;
+    }
+    .album-info>.cover {
+        height: 150px;
+        width: 150px;
+    }
+    .album-info>.info>.album-name {
+        font-size: 24px;
+        line-height: 30px;
+    }
+    .album-info>.info>.artist-name {
+        font-size: 20px;
+        line-height: 25px;
+    }
+    .album-info>.info .time {
+        font-size: 16px;
+    }
+}
+
+
 /* 底部吸附播放器 */
 
 #player {
