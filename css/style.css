@@ -24,14 +24,18 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 .album {
-    width: calc(25% - 1em);
+    --album-size: calc(25% - 1em);
+    height: 0;
+    width: var(--album-size);
+    padding-bottom: var(--album-size);
     font-size: 10px;
-    display: flex;
     margin: .875em 0.5em;
-    flex-direction: column;
-    position: relative;
-    break-inside: avoid;
-    box-sizing: border-box;
+    background-position: center;
+    background-size: cover;
+}
+
+.album .mdui-card-media {
+    position: unset;
 }
 
 .album .mdui-card-primary-title {
@@ -39,31 +43,30 @@ header.mdui-appbar.mdui-appbar-fixed {
     line-height: 1.6em;
 }
 
-@media screen and (min-width: 1256px) {
-    .album {
-        width: calc(16.666% - 1em);
-    }
-}
-
-@media screen and (max-width: 768px) {
-    .album {
-        width: calc(33.3% - 1em);
-    }
-}
-
-@media screen and (max-width: 512px) {
-    .album {
-        width: calc(50% - 1em);
-        font-size: 9px;
-    }
-}
-
 .album>.mdui-card-media>img {
     object-fit: cover;
     align-items: center;
     justify-content: center;
     max-width: 100%;
-    height: 16em;
+}
+
+@media screen and (min-width: 1256px) {
+    .album {
+        --album-size: calc(16.666% - 1em);
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .album {
+        --album-size: calc(33.3% - 1em);
+    }
+}
+
+@media screen and (max-width: 512px) {
+    .album {
+        --album-size: calc(50% - 1em);
+        font-size: 9px;
+    }
 }
 
 #aplayer {

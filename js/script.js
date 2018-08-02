@@ -179,15 +179,14 @@ function HTML_showPins(items) {
                 break;
         }
         //await getAlbumSong(albumData.criteria.album, albumData.criteria.album_artist, albumData.criteria.artist)
-        html += `<div class="mdui-card mdui-ripple mdui-hoverable album" onclick="${onclickActions}">
+        html += `<div class="mdui-card mdui-ripple mdui-hoverable album" onclick="${onclickActions}" style="background-image:url(.${img});">
                 <div class="mdui-card-media">
-                <img src=".${img}"/>
-                <div class="mdui-card-media-covered mdui-card-media-covered-gradient">
-                    <div class="mdui-card-primary">
-                    <div class="mdui-card-primary-title">${title}</div>
-                    <div class="mdui-card-primary-subtitle">${subtitle}</div>
+                    <div class="mdui-card-media-covered mdui-card-media-covered-gradient">
+                        <div class="mdui-card-primary">
+                        <div class="mdui-card-primary-title">${title}</div>
+                        <div class="mdui-card-primary-subtitle">${subtitle}</div>
+                        </div>
                     </div>
-                </div>
                 </div>
             </div>`
     }
@@ -245,21 +244,21 @@ function HTML_showAlbums(items) {
         var artist = albumData.album_artist || albumData.display_artist || ''
         var album_artist = albumData.album_artist || ''
         var name = albumData.name || ''
+        var img = getAlbumCover(name, album_artist, artist)
         if (albumData.criteria) {
             var artist = artist || albumData.criteria.artist || albumData.criteria.album_artist || '未知'
             var album_artist = album_artist || albumData.criteria.album_artist || ''
             var name = name || albumData.criteria.album || ''
         }
         //await getAlbumSong(albumData.criteria.album, albumData.criteria.album_artist, albumData.criteria.artist)
-        album += `<div class="mdui-card mdui-ripple mdui-hoverable album" onclick="show_album_songs('${artist}','${name}','${album_artist}')">
+        album += `<div class="mdui-card mdui-ripple mdui-hoverable album" onclick="show_album_songs('${artist}','${name}','${album_artist}')"  style="background-image:url(.${img});">
                 <div class="mdui-card-media">
-                <img src=".${getAlbumCover(name, album_artist, artist)}"/>
-                <div class="mdui-card-media-covered mdui-card-media-covered-gradient">
-                    <div class="mdui-card-primary">
-                    <div class="mdui-card-primary-title">${name}</div>
-                    <div class="mdui-card-primary-subtitle">${artist}</div>
+                    <div class="mdui-card-media-covered mdui-card-media-covered-gradient">
+                        <div class="mdui-card-primary">
+                        <div class="mdui-card-primary-title">${name}</div>
+                        <div class="mdui-card-primary-subtitle">${artist}</div>
+                        </div>
                     </div>
-                </div>
                 </div>
             </div>`
     }
