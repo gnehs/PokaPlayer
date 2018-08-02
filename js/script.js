@@ -278,7 +278,7 @@ function HTML_showSongs(songs) {
         let artist = song.additional.song_tag.artist
         let album_artist = song.additional.song_tag.album_artist
         let album = song.additional.song_tag.album
-        let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${getCover("song", song.id)}"/></div>`
+        let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${ getAlbumCover(album, album_artist, artist)}"/></div>`
         html += `<div class="mdui-col"><li class="mdui-list-item mdui-ripple">
             ${img}
             <div class="mdui-list-item-content" onclick="playSongs(songList,'${song.id}');show_now()" title="${title}${artist?' / '+artist:''}">
@@ -916,7 +916,7 @@ function playSongs(songlist, song = false, clear = true) {
         let artist = nowsong.additional.song_tag.artist
         let album = nowsong.additional.song_tag.album
         let album_artist = nowsong.additional.song_tag.album_artist
-        let poster = getCover("song", nowsong.id) 
+        let poster =  getAlbumCover(album, album_artist, artist)
         playlist.push({
             url: src,
             cover: poster,
@@ -945,7 +945,7 @@ function addSong(songlist, songID=0) {
             let artist = nowsong.additional.song_tag.artist
             let album = nowsong.additional.song_tag.album
             let album_artist = nowsong.additional.song_tag.album_artist
-            let poster = getCover("song", nowsong.id) 
+            let poster = getAlbumCover(album, album_artist, artist)
             playlist.push({
                 url: src,
                 cover: poster,
