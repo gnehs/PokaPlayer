@@ -211,7 +211,7 @@ function HTML_showFolder(items) {
             let artist = item.additional.song_tag.artist
             let album_artist = item.additional.song_tag.album_artist
             let album_album = item.additional.song_tag.album
-            let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src=".${getAlbumCover(album_album, album_artist, artist)}"/></div>`
+            let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${getCover("song", item.id)}"/></div>`
             let subtitle = ''
             subtitle += artist ? artist : ''
             subtitle += album_album ? (artist ? ' / ' + album_album : album_album) : ''
@@ -275,7 +275,7 @@ function HTML_showSongs(songs) {
         let artist = song.additional.song_tag.artist
         let album_artist = song.additional.song_tag.album_artist
         let album = song.additional.song_tag.album
-        let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src=".${getAlbumCover(album, album_artist, artist)}"/></div>`
+        let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${getCover("song", song.id)}"/></div>`
         html += `<div class="mdui-col"><li class="mdui-list-item mdui-ripple">
             ${img}
             <div class="mdui-list-item-content" onclick="playSongs(songList,'${song.id}');show_now()">
@@ -297,7 +297,7 @@ function HTML_showArtist(artists) {
     for (i = 0; i < artists.length; i++) {
         let artist = artists[i]
         let name = artist.name ? artist.name : "未知"
-        let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src=".${getCover("artist", name)}"/></div>`
+        let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${getCover("artist", name)}"/></div>`
         html += `<li class="mdui-list-item mdui-ripple" onclick="show_artist('${name}')">
             ${img}
             <div class="mdui-list-item-content">
@@ -314,7 +314,7 @@ function HTML_showComposer(composers) {
     for (i = 0; i < composers.length; i++) {
         let composer = composers[i]
         let name = composer.name ? composer.name : "未知"
-        let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src=".${getCover("composer", name)}"/></div>`
+        let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${getCover("composer", name)}"/></div>`
         html += `<li class="mdui-list-item mdui-ripple" onclick="show_composer('${name}')">
             ${img}
             <div class="mdui-list-item-content">
@@ -580,7 +580,7 @@ async function show_now() {
         let artist = ap.list.audios[i].artist
         let album_artist = ap.list.audios[i].album_artist
         let album = ap.list.audios[i].album
-        let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src=".${getAlbumCover(album, album_artist, artist)}"/></div>`
+        let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${ap.list.audios[i].cover}"/></div>`
         html += `<li class="mdui-list-item mdui-ripple song ${focus}" >
             ${img}
             <div class="mdui-list-item-content songinfo" data-now-play-id="${i}">
@@ -929,7 +929,7 @@ function addSong(songlist, songID=0) {
             let artist = nowsong.additional.song_tag.artist
             let album = nowsong.additional.song_tag.album
             let album_artist = nowsong.additional.song_tag.album_artist
-            let poster = getAlbumCover(album, nowsong.additional.song_tag.album_artist, artist)
+            let poster = getCover("song", nowsong.id) 
             playlist.push({
                 url: src,
                 cover: poster,
