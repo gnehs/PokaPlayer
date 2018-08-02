@@ -91,6 +91,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     align-content: center;
     flex-direction: column;
     background-size: cover;
+    background-position: center;
 }
 
 .album-info>.info {
@@ -291,6 +292,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     width: var(--main-size);
     height: var(--main-size);
     background-size: cover;
+    background-position: center;
     background-color: #0000;
 }
 
