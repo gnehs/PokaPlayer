@@ -255,8 +255,8 @@ function HTML_showAlbums(items) {
                 <div class="mdui-card-media">
                     <div class="mdui-card-media-covered mdui-card-media-covered-gradient">
                         <div class="mdui-card-primary">
-                        <div class="mdui-card-primary-title">${name}</div>
-                        <div class="mdui-card-primary-subtitle">${artist}</div>
+                        <div class="mdui-card-primary-title mdui-text-truncate">${name}</div>
+                        <div class="mdui-card-primary-subtitle mdui-text-truncate">${artist}</div>
                         </div>
                     </div>
                 </div>
