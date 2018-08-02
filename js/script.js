@@ -338,6 +338,7 @@ async function show_home() {
     var data = await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "list", [{ key: "limit", "value": -1 }, { key: "offset", "value": 0 }]),
         album = HTML_showPins(data.data.items)
     $("#content").html(header + album)
+    $("#content>:not(#header-wrapper)").animateCss("fadeIn")
 }
 //- 列出專輯
 async function show_search(keyword) {
@@ -392,6 +393,7 @@ async function show_album() {
     var data = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3),
         album = HTML_showAlbums(data.data.albums)
     $("#content").html(header + album)
+    $("#content>:not(#header-wrapper)").animateCss("fadeIn")
 }
 // 最近加入ㄉ專輯
 async function show_recentlyAlbum() {
@@ -410,6 +412,7 @@ async function show_recentlyAlbum() {
     var data = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3),
         album = HTML_showAlbums(data.data.albums)
     $("#content").html(header + album)
+    $("#content>:not(#header-wrapper)").animateCss("fadeIn")
 }
 //- 展示專輯歌曲
 async function show_album_songs(artist, album, album_artist) {
@@ -450,12 +453,13 @@ async function show_album_songs(artist, album, album_artist) {
     var data = await getAlbumSong(album, album_artist, artist),
         html = HTML_showSongs(data.data.songs)
     $("#content").html(albumInfo + html)
+    $("#content>:not(.album-info):not(.mdui-divider)").animateCss("fadeIn")
 
     // 獲取總時間
     var time = 0
     for (i = 0; i < data.data.songs.length; i++) time += data.data.songs[i].additional.song_audio.duration
-    $("#content .album-info .time").html(`共 ${data.data.songs.length} 首歌曲 / ${secondToTime(time)}`)
-    $("#content .album-info .actions").html(actions)
+    $("#content .album-info .time").html(`共 ${data.data.songs.length} 首歌曲 / ${secondToTime(time)}`).animateCss("fadeIn")
+    $("#content .album-info .actions").html(actions).animateCss("fadeIn")
 
 }
 // 資料夾
@@ -480,6 +484,7 @@ async function show_folder(folder) {
     var data = await getAPI("AudioStation/folder.cgi", "SYNO.AudioStation.Folder", "list", PARAMS_JSON, 2),
         folderHTML = HTML_showFolder(data.data.items)
     $("#content").html(header + folderHTML)
+    $("#content>:not(#header-wrapper)").animateCss("fadeIn")
 }
 async function show_artist(artist) {
     var header = HTML_getHeader("演出者")
@@ -514,6 +519,7 @@ async function show_artist(artist) {
             artistsHTML = HTML_showArtist(data.data.artists)
         $("#content").html(header + artistsHTML)
     }
+    $("#content>:not(#header-wrapper)").animateCss("fadeIn")
 }
 async function show_composer(composer) {
     var header = HTML_getHeader("作曲者")
@@ -548,6 +554,7 @@ async function show_composer(composer) {
             composersHTML = HTML_showComposer(data.data.composers)
         $("#content").html(header + composersHTML)
     }
+    $("#content>:not(#header-wrapper)").animateCss("fadeIn")
 }
 //- 隨機播放
 async function show_random() {
@@ -565,7 +572,7 @@ async function show_random() {
     var data = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "list", PARAMS_JSON, 1),
         album = HTML_showSongs(data.data.songs)
     $("#content").html(header + album)
-
+    $("#content>:not(#header-wrapper)").animateCss("fadeIn")
 }
 async function play_random() {
     var PARAMS_JSON = [
@@ -1100,3 +1107,29 @@ function getSnackbarPosition(){
     else 
         return "left-bottom"
 }
+$.fn.extend({
+    animateCss: function(animationName, callback) {
+      var animationEnd = (function(el) {
+        var animations = {
+          animation: 'animationend',
+          OAnimation: 'oAnimationEnd',
+          MozAnimation: 'mozAnimationEnd',
+          WebkitAnimation: 'webkitAnimationEnd',
+        };
+  
+        for (var t in animations) {
+          if (el.style[t] !== undefined) {
+            return animations[t];
+          }
+        }
+      })(document.createElement('div'));
+  
+      this.addClass('animated ' + animationName).one(animationEnd, function() {
+        $(this).removeClass('animated ' + animationName);
+  
+        if (typeof callback === 'function') callback();
+      });
+  
+      return this;
+    },
+  });
