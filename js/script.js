@@ -425,7 +425,7 @@ async function show_album_songs(artist, album, album_artist) {
                     <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="addSong(songList)">
                         <i class="mdui-icon material-icons">add</i>
                     </button>
-                    <button class="mdui-btn mdui-btn-icon mdui-ripple mdui-color-theme-accent" onclick="playSongs(songList,false,true)">
+                    <button class="mdui-btn mdui-btn-icon mdui-ripple mdui-color-theme-accent" onclick="playSongs(songList,false,true);show_now();">
                         <i class="mdui-icon material-icons">play_arrow</i>
                     </button>
                 </div>

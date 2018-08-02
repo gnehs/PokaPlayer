@@ -18,7 +18,7 @@ html
         meta(name="msapplication-TileImage" content="/img/PokaPlayer.png")
         meta(name="msapplication-TileColor" content="#3f51b5")
         block head
-    body.mdui-drawer-body-left.mdui-theme-primary-indigo.mdui-theme-accent-pink
+    body.mdui-theme-primary-indigo.mdui-theme-accent-pink.mdui-drawer-body-left
         header.mdui-appbar.mdui-appbar-fixed
             .mdui-toolbar.mdui-color-theme
                 a.mdui-btn.mdui-btn-icon(mdui-drawer="{target: '#drawer', swipe: true}")
@@ -30,9 +30,6 @@ html
                     i.mdui-icon.material-icons search 
         #drawer.mdui-drawer.mdui-appbar-with-toolbar
             .mdui-list
-                a.mdui-list-item.mdui-ripple.mdui-list-item-active(href='javascript:void(0)',data-link='home')
-                    i.mdui-list-item-icon.mdui-icon.material-icons home
-                    .mdui-list-item-content 首頁
                 block drawer
         #content.mdui-container
             block content

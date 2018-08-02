@@ -2,6 +2,9 @@ extends _layout.pug
 block head
     link(href='//cdnjs.cloudflare.com/ajax/libs/aplayer/1.10.1/APlayer.min.css',rel='stylesheet')
 block drawer
+    a.mdui-list-item.mdui-ripple.mdui-list-item-active(href='javascript:void(0)',data-link='home')
+        i.mdui-list-item-icon.mdui-icon.material-icons home
+        .mdui-list-item-content 首頁
     .mdui-subheader 音樂庫
     a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='search')
         i.mdui-list-item-icon.mdui-icon.material-icons search
