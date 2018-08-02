@@ -179,7 +179,7 @@ function HTML_showPins(items) {
                 break;
         }
         //await getAlbumSong(albumData.criteria.album, albumData.criteria.album_artist, albumData.criteria.artist)
-        html += `<div class="mdui-card mdui-ripple mdui-hoverable album" onclick="${onclickActions}" style="background-image:url(${img});">
+        html += `<div class="mdui-card mdui-ripple mdui-hoverable album" onclick="${onclickActions}" style="background-image:url(${img});" title="${title} - ${subtitle}">
                 <div class="mdui-card-media">
                     <div class="mdui-card-media-covered mdui-card-media-covered-gradient">
                         <div class="mdui-card-primary">
@@ -251,7 +251,10 @@ function HTML_showAlbums(items) {
             var name = name || albumData.criteria.album || ''
         }
         //await getAlbumSong(albumData.criteria.album, albumData.criteria.album_artist, albumData.criteria.artist)
-        album += `<div class="mdui-card mdui-ripple mdui-hoverable album" onclick="show_album_songs('${artist}','${name}','${album_artist}')"  style="background-image:url(${img});">
+        album += `<div  class="mdui-card mdui-ripple mdui-hoverable album" 
+                        onclick="show_album_songs('${artist}','${name}','${album_artist}')"  
+                        style="background-image:url(${img});"
+                        title="${name}${artist ? ' / ' + artist : ''}">
                 <div class="mdui-card-media">
                     <div class="mdui-card-media-covered mdui-card-media-covered-gradient">
                         <div class="mdui-card-primary">
@@ -278,11 +281,11 @@ function HTML_showSongs(songs) {
         let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${getCover("song", song.id)}"/></div>`
         html += `<div class="mdui-col"><li class="mdui-list-item mdui-ripple">
             ${img}
-            <div class="mdui-list-item-content" onclick="playSongs(songList,'${song.id}');show_now()">
+            <div class="mdui-list-item-content" onclick="playSongs(songList,'${song.id}');show_now()" title="${title}${artist?' / '+artist:''}">
                 <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
                 <div class="mdui-list-item-text mdui-list-item-one-line">${artist}</div>
             </div>
-            <button class="mdui-btn mdui-btn-icon mdui-ripple add" onclick="addSong(songList,'${song.id}')">
+            <button class="mdui-btn mdui-btn-icon mdui-ripple add" onclick="addSong(songList,'${song.id}')" title="加入這首歌曲到現正播放">
                 <i class="mdui-icon material-icons">add</i>
             </button>
         </li></div>`　
@@ -416,23 +419,28 @@ async function show_album_songs(artist, album, album_artist) {
     var albumInfo = `<div class="album-info">
         <div class="cover" style="background-image:url(${getAlbumCover(album, album_artist, artist)})"></div>
         <div class="info">
-            <div class="album-name mdui-text-truncate mdui-text-color-theme-text">${album}</div>
-            <div class="artist-name mdui-text-truncate mdui-text-color-theme-secondary">${artist}</div>
+            <div class="album-name mdui-text-truncate mdui-text-color-theme-text" title="${album}">${album}</div>
+            <div class="artist-name mdui-text-truncate mdui-text-color-theme-secondary" title="${artist}">${artist}</div>
             <div class="grow"></div>
             <div class="footer">
                 <div class="time mdui-text-color-theme-disabled mdui-text-truncate"></div>
                 <div class="actions">
-                    <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="addSong(songList)">
-                        <i class="mdui-icon material-icons">add</i>
-                    </button>
-                    <button class="mdui-btn mdui-btn-icon mdui-ripple mdui-color-theme-accent" onclick="playSongs(songList,false,true);show_now();">
-                        <i class="mdui-icon material-icons">play_arrow</i>
-                    </button>
                 </div>
             </div>
         </div>
     </div>
     <div class="mdui-divider" style="margin: 10px 0"></div>`
+    var actions = `
+    <button class="mdui-btn mdui-btn-icon mdui-ripple" 
+            onclick="addSong(songList)" 
+            title="將此頁面歌曲全部加入到現正播放">
+        <i class="mdui-icon material-icons">add</i>
+    </button>
+    <button class="mdui-btn mdui-btn-icon mdui-ripple mdui-color-theme-accent" 
+            onclick="playSongs(songList,false,true);show_now();"
+            title="將現正播放以此頁面歌曲">
+        <i class="mdui-icon material-icons">play_arrow</i>
+    </button>`
 
     // 展示讀取中
     $("#content").html(albumInfo + HTML_getSpinner())
@@ -446,7 +454,8 @@ async function show_album_songs(artist, album, album_artist) {
     // 獲取總時間
     var time = 0
     for (i = 0; i < data.data.songs.length; i++) time += data.data.songs[i].additional.song_audio.duration
-    $("#content .album-info .time").html(`${data.data.songs.length} 首樂曲 / ${secondToTime(time)}`)
+    $("#content .album-info .time").html(`共 ${data.data.songs.length} 首歌曲 / ${secondToTime(time)}`)
+    $("#content .album-info .actions").html(actions)
 
 }
 // 資料夾
