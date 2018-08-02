@@ -179,7 +179,7 @@ function HTML_showPins(items) {
                 break;
         }
         //await getAlbumSong(albumData.criteria.album, albumData.criteria.album_artist, albumData.criteria.artist)
-        html += `<div class="mdui-card mdui-ripple mdui-hoverable album" onclick="${onclickActions}" style="background-image:url(.${img});">
+        html += `<div class="mdui-card mdui-ripple mdui-hoverable album" onclick="${onclickActions}" style="background-image:url(${img});">
                 <div class="mdui-card-media">
                     <div class="mdui-card-media-covered mdui-card-media-covered-gradient">
                         <div class="mdui-card-primary">
@@ -251,7 +251,7 @@ function HTML_showAlbums(items) {
             var name = name || albumData.criteria.album || ''
         }
         //await getAlbumSong(albumData.criteria.album, albumData.criteria.album_artist, albumData.criteria.artist)
-        album += `<div class="mdui-card mdui-ripple mdui-hoverable album" onclick="show_album_songs('${artist}','${name}','${album_artist}')"  style="background-image:url(.${img});">
+        album += `<div class="mdui-card mdui-ripple mdui-hoverable album" onclick="show_album_songs('${artist}','${name}','${album_artist}')"  style="background-image:url(${img});">
                 <div class="mdui-card-media">
                     <div class="mdui-card-media-covered mdui-card-media-covered-gradient">
                         <div class="mdui-card-primary">
@@ -414,7 +414,7 @@ async function show_album_songs(artist, album, album_artist) {
     $('[data-link]').removeClass('mdui-list-item-active')
     $('[data-link="album"]').addClass('mdui-list-item-active')
     var albumInfo = `<div class="album-info">
-        <div class="cover" style="background-image:url(.${getAlbumCover(album, album_artist, artist)})"></div>
+        <div class="cover" style="background-image:url(${getAlbumCover(album, album_artist, artist)})"></div>
         <div class="info">
             <div class="album-name mdui-text-truncate mdui-text-color-theme-text">${album}</div>
             <div class="artist-name mdui-text-truncate mdui-text-color-theme-secondary">${artist}</div>
