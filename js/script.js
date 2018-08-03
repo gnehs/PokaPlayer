@@ -145,14 +145,14 @@ function HTML_showPins(items) {
                 var img = getCover(type, pin.criteria.artist)
                 var title = pin.name
                 var subtitle = '演出者'
-                var onclickActions = `show_artist('${pin.criteria.artist}')`
+                var onclickActions = `show_artist(\`${pin.criteria.artist}\`)`
                 break;
             case "composer":
                 //作曲者
                 var img = getCover(type, pin.criteria.composer)
                 var title = pin.name
                 var subtitle = '作曲者'
-                var onclickActions = `show_composer('${pin.criteria.composer}')`
+                var onclickActions = `show_composer(\`${pin.criteria.composer}\`)`
                 break;
             case "genre":
                 //作曲者
@@ -166,7 +166,7 @@ function HTML_showPins(items) {
                 var img = getCover(type, pin.criteria.folder)
                 var title = pin.name
                 var subtitle = '資料夾'
-                var onclickActions = `show_folder('${pin.criteria.folder}')`
+                var onclickActions = `show_folder(\`${pin.criteria.folder}\`)`
                 break;
             case "album":
                 //專輯
@@ -177,7 +177,7 @@ function HTML_showPins(items) {
                 var img = getCover("album", name, artist, album_artist)
                 var title = name
                 var subtitle = artist
-                var onclickActions = `show_album_songs('${artist}','${name}','${album_artist}')`
+                var onclickActions = `show_album_songs(\`${artist}\`,\`${name}\`,\`${album_artist}\`)`
                 break;
         }
         //await getAlbumSong(albumData.criteria.album, albumData.criteria.album_artist, albumData.criteria.artist)
@@ -224,7 +224,7 @@ function HTML_showFolder(items) {
             html += `
             <li class="mdui-list-item mdui-ripple">
                 ${img}
-                <div class="mdui-list-item-content" onclick="playSongs(songList,'${id}')">
+                <div class="mdui-list-item-content" onclick="playSongs(songList,\`${id}\`)">
                     <div class="mdui-list-item-title">${title}</div>
                     <div class="mdui-list-item-text">${subtitle}</div>
                     <div class="mdui-list-item-text">${filedetail}</div>
@@ -235,7 +235,7 @@ function HTML_showFolder(items) {
                 </button>
             </li>`
         } else {
-            html += `<li class="mdui-list-item mdui-ripple" onclick="show_folder('${id}')">
+            html += `<li class="mdui-list-item mdui-ripple" onclick="show_folder(\`${id}\`)">
                         <i class="mdui-list-item-avatar mdui-icon material-icons">${icon}</i>
                         <div class="mdui-list-item-content">${title}</div>
                     </li>`
@@ -262,7 +262,7 @@ function HTML_showAlbums(items) {
         //await getAlbumSong(albumData.criteria.album, albumData.criteria.album_artist, albumData.criteria.artist)
         album += `
         <div class="mdui-card mdui-ripple mdui-hoverable album" 
-            onclick="show_album_songs('${artist}','${name}','${album_artist}')"  
+            onclick="show_album_songs(\`${artist}\`,\`${name}\`,\`${album_artist}\`)"  
             style="background-image:url(${img});"
             title="${name}${artist ? ' / ' + artist : ''}">
             <div class="mdui-card-media">
@@ -293,7 +293,7 @@ function HTML_showSongs(songs) {
         <div class="mdui-col"><li class="mdui-list-item mdui-ripple">
             ${img}
             <div class="mdui-list-item-content" 
-                 onclick="playSongs(songList,'${song.id}');show_now()" 
+                 onclick="playSongs(songList,\`${song.id}\`);show_now()" 
                  title="${title}${artist?' / '+artist:''}">
                 <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
                 <div class="mdui-list-item-text mdui-list-item-one-line">${artist}</div>
@@ -317,7 +317,7 @@ function HTML_showArtist(artists) {
         let name = artist.name ? artist.name : "未知"
         let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${getCover("artist", name)}"/></div>`
         html += `
-        <li class="mdui-list-item mdui-ripple" onclick="show_artist('${name}')">
+        <li class="mdui-list-item mdui-ripple" onclick="show_artist(\`${name}\`)">
             ${img}
             <div class="mdui-list-item-content">
                ${name}
@@ -335,7 +335,7 @@ function HTML_showComposer(composers) {
         let name = composer.name ? composer.name : "未知"
         let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${getCover("composer", name)}"/></div>`
         html += `
-        <li class="mdui-list-item mdui-ripple" onclick="show_composer('${name}')">
+        <li class="mdui-list-item mdui-ripple" onclick="show_composer(\`${name}\`)">
             ${img}
             <div class="mdui-list-item-content">
                ${name}
