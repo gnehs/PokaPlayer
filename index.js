@@ -123,22 +123,12 @@ app.get('/cover/:type/:info', async(req, res) => {
                 //資料夾
                 url = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}/webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getfoldercover&view=default&id=${info}`
                 break;
+            case "album":
+                //專輯
+                var info = pp_decode(req.params.info)
+                url += info
+                break;
         }
-        rProxy(req, res, url)
-    }
-})
-app.get('/cover/album/:album/:artist_name/:album_artist_name', async(req, res) => {
-    if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
-        res.send('請登入')
-    else {
-        var url = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}/webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getcover&view=default`
-        var album = req.params.album
-        var artist_name = req.params.artist_name
-        var album_artist_name = req.params.album_artist_name
-            //專輯
-        url += album ? `&album_name=${encodeURIComponent(album)}` : ``
-        url += artist_name ? `&artist_name=${encodeURIComponent(artist_name)}` : ``
-        url += album_artist_name ? `&album_artist_name=${encodeURIComponent(album_artist_name)}` : `&album_artist_name=`
         rProxy(req, res, url)
     }
 })

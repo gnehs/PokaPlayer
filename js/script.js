@@ -1003,7 +1003,11 @@ function addSong(songlist, songID=0) {
 
 function getCover(type, info, artist_name, album_artist_name) {
     if (type == "album"){
-        var url=`/cover/album/${encodeURIComponent(info)}/${encodeURIComponent(artist_name)}/${encodeURIComponent(album_artist_name)}`
+        var q=''
+        q += info ? `&album_name=${encodeURIComponent(info)}` : ``
+        q += artist_name ? `&artist_name=${encodeURIComponent(artist_name)}` : ``
+        q += album_artist_name ? `&album_artist_name=${encodeURIComponent(album_artist_name)}` : `&album_artist_name=`
+        var url=`/cover/album/`+pp_encode(q)
     }
     else{
         var url=`/cover/${encodeURIComponent(type)}/${encodeURIComponent(info)}`
