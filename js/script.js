@@ -172,7 +172,7 @@ function HTML_showPins(items) {
                 var album_artist = pin.criteria.album_artist || ''
                 var name = pin.criteria.album || '';
                 // 輸出資料
-                var img = getAlbumCover(name, album_artist, artist)
+                var img = getCover("album", name, artist, album_artist)
                 var title = name
                 var subtitle = artist
                 var onclickActions = `show_album_songs('${artist}','${name}','${album_artist}')`
@@ -244,7 +244,7 @@ function HTML_showAlbums(items) {
         var artist = albumData.album_artist || albumData.display_artist || ''
         var album_artist = albumData.album_artist || ''
         var name = albumData.name || ''
-        var img = getAlbumCover(name, album_artist, artist)
+        var img = getCover("album", name, artist, album_artist)
         if (albumData.criteria) {
             var artist = artist || albumData.criteria.artist || albumData.criteria.album_artist || '未知'
             var album_artist = album_artist || albumData.criteria.album_artist || ''
@@ -278,7 +278,7 @@ function HTML_showSongs(songs) {
         let artist = song.additional.song_tag.artist
         let album_artist = song.additional.song_tag.album_artist
         let album = song.additional.song_tag.album
-        let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${ getAlbumCover(album, album_artist, artist)}"/></div>`
+        let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${getCover("album", album,artist,album_artist)}"/></div>`
         html += `<div class="mdui-col"><li class="mdui-list-item mdui-ripple">
             ${img}
             <div class="mdui-list-item-content" onclick="playSongs(songList,'${song.id}');show_now()" title="${title}${artist?' / '+artist:''}">
@@ -421,7 +421,7 @@ async function show_album_songs(artist, album, album_artist) {
     $('[data-link="album"]').addClass('mdui-list-item-active')
     var albumInfo = `<div class="album-info">
         <div class="cover mdui-shadow-1" 
-             style="background-image:url(${getAlbumCover(album, album_artist, artist)})"></div>
+             style="background-image:url(${getCover("album", album,artist,album_artist)})"></div>
         <div class="info">
             <div class="album-name mdui-text-truncate mdui-text-color-theme-text" 
                  title="${album}">${album}</div>
@@ -919,7 +919,7 @@ function playSongs(songlist, song = false, clear = true) {
         let artist = nowsong.additional.song_tag.artist
         let album = nowsong.additional.song_tag.album
         let album_artist = nowsong.additional.song_tag.album_artist
-        let poster =  getAlbumCover(album, album_artist, artist)
+        let poster =   getCover("album", album,artist,album_artist)
         playlist.push({
             url: src,
             cover: poster,
@@ -948,7 +948,7 @@ function addSong(songlist, songID=0) {
             let artist = nowsong.additional.song_tag.artist
             let album = nowsong.additional.song_tag.album
             let album_artist = nowsong.additional.song_tag.album_artist
-            let poster = getAlbumCover(album, album_artist, artist)
+            let poster = getCover("album", album,artist,album_artist)
             playlist.push({
                 url: src,
                 cover: poster,
@@ -973,7 +973,7 @@ function addSong(songlist, songID=0) {
     if (ap.list.audios.length == 1) ap.play() //如果只有一首直接開播
 }
 
-function getCover(type, info) {
+function getCover(type, info,artist_name,album_artist_name) {
     var url = "cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getcover&view=default"
     switch (type) {
         case "artist":
@@ -1000,22 +1000,11 @@ function getCover(type, info) {
             break;
         case "album":
             //專輯
-            url += info.album_name ? `&album_name=${encodeURIComponent(album_name)}` : ``
-            url += info.artist_name ? `&artist_name=${encodeURIComponent(artist_name)}` : ``
-            url += info.album_artist_name ? `&album_artist_name=${encodeURIComponent(album_artist_name)}` : `&album_artist_name=`
+            url += info ? `&album_name=${encodeURIComponent(info)}` : ``
+            url += artist_name ? `&artist_name=${encodeURIComponent(artist_name)}` : ``
+            url += album_artist_name ? `&album_artist_name=${encodeURIComponent(album_artist_name)}` : `&album_artist_name=`
             break;
     }
-    if (window.localStorage["imgRes"] == "true")
-        return "/og/og.png"
-    else 
-        return '/nas/' + pp_encode(url)
-}
-
-function getAlbumCover(album_name, album_artist_name, artist_name) {
-    var url = "cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getcover&view=album"
-    url += album_name ? `&album_name=${encodeURIComponent(album_name)}` : ``
-    url += artist_name ? `&artist_name=${encodeURIComponent(artist_name)}` : ``
-    url += album_artist_name ? `&album_artist_name=${encodeURIComponent(album_artist_name)}` : `&album_artist_name=`
     if (window.localStorage["imgRes"] == "true")
         return "/og/og.png"
     else 
@@ -1062,10 +1051,7 @@ async function getAlbumSong(album_name, album_artist_name, artist_name) {
     return info
 }
 async function searchSong(keyword) {
-    /*
-        title=a keyword=a
-    
-        */
+        //title=a keyword=a
     var PARAMS_JSON = [
         { key: "additional", "value": "song_tag,song_audio,song_rating" },
         { key: "library", "value": "shared" },
