@@ -79,7 +79,7 @@ app.get('/nas/:url', async(req, res) => {
     if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
         res.send('請登入')
     else {
-        var url = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}/${pp_decode(req.params.url)}`
+        var url = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}/webapi/AudioStation/${pp_decode(req.params.url)}`
         rProxy(req, res, url)
     }
 })

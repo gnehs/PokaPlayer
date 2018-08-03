@@ -974,13 +974,7 @@ function addSong(songlist, songID=0) {
 }
 
 function getCover(type, info) {
-    // 資料夾
-    // &id=dir_447
-    // 歌手
-    // &artist_name=RADWIMPS
-    // 作曲
-    // &composer_name=Crispy%E8%84%86%E6%A8%82%E5%9C%98
-    var url = "webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getcover&view=default"
+    var url = "cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getcover&view=default"
     switch (type) {
         case "artist":
             //演出者
@@ -996,12 +990,12 @@ function getCover(type, info) {
             break;
         case "song":
             //歌曲
-            url = "webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getsongcover&view=large&id=" + info
+            url = "cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getsongcover&view=large&id=" + info
             url += info ? `&id=${encodeURIComponent(info)}` : ``
             break;
         case "folder":
             //資料夾
-            url = "webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getfoldercover&view=default"
+            url = "cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getfoldercover&view=default"
             url += info ? `&id=${encodeURIComponent(info)}` : ``
             break;
         case "album":
@@ -1018,7 +1012,7 @@ function getCover(type, info) {
 }
 
 function getAlbumCover(album_name, album_artist_name, artist_name) {
-    var url = "webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getcover&view=album"
+    var url = "cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getcover&view=album"
     url += album_name ? `&album_name=${encodeURIComponent(album_name)}` : ``
     url += artist_name ? `&artist_name=${encodeURIComponent(artist_name)}` : ``
     url += album_artist_name ? `&album_artist_name=${encodeURIComponent(album_artist_name)}` : `&album_artist_name=`
@@ -1051,7 +1045,6 @@ function getSong(song) {
         res = "wav"
     else 
         res = "original"
-    
     return '/song/' + res + '/' + id
 }
 async function getAlbumSong(album_name, album_artist_name, artist_name) {
