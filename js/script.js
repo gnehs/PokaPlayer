@@ -959,21 +959,25 @@ function addSong(songlist, songID=0) {
                 album_artist: album_artist
             })
         }
-    }if(songID==0){mdui.snackbar({
-        message: `已添加 ${songlist.length} 首歌`,
-        timeout: 400,
-        position: getSnackbarPosition()
-      });}else{
-    mdui.snackbar({
-        message: `已添加 ${playlist[0].name}`,
-        timeout: 400,
-        position: getSnackbarPosition()
-      });}
+    }
+    if (songID == 0) {
+        mdui.snackbar({
+            message: `已添加 ${songlist.length} 首歌`,
+            timeout: 400,
+            position: getSnackbarPosition()
+        });
+    } else {
+        mdui.snackbar({
+            message: `已添加 ${playlist[0].name}`,
+            timeout: 400,
+            position: getSnackbarPosition()
+        });
+    }
     ap.list.add(playlist)
     if (ap.list.audios.length == 1) ap.play() //如果只有一首直接開播
 }
 
-function getCover(type, info,artist_name,album_artist_name) {
+function getCover(type, info, artist_name, album_artist_name) {
     var url = "cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getcover&view=default"
     switch (type) {
         case "artist":
