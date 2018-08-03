@@ -81,7 +81,6 @@ header.mdui-appbar.mdui-appbar-fixed {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    overflow: hidden;
 }
 
 .album-info * {

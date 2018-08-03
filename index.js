@@ -80,26 +80,50 @@ app.get('/nas/:url', async(req, res) => {
         res.send('請登入')
     else {
         var url = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}/${pp_decode(req.params.url)}`
-
-        request.get({
-            url: url,
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36',
-                'range': req.headers.range
-            }
-        }).on('response', function(response) {
-            if (response.headers['content-type'].match(/audio/)) {
-                //針對 Audio 寫入 Header 避免 Chrome 時間軸不能跳
-                res.writeHead(206, {
-                    "Content-Length": response.headers['content-length'] ? response.headers['content-length'] : '',
-                    "Content-Range": response.headers['content-range'] ? response.headers['content-range'] : '',
-                    "Content-Type": response.headers['content-type'] ? response.headers['content-type'] : ''
-                })
-            }
-        }).pipe(res)
+        rProxy(req, res, url)
     }
 })
 
+// get song
+app.get('/song/:res/:id', async(req, res) => {
+    if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
+        res.send('請登入')
+    else {
+        var url = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}/`
+        switch (req.params.url) {
+            case "wav":
+                url += `webapi/AudioStation/stream.cgi/0.wav?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=wav&id=`
+                break;
+            case "mp3":
+                url += `webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=mp3&id=`
+                break;
+            default:
+                url += `webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=stream&id=`
+                break;
+        }
+        url += req.params.id
+        rProxy(req, res, url)
+    }
+})
+
+function rProxy(req, res, url) {
+    request.get({
+        url: url,
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36',
+            'range': req.headers.range
+        }
+    }).on('response', function(response) {
+        if (response.headers['content-type'].match(/audio/)) {
+            //針對 Audio 寫入 Header 避免 Chrome 時間軸不能跳
+            res.writeHead(206, {
+                "Content-Length": response.headers['content-length'] ? response.headers['content-length'] : '',
+                "Content-Range": response.headers['content-range'] ? response.headers['content-range'] : '',
+                "Content-Type": response.headers['content-type'] ? response.headers['content-type'] : ''
+            })
+        }
+    }).pipe(res)
+}
 // api
 app.get('/api/:apireq', async(req, res) => {
     var apireq = JSON.parse(pp_decode(req.params.apireq))

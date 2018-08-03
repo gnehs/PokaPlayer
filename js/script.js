@@ -420,10 +420,13 @@ async function show_album_songs(artist, album, album_artist) {
     $('[data-link]').removeClass('mdui-list-item-active')
     $('[data-link="album"]').addClass('mdui-list-item-active')
     var albumInfo = `<div class="album-info">
-        <div class="cover" style="background-image:url(${getAlbumCover(album, album_artist, artist)})"></div>
+        <div class="cover mdui-shadow-1" 
+             style="background-image:url(${getAlbumCover(album, album_artist, artist)})"></div>
         <div class="info">
-            <div class="album-name mdui-text-truncate mdui-text-color-theme-text" title="${album}">${album}</div>
-            <div class="artist-name mdui-text-truncate mdui-text-color-theme-secondary" title="${artist}">${artist}</div>
+            <div class="album-name mdui-text-truncate mdui-text-color-theme-text" 
+                 title="${album}">${album}</div>
+            <div class="artist-name mdui-text-truncate mdui-text-color-theme-secondary" 
+                 title="${artist}">${artist}</div>
             <div class="grow"></div>
             <div class="footer">
                 <div class="time mdui-text-color-theme-disabled mdui-text-truncate"></div>
@@ -1044,14 +1047,12 @@ function getSong(song) {
     var id = song.id
     var res = window.localStorage["musicRes"]
     var bitrate = song.additional.song_audio.bitrate / 1000
-    if (res == "wav"&& bitrate > 320) {
-        var url = "webapi/AudioStation/stream.cgi/0.wav?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=wav&id=" + id
-    } else if (res == "mp3") {
-       var url = "webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=mp3&id=" + id
-    } else {
-        var url = "webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=stream&id=" + id
-    }
-    return '/nas/' + pp_encode(url)
+    if (res == "wav"&& bitrate > 320) 
+        res = "wav"
+    else 
+        res = "original"
+    
+    return '/song/' + res + '/' + id
 }
 async function getAlbumSong(album_name, album_artist_name, artist_name) {
     var PARAMS_JSON = [
