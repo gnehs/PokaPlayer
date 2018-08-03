@@ -1002,41 +1002,16 @@ function addSong(songlist, songID=0) {
 }
 
 function getCover(type, info, artist_name, album_artist_name) {
-    var url = "cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getcover&view=default"
-    switch (type) {
-        case "artist":
-            //演出者
-            url += info ? `&artist_name=${encodeURIComponent(info)}` : ``
-            break;
-        case "composer":
-            //作曲者
-            url += info ? `&composer_name=${encodeURIComponent(info)}` : ``
-            break;
-        case "genre":
-            //作曲者
-            url += info ? `&genre_name=${encodeURIComponent(info)}` : ``
-            break;
-        case "song":
-            //歌曲
-            url = "cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getsongcover&view=large&id=" + info
-            url += info ? `&id=${encodeURIComponent(info)}` : ``
-            break;
-        case "folder":
-            //資料夾
-            url = "cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getfoldercover&view=default"
-            url += info ? `&id=${encodeURIComponent(info)}` : ``
-            break;
-        case "album":
-            //專輯
-            url += info ? `&album_name=${encodeURIComponent(info)}` : ``
-            url += artist_name ? `&artist_name=${encodeURIComponent(artist_name)}` : ``
-            url += album_artist_name ? `&album_artist_name=${encodeURIComponent(album_artist_name)}` : `&album_artist_name=`
-            break;
+    if (type == "album"){
+        var url=`/cover/album/${encodeURIComponent(info)}/${encodeURIComponent(artist_name)}/${encodeURIComponent(album_artist_name)}`
+    }
+    else{
+        var url=`/cover/${encodeURIComponent(type)}/${encodeURIComponent(info)}`
     }
     if (window.localStorage["imgRes"] == "true")
         return "/og/og.png"
     else 
-        return '/nas/' + pp_encode(url)
+        return url
 }
 
 async function getLrc(artist, title) {
