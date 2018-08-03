@@ -120,10 +120,12 @@ function secondToTime(second) {
 
 //-- 常用 HTML
 function HTML_getHeader(title) {
-    return `<div class="mdui-container-fluid mdui-valign mdui-typo mdui-color-theme" style="padding: 0 30px;min-height: 150px;background-image:url(/og/og.png);background-size: cover;" id="header-wrapper">
-    <h1 class="mdui-center mdui-text-color-white" style="
-    text-shadow: 0 1px 8px #000000ad;">${title}</h1>
-</div>`
+    return `<div class="mdui-container-fluid mdui-valign mdui-typo mdui-color-theme" 
+                 style="padding:0 30px;min-height:150px;background-image:url(/og/og.png);background-size:cover;" 
+                 id="header-wrapper">
+                <h1 class="mdui-center mdui-text-color-white" 
+                    style="text-shadow: 0 1px 8px #000000ad;">${title}</h1>
+            </div>`
 }
 
 function HTML_getSpinner() {
@@ -179,7 +181,10 @@ function HTML_showPins(items) {
                 break;
         }
         //await getAlbumSong(albumData.criteria.album, albumData.criteria.album_artist, albumData.criteria.artist)
-        html += `<div class="mdui-card mdui-ripple mdui-hoverable album" onclick="${onclickActions}" style="background-image:url(${img});" title="${title} - ${subtitle}">
+        html += `<div class="mdui-card mdui-ripple mdui-hoverable album" 
+                      onclick="${onclickActions}" 
+                      style="background-image:url(${img});" 
+                      title="${title} - ${subtitle}">
                 <div class="mdui-card-media">
                     <div class="mdui-card-media-covered mdui-card-media-covered-gradient">
                         <div class="mdui-card-primary">
@@ -216,20 +221,24 @@ function HTML_showFolder(items) {
             subtitle += artist ? artist : ''
             subtitle += album_album ? (artist ? ' / ' + album_album : album_album) : ''
 
-            html += `<li class="mdui-list-item mdui-ripple">
-            ${img}
-            <div class="mdui-list-item-content" onclick="playSongs(songList,'${id}')">
-                <div class="mdui-list-item-title">${title}</div>
-                <div class="mdui-list-item-text">${subtitle}</div>
-                <div class="mdui-list-item-text">${filedetail}</div>
-            </div>
-            <button class="mdui-btn mdui-btn-icon mdui-ripple add" onclick="addSong(songList,'${id}')"><i class="mdui-icon material-icons">add</i></button>
-        </li>`
+            html += `
+            <li class="mdui-list-item mdui-ripple">
+                ${img}
+                <div class="mdui-list-item-content" onclick="playSongs(songList,'${id}')">
+                    <div class="mdui-list-item-title">${title}</div>
+                    <div class="mdui-list-item-text">${subtitle}</div>
+                    <div class="mdui-list-item-text">${filedetail}</div>
+                </div>
+                <button class="mdui-btn mdui-btn-icon mdui-ripple add" 
+                        onclick="addSong(songList,'${id}')">
+                        <i class="mdui-icon material-icons">add</i>
+                </button>
+            </li>`
         } else {
             html += `<li class="mdui-list-item mdui-ripple" onclick="show_folder('${id}')">
-            <i class="mdui-list-item-avatar mdui-icon material-icons">${icon}</i>
-            <div class="mdui-list-item-content">${title}</div>
-        </li>`
+                        <i class="mdui-list-item-avatar mdui-icon material-icons">${icon}</i>
+                        <div class="mdui-list-item-content">${title}</div>
+                    </li>`
         }
     }
     html += `</ul>`
@@ -251,19 +260,20 @@ function HTML_showAlbums(items) {
             var name = name || albumData.criteria.album || ''
         }
         //await getAlbumSong(albumData.criteria.album, albumData.criteria.album_artist, albumData.criteria.artist)
-        album += `<div  class="mdui-card mdui-ripple mdui-hoverable album" 
-                        onclick="show_album_songs('${artist}','${name}','${album_artist}')"  
-                        style="background-image:url(${img});"
-                        title="${name}${artist ? ' / ' + artist : ''}">
-                <div class="mdui-card-media">
-                    <div class="mdui-card-media-covered mdui-card-media-covered-gradient">
-                        <div class="mdui-card-primary">
-                        <div class="mdui-card-primary-title mdui-text-truncate">${name}</div>
-                        <div class="mdui-card-primary-subtitle mdui-text-truncate">${artist}</div>
-                        </div>
+        album += `
+        <div class="mdui-card mdui-ripple mdui-hoverable album" 
+            onclick="show_album_songs('${artist}','${name}','${album_artist}')"  
+            style="background-image:url(${img});"
+            title="${name}${artist ? ' / ' + artist : ''}">
+            <div class="mdui-card-media">
+                <div class="mdui-card-media-covered mdui-card-media-covered-gradient">
+                    <div class="mdui-card-primary">
+                    <div class="mdui-card-primary-title mdui-text-truncate">${name}</div>
+                    <div class="mdui-card-primary-subtitle mdui-text-truncate">${artist}</div>
                     </div>
                 </div>
-            </div>`
+            </div>
+        </div>`
     }
     album += "</div>"
     return album
@@ -279,13 +289,18 @@ function HTML_showSongs(songs) {
         let album_artist = song.additional.song_tag.album_artist
         let album = song.additional.song_tag.album
         let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${getCover("album", album,artist,album_artist)}"/></div>`
-        html += `<div class="mdui-col"><li class="mdui-list-item mdui-ripple">
+        html += `
+        <div class="mdui-col"><li class="mdui-list-item mdui-ripple">
             ${img}
-            <div class="mdui-list-item-content" onclick="playSongs(songList,'${song.id}');show_now()" title="${title}${artist?' / '+artist:''}">
+            <div class="mdui-list-item-content" 
+                 onclick="playSongs(songList,'${song.id}');show_now()" 
+                 title="${title}${artist?' / '+artist:''}">
                 <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
                 <div class="mdui-list-item-text mdui-list-item-one-line">${artist}</div>
             </div>
-            <button class="mdui-btn mdui-btn-icon mdui-ripple add" onclick="addSong(songList,'${song.id}')" title="加入這首歌曲到現正播放">
+            <button class="mdui-btn mdui-btn-icon mdui-ripple add" 
+                    onclick="addSong(songList,'${song.id}')" 
+                    title="加入這首歌曲到現正播放">
                 <i class="mdui-icon material-icons">add</i>
             </button>
         </li></div>`　
@@ -301,7 +316,8 @@ function HTML_showArtist(artists) {
         let artist = artists[i]
         let name = artist.name ? artist.name : "未知"
         let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${getCover("artist", name)}"/></div>`
-        html += `<li class="mdui-list-item mdui-ripple" onclick="show_artist('${name}')">
+        html += `
+        <li class="mdui-list-item mdui-ripple" onclick="show_artist('${name}')">
             ${img}
             <div class="mdui-list-item-content">
                ${name}
@@ -318,7 +334,8 @@ function HTML_showComposer(composers) {
         let composer = composers[i]
         let name = composer.name ? composer.name : "未知"
         let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${getCover("composer", name)}"/></div>`
-        html += `<li class="mdui-list-item mdui-ripple" onclick="show_composer('${name}')">
+        html += `
+        <li class="mdui-list-item mdui-ripple" onclick="show_composer('${name}')">
             ${img}
             <div class="mdui-list-item-content">
                ${name}
@@ -342,11 +359,17 @@ async function show_home() {
 }
 //- 列出專輯
 async function show_search(keyword) {
-    var html = `<div class="mdui-row">
+    var html = `
+    <div class="mdui-row">
         <div class="mdui-col-md-6 mdui-col-offset-md-3">
             <div class="mdui-textfield">
                 <i class="mdui-icon material-icons">search</i>
-                <input class="mdui-textfield-input" id="search" type="text" placeholder="搜尋" value="${$('#search').val()||''}" required/>
+                <input class="mdui-textfield-input" 
+                       id="search" 
+                       type="text" 
+                       placeholder="搜尋" 
+                       value="${$('#search').val()||''}" 
+                       required/>
                 <div class="mdui-textfield-error">尚未輸入關鍵字</div>
                 <div class="mdui-textfield-helper">輸入完後按下 Enter 開始搜尋音樂</div>
             </div>
@@ -419,7 +442,8 @@ async function show_album_songs(artist, album, album_artist) {
     //如果從首頁按進去頁籤沒切換
     $('[data-link]').removeClass('mdui-list-item-active')
     $('[data-link="album"]').addClass('mdui-list-item-active')
-    var albumInfo = `<div class="album-info">
+    var albumInfo = `
+    <div class="album-info">
         <div class="cover mdui-shadow-1" 
              style="background-image:url(${getCover("album", album,artist,album_artist)})"></div>
         <div class="info">
@@ -533,27 +557,27 @@ async function show_composer(composer) {
     if (composer) {
         var header = HTML_getHeader("作曲者 / " + composer)
         var PARAMS_JSON = [
-            { key: "additional", "value": "avg_rating" },
-            { key: "library", "value": "shared" },
-            { key: "limit", "value": 1000 },
-            { key: "method", "value": 'list' },
-            { key: "sort_by", "value": "display_artist" },
-            { key: "sort_direction", "value": "ASC" },
-            { key: "composer", "value": composer != "未知" ? composer : '' },
-        ]
-        var data = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3),
+                { key: "additional", "value": "avg_rating" },
+                { key: "library", "value": "shared" },
+                { key: "limit", "value": 1000 },
+                { key: "method", "value": 'list' },
+                { key: "sort_by", "value": "display_artist" },
+                { key: "sort_direction", "value": "ASC" },
+                { key: "composer", "value": composer != "未知" ? composer : '' },
+            ],
+            data = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3),
             albumHTML = HTML_showAlbums(data.data.albums)
         $("#content").html(header + albumHTML)
     } else {
         //請求資料囉
         var PARAMS_JSON = [
-            { key: "limit", "value": 1000 },
-            { key: "library", "value": "shared" },
-            { key: "additional", "value": "avg_rating" },
-            { key: "sort_by", "value": "name" },
-            { key: "sort_direction", "value": "ASC" }
-        ]
-        var data = await getAPI("AudioStation/composer.cgi", "SYNO.AudioStation.Composer", "list", PARAMS_JSON, 2),
+                { key: "limit", "value": 1000 },
+                { key: "library", "value": "shared" },
+                { key: "additional", "value": "avg_rating" },
+                { key: "sort_by", "value": "name" },
+                { key: "sort_direction", "value": "ASC" }
+            ],
+            data = await getAPI("AudioStation/composer.cgi", "SYNO.AudioStation.Composer", "list", PARAMS_JSON, 2),
             composersHTML = HTML_showComposer(data.data.composers)
         $("#content").html(header + composersHTML)
     }
@@ -567,24 +591,24 @@ async function show_random() {
     mdui.mutation()
 
     var PARAMS_JSON = [
-        { key: "additional", "value": "song_tag,song_audio,song_rating" },
-        { key: "library", "value": "shared" },
-        { key: "limit", "value": 100 },
-        { key: "sort_by", "value": "random" }
-    ]
-    var data = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "list", PARAMS_JSON, 1),
+            { key: "additional", "value": "song_tag,song_audio,song_rating" },
+            { key: "library", "value": "shared" },
+            { key: "limit", "value": 100 },
+            { key: "sort_by", "value": "random" }
+        ],
+        data = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "list", PARAMS_JSON, 1),
         album = HTML_showSongs(data.data.songs)
     $("#content").html(header + album)
     $("#content>:not(#header-wrapper)").animateCss("fadeIn")
 }
 async function play_random() {
     var PARAMS_JSON = [
-        { key: "additional", "value": "song_tag,song_audio,song_rating" },
-        { key: "library", "value": "shared" },
-        { key: "limit", "value": 100 },
-        { key: "sort_by", "value": "random" }
-    ]
-    var data = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "list", PARAMS_JSON, 1)
+            { key: "additional", "value": "song_tag,song_audio,song_rating" },
+            { key: "library", "value": "shared" },
+            { key: "limit", "value": 100 },
+            { key: "sort_by", "value": "random" }
+        ],
+        data = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "list", PARAMS_JSON, 1)
     playSongs(data.data.songs, false, false)
     show_now()
 }
@@ -594,12 +618,12 @@ async function show_now() {
     $('[data-link="now"]').addClass('mdui-list-item-active')
     var html = `<ul class="mdui-list songs">`
     for (i = 0; i < ap.list.audios.length; i++) {
-        let focus = ap.list.index == i ? 'mdui-list-item-active' : ''
-        let title = ap.list.audios[i].name
-        let artist = ap.list.audios[i].artist
-        let album_artist = ap.list.audios[i].album_artist
-        let album = ap.list.audios[i].album
-        let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${ap.list.audios[i].cover}"/></div>`
+        let focus = ap.list.index == i ? 'mdui-list-item-active' : '',
+            title = ap.list.audios[i].name,
+            artist = ap.list.audios[i].artist,
+            album_artist = ap.list.audios[i].album_artist,
+            album = ap.list.audios[i].album,
+            img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${ap.list.audios[i].cover}"/></div>`
         html += `<li class="mdui-list-item mdui-ripple song ${focus}" >
             ${img}
             <div class="mdui-list-item-content songinfo" data-now-play-id="${i}">
@@ -613,16 +637,15 @@ async function show_now() {
     }
     html += `</ul>`
 
-    var nowPlaying = ap.list.audios[ap.list.index]
-    var name = nowPlaying ? nowPlaying.name : "PokaPlayer"
-    var artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點擊播放鍵開始隨機播放"
-    var album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>"
-    var img = (nowPlaying && window.localStorage["imgRes"] != "true") ? nowPlaying.cover : "/og/og.png" //一定會有圖片
-
-    var currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00"
-    var duration = ap.audio.currentTime ? secondToTime(ap.audio.duration) : "0:00"
-    var timer = currentTime + '/' + duration
-    var info = `
+    var nowPlaying = ap.list.audios[ap.list.index],
+        name = nowPlaying ? nowPlaying.name : "PokaPlayer",
+        artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點擊播放鍵開始隨機播放",
+        album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>",
+        img = (nowPlaying && window.localStorage["imgRes"] != "true") ? nowPlaying.cover : "/og/og.png",
+        currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00",
+        duration = ap.audio.currentTime ? secondToTime(ap.audio.duration) : "0:00",
+        timer = currentTime + '/' + duration,
+        info = `
     <div data-player>
         <div class="mdui-card" style="background-image:url(${img});">
         </div>
@@ -706,9 +729,10 @@ async function show_now() {
         // 更新 timer
         $("[data-player]>.info>.player-bar input[type=range]").val(0);
         mdui.updateSliders()
-            // 找找看歌詞
-            //ap.list.audios[ap.list.index].lrc 
-            //lyrics = await getLrc(artist, name)
+
+        // 找找看歌詞
+        //ap.list.audios[ap.list.index].lrc 
+        //lyrics = await getLrc(artist, name)
     })
     ap.on("timeupdate", function() {
         currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00"
