@@ -156,7 +156,7 @@ function HTML_showPins(items) {
                 var img = getCover(type, pin.criteria.genre)
                 var title = pin.name
                 var subtitle = '類型'
-                var onclickActions = `mdui.snackbar({message: '沒打算做喔，不過資料都給了就給你看一下啦',position:'top',timeout:500});`
+                var onclickActions = `mdui.snackbar({message: '沒打算做喔，不過資料都給了就給你看一下啦',timeout:500,position:'${getSnackbarPosition()}'});`
                 break;
             case "folder":
                 //資料夾
@@ -887,11 +887,19 @@ async function show_settings() {
 
     $("#PP_Res input").change(function() {
         window.localStorage["musicRes"] = $(this).val()
-        mdui.snackbar({ message: `音質已設定為 ${$(this).val().toUpperCase()}，該設定並不會在現正播放中生效，請重新加入歌曲`, position: getSnackbarPosition(), timeout: 1500 });
+        mdui.snackbar({
+            message: `音質已設定為 ${$(this).val().toUpperCase()}，該設定並不會在現正播放中生效，請重新加入歌曲`,
+            position: getSnackbarPosition(),
+            timeout: 1500
+        });
     })
     $("#PP_imgRes input").change(function() {
         window.localStorage["imgRes"] = $(this).val()
-        mdui.snackbar({ message: `圖片流量節省已${$(this).val()=="true"?"開啟":"關閉"}`, position: getSnackbarPosition(), timeout: 1500 });
+        mdui.snackbar({
+            message: `圖片流量節省已${$(this).val()=="true"?"開啟":"關閉"}`,
+            position: getSnackbarPosition(),
+            timeout: 1500
+        });
     })
     $("#PP_Theme input").change(function() {
         window.localStorage["mdui-theme-color"] = $(this).val()
