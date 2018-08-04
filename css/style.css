@@ -83,7 +83,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 @media screen and (min-width: 1256px) {
     .album {
-        --album-size: calc(16.666% - 1em);
+        --album-size: calc(20% - 1em);
     }
 }
 
@@ -101,7 +101,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 #aplayer {
-    visibility: hidden;
+    display: none;
 }
 
 

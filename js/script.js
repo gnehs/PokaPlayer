@@ -408,7 +408,7 @@ async function show_album() {
     // 展示讀取中
     var header = HTML_getHeader("專輯")
     var tabs = `<div class="mdui-tab" mdui-tab>
-        <a class="mdui-ripple mdui-tab-active" style="border-bottom: 2px solid ${$('header>div:first-child').css("background-color")};">專輯列表</a>
+        <a class="mdui-ripple mdui-tab-active" style="border-bottom: 2px solid currentColor;">專輯列表</a>
         <a onclick="show_recentlyAlbum()" class="mdui-ripple" style="border-bottom: 2px solid #0000;">最近加入</a>
     </div>`
     $("#content").html(header + tabs + HTML_getSpinner())
@@ -431,7 +431,7 @@ async function show_recentlyAlbum() {
     var header = HTML_getHeader("專輯")
     var tabs = `<div class="mdui-tab" mdui-tab>
         <a onclick="show_album()" class="mdui-ripple" style="border-bottom: 2px solid #0000;">專輯列表</a>
-        <a class="mdui-ripple mdui-tab-active" style="border-bottom: 2px solid ${$('header>div:first-child').css("background-color")};">最近加入</a>
+        <a class="mdui-ripple mdui-tab-active" style="border-bottom: 2px solid currentColor;">最近加入</a>
     </div>`
     $("#content").html(header + tabs + HTML_getSpinner())
     mdui.mutation()
