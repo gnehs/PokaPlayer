@@ -120,11 +120,8 @@ function secondToTime(second) {
 
 //-- 常用 HTML
 function HTML_getHeader(title) {
-    return `<div class="mdui-container-fluid mdui-valign mdui-typo mdui-color-theme" 
-                 style="padding:0 30px;min-height:150px;background-image:url(/og/og.png);background-size:cover;" 
-                 id="header-wrapper">
-                <h1 class="mdui-center mdui-text-color-white" 
-                    style="text-shadow: 0 1px 8px #000000ad;">${title}</h1>
+    return `<div class="mdui-container-fluid mdui-valign mdui-typo mdui-color-theme" id="header-wrapper">
+                <h1 class="mdui-center mdui-text-color-white">${title}</h1>
             </div>`
 }
 
@@ -184,12 +181,12 @@ function HTML_showPins(items) {
         html += `<div class="mdui-card mdui-ripple mdui-hoverable album" 
                       onclick="${onclickActions}" 
                       style="background-image:url(${img});" 
-                      title="${title} - ${subtitle}">
+                      title="${title}&#10;${subtitle}">
                 <div class="mdui-card-media">
                     <div class="mdui-card-media-covered mdui-card-media-covered-gradient">
                         <div class="mdui-card-primary">
-                        <div class="mdui-card-primary-title">${title}</div>
-                        <div class="mdui-card-primary-subtitle">${subtitle}</div>
+                        <div class="mdui-card-primary-title mdui-text-truncate">${title}</div>
+                        <div class="mdui-card-primary-subtitle mdui-text-truncate">${subtitle}</div>
                         </div>
                     </div>
                 </div>
@@ -264,7 +261,7 @@ function HTML_showAlbums(items) {
         <div class="mdui-card mdui-ripple mdui-hoverable album" 
             onclick="show_album_songs(\`${artist}\`,\`${name}\`,\`${album_artist}\`)"  
             style="background-image:url(${img});"
-            title="${name}${artist ? ' / ' + artist : ''}">
+            title="${name}${artist ? '&#10;' + artist : ''}">
             <div class="mdui-card-media">
                 <div class="mdui-card-media-covered mdui-card-media-covered-gradient">
                     <div class="mdui-card-primary">
@@ -301,7 +298,7 @@ function HTML_showSongs(songs) {
             ${img}
             <div class="mdui-list-item-content" 
                  ${clickAction}
-                 title="${title}${artist?' / '+artist:''}">
+                 title="${title}${artist?'&#10;'+artist:''}">
                 <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
                 <div class="mdui-list-item-text mdui-list-item-one-line">${artist}</div>
             </div>
