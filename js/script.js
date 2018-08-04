@@ -288,18 +288,25 @@ function HTML_showSongs(songs) {
         let artist = song.additional.song_tag.artist
         let album_artist = song.additional.song_tag.album_artist
         let album = song.additional.song_tag.album
-        let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${getCover("album", album,artist,album_artist)}"/></div>`
+        let clickAction = `onclick="playSongs(songList,\`${song.id}\`);show_now()" `
+        let addAction = `onclick="addSong(songList,'${song.id}')"`
+
+        let img = window.localStorage["imgRes"] == "true" ? '' :
+            `<div class="mdui-list-item-avatar" ${clickAction}>
+                <img src="${getCover("album", album,artist,album_artist)}"/>
+            </div>`
+
         html += `
         <div class="mdui-col"><li class="mdui-list-item mdui-ripple">
             ${img}
             <div class="mdui-list-item-content" 
-                 onclick="playSongs(songList,\`${song.id}\`);show_now()" 
+                 ${clickAction}
                  title="${title}${artist?' / '+artist:''}">
                 <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
                 <div class="mdui-list-item-text mdui-list-item-one-line">${artist}</div>
             </div>
             <button class="mdui-btn mdui-btn-icon mdui-ripple add" 
-                    onclick="addSong(songList,'${song.id}')" 
+                    ${addAction}
                     title="加入這首歌曲到現正播放">
                 <i class="mdui-icon material-icons">add</i>
             </button>
@@ -465,11 +472,6 @@ async function show_album_songs(artist, album, album_artist) {
             onclick="addSong(songList)" 
             title="將此頁面歌曲全部加入到現正播放">
         <i class="mdui-icon material-icons">add</i>
-    </button>
-    <button class="mdui-btn mdui-btn-icon mdui-ripple mdui-color-theme-accent" 
-            onclick="playSongs(songList,false,true);show_now();"
-            title="將現正播放以此頁面歌曲">
-        <i class="mdui-icon material-icons">play_arrow</i>
     </button>`
 
     // 展示讀取中
@@ -485,7 +487,7 @@ async function show_album_songs(artist, album, album_artist) {
     // 獲取總時間
     var time = 0
     for (i = 0; i < data.data.songs.length; i++) time += data.data.songs[i].additional.song_audio.duration
-    $("#content .album-info .time").html(`共 ${data.data.songs.length} 首歌曲 / ${secondToTime(time)}`).animateCss("fadeIn")
+    $("#content .album-info .time").html(`${data.data.songs.length} 首歌曲/${secondToTime(time)}`).animateCss("fadeIn")
     $("#content .album-info .actions").html(actions).animateCss("fadeIn")
 
 }
