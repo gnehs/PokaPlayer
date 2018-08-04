@@ -13,6 +13,18 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 
+/* 側邊欄 */
+
+@media screen and (min-width:1024px) {
+    .mdui-list-item {
+        border-radius: 5px 5px;
+    }
+    #drawer .mdui-list-item {
+        border-radius: 0 5px 5px 0;
+    }
+}
+
+
 /* header-wrapper */
 
 #header-wrapper {

@@ -875,10 +875,11 @@ async function show_settings() {
 
     var imgRes = title("圖片流量節省") + `<form class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4" id="PP_imgRes">${imgRes(window.localStorage["imgRes"])}</form>`
 
-    var info = title("Audio Station 狀態") + `<div id="DSMinfo">讀取中</div>`
+    var info = title("Audio Station 狀態") + `<div id="DSMinfo" class="mdui-typo"><strong>版本</strong> 載入中</div>`
 
-    var about = title("關於 PokaPlayer") + `<div id="about">
-    <div class="mdui-typo">PokaPlayer 是 Synology Audio Ststion 的新朋友！ <a href="https://github.com/gnehs/PokaPlayer" target="_blank">GitHub</a><ul><li><strong>版本</strong></li><li><strong>開發者</strong></li><li>正在檢查更新</li></ul></div>
+    var about = title("關於 PokaPlayer") + `<div id="about" class="mdui-typo">
+    PokaPlayer 是 Synology Audio Ststion 的新朋友！ <a href="https://github.com/gnehs/PokaPlayer" target="_blank">GitHub</a>
+        <p><strong>版本</strong> 載入中 / <strong>開發者</strong> 載入中 / 正在檢查更新</p>
     </div>`
 
     var html = header + setting_theme + musicRes + imgRes + info + about
@@ -930,20 +931,14 @@ async function show_settings() {
 
     // DSM 詳細資料
     var getDSMinfo = await getAPI("AudioStation/info.cgi", "SYNO.AudioStation.Info", "getinfo", [], 4)
-    $("#DSMinfo").html(`<p>${getDSMinfo.success?"狀態：正常":"狀態：錯誤"}</p>
-    <p>${getDSMinfo.data.version_string?`版本：${getDSMinfo.data.version_string}`:"版本：未知"}</p>`)
+    $("#DSMinfo").html(`<strong>版本</strong> ${getDSMinfo.data.version_string?getDSMinfo.data.version_string:"版本：未知"}`)
 
     // PokaPlayer 詳細資料
     var getinfo = await axios.get('/info/');
     var checkupdate = await axios.get(`https://api.github.com/repos/gnehs/PokaPlayer/releases`);
     var update = getinfo.data.version != checkupdate.data[0].tag_name ? `新版本已發佈，請立即更新 <a href="${checkupdate.data[0].html_url}" target="_blank">查看更新資訊</a>` : `您的 PokaPlayer 已是最新版本`
-    var about = `<div class="mdui-typo">PokaPlayer 是 Synology Audio Ststion 的新朋友！ <a href="https://github.com/gnehs/PokaPlayer" target="_blank">GitHub</a>
-        <ul>
-            <li><strong>版本</strong> ${getinfo.data.version}</li>
-            <li><strong>開發者</strong> ${getinfo.data.author}</li>
-            <li>${update}</li>
-        </ul>
-    </div>`
+    var about = `PokaPlayer 是 Synology Audio Ststion 的新朋友！ <a href="https://github.com/gnehs/PokaPlayer" target="_blank">GitHub</a>
+        <p><strong>版本</strong> ${getinfo.data.version} / <strong>開發者</strong> ${getinfo.data.author} / ${update}</p>`
     $("#about").html(about)
 
 }
@@ -960,7 +955,7 @@ function playSongs(songlist, song = false, clear = true) {
         let artist = nowsong.additional.song_tag.artist
         let album = nowsong.additional.song_tag.album
         let album_artist = nowsong.additional.song_tag.album_artist
-        let poster =   getCover("album", album,artist,album_artist)
+        let poster = getCover("album", album, artist, album_artist)
         playlist.push({
             url: src,
             cover: poster,
@@ -979,17 +974,17 @@ function playSongs(songlist, song = false, clear = true) {
     if (clear) ap.play()
 }
 
-function addSong(songlist, songID=0) {
+function addSong(songlist, songID = 0) {
     var playlist = []
     for (i = 0; i < songlist.length; i++) {
         let nowsong = songlist[i]
-        if (nowsong.id == songID||songID==0) {
+        if (nowsong.id == songID || songID == 0) {
             let src = getSong(nowsong)
             let name = nowsong.title
             let artist = nowsong.additional.song_tag.artist
             let album = nowsong.additional.song_tag.album
             let album_artist = nowsong.additional.song_tag.album_artist
-            let poster = getCover("album", album,artist,album_artist)
+            let poster = getCover("album", album, artist, album_artist)
             playlist.push({
                 url: src,
                 cover: poster,
@@ -1019,19 +1014,18 @@ function addSong(songlist, songID=0) {
 }
 
 function getCover(type, info, artist_name, album_artist_name) {
-    if (type == "album"){
-        var q=''
+    if (type == "album") {
+        var q = ''
         q += info ? `&album_name=${encodeURIComponent(info)}` : ``
         q += artist_name ? `&artist_name=${encodeURIComponent(artist_name)}` : ``
         q += album_artist_name ? `&album_artist_name=${encodeURIComponent(album_artist_name)}` : `&album_artist_name=`
-        var url=`/cover/album/`+pp_encode(q)
-    }
-    else{
-        var url=`/cover/${encodeURIComponent(type)}/${encodeURIComponent(info)}`
+        var url = `/cover/album/` + pp_encode(q)
+    } else {
+        var url = `/cover/${encodeURIComponent(type)}/${encodeURIComponent(info)}`
     }
     if (window.localStorage["imgRes"] == "true")
         return "/og/og.png"
-    else 
+    else
         return url
 }
 
@@ -1054,9 +1048,9 @@ function getSong(song) {
     var id = song.id
     var res = window.localStorage["musicRes"]
     var bitrate = song.additional.song_audio.bitrate / 1000
-    if (res == "wav"&& bitrate > 320) 
+    if (res == "wav" && bitrate > 320)
         res = "wav"
-    else 
+    else
         res = "original"
     return '/song/' + res + '/' + id
 }
@@ -1075,7 +1069,7 @@ async function getAlbumSong(album_name, album_artist_name, artist_name) {
     return info
 }
 async function searchSong(keyword) {
-        //title=a keyword=a
+    //title=a keyword=a
     var PARAMS_JSON = [
         { key: "additional", "value": "song_tag,song_audio,song_rating" },
         { key: "library", "value": "shared" },
@@ -1105,35 +1099,36 @@ async function getAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 1)
     const response = await axios.get('/api/' + pp_encode(req_json));
     return response.data
 }
-function getSnackbarPosition(){
-    if ($(window).width() < 768) 
+
+function getSnackbarPosition() {
+    if ($(window).width() < 768)
         return "left-top"
-    else 
+    else
         return "left-bottom"
 }
 $.fn.extend({
     animateCss: function(animationName, callback) {
-      var animationEnd = (function(el) {
-        var animations = {
-          animation: 'animationend',
-          OAnimation: 'oAnimationEnd',
-          MozAnimation: 'mozAnimationEnd',
-          WebkitAnimation: 'webkitAnimationEnd',
-        };
-  
-        for (var t in animations) {
-          if (el.style[t] !== undefined) {
-            return animations[t];
-          }
-        }
-      })(document.createElement('div'));
-  
-      this.addClass('animated ' + animationName).one(animationEnd, function() {
-        $(this).removeClass('animated ' + animationName);
-  
-        if (typeof callback === 'function') callback();
-      });
-  
-      return this;
+        var animationEnd = (function(el) {
+            var animations = {
+                animation: 'animationend',
+                OAnimation: 'oAnimationEnd',
+                MozAnimation: 'mozAnimationEnd',
+                WebkitAnimation: 'webkitAnimationEnd',
+            };
+
+            for (var t in animations) {
+                if (el.style[t] !== undefined) {
+                    return animations[t];
+                }
+            }
+        })(document.createElement('div'));
+
+        this.addClass('animated ' + animationName).one(animationEnd, function() {
+            $(this).removeClass('animated ' + animationName);
+
+            if (typeof callback === 'function') callback();
+        });
+
+        return this;
     },
-  });
+});
