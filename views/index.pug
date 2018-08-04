@@ -28,39 +28,25 @@ html
                 .mdui-toolbar-spacer
         #drawer.mdui-drawer.mdui-appbar-with-toolbar
             .mdui-list
-                a.mdui-list-item.mdui-ripple.mdui-list-item-active(href='javascript:void(0)',data-link='home')
-                    i.mdui-list-item-icon.mdui-icon.material-icons home
-                    .mdui-list-item-content 首頁
+                mixin link(name,link,icon)
+                    a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link=link)&attributes(attributes)
+                        i.mdui-list-item-icon.mdui-icon.material-icons=icon
+                        .mdui-list-item-content=name
+                +link("首頁","home","home")(class="mdui-list-item-active")
                 .mdui-subheader 音樂庫
-                a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='search')
-                    i.mdui-list-item-icon.mdui-icon.material-icons search
-                    .mdui-list-item-content 搜尋
-                a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='album')
-                    i.mdui-list-item-icon.mdui-icon.material-icons album
-                    .mdui-list-item-content 專輯
-                a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='folder')
-                    i.mdui-list-item-icon.mdui-icon.material-icons folder
-                    .mdui-list-item-content 資料夾
-                a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='artist')
-                    i.mdui-list-item-icon.mdui-icon.material-icons mic
-                    .mdui-list-item-content 演出者
-                a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='composer')
-                    i.mdui-list-item-icon.mdui-icon.material-icons music_note
-                    .mdui-list-item-content 作曲者
-                a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='random')
-                    i.mdui-list-item-icon.mdui-icon.material-icons playlist_play
-                    .mdui-list-item-content 隨機播放
+                +link("搜尋","search","search")
+                +link("專輯","album","album")
+                +link("資料夾","folder","folder")
+                +link("演出者","artist","mic")
+                +link("作曲者","composer","music_note")
+                +link("隨機播放","random","playlist_play")
                 .mdui-subheader 現正播放
-                a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='now')
-                    i.mdui-list-item-icon.mdui-icon.material-icons play_circle_filled
-                    .mdui-list-item-content 現正播放
+                +link("現正播放","now","play_circle_filled")
                 //-a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='lrc')
                     i.mdui-list-item-icon.mdui-icon.material-icons subtitles
                     .mdui-list-item-content 歌詞
                 .mdui-subheader 設定
-                a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='settings')
-                    i.mdui-list-item-icon.mdui-icon.material-icons settings
-                    .mdui-list-item-content 設定
+                +link("設定","settings","settings")
                 //-.mdui-subheader 帳號
                 //-a.mdui-list-item.mdui-ripple(href='/logout/')
                     i.mdui-list-item-icon.mdui-icon.material-icons account_circle
