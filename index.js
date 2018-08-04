@@ -1,5 +1,6 @@
 const fs = require('fs'); //檔案系統
 const config = require('./config.json'); // 設定檔
+const package = require('./package.json'); // 設定檔
 const schedule = require('node-schedule'); // 很會計時ㄉ朋友
 const base64 = require('base-64');
 //express
@@ -73,28 +74,38 @@ function pp_decode(str) {
     return base64.decode(decodeURIComponent(str))
 }
 
+// get info
+app.get('/info', (req, res) => {
+    if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
+        res.status(403).send('Permission Denied Desu')
+    else {
+        res.json(package)
+    }
+})
+
 // get song
 app.get('/song/:res/:id', async(req, res) => {
-        if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
-            res.send('請登入')
-        else {
-            var url = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}/`
-            switch (req.params.url) {
-                case "wav":
-                    url += `webapi/AudioStation/stream.cgi/0.wav?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=wav&id=`
-                    break;
-                case "mp3":
-                    url += `webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=mp3&id=`
-                    break;
-                default:
-                    url += `webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=stream&id=`
-                    break;
-            }
-            url += req.params.id
-            rProxy(req, res, url)
+    if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
+        res.status(403).send('Permission Denied Desu')
+    else {
+        var url = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}/`
+        switch (req.params.url) {
+            case "wav":
+                url += `webapi/AudioStation/stream.cgi/0.wav?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=wav&id=`
+                break;
+            case "mp3":
+                url += `webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=mp3&id=`
+                break;
+            default:
+                url += `webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=stream&id=`
+                break;
         }
-    })
-    // get cover
+        url += req.params.id
+        rProxy(req, res, url)
+    }
+})
+
+// get cover
 app.get('/cover/:type/:info', async(req, res) => {
     if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
         res.send('請登入')
@@ -166,7 +177,7 @@ app.get('/api/:apireq', async(req, res) => {
         }
         */
     if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
-        res.send('請登入')
+        res.status(403).send('Permission Denied Desu')
     else if (apireq.API_NAME.match(/SYNO.AudioStation/)) {
         var getRes = await api(config.DSM, apireq.CGI_PATH, apireq.API_NAME, apireq.METHOD, apireq.VERSION, apireq.PARAMS)
         res.send(getRes)

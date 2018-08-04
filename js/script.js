@@ -880,7 +880,9 @@ async function show_settings() {
 
     var info = title("Audio Station 狀態") + `<div id="DSMinfo">讀取中</div>`
 
-    var about = title("關於") + `<p>PokaPlayer by gnehs</p>`
+    var about = title("關於 PokaPlayer") + `<div id="about">
+    <div class="mdui-typo">PokaPlayer 是 Synology Audio Ststion 的新朋友！ <a href="https://github.com/gnehs/PokaPlayer" target="_blank">GitHub</a><ul><li><strong>版本</strong></li><li><strong>開發者</strong></li><li>正在檢查更新</li></ul></div>
+    </div>`
 
     var html = header + setting_theme + musicRes + imgRes + info + about
     $("#content").html(html)
@@ -928,9 +930,25 @@ async function show_settings() {
         window.localStorage["mdui-theme-accent"] = $(this).val()
         $('body').addClass(`mdui-theme-accent-${$(this).val()}`)
     })
-    var getinfo = await getAPI("AudioStation/info.cgi", "SYNO.AudioStation.Info", "getinfo", [], 4)
-    $("#DSMinfo").html(`<p>${getinfo.success?"狀態：正常":"狀態：錯誤"}</p>
-    <p>${getinfo.data.version_string?`版本：${getinfo.data.version_string}`:"版本：未知"}</p>`)
+
+    // DSM 詳細資料
+    var getDSMinfo = await getAPI("AudioStation/info.cgi", "SYNO.AudioStation.Info", "getinfo", [], 4)
+    $("#DSMinfo").html(`<p>${getDSMinfo.success?"狀態：正常":"狀態：錯誤"}</p>
+    <p>${getDSMinfo.data.version_string?`版本：${getDSMinfo.data.version_string}`:"版本：未知"}</p>`)
+
+    // PokaPlayer 詳細資料
+    var getinfo = await axios.get('/info/');
+    var checkupdate = await axios.get(`https://api.github.com/repos/gnehs/PokaPlayer/releases`);
+    var update = getinfo.data.version != checkupdate.data[0].tag_name ? `新版本已發佈，請立即更新 <a href="${checkupdate.data[0].html_url}" target="_blank">查看更新資訊</a>` : `您的 PokaPlayer 已是最新版本`
+    var about = `<div class="mdui-typo">PokaPlayer 是 Synology Audio Ststion 的新朋友！ <a href="https://github.com/gnehs/PokaPlayer" target="_blank">GitHub</a>
+        <ul>
+            <li><strong>版本</strong> ${getinfo.data.version}</li>
+            <li><strong>開發者</strong> ${getinfo.data.author}</li>
+            <li>${update}</li>
+        </ul>
+    </div>`
+    $("#about").html(about)
+
 }
 
 
