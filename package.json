@@ -1,10 +1,9 @@
 {
     "name": "pokaplayer",
-    "version": "0.3",
+    "version": "0.3.0",
     "description": "",
     "main": "index.js",
     "scripts": {
-        "test": "nodemon index.js --ignore '/.git/' --watch 'index.js'",
         "start": "node index.js"
     },
     "repository": {
