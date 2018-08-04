@@ -39,6 +39,11 @@ header.mdui-appbar.mdui-appbar-fixed {
     text-shadow: 0 1px 8px #000000ad;
 }
 
+#header-wrapper+.mdui-tab {
+    margin-top: -32px;
+    margin-bottom: 32px;
+}
+
 
 /* 專輯頁面檢視 */
 
