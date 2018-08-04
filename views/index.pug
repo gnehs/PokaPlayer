@@ -1,66 +1,94 @@
-extends _layout.pug
-block head
-    link(href='//cdnjs.cloudflare.com/ajax/libs/aplayer/1.10.1/APlayer.min.css',rel='stylesheet')
-block drawer
-    a.mdui-list-item.mdui-ripple.mdui-list-item-active(href='javascript:void(0)',data-link='home')
-        i.mdui-list-item-icon.mdui-icon.material-icons home
-        .mdui-list-item-content 首頁
-    .mdui-subheader 音樂庫
-    a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='search')
-        i.mdui-list-item-icon.mdui-icon.material-icons search
-        .mdui-list-item-content 搜尋
-    a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='album')
-        i.mdui-list-item-icon.mdui-icon.material-icons album
-        .mdui-list-item-content 專輯
-    a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='recentlyAlbum')
-        i.mdui-list-item-icon.mdui-icon.material-icons album
-        .mdui-list-item-content 最近加入的專輯
-    a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='folder')
-        i.mdui-list-item-icon.mdui-icon.material-icons folder
-        .mdui-list-item-content 資料夾
-    a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='artist')
-        i.mdui-list-item-icon.mdui-icon.material-icons mic
-        .mdui-list-item-content 演出者
-    a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='composer')
-        i.mdui-list-item-icon.mdui-icon.material-icons music_note
-        .mdui-list-item-content 作曲者
-    a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='random')
-        i.mdui-list-item-icon.mdui-icon.material-icons playlist_play
-        .mdui-list-item-content 隨機播放
-    .mdui-subheader 現正播放
-    a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='now')
-        i.mdui-list-item-icon.mdui-icon.material-icons play_circle_filled
-        .mdui-list-item-content 現正播放
-    //-a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='lrc')
-        i.mdui-list-item-icon.mdui-icon.material-icons subtitles
-        .mdui-list-item-content 歌詞
-    .mdui-subheader 設定
-    a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='settings')
-        i.mdui-list-item-icon.mdui-icon.material-icons settings
-        .mdui-list-item-content 設定
-    //-.mdui-subheader 帳號
-    //-a.mdui-list-item.mdui-ripple(href='/logout/')
-        i.mdui-list-item-icon.mdui-icon.material-icons account_circle
-        .mdui-list-item-content 登出
-block body
-    #aplayer
-    #player
-        .mdui-ripple
-            img(src="/img/PokaPlayer.png")
-        .song-info.mdui-ripple
-            .name PokaPlayer
-            .artist 點擊播放鍵開始隨機播放
-        .mdui-toolbar-spacer
-        .ctrl
-            button.mdui-btn.mdui-btn-icon.mdui-ripple(onclick='ap.skipBack()')
-                i.mdui-icon.material-icons skip_previous
-            button.mdui-btn.mdui-btn-icon.mdui-ripple.mdui-color-theme-accent.play(onclick='ap.toggle()')
-                i.mdui-icon.material-icons play_arrow
-            button.mdui-btn.mdui-btn-icon.mdui-ripple(onclick='ap.skipForward()')
-                i.mdui-icon.material-icons skip_next
-    script(src='//cdnjs.cloudflare.com/ajax/libs/aplayer/1.10.1/APlayer.min.js')
-    script(src='//cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js')
-    script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js')
-    script(src='/js/base64.js')
-    script(src='/js/script.js')
-    script(src='/js/color-theme.js')
+doctype html
+html
+    head
+        title PokaPlayer
+        meta(name='viewport', content='width=device-width, initial-scale=1.0')       
+        link(href='//cdnjs.cloudflare.com/ajax/libs/mdui/0.4.1/css/mdui.min.css',rel='stylesheet')
+        link(href='/css/style.css',rel='stylesheet')
+        link(href='//fonts.googleapis.com/css?family=News+Cycle:400,700',rel='stylesheet')
+        link(href='//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css',rel='stylesheet')
+        link(href='//cdnjs.cloudflare.com/ajax/libs/aplayer/1.10.1/APlayer.min.css',rel='stylesheet')
+        script(src='//cdnjs.cloudflare.com/ajax/libs/mdui/0.4.1/js/mdui.min.js')
+        //-app
+        meta(name="theme-color" content="#3f51b5")
+        link(rel="icon" href="/img/PokaPlayer.png")
+        //-Add to home screen for Safari on iOS
+        meta(name="apple-mobile-web-app-capable" content="yes")
+        meta(name="apple-mobile-web-app-status-bar-style" content="black")
+        meta(name="apple-mobile-web-app-title" content="PokaPlayer")
+        link(rel="apple-touch-icon" href="/img/PokaPlayer.png")
+        //-Windows
+        meta(name="msapplication-TileImage" content="/img/PokaPlayer.png")
+        meta(name="msapplication-TileColor" content="#3f51b5")
+
+    body.mdui-drawer-body-left
+        header.mdui-appbar.mdui-appbar-fixed
+            .mdui-toolbar.mdui-color-theme
+                a.mdui-btn.mdui-btn-icon(mdui-drawer="{target: '#drawer', swipe: true}")
+                    i.mdui-icon.material-icons menu 
+                .mdui-typo-title PokaPlayer
+                .mdui-toolbar-spacer
+        #drawer.mdui-drawer.mdui-appbar-with-toolbar
+            .mdui-list
+                a.mdui-list-item.mdui-ripple.mdui-list-item-active(href='javascript:void(0)',data-link='home')
+                    i.mdui-list-item-icon.mdui-icon.material-icons home
+                    .mdui-list-item-content 首頁
+                .mdui-subheader 音樂庫
+                a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='search')
+                    i.mdui-list-item-icon.mdui-icon.material-icons search
+                    .mdui-list-item-content 搜尋
+                a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='album')
+                    i.mdui-list-item-icon.mdui-icon.material-icons album
+                    .mdui-list-item-content 專輯
+                a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='recentlyAlbum')
+                    i.mdui-list-item-icon.mdui-icon.material-icons album
+                    .mdui-list-item-content 最近加入的專輯
+                a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='folder')
+                    i.mdui-list-item-icon.mdui-icon.material-icons folder
+                    .mdui-list-item-content 資料夾
+                a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='artist')
+                    i.mdui-list-item-icon.mdui-icon.material-icons mic
+                    .mdui-list-item-content 演出者
+                a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='composer')
+                    i.mdui-list-item-icon.mdui-icon.material-icons music_note
+                    .mdui-list-item-content 作曲者
+                a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='random')
+                    i.mdui-list-item-icon.mdui-icon.material-icons playlist_play
+                    .mdui-list-item-content 隨機播放
+                .mdui-subheader 現正播放
+                a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='now')
+                    i.mdui-list-item-icon.mdui-icon.material-icons play_circle_filled
+                    .mdui-list-item-content 現正播放
+                //-a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='lrc')
+                    i.mdui-list-item-icon.mdui-icon.material-icons subtitles
+                    .mdui-list-item-content 歌詞
+                .mdui-subheader 設定
+                a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link='settings')
+                    i.mdui-list-item-icon.mdui-icon.material-icons settings
+                    .mdui-list-item-content 設定
+                //-.mdui-subheader 帳號
+                //-a.mdui-list-item.mdui-ripple(href='/logout/')
+                    i.mdui-list-item-icon.mdui-icon.material-icons account_circle
+                    .mdui-list-item-content 登出
+        #content.mdui-container
+        #aplayer
+        #player
+            .mdui-ripple
+                img(src="/img/PokaPlayer.png")
+            .song-info.mdui-ripple
+                .name PokaPlayer
+                .artist 點擊播放鍵開始隨機播放
+            .mdui-toolbar-spacer
+            .ctrl
+                button.mdui-btn.mdui-btn-icon.mdui-ripple(onclick='ap.skipBack()')
+                    i.mdui-icon.material-icons skip_previous
+                button.mdui-btn.mdui-btn-icon.mdui-ripple.mdui-color-theme-accent.play(onclick='ap.toggle()')
+                    i.mdui-icon.material-icons play_arrow
+                button.mdui-btn.mdui-btn-icon.mdui-ripple(onclick='ap.skipForward()')
+                    i.mdui-icon.material-icons skip_next
+        script(src='//cdnjs.cloudflare.com/ajax/libs/aplayer/1.10.1/APlayer.min.js')
+        script(src='//cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js')
+        script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js')
+        script(src='/js/base64.js')
+        script(src='/js/script.js')
+        script(src='/js/color-theme.js')
