@@ -379,12 +379,15 @@ async function show_search(keyword) {
         </div>
     </div>`
     var noResultText = [
-        '嘿，我們沒聽說過那首歌！',
+        '嘿，我們沒聽說過那個！',
         '也許試試其他關鍵字',
         '找不到啦QQQ',
         '找不到，也許搜尋結果幻化成泡影了也說不定。',
         '找不到，就讓搜尋結果隨風飄揚吧。',
-        '茫茫歌海，就是找不到你要的歌'
+        '糟糕！搜尋結果被吃掉了',
+        '找不到：（',
+        '我們把搜尋結果拿去餵魚了',
+        '茫茫歌海，就是找不到你要的東西'
     ]
     var noResult = () => { return `<div class="mdui-valign" style="height:150px"><p class="mdui-center">${noResultText[Math.floor(Math.random() * noResultText.length)]}</p></div>` }
     if (keyword) {
