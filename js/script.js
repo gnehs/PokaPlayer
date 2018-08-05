@@ -618,6 +618,7 @@ async function show_random() {
     $("#content>:not(#header-wrapper)").animateCss("fadeIn")
 }
 async function play_random() {
+    show_now()
     var PARAMS_JSON = [
             { key: "additional", "value": "song_tag,song_audio,song_rating" },
             { key: "library", "value": "shared" },
