@@ -61,6 +61,7 @@ $(function() {
     $('[data-link="folder"]').click(function() { show_folder() })
     $('[data-link="artist"]').click(function() { show_artist() })
     $('[data-link="composer"]').click(function() { show_composer() })
+    $('[data-link="playlist"]').click(function() { show_playlist() })
     $('[data-link="random"]').click(function() { show_random() })
     $('[data-link="now"]').click(function() { show_now() })
     $('[data-link="lrc"]').click(function() { show_lrc() })
@@ -598,6 +599,13 @@ async function show_composer(composer) {
         $("#content").html(header + composersHTML)
     }
     $("#content>:not(#header-wrapper)").animateCss("fadeIn")
+}
+//- 播放清單
+async function show_playlist() {
+    // 展示讀取中
+    var header = HTML_getHeader("播放清單")
+    $("#content").html(header + HTML_getSpinner())
+    mdui.mutation()
 }
 //- 隨機播放
 async function show_random() {
