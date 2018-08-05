@@ -382,10 +382,17 @@ async function show_search(keyword) {
         '嘿，我們沒聽說過那個！',
         '也許試試其他關鍵字',
         '找不到啦QQQ',
-        '找不到，也許搜尋結果幻化成泡影了也說不定。',
-        '找不到，就讓搜尋結果隨風飄揚吧。',
+        '嘿！搜尋結果不見了',
         '糟糕！搜尋結果被吃掉了',
         '找不到：（',
+        '哈囉！這裡是太虛之境，啥都沒有',
+        '尼484打錯字',
+        '偶們看不懂關鍵字：（',
+        '什麼～都～沒有',
+        '找不到結果，請不要太難過',
+        '萬物皆空',
+        '喔不，搜尋結果被搶走了',
+        '飛鴿傳書也找不到，咕咕咕',
         '我們把搜尋結果拿去餵魚了'
     ]
     var noResult = () => { return `<div class="mdui-valign" style="height:150px"><p class="mdui-center">${noResultText[Math.floor(Math.random() * noResultText.length)]}</p></div>` }
