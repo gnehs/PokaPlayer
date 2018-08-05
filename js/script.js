@@ -775,8 +775,8 @@ async function show_now() {
     })
     $(".songs [data-now-play-id].close").click(function() {
         var song = $(this).attr('data-now-play-id')
-        ap.list.remove(song)
         if (song == ap.list.index) ap.skipForward()
+        ap.list.remove(song)
         show_now()
     })
 }
