@@ -20,7 +20,7 @@ header.mdui-appbar.mdui-appbar-fixed {
         border-radius: 5px 5px;
     }
     #drawer .mdui-list-item {
-        border-radius: 0 5px 5px 0;
+        border-radius: 0 500em 500em 0;
     }
 }
 
