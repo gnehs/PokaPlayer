@@ -14,7 +14,7 @@ ap.on("timeupdate", function() {
     var name = ap.list.audios[ap.list.index].name || ""
     var artist = ap.list.audios[ap.list.index].artist || ""
 
-    var img = window.localStorage["imgRes"] != "true" ? ap.list.audios[ap.list.index].cover : "/og/og.png" //一定會有圖片
+    var img = window.localStorage["imgRes"] != "true" ? ap.list.audios[ap.list.index].cover : getBackground() //一定會有圖片
     $('#player button.play[onclick="ap.toggle()"] i').text("pause")
     if (name != $('#player .song-info .name').text()) { //歌名有變才更新
         $('#player .song-info .name').text(name)
@@ -120,7 +120,9 @@ function secondToTime(second) {
 
 //-- 常用 HTML
 function HTML_getHeader(title) {
-    return `<div class="mdui-container-fluid mdui-valign mdui-typo mdui-color-theme" id="header-wrapper">
+    if (window.localStorage["randomImg"]) var style = `background-image: url(${window.localStorage["randomImg"]});`
+    else var style = `background-image: url(/og/og.png);`
+    return `<div class="mdui-container-fluid mdui-valign mdui-typo mdui-color-theme" id="header-wrapper" style="${style}">
                 <h1 class="mdui-center mdui-text-color-white">${title}</h1>
             </div>`
 }
@@ -167,7 +169,7 @@ function HTML_showPins(items) {
                 break;
             case "playlist":
                 //資料夾
-                var img = '/og/og.png'
+                var img = getBackground()
                 var title = pin.name
                 console.log(pin)
                 var subtitle = '播放清單'
@@ -731,8 +733,8 @@ async function show_now() {
         name = nowPlaying ? nowPlaying.name : "PokaPlayer",
         artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點擊播放鍵開始隨機播放",
         album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>",
-        img = (nowPlaying && window.localStorage["imgRes"] != "true") ? nowPlaying.cover : "/og/og.png",
-        currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00",
+        img = (nowPlaying && window.localStorage["imgRes"] != "true") ? nowPlaying.cover : getBackground()
+    currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00",
         duration = ap.audio.currentTime ? secondToTime(ap.audio.duration) : "0:00",
         timer = currentTime + '/' + duration,
         info = `
@@ -811,7 +813,7 @@ async function show_now() {
         var name = nowPlaying ? nowPlaying.name : "PokaPlayer"
         var artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點擊播放鍵開始隨機播放"
         var album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>"
-        var img = (nowPlaying && window.localStorage["imgRes"] != "true") ? nowPlaying.cover : "/og/og.png" //一定會有圖片
+        var img = (nowPlaying && window.localStorage["imgRes"] != "true") ? nowPlaying.cover : getBackground() //一定會有圖片
         $('[data-player]>.mdui-card').attr('style', `background-image:url(${img});`)
         $('[data-player]>.info .title').text(name)
         $('[data-player]>.info .artist').html(artist + album)
@@ -874,6 +876,7 @@ function show_lrc() {
 async function show_settings() {
     ///給定預設值
     if (!window.localStorage["musicRes"]) window.localStorage["musicRes"] = "wav"
+    if (!window.localStorage["randomImg"]) window.localStorage["randomImg"] = "/og/og.png"
         ///
     var header = HTML_getHeader("設定")
     var title = (title) => `<h2 class="mdui-text-color-theme">${title}</h2>`
@@ -956,6 +959,10 @@ async function show_settings() {
         </label>
         <div class="mdui-typo-caption-opacity">載入所有圖片，就像平常那樣</div>
     </div>` }
+    var bg = (s) => { return `<div class="mdui-textfield">
+        <input class="mdui-textfield-input" placeholder="隨機圖片" value="${s=="/og/og.png"?'':s}"/>
+        <div class="mdui-textfield-helper">填入網址、Base64 Image或任何你認為他會正常運作的東西來取代原本的隨機圖片，若要回復原始設定直接將欄位清空即可</div>
+    </div>` }
 
     var setting_theme = title("主題") +
         subtitle("主題色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Theme">${themecolor(window.localStorage["mdui-theme-color"])}</form>` +
@@ -966,6 +973,8 @@ async function show_settings() {
 
     var imgRes = title("圖片流量節省") + `<form class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4" id="PP_imgRes">${imgRes(window.localStorage["imgRes"])}</form>`
 
+    var bg = title("隨機圖片設定") + `<form id="PP_bg">${bg(window.localStorage["randomImg"])}</form>`
+
     var info = title("Audio Station 狀態") + `<div id="DSMinfo" class="mdui-typo"><strong>版本</strong> 載入中</div>`
 
     var about = title("關於 PokaPlayer") + `<div id="about" class="mdui-typo">
@@ -973,9 +982,29 @@ async function show_settings() {
         <p><strong>版本</strong> 載入中 / <strong>開發者</strong> 載入中 / 正在檢查更新</p>
     </div>`
 
-    var html = header + setting_theme + musicRes + imgRes + info + about
+    var html = header + setting_theme + musicRes + imgRes + bg + info + about
     $("#content").html(html)
 
+    //初始化
+    mdui.mutation();
+
+    $("#PP_bg input").change(function() {
+        if ($(this).val()) {
+            window.localStorage["randomImg"] = $(this).val()
+            mdui.snackbar({
+                message: `隨機圖片已變更為 ${$(this).val()}，該變更並不會在此頁生效`,
+                position: getSnackbarPosition(),
+                timeout: 1500
+            });
+        } else {
+            window.localStorage["randomImg"] = "/og/og.png"
+            mdui.snackbar({
+                message: `隨機圖片已回復預設，該變更並不會在此頁生效`,
+                position: getSnackbarPosition(),
+                timeout: 1500
+            });
+        }
+    })
     $("#PP_Res input").change(function() {
         window.localStorage["musicRes"] = $(this).val()
         mdui.snackbar({
@@ -1028,6 +1057,7 @@ async function show_settings() {
         $('body').addClass(`mdui-theme-accent-${$(this).val()}`)
     })
 
+
     // DSM 詳細資料
     var getDSMinfo = await getAPI("AudioStation/info.cgi", "SYNO.AudioStation.Info", "getinfo", [], 4)
     $("#DSMinfo").html(`<strong>版本</strong> ${getDSMinfo.data.version_string?getDSMinfo.data.version_string:"版本：未知"}`)
@@ -1041,7 +1071,7 @@ async function show_settings() {
     $("#about").html(about)
 
 }
-
+//- 播放音樂
 
 function playSongs(songlist, song = false, clear = true) {
     if (clear) ap.list.clear()
@@ -1073,6 +1103,7 @@ function playSongs(songlist, song = false, clear = true) {
     if (clear) ap.play()
 }
 
+//- 加入音樂
 function addSong(songlist, songID = 0) {
     var playlist = []
     var apList = ap.list.audios.length
@@ -1112,7 +1143,14 @@ function addSong(songlist, songID = 0) {
     ap.list.add(playlist)
     if (apList == 0) ap.play() //如果原本沒歌直接開播
 }
-
+//- 取得背景
+function getBackground() {
+    if (window.localStorage["randomImg"])
+        return window.localStorage["randomImg"]
+    else
+        return "/og/og.png"
+}
+//- 取得封面
 function getCover(type, info, artist_name, album_artist_name) {
     if (type == "album") {
         var q = ''
@@ -1124,15 +1162,13 @@ function getCover(type, info, artist_name, album_artist_name) {
         var url = `/cover/${encodeURIComponent(type)}/${encodeURIComponent(info)}`
     }
     if (window.localStorage["imgRes"] == "true")
-        return "/og/og.png"
+        return getBackground()
     else
         return url
 }
 
+//- 取得歌詞
 async function getLrc(artist, title) {
-    /*
-    DSM 請求
-    */
     var PARAMS_JSON = [
         { key: "additional", "value": "full_lyrics" },
         { key: "limit", "value": 1 }
@@ -1144,6 +1180,7 @@ async function getLrc(artist, title) {
 
 }
 
+//- 取得歌曲連結
 function getSong(song) {
     var id = song.id
     var res = window.localStorage["musicRes"]
@@ -1154,6 +1191,8 @@ function getSong(song) {
         res = "original"
     return '/song/' + res + '/' + id
 }
+
+//- 取得專輯歌曲
 async function getAlbumSong(album_name, album_artist_name, artist_name) {
     var PARAMS_JSON = [
         { key: "additional", "value": "song_tag,song_audio,song_rating" },
@@ -1168,6 +1207,7 @@ async function getAlbumSong(album_name, album_artist_name, artist_name) {
     var info = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "list", PARAMS_JSON, 3)
     return info
 }
+//- 取得搜尋結果
 async function searchAll(keyword) {
     var PARAMS_JSON = [
         { key: "additional", "value": "song_tag,song_audio,song_rating" },
@@ -1181,6 +1221,7 @@ async function searchAll(keyword) {
     return result.data
 }
 
+//- API 請求
 async function getAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 1) {
     var PARAMS = ''
     for (i = 0; i < PARAMS_JSON.length; i++) {　
@@ -1198,12 +1239,15 @@ async function getAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 1)
     return response.data
 }
 
+
+//- 取得 Snackbar 位置
 function getSnackbarPosition() {
     if ($(window).width() < 768)
         return "left-top"
     else
         return "left-bottom"
 }
+// animate css
 $.fn.extend({
     animateCss: function(animationName, callback) {
         var animationEnd = (function(el) {

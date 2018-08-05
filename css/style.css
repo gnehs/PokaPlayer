@@ -31,8 +31,8 @@ header.mdui-appbar.mdui-appbar-fixed {
     margin-bottom: 32px;
     padding: 0 30px;
     min-height: 150px;
-    background-image: url(/og/og.png);
     background-size: cover;
+    background-position: center;
 }
 
 #header-wrapper h1 {
