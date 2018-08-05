@@ -420,46 +420,34 @@ async function show_search(keyword) {
 async function show_album() {
     // 展示讀取中
     var header = HTML_getHeader("專輯")
-    var tabs = `<div class="mdui-tab" mdui-tab>
-        <a class="mdui-ripple mdui-tab-active" style="border-bottom: 2px solid currentColor;">專輯列表</a>
-        <a onclick="show_recentlyAlbum()" class="mdui-ripple" style="border-bottom: 2px solid transparent;">最近加入</a>
-    </div>`
-    $("#content").html(header + tabs + HTML_getSpinner())
+    $("#content").html(header + HTML_getSpinner())
     mdui.mutation()
-    var PARAMS_JSON = [
-        { key: "additional", "value": "avg_rating" },
-        { key: "library", "value": "shared" },
-        { key: "limit", "value": 1000 },
-        { key: "sort_by", "value": "display_artist" },
-        { key: "sort_direction", "value": "ASC" },
-    ]
-    var data = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3),
-        album = HTML_showAlbums(data.data.albums)
-    $("#content").html(header + tabs + album)
+    var albums_albums = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", [
+            { key: "additional", "value": "avg_rating" },
+            { key: "library", "value": "shared" },
+            { key: "limit", "value": 1000 },
+            { key: "sort_by", "value": "name" },
+            { key: "sort_direction", "value": "ASC" },
+        ], 3),
+        album = HTML_showAlbums(albums_albums.data.albums),
+        recently_albums = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", [
+            { key: "additional", "value": "avg_rating" },
+            { key: "library", "value": "shared" },
+            { key: "limit", "value": 1000 },
+            { key: "method", "value": 'list' },
+            { key: "sort_by", "value": "time" },
+            { key: "sort_direction", "value": "desc" },
+        ], 3),
+        recently = HTML_showAlbums(recently_albums.data.albums),
+        tabs = `<div class="mdui-tab" mdui-tab>
+            <a href="#album-albums" class="mdui-tab-active mdui-ripple">專輯列表</a>
+            <a href="#recently-albums" class="mdui-ripple">最近加入</a>
+        </div>`,
+        html = `<div id="album-albums">${album}</div>
+                <div id="recently-albums">${recently}</div>`
+    $("#content").html(header + tabs + html)
     $("#content>:not(#header-wrapper):not(.mdui-tab)").animateCss("fadeIn")
-}
-// 最近加入ㄉ專輯
-async function show_recentlyAlbum() {
-    // 展示讀取中
-    var header = HTML_getHeader("專輯")
-    var tabs = `<div class="mdui-tab" mdui-tab>
-        <a onclick="show_album()" class="mdui-ripple" style="border-bottom: 2px solid transparent;">專輯列表</a>
-        <a class="mdui-ripple mdui-tab-active" style="border-bottom: 2px solid currentColor;">最近加入</a>
-    </div>`
-    $("#content").html(header + tabs + HTML_getSpinner())
     mdui.mutation()
-    var PARAMS_JSON = [
-        { key: "additional", "value": "avg_rating" },
-        { key: "library", "value": "shared" },
-        { key: "limit", "value": 100 },
-        { key: "method", "value": 'list' },
-        { key: "sort_by", "value": "time" },
-        { key: "sort_direction", "value": "desc" },
-    ]
-    var data = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3),
-        album = HTML_showAlbums(data.data.albums)
-    $("#content").html(header + tabs + album)
-    $("#content>:not(#header-wrapper):not(.mdui-tab)").animateCss("fadeIn")
 }
 //- 展示專輯歌曲
 async function show_album_songs(artist, album, album_artist) {
