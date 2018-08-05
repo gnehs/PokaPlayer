@@ -226,7 +226,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     overflow: hidden;
     box-shadow: 0 0 10px #0000004d;
     transform: translateY(0);
-    transition: transform .3s ease, width .4s ease-in, border-radius .4s ease-in, box-shadow .3s ease;
+    transition: transform .3s ease, width .3s ease, border-radius .3s ease, box-shadow .3s ease;
     margin: 0 auto;
 }
 
