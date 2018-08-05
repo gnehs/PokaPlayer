@@ -485,7 +485,7 @@ async function show_album_songs(artist, album, album_artist) {
     <button class="mdui-btn mdui-btn-icon mdui-ripple" 
             onclick="addSong(songList)" 
             title="將此頁面歌曲全部加入到現正播放">
-        <i class="mdui-icon material-icons">add</i>
+        <i class="mdui-icon material-icons">playlist_add</i>
     </button>`
 
     // 展示讀取中
