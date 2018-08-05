@@ -276,6 +276,23 @@ function HTML_showAlbums(items) {
     return album
 }
 
+function HTML_showPlaylists(playlists) {
+    var html = `<ul class="mdui-list">`
+    for (i = 0; i < playlists.length; i++) {
+        let playlist = playlists[i]
+        let name = playlist.name
+        let id = playlist.id
+        html += `
+        <li class="mdui-list-item mdui-ripple" onclick="show_playlist_songs(\`${id}\`)">
+            <div class="mdui-list-item-content">
+               ${name}
+            </div>
+        </li>`　
+    }
+    html += '</ul>'
+    return html
+}
+
 function HTML_showSongs(songs) {
     songList = songs
     var html = `<div class="songs"><div class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4">`
@@ -606,6 +623,45 @@ async function show_playlist() {
     var header = HTML_getHeader("播放清單")
     $("#content").html(header + HTML_getSpinner())
     mdui.mutation()
+    var playlist = await getAPI("AudioStation/playlist.cgi", "SYNO.AudioStation.Playlist", "list", [
+        { key: "limit", "value": 1000 },
+        { key: "library", "value": "shared" },
+        { key: "sort_by", "value": "" },
+        { key: "sort_direction", "value": "ASC" }
+    ], 3)
+    if (playlist.data.playlists.length < 0) {
+        $("#content").html(header + `<div class="mdui-valign" style="height:150px"><p class="mdui-center">沒有任何播放清單</p></div>`)
+    }
+    $("#content").html(header + HTML_showPlaylists(playlist.data.playlists))
+}
+//- 播放清單歌曲
+async function show_playlist_songs(id) {
+    //如果從首頁按進去頁籤沒切換
+    $('[data-link]').removeClass('mdui-list-item-active')
+    $('[data-link="playlist"]').addClass('mdui-list-item-active')
+
+    // 展示讀取中
+    var header = HTML_getHeader("播放清單")
+    $("#content").html(header + HTML_getSpinner())
+    mdui.mutation()
+
+    //抓資料
+    var playlist = await getAPI("AudioStation/playlist.cgi", "SYNO.AudioStation.Playlist", "getinfo", [
+        { key: "limit", "value": 1000 },
+        { key: "library", "value": "shared" },
+        { key: "sort_by", "value": "" },
+        { key: "additional", "value": "songs_song_tag,songs_song_audio,songs_song_rating,sharing_info" },
+        { key: "id", "value": id },
+        { key: "sort_direction", "value": "ASC" }
+    ], 3)
+    var result = playlist.data.playlists[0]
+    var name = result.name
+    var songs = HTML_showSongs(result.additional.songs)
+    var header = HTML_getHeader(name)
+    $("#content").html(header + songs)
+    $("#content>:not(#header-wrapper)").animateCss("fadeIn")
+
+
 }
 //- 隨機播放
 async function show_random() {
