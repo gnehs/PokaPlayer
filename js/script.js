@@ -165,6 +165,14 @@ function HTML_showPins(items) {
                 var subtitle = '資料夾'
                 var onclickActions = `show_folder(\`${pin.criteria.folder}\`)`
                 break;
+            case "playlist":
+                //資料夾
+                var img = '/og/og.png'
+                var title = pin.name
+                console.log(pin)
+                var subtitle = '播放清單'
+                var onclickActions = `show_playlist_songs(\`${pin.criteria.playlist}\`) `
+                break;
             case "album":
                 //專輯
                 var artist = pin.criteria.artist || pin.criteria.album_artist || ''
@@ -620,7 +628,7 @@ async function show_composer(composer) {
 //- 播放清單
 async function show_playlist() {
     // 展示讀取中
-    var header = HTML_getHeader("播放清單")
+    var header = HTML_getHeader("所有清單")
     $("#content").html(header + HTML_getSpinner())
     mdui.mutation()
     var playlist = await getAPI("AudioStation/playlist.cgi", "SYNO.AudioStation.Playlist", "list", [
@@ -641,7 +649,7 @@ async function show_playlist_songs(id) {
     $('[data-link="playlist"]').addClass('mdui-list-item-active')
 
     // 展示讀取中
-    var header = HTML_getHeader("播放清單")
+    var header = HTML_getHeader("正在讀取播放清單")
     $("#content").html(header + HTML_getSpinner())
     mdui.mutation()
 
