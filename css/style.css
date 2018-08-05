@@ -81,28 +81,34 @@ header.mdui-appbar.mdui-appbar-fixed {
     max-width: 100%;
 }
 
-@media screen and (max-width: 1200px) {
+@media (max-width: 575.98px) {
     .album {
-        --album-size: calc(20% - 1em);
+        --album-size: calc(50% - 1em);
+        font-size: 9px;
     }
 }
 
-@media screen and (max-width: 992px) {
-    .album {
-        --album-size: calc(25% - 1em);
-    }
-}
-
-@media screen and (max-width: 768px) {
+@media (min-width: 576px) and (max-width: 767.98px) {
     .album {
         --album-size: calc(33.3% - 1em);
     }
 }
 
-@media screen and (max-width: 512px) {
+@media (min-width: 768px) and (max-width: 991.98px) {
     .album {
-        --album-size: calc(50% - 1em);
-        font-size: 9px;
+        --album-size: calc(25% - 1em);
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .album {
+        --album-size: calc(20% - 1em);
+    }
+}
+
+@media (min-width: 1200px) {
+    .album {
+        --album-size: calc(16.6% - 1em);
     }
 }
 
