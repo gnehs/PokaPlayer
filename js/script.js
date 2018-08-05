@@ -455,7 +455,7 @@ async function show_album() {
         html = `<div id="album-albums">${album}</div>
                 <div id="recently-albums">${recently}</div>`
     $("#content").html(header + tabs + html)
-    $("#content>:not(#header-wrapper):not(.mdui-tab):not(#recently-albums)").animateCss("fadeIn")
+    $("#content>:not(#header-wrapper):not(#recently-albums)").animateCss("fadeIn")
     mdui.mutation()
 }
 //- 展示專輯歌曲
