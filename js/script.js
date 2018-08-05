@@ -292,6 +292,7 @@ function HTML_showPlaylists(playlists) {
         let id = playlist.id
         html += `
         <li class="mdui-list-item mdui-ripple" onclick="show_playlist_songs(\`${id}\`)">
+            <i class="mdui-list-item-avatar mdui-icon material-icons">playlist_play</i>
             <div class="mdui-list-item-content">
                ${name}
             </div>
