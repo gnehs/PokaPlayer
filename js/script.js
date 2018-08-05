@@ -961,7 +961,7 @@ async function show_settings() {
     </div>` }
     var bg = (s) => { return `<div class="mdui-textfield">
         <input class="mdui-textfield-input" placeholder="隨機圖片" value="${s=="/og/og.png"?'':s}"/>
-        <div class="mdui-textfield-helper">填入網址、Base64 Image或任何你認為他會正常運作的東西來取代原本的隨機圖片，若要回復原始設定直接將欄位清空即可</div>
+        <div class="mdui-textfield-helper">填入網址、Base64 Image或任何你認為他會正常運作的東西來取代原本的隨機圖片，若要回復預設值直接將欄位清空即可</div>
     </div>` }
 
     var setting_theme = title("主題") +
@@ -999,7 +999,7 @@ async function show_settings() {
         } else {
             window.localStorage["randomImg"] = "/og/og.png"
             mdui.snackbar({
-                message: `隨機圖片已回復預設，該變更並不會在此頁生效`,
+                message: `隨機圖片已回復預設值，該變更並不會在此頁生效`,
                 position: getSnackbarPosition(),
                 timeout: 1500
             });
