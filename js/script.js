@@ -1002,6 +1002,7 @@ function playSongs(songlist, song = false, clear = true) {
 
 function addSong(songlist, songID = 0) {
     var playlist = []
+    var apList = ap.list.audios.length
     for (i = 0; i < songlist.length; i++) {
         let nowsong = songlist[i]
         if (nowsong.id == songID || songID == 0) {
@@ -1036,7 +1037,7 @@ function addSong(songlist, songID = 0) {
         });
     }
     ap.list.add(playlist)
-    if (ap.list.audios.length == 1) ap.play() //如果只有一首直接開播
+    if (apList == 0) ap.play() //如果原本沒歌直接開播
 }
 
 function getCover(type, info, artist_name, album_artist_name) {
