@@ -308,7 +308,7 @@ function HTML_showSongs(songs) {
             </button>
         </li></div>`　
     }
-    html += '</div>'
+    html += '</div></div>'
     return html
 }
 
@@ -360,7 +360,7 @@ async function show_home() {
     $("#content").html(header + album)
     $("#content>:not(#header-wrapper)").animateCss("fadeIn")
 }
-//- 列出專輯
+//- 搜尋
 async function show_search(keyword) {
     var html = `
     <div class="mdui-row">
@@ -386,15 +386,28 @@ async function show_search(keyword) {
         '找不到，就讓搜尋結果隨風飄揚吧。',
         '茫茫歌海，就是找不到你要的歌'
     ]
-    var noResult = `<div class="mdui-valign" style="height:150px"><p class="mdui-center">${noResultText[Math.floor(Math.random() * noResultText.length)]}</p></div>`
+    var noResult = () => { return `<div class="mdui-valign" style="height:150px"><p class="mdui-center">${noResultText[Math.floor(Math.random() * noResultText.length)]}</p></div>` }
     if (keyword) {
-        var result = await searchSong(keyword)
-        if (result.length == 0)
-            $("#content").html(html + noResult)
-        else {
-            var resultHTML = HTML_showSongs(result)
-            $("#content").html(html + resultHTML)
-        }
+        var result = await searchAll(keyword)
+        var tabs = `<div class="mdui-tab" mdui-tab style="margin-bottom:16px;">
+            <a class="mdui-tab-active mdui-ripple" href="#search-songs">歌曲 (${result.songTotal})</a>
+            <a class="mdui-ripple" href="#search-albums">專輯 (${result.albumTotal})</a>
+            <a class="mdui-ripple" href="#search-artists">演出者 (${result.artistTotal})</a>
+        </div>`
+        var result_html = ``
+            // 歌曲
+        if (result.songTotal > 0) result_html += `<div id="search-songs">${HTML_showSongs(result.songs)}</div>`
+        else result_html += `<div id="search-songs">${noResult()}</div>`
+            // 專輯
+        if (result.albumTotal > 0) result_html += `<div id="search-albums">${HTML_showAlbums(result.albums)}</div>`
+        else result_html += `<div id="search-albums">${noResult()}</div>`
+            // 演出者
+        if (result.artistTotal > 0) result_html += `<div id="search-artists">${HTML_showArtist(result.artists)}</div>`
+        else result_html += `<div id="search-artists">${noResult()}</div>`
+
+        $("#content").html(html + tabs + result_html)
+        mdui.mutation()
+
     } else
         $("#content").html(html)
     mdui.mutation() //初始化
@@ -409,7 +422,7 @@ async function show_album() {
     var header = HTML_getHeader("專輯")
     var tabs = `<div class="mdui-tab" mdui-tab>
         <a class="mdui-ripple mdui-tab-active" style="border-bottom: 2px solid currentColor;">專輯列表</a>
-        <a onclick="show_recentlyAlbum()" class="mdui-ripple" style="border-bottom: 2px solid #0000;">最近加入</a>
+        <a onclick="show_recentlyAlbum()" class="mdui-ripple" style="border-bottom: 2px solid transparent;">最近加入</a>
     </div>`
     $("#content").html(header + tabs + HTML_getSpinner())
     mdui.mutation()
@@ -430,7 +443,7 @@ async function show_recentlyAlbum() {
     // 展示讀取中
     var header = HTML_getHeader("專輯")
     var tabs = `<div class="mdui-tab" mdui-tab>
-        <a onclick="show_album()" class="mdui-ripple" style="border-bottom: 2px solid #0000;">專輯列表</a>
+        <a onclick="show_album()" class="mdui-ripple" style="border-bottom: 2px solid transparent;">專輯列表</a>
         <a class="mdui-ripple mdui-tab-active" style="border-bottom: 2px solid currentColor;">最近加入</a>
     </div>`
     $("#content").html(header + tabs + HTML_getSpinner())
@@ -1083,19 +1096,17 @@ async function getAlbumSong(album_name, album_artist_name, artist_name) {
     var info = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "list", PARAMS_JSON, 3)
     return info
 }
-async function searchSong(keyword) {
-    //title=a keyword=a
+async function searchAll(keyword) {
     var PARAMS_JSON = [
         { key: "additional", "value": "song_tag,song_audio,song_rating" },
         { key: "library", "value": "shared" },
         { key: "limit", "value": 1000 },
-        { key: "sort_by", "value": "track" },
+        { key: "sort_by", "value": "title" },
         { key: "sort_direction", "value": "ASC" },
-        { key: "title", "value": keyword },
         { key: "keyword", "value": keyword },
     ]
-    var result = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "search", PARAMS_JSON, 3)
-    return result.data.songs
+    var result = await getAPI("AudioStation/search.cgi", "SYNO.AudioStation.Search", "list", PARAMS_JSON, 1)
+    return result.data
 }
 
 async function getAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 1) {
