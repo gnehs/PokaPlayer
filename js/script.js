@@ -401,7 +401,7 @@ async function show_search(keyword) {
                        value="${$('#search').val()||''}" 
                        required/>
                 <div class="mdui-textfield-error">尚未輸入關鍵字</div>
-                <div class="mdui-textfield-helper">輸入完後按下 Enter 開始搜尋音樂</div>
+                <div class="mdui-textfield-helper">輸入完後按下 Enter 開始搜尋音樂、專輯或演出者</div>
             </div>
         </div>
     </div>`
