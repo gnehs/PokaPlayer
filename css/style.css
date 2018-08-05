@@ -55,7 +55,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 .album {
-    --album-size: calc(25% - 1em);
+    --album-size: calc(16.6% - 1em);
     height: 0;
     width: var(--album-size);
     padding-bottom: var(--album-size);
@@ -81,9 +81,15 @@ header.mdui-appbar.mdui-appbar-fixed {
     max-width: 100%;
 }
 
-@media screen and (min-width: 1256px) {
+@media screen and (max-width: 1200px) {
     .album {
         --album-size: calc(20% - 1em);
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .album {
+        --album-size: calc(25% - 1em);
     }
 }
 
