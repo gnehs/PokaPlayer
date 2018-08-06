@@ -18,22 +18,23 @@ ap.on("loadstart", async function() {
         name = nowPlaying.name,
         artist = nowPlaying.artist
     var lrc_result = await getLrc(artist == "未知的歌手" ? '' : artist, name),
-        lyric_regex = /\[[0-9]{2}\:[0-9]{2}(\.[0-9]{2})?\](.+)/i
+        lyric_regex = /\[[A-Za-z0-9_.]{2}\:[A-Za-z0-9_.]{2}(\.[A-Za-z0-9_.]{2})?\](.+)/i;
     console.log(lrc_result)
     lrc_result = lrc_result.lyrics[0].additional.full_lyrics
     if (lyric_regex.test(lrc_result)) {
         lrc.load(lrc_result);
-        if ($("div[data-lrc]").length > 0) {
-            var html = ``
-            for (i = 0; i < lrc.getLyrics().length; i++) {
-                let text = lrc.getLyrics()[i].text
-                html += `<p>${text}</p>`
-            }
-            $("div[data-lrc]").html(html)
-            console.log(lrc.getLyrics())
-        }
+
     } else {
         lrc.load(`[00:00.000]無歌詞`)
+    }
+    if ($("div[data-lrc]").length > 0) {
+        var html = ``
+        for (i = 0; i < lrc.getLyrics().length; i++) {
+            let text = lrc.getLyrics()[i].text
+            html += `<p>${text}</p>`
+        }
+        $("div[data-lrc]").html(html)
+        console.log(lrc.getLyrics())
     }
 })
 ap.on("timeupdate", function() {
