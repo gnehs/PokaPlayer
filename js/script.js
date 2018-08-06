@@ -17,10 +17,10 @@ ap.on("loadstart", async function() {
     var nowPlaying = ap.list.audios[ap.list.index],
         name = nowPlaying.name,
         artist = nowPlaying.artist
-    var lrc_result = await getLrc(artist == "未知的歌手" ? '' : artist, name),
+    var lrc_result = await getLrc(artist, name),
         lrc_result = lrc_result.lyrics[0].additional.full_lyrics,
         lyric_regex = /\[([0-9.:]*)\]/i
-    if (lrc_result && lrc_result.match(lyric_regex))
+    if (lrc_result != undefined && lrc_result.match(lyric_regex))
         lrc.load(lrc_result);
     else
         lrc.load(`[00:00.000]無歌詞`)
@@ -767,7 +767,7 @@ async function show_now() {
             <div class="title  mdui-text-truncate mdui-text-color-theme-accent">${name}</div>
             <div class="artist mdui-text-truncate mdui-text-color-theme-text">${artist+album}</div>
             <div data-lrc>
-                <p>歌詞讀取中</p>
+                <p class="loading">歌詞讀取中</p>
             </div>
             <div class="ctrl">
                 <button class="mdui-btn mdui-btn-icon mdui-ripple random"><i class="mdui-icon material-icons">skip_previous</i></button>
@@ -815,7 +815,10 @@ async function show_now() {
         var html = ``
         for (i = 0; i < lrc.getLyrics().length; i++) {
             let text = lrc.getLyrics()[i].text
-            html += `<p>${text}</p>`
+            if (text == "歌詞讀取中")
+                html += `<p class="loading">${text}</p>`
+            else
+                html += `<p>${text}</p>`
         }
         $("div[data-lrc]").html(html)
     }
@@ -847,7 +850,7 @@ async function show_now() {
         mdui.updateSliders()
 
         // 歌詞
-        $("div[data-lrc]").html(`<p>歌詞讀取中</p>`)
+        $("div[data-lrc]").html(`<p class="loading">歌詞讀取中</p>`)
     })
     ap.on("timeupdate", function() {
         currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00"
@@ -866,7 +869,7 @@ async function show_now() {
                 $('div[data-lrc] p').eq(lrc.select(ap.audio.currentTime)).addClass('mdui-text-color-theme-accent')
                     //$('div[data-lrc] p').eq(lrc.select(ap.audio.currentTime))[0].scrollHeight
                     //$('div[data-lrc]')[0].scrollHeight
-                let sh = 41 * lrc.select(ap.audio.currentTime) - $('div[data-lrc]').height() / 2
+                let sh = 41 * lrc.select(ap.audio.currentTime) - $('div[data-lrc]').height() / 2 + 55
                 $('div[data-lrc]').animate({ scrollTop: sh }, 150);
             }
         }

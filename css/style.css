@@ -25,18 +25,6 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 
-/* lrc */
-
-div[data-lrc] p {
-    font-size: 13px;
-    line-height: 18px;
-    height: 36px;
-    overflow: hidden;
-    margin-top: 0;
-    margin-bottom: 5px;
-}
-
-
 /* header-wrapper */
 
 #header-wrapper {
@@ -449,7 +437,27 @@ div[data-lrc] p {
         flex-grow: 1;
         display: block;
         min-height: 55px;
+        padding-top: 55px;
         /* 1390 * 640*/
+    }
+    [data-player]>.info>[data-lrc] p {
+        font-size: 13px;
+        line-height: 18px;
+        height: 36px;
+        overflow: hidden;
+        margin-top: 0;
+        margin-bottom: 5px;
+    }
+    [data-player]>.info>[data-lrc] p.loading {
+        position: relative;
+        opacity: .3;
+        transition: all 0.3s ease-in-out;
+        animation-name: flash;
+        animation-duration: 2s;
+        animation-iteration-count: infinite;
+    }
+    [data-player]>.info>[data-lrc] p.loading.mdui-text-color-theme-accent {
+        animation-duration: 1s;
     }
 }
 
