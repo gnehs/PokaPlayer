@@ -423,7 +423,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     /* 1390 *600*/
 }
 
-@media screen and (min-width: 850px) and (min-height: 640px) {
+@media screen and (min-width: 850px) and (min-height: 690px) {
     [data-player]>.info {
         display: flex;
         max-width: 320px;
@@ -440,7 +440,7 @@ header.mdui-appbar.mdui-appbar-fixed {
         padding-top: 55px;
         position: relative;
         mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
-        /* 1390 * 640*/
+        /* 1390 * 690*/
     }
     [data-player]>.info>[data-lrc] p {
         font-size: 13px;
@@ -451,15 +451,14 @@ header.mdui-appbar.mdui-appbar-fixed {
         margin-bottom: 5px;
     }
     [data-player]>.info>[data-lrc] p.loading {
+        opacity: 0;
+    }
+    [data-player]>.info>[data-lrc] p.loading.mdui-text-color-theme-accent {
         position: relative;
-        opacity: .3;
         transition: all 0.3s ease-in-out;
         animation-name: flash;
         animation-duration: 2s;
         animation-iteration-count: infinite;
-    }
-    [data-player]>.info>[data-lrc] p.loading.mdui-text-color-theme-accent {
-        animation-duration: 1s;
     }
 }
 
