@@ -1,14 +1,40 @@
 // 宣告全域變數
 songList = [];
+const lrc = new Lyrics(`[00:00.000]歌詞讀取中`);
 // 初始化播放器
 const ap = new APlayer({
     container: document.getElementById('aplayer'),
     fixed: true
 });
-ap.on("play", function() {
+ap.on("play", async function() {
     //沒歌就隨機播放
     if (ap.list.audios.length == 0) play_random();
     updateMediaSession()
+})
+ap.on("loadstart", async function() {
+    // 弄歌詞
+    lrc.load(`[00:00.000]歌詞讀取中`)
+    var nowPlaying = ap.list.audios[ap.list.index],
+        name = nowPlaying.name,
+        artist = nowPlaying.artist
+    var lrc_result = await getLrc(artist == "未知的歌手" ? '' : artist, name),
+        lyric_regex = /\[[0-9]{2}\:[0-9]{2}(\.[0-9]{2})?\](.+)/i
+    console.log(lrc_result)
+    lrc_result = lrc_result.lyrics[0].additional.full_lyrics
+    if (lyric_regex.test(lrc_result)) {
+        lrc.load(lrc_result);
+        if ($("div[data-lrc]").length > 0) {
+            var html = ``
+            for (i = 0; i < lrc.getLyrics().length; i++) {
+                let text = lrc.getLyrics()[i].text
+                html += `<p>${text}</p>`
+            }
+            $("div[data-lrc]").html(html)
+            console.log(lrc.getLyrics())
+        }
+    } else {
+        lrc.load(`[00:00.000]無歌詞`)
+    }
 })
 ap.on("timeupdate", function() {
     var name = ap.list.audios[ap.list.index].name || ""
@@ -171,7 +197,6 @@ function HTML_showPins(items) {
                 //資料夾
                 var img = getBackground()
                 var title = pin.name
-                console.log(pin)
                 var subtitle = '播放清單'
                 var onclickActions = `show_playlist_songs(\`${pin.criteria.playlist}\`) `
                 break;
@@ -744,17 +769,9 @@ async function show_now() {
         <div class="info">
             <div class="title  mdui-text-truncate mdui-text-color-theme-accent">${name}</div>
             <div class="artist mdui-text-truncate mdui-text-color-theme-text">${artist+album}</div>
-            <!--<div data-lrc>
-                <p>作詞：佐香智久・天月-あまつき-</p>
-                <p>作曲：佐香智久</p>
-                <p>獨りよがりじゃなくて</p>
-                <p class="mdui-text-color-theme-accent">自分より大切なあなたに宿るもの</p>
-                <p>あぁもしも僕たちがあの映畫の</p>
-                <p>主人公とヒロインなら</p>
-                <p>どんな起承転結もフィナーレには</p>
-                <p>ドラマティックなキスをして</p>
-                <p>なんて言ってもうまくはいかない</p>
-            </div>-->
+            <div data-lrc>
+                <p>歌詞讀取中</p>
+            </div>
             <div class="ctrl">
                 <button class="mdui-btn mdui-btn-icon mdui-ripple random"><i class="mdui-icon material-icons">skip_previous</i></button>
                 <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="ap.skipBack()"><i class="mdui-icon material-icons">skip_previous</i></button>
@@ -796,6 +813,16 @@ async function show_now() {
     if ($(window).width() > 850 && $(window).height() > 560) {
         $('.mdui-list.songs').scrollTop(72 * ap.list.index - 100);
     }
+    // 歌詞
+    if (lrc.getLyrics()) {
+        var html = ``
+        for (i = 0; i < lrc.getLyrics().length; i++) {
+            let text = lrc.getLyrics()[i].text
+            html += `<p>${text}</p>`
+        }
+        $("div[data-lrc]").html(html)
+    }
+
     ap.on("pause", function() {
         $('[data-player] button.play[onclick="ap.toggle()"] i').text("play_arrow")
     })
@@ -822,9 +849,8 @@ async function show_now() {
         $("[data-player]>.info>.player-bar input[type=range]").val(0);
         mdui.updateSliders()
 
-        // 找找看歌詞
-        //ap.list.audios[ap.list.index].lrc 
-        //lyrics = await getLrc(artist, name)
+        // 歌詞
+        $("div[data-lrc]").html(`<p>歌詞讀取中</p>`)
     })
     ap.on("timeupdate", function() {
         currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00"
@@ -833,7 +859,16 @@ async function show_now() {
         $('[data-player]>.info>.player-bar>.timer').text(currentTime + '/' + duration);
         // 更新 timer
         $("[data-player]>.info>.player-bar input[type=range]").val(cent);
-        mdui.updateSliders()
+        mdui.updateSliders();
+        // 歌詞亮亮
+        if ($(window).width() > 850 && $(window).height() > 560) {
+            $('div[data-lrc] p').removeClass('mdui-text-color-theme-accent')
+            $('div[data-lrc] p').eq(lrc.select(ap.audio.currentTime)).addClass('mdui-text-color-theme-accent')
+                //$('div[data-lrc] p').eq(lrc.select(ap.audio.currentTime))[0].scrollHeight
+                //$('div[data-lrc]')[0].scrollHeight
+            let sh = 41 * lrc.select(ap.audio.currentTime) - $('div[data-lrc]').height() / 2
+            $('div[data-lrc]').scrollTop(sh);
+        }
     });
 
     $("[data-player]>.info>.player-bar input[type=range]").on("input", function() {

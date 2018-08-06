@@ -25,6 +25,18 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 
+/* lrc */
+
+div[data-lrc] p {
+    font-size: 13px;
+    line-height: 18px;
+    height: 36px;
+    overflow: hidden;
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+
 /* header-wrapper */
 
 #header-wrapper {
