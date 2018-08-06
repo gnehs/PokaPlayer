@@ -18,15 +18,12 @@ ap.on("loadstart", async function() {
         name = nowPlaying.name,
         artist = nowPlaying.artist
     var lrc_result = await getLrc(artist == "未知的歌手" ? '' : artist, name),
-        lyric_regex = /\[[A-Za-z0-9_.]{2}\:[A-Za-z0-9_.]{2}(\.[A-Za-z0-9_.]{2})?\](.+)/i;
-    console.log(lrc_result)
-    lrc_result = lrc_result.lyrics[0].additional.full_lyrics
-    if (lyric_regex.test(lrc_result)) {
+        lrc_result = lrc_result.lyrics[0].additional.full_lyrics,
+        lyric_regex = /\[([0-9.:]*)\]/i
+    if (lrc_result && lrc_result.match(lyric_regex))
         lrc.load(lrc_result);
-
-    } else {
+    else
         lrc.load(`[00:00.000]無歌詞`)
-    }
     if ($("div[data-lrc]").length > 0) {
         var html = ``
         for (i = 0; i < lrc.getLyrics().length; i++) {
@@ -34,7 +31,6 @@ ap.on("loadstart", async function() {
             html += `<p>${text}</p>`
         }
         $("div[data-lrc]").html(html)
-        console.log(lrc.getLyrics())
     }
 })
 ap.on("timeupdate", function() {
@@ -863,12 +859,16 @@ async function show_now() {
         mdui.updateSliders();
         // 歌詞亮亮
         if ($(window).width() > 850 && $(window).height() > 560) {
-            $('div[data-lrc] p').removeClass('mdui-text-color-theme-accent')
-            $('div[data-lrc] p').eq(lrc.select(ap.audio.currentTime)).addClass('mdui-text-color-theme-accent')
-                //$('div[data-lrc] p').eq(lrc.select(ap.audio.currentTime))[0].scrollHeight
-                //$('div[data-lrc]')[0].scrollHeight
-            let sh = 41 * lrc.select(ap.audio.currentTime) - $('div[data-lrc]').height() / 2
-            $('div[data-lrc]').scrollTop(sh);
+            let before = $('div[data-lrc] p.mdui-text-color-theme-accent')[0]
+            let after = $('div[data-lrc] p').eq(lrc.select(ap.audio.currentTime))[0]
+            if (before != after) {
+                $('div[data-lrc] p').removeClass('mdui-text-color-theme-accent')
+                $('div[data-lrc] p').eq(lrc.select(ap.audio.currentTime)).addClass('mdui-text-color-theme-accent')
+                    //$('div[data-lrc] p').eq(lrc.select(ap.audio.currentTime))[0].scrollHeight
+                    //$('div[data-lrc]')[0].scrollHeight
+                let sh = 41 * lrc.select(ap.audio.currentTime) - $('div[data-lrc]').height() / 2
+                $('div[data-lrc]').animate({ scrollTop: sh }, 150);
+            }
         }
     });
 
