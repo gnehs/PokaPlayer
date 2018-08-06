@@ -861,15 +861,15 @@ async function show_now() {
         mdui.updateSliders();
         // 歌詞亮亮
         if ($(window).width() > 850 && $(window).height() > 560) {
-            let before = $('div[data-lrc] p.mdui-text-color-theme-accent')[0]
-            let after = $('div[data-lrc] p').eq(lrc.select(ap.audio.currentTime))[0]
+            let before = $('[data-player] div[data-lrc] p.mdui-text-color-theme-accent')[0]
+            let after = $('[data-player] div[data-lrc] p').eq(lrc.select(ap.audio.currentTime))[0]
             if (before != after) {
-                $('div[data-lrc] p').removeClass('mdui-text-color-theme-accent')
-                $('div[data-lrc] p').eq(lrc.select(ap.audio.currentTime)).addClass('mdui-text-color-theme-accent')
+                $('[data-player] div[data-lrc] p').removeClass('mdui-text-color-theme-accent')
+                $('[data-player] div[data-lrc] p').eq(lrc.select(ap.audio.currentTime)).addClass('mdui-text-color-theme-accent')
                     //$('div[data-lrc] p').eq(lrc.select(ap.audio.currentTime))[0].scrollHeight
                     //$('div[data-lrc]')[0].scrollHeight
-                let sh = 41 * lrc.select(ap.audio.currentTime) - $('div[data-lrc]').height() / 2 + 55
-                $('div[data-lrc]').animate({ scrollTop: sh }, 150);
+                let sh = 41 * lrc.select(ap.audio.currentTime) - $('[data-player] div[data-lrc]').height() / 2 + 55
+                $('[data-player] div[data-lrc]').animate({ scrollTop: sh }, 150);
             }
         }
     });
@@ -896,19 +896,31 @@ async function show_now() {
 //- 歌詞
 function show_lrc() {
     var header = HTML_getHeader("歌詞")
-    var lyricHTML = `
-    <!--<div data-lrc>
-        <p>作詞：佐香智久・天月-あまつき-</p>
-        <p>作曲：佐香智久</p>
-        <p>獨りよがりじゃなくて</p>
-        <p class="mdui-text-color-theme-accent">自分より大切なあなたに宿るもの</p>
-        <p>あぁもしも僕たちがあの映畫の</p>
-        <p>主人公とヒロインなら</p>
-        <p>どんな起承転結もフィナーレには</p>
-        <p>ドラマティックなキスをして</p>
-        <p>なんて言ってもうまくはいかない</p>
-    </div>-->`
-    $("#content").html(header + lyricHTML)
+    $("#content").html(header + `<div data-lrc></div>`)
+        // 歌詞
+    if (lrc.getLyrics()) {
+        var html = ``
+        for (i = 0; i < lrc.getLyrics().length; i++) {
+            let text = lrc.getLyrics()[i].text
+            if (text == "歌詞讀取中")
+                html += `<p class="loading">${text}</p>`
+            else
+                html += `<p>${text}</p>`
+        }
+        $("#content>div[data-lrc]").html(html)
+    }
+
+    ap.on("timeupdate", function() {
+        // 歌詞亮亮
+        let before = $('#content>div[data-lrc] p.mdui-text-color-theme-accent')[0]
+        let after = $('#content>div[data-lrc] p').eq(lrc.select(ap.audio.currentTime))[0]
+        if (before != after) {
+            $('#content>div[data-lrc] p').removeClass('mdui-text-color-theme-accent')
+            $('#content>div[data-lrc] p').eq(lrc.select(ap.audio.currentTime)).addClass('mdui-text-color-theme-accent')
+            let sh = 30 * lrc.select(ap.audio.currentTime) - $('#content>div[data-lrc]').height() / 2 + 30 + 80
+            $('#content>div[data-lrc]').animate({ scrollTop: sh }, 150);
+        }
+    });
 }
 //- 設定
 async function show_settings() {
