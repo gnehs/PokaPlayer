@@ -438,6 +438,8 @@ header.mdui-appbar.mdui-appbar-fixed {
         display: block;
         min-height: 55px;
         padding-top: 55px;
+        position: relative;
+        mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
         /* 1390 * 640*/
     }
     [data-player]>.info>[data-lrc] p {

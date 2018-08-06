@@ -18,11 +18,11 @@ ap.on("loadstart", async function() {
         name = nowPlaying.name,
         artist = nowPlaying.artist
     var lrc_result = await getLrc(artist, name),
-        lrc_result = lrc_result.lyrics[0].additional.full_lyrics,
         lyric_regex = /\[([0-9.:]*)\]/i
-    if (lrc_result != undefined && lrc_result.match(lyric_regex))
-        lrc.load(lrc_result);
-    else
+    if (lrc_result && lrc_result.lyrics[0].additional.full_lyrics.match(lyric_regex)) {
+        var full_lyrics = lrc_result.lyrics[0].additional.full_lyrics
+        lrc.load(full_lyrics);
+    } else
         lrc.load(`[00:00.000]無歌詞`)
     if ($("div[data-lrc]").length > 0) {
         var html = ``
@@ -767,7 +767,6 @@ async function show_now() {
             <div class="title  mdui-text-truncate mdui-text-color-theme-accent">${name}</div>
             <div class="artist mdui-text-truncate mdui-text-color-theme-text">${artist+album}</div>
             <div data-lrc>
-                <p class="loading">歌詞讀取中</p>
             </div>
             <div class="ctrl">
                 <button class="mdui-btn mdui-btn-icon mdui-ripple random"><i class="mdui-icon material-icons">skip_previous</i></button>
