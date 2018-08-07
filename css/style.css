@@ -448,7 +448,6 @@ header.mdui-appbar.mdui-appbar-fixed {
         font-size: 14px;
         line-height: 30px;
         height: 30px;
-        overflow: hidden;
         margin-top: 0;
         margin-bottom: 5px;
     }
@@ -502,6 +501,19 @@ header.mdui-appbar.mdui-appbar-fixed {
     animation-iteration-count: infinite;
 }
 
+[data-lrc] p {
+    transition: all 0.3s ease-in-out;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    opacity: .7;
+}
+
+[data-lrc] p.mdui-text-color-theme-accent,
+[data-lrc] p.mdui-text-color-theme-accent+p {
+    opacity: 1;
+}
+
 #content>[data-lrc] {
     padding-top: 80px;
     padding-bottom: 80px;
@@ -522,16 +534,10 @@ header.mdui-appbar.mdui-appbar-fixed {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    opacity: .7;
 }
 
 #content>[data-lrc] p.mdui-text-color-theme-accent {
     font-size: 16px;
     line-height: 30px;
     height: 30px;
-}
-
-#content>[data-lrc] p.mdui-text-color-theme-accent,
-#content>[data-lrc] p.mdui-text-color-theme-accent+p {
-    opacity: 1;
 }
