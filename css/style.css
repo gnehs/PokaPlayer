@@ -499,15 +499,27 @@ header.mdui-appbar.mdui-appbar-fixed {
     content: '';
     position: absolute;
     width: 5.5em;
-    height: 1px;
+    height: 2px;
     background: currentColor;
     margin: 0 auto;
-    top: 1.8em;
-    animation-name: flash;
-    animation-duration: 2s;
-    animation-iteration-count: infinite;
+    top: calc(1em + 3px);
     left: 0;
     right: 0;
+    animation-name: lrcloading;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    transform-origin: 0% 0%;
+}
+
+@keyframes lrcloading {
+    0% {
+        transform: scaleX(0);
+        opacity: 0;
+    }
+    100% {
+        transform: scaleX(1);
+        opacity: 1;
+    }
 }
 
 [data-lrc] p {
@@ -524,6 +536,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     padding-top: 80px;
     text-align: center;
     height: calc(100vh - 96px - 20px - 32px - 80px);
+    overflow: hidden;
     overflow-y: scroll;
     margin-bottom: -64px;
     mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
@@ -534,5 +547,13 @@ header.mdui-appbar.mdui-appbar-fixed {
     font-size: calc(12px + 1vmin);
     line-height: 2em;
     margin: 0;
-    transition: color 0.3s ease-in-out;
+    transition: color 0.3s ease, transform .5s ease, opacity .2s linear;
+}
+
+#content>[data-lrc] p.mdui-text-color-theme-accent {
+    transform: scale(1.1);
+}
+
+#content>[data-lrc] p.mdui-text-color-theme-accent+p {
+    transform: scale(1.05);
 }
