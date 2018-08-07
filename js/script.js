@@ -13,7 +13,7 @@ ap.on("play", async function() {
 })
 ap.on("loadedmetadata", async function() {
     lrc.load(`[00:00.000]歌詞讀取中`)
-    $("div[data-lrc]").html(`<p class="loading">歌詞讀取中</p>`)
+    $("div[data-lrc=\"inner\"]").html(`<p class="loading">歌詞讀取中</p>`)
     var nowPlaying = ap.list.audios[ap.list.index],
         name = nowPlaying.name,
         id = nowPlaying.id,
@@ -22,9 +22,9 @@ ap.on("loadedmetadata", async function() {
 
     var lrc_result = await getLrcByID(id),
         lrc_s = lrc_result.lyrics
-    if (lrc_s == "") {
+    if (lrc_s == "" || !lrc_s.match(lyric_regex)) {
         lrc_result = await getLrc(artist, name)
-        lrc_s = lrc_result.lyrics[0].additional.full_lyrics
+        lrc_s = lrc_result.lyrics[0].additional.full_lyrics || false
     }
     if (lrc_s && lrc_s.match(lyric_regex)) {
         lrc.load(lrc_s);
@@ -36,7 +36,7 @@ ap.on("loadedmetadata", async function() {
             let text = lrc.getLyrics()[i].text
             html += `<p>${text}</p>`
         }
-        $("div[data-lrc]").html(html)
+        $("div[data-lrc=\"inner\"]").html(html)
     }
 })
 ap.on("timeupdate", function() {
@@ -773,6 +773,7 @@ async function show_now() {
             <div class="title  mdui-text-truncate mdui-text-color-theme-accent">${name}</div>
             <div class="artist mdui-text-truncate mdui-text-color-theme-text">${artist+album}</div>
             <div data-lrc>
+                <div data-lrc="inner"></div>
             </div>
             <div class="ctrl">
                 <button class="mdui-btn mdui-btn-icon mdui-ripple random"><i class="mdui-icon material-icons">skip_previous</i></button>
@@ -825,7 +826,7 @@ async function show_now() {
             else
                 html += `<p>${text}</p>`
         }
-        $("div[data-lrc]").html(html)
+        $('div[data-lrc="inner"]').html(html)
     }
 
     ap.on("pause", function() {
@@ -864,7 +865,7 @@ async function show_now() {
                 else
                     html += `<p>${text}</p>`
             }
-            $("div[data-lrc]").html(html)
+            $('[data-lrc="inner"]').html(html)
         }
     })
     ap.on("timeupdate", function() {
@@ -877,15 +878,13 @@ async function show_now() {
         mdui.updateSliders();
         // 歌詞亮亮
         if ($(window).width() > 850 && $(window).height() > 560) {
-            let before = $('[data-player] div[data-lrc] p.mdui-text-color-theme-accent')[0]
-            let after = $('[data-player] div[data-lrc] p').eq(lrc.select(ap.audio.currentTime))[0]
+            let before = $('[data-player] div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0]
+            let after = $('[data-player] div[data-lrc="inner"] p').eq(lrc.select(ap.audio.currentTime))[0]
             if (before != after) {
-                $('[data-player] div[data-lrc] p').removeClass('mdui-text-color-theme-accent')
-                $('[data-player] div[data-lrc] p').eq(lrc.select(ap.audio.currentTime)).addClass('mdui-text-color-theme-accent')
-                    //$('div[data-lrc] p').eq(lrc.select(ap.audio.currentTime))[0].scrollHeight
-                    //$('div[data-lrc]')[0].scrollHeight
-                let sh = 35 * lrc.select(ap.audio.currentTime) - $('[data-player] div[data-lrc]').height() / 2 + 20
-                $('[data-player] div[data-lrc]').animate({ scrollTop: sh }, 150);
+                $('[data-player] div[data-lrc="inner"] p').removeClass('mdui-text-color-theme-accent')
+                $('[data-player] div[data-lrc="inner"] p').eq(lrc.select(ap.audio.currentTime)).addClass('mdui-text-color-theme-accent')
+                let sh = $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].offsetTop - $('[data-player] .info>div[data-lrc]').height() / 2 - $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].clientHeight
+                $('[data-player] .info>div[data-lrc]').animate({ scrollTop: sh }, 150);
             }
         }
     });
@@ -911,7 +910,7 @@ async function show_now() {
 }
 //- 歌詞
 function show_lrc() {
-    $("#content").html(`<div data-lrc></div>`)
+    $("#content").html(`<div data-lrc><div data-lrc="inner"></div></div>`)
         // 歌詞
     if (lrc.getLyrics()) {
         var html = ``
@@ -922,18 +921,17 @@ function show_lrc() {
             else
                 html += `<p>${text}</p>`
         }
-        $("#content>div[data-lrc]").html(html)
+        $("#content>div[data-lrc]>[data-lrc=\"inner\"]").html(html)
     }
-
     ap.on("timeupdate", function() {
         // 歌詞亮亮
-        let before = $('#content>div[data-lrc] p.mdui-text-color-theme-accent')[0]
-        let after = $('#content>div[data-lrc] p').eq(lrc.select(ap.audio.currentTime))[0]
+        let before = $('#content>div[data-lrc]>div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0]
+        let after = $('#content>div[data-lrc]>div[data-lrc="inner"] p').eq(lrc.select(ap.audio.currentTime))[0]
         if (before != after) {
-            $('#content>div[data-lrc] p').removeClass('mdui-text-color-theme-accent')
-            $('#content>div[data-lrc] p').eq(lrc.select(ap.audio.currentTime)).addClass('mdui-text-color-theme-accent')
-            let sh = 30 * lrc.select(ap.audio.currentTime) - $('#content>div[data-lrc]').height() / 2 + 30 + 80
-            $('#content>div[data-lrc]').animate({ scrollTop: sh }, 150);
+            $('#content>div[data-lrc]>div[data-lrc="inner"] p').removeClass('mdui-text-color-theme-accent')
+            $('#content>div[data-lrc]>div[data-lrc="inner"] p').eq(lrc.select(ap.audio.currentTime)).addClass('mdui-text-color-theme-accent')
+            let top = $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].offsetTop - $('div[data-lrc]').height() / 2 - $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].clientHeight
+            $('#content>div[data-lrc]').animate({ scrollTop: top }, 150);
         }
     });
 }
