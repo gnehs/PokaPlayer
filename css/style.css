@@ -496,9 +496,22 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 [data-lrc] p.loading.mdui-text-color-theme-accent {
     transition: all 0.3s ease-in-out;
+    position: relative;
+}
+
+[data-lrc] p.loading.mdui-text-color-theme-accent::after {
+    content: '';
+    position: absolute;
+    width: 5.5em;
+    height: 1px;
+    background: currentColor;
+    margin: 0 auto;
+    top: 1.8em;
     animation-name: flash;
     animation-duration: 2s;
     animation-iteration-count: infinite;
+    left: 0;
+    right: 0;
 }
 
 [data-lrc] p {
