@@ -884,7 +884,7 @@ async function show_now() {
                 $('[data-player] div[data-lrc="inner"] p').removeClass('mdui-text-color-theme-accent')
                 $('[data-player] div[data-lrc="inner"] p').eq(lrc.select(ap.audio.currentTime)).addClass('mdui-text-color-theme-accent')
                 let sh = $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].offsetTop - $('[data-player] .info>div[data-lrc]').height() / 2 - $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].clientHeight
-                $('[data-player] .info>div[data-lrc]').animate({ scrollTop: sh }, 150);
+                $('[data-player] .info>div[data-lrc]').animate({ scrollTop: sh }, 300);
             }
         }
     });
@@ -931,7 +931,7 @@ function show_lrc() {
             $('#content>div[data-lrc]>div[data-lrc="inner"] p').removeClass('mdui-text-color-theme-accent')
             $('#content>div[data-lrc]>div[data-lrc="inner"] p').eq(lrc.select(ap.audio.currentTime)).addClass('mdui-text-color-theme-accent')
             let top = $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].offsetTop - $('div[data-lrc]').height() / 2 - $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].clientHeight
-            $('#content>div[data-lrc]').animate({ scrollTop: top }, 150);
+            $('#content>div[data-lrc]').animate({ scrollTop: top }, 300);
         }
     });
 }

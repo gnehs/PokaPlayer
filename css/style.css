@@ -547,7 +547,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     font-size: calc(12px + 1vmin);
     line-height: 2em;
     margin: 0;
-    transition: color 0.3s ease, transform .5s ease, opacity .2s linear;
+    transition: color .3s linear, transform .5s ease, opacity .3s linear;
 }
 
 #content>[data-lrc] p.mdui-text-color-theme-accent {
