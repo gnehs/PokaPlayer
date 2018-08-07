@@ -24,7 +24,7 @@ ap.on("loadedmetadata", async function() {
         lrc_s = lrc_result.lyrics
     if (lrc_s == "" || !lrc_s.match(lyric_regex)) {
         lrc_result = await getLrc(artist, name)
-        lrc_s = lrc_result.lyrics[0].additional.full_lyrics || false
+        lrc_s = lrc_result ? lrc_result.lyrics[0].additional.full_lyrics : false
     }
     if (lrc_s && lrc_s.match(lyric_regex)) {
         lrc.load(lrc_s);
@@ -877,7 +877,7 @@ async function show_now() {
         $("[data-player]>.info>.player-bar input[type=range]").val(cent);
         mdui.updateSliders();
         // 歌詞亮亮
-        if ($(window).width() > 850 && $(window).height() > 560) {
+        if ($(window).width() > 850 && $(window).height() > 750) {
             let before = $('[data-player] div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0]
             let after = $('[data-player] div[data-lrc="inner"] p').eq(lrc.select(ap.audio.currentTime))[0]
             if (before != after) {

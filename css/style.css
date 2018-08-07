@@ -423,7 +423,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     /* 1390 *600*/
 }
 
-@media screen and (min-width: 850px) and (min-height: 690px) {
+@media screen and (min-width: 850px) and (min-height: 750px) {
     [data-player]>.info {
         display: flex;
         max-width: 320px;
@@ -446,6 +446,9 @@ header.mdui-appbar.mdui-appbar-fixed {
     }
     [data-player]>.info>[data-lrc] p {
         font-size: calc(8px + 1vmin);
+    }
+    [data-player]>.info>[data-lrc]>[data-lrc="inner"] {
+        padding: 80px 0;
     }
 }
 
@@ -486,10 +489,6 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 /* 歌詞頁籤 */
 
-[data-lrc="inner"] {
-    padding: 30vh 0;
-}
-
 [data-lrc] p.loading {
     opacity: 0;
 }
@@ -506,7 +505,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     height: 2px;
     background: currentColor;
     margin: 0 auto;
-    top: calc(1em + 3px);
+    top: calc(1.5em + 3px);
     left: 0;
     right: 0;
     animation-name: lrcloading;
@@ -547,17 +546,13 @@ header.mdui-appbar.mdui-appbar-fixed {
     -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
 }
 
+#content>[data-lrc]>[data-lrc="inner"] {
+    padding: 30vh 0;
+}
+
 #content>[data-lrc] p {
     font-size: calc(12px + 1vmin);
     line-height: 2em;
     margin: 0;
-    transition: color .3s linear, transform .5s ease, opacity .3s linear;
-}
-
-#content>[data-lrc] p.mdui-text-color-theme-accent {
-    transform: scale(1.1);
-}
-
-#content>[data-lrc] p.mdui-text-color-theme-accent+p {
-    transform: scale(1.05);
+    transition: color .3s linear, opacity .3s linear;
 }
