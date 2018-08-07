@@ -878,11 +878,12 @@ async function show_now() {
         mdui.updateSliders();
         // 歌詞亮亮
         if ($(window).width() > 850 && $(window).height() > 750) {
+            let nowLrc = lrc.select(ap.audio.currentTime)
             let before = $('[data-player] div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0]
-            let after = $('[data-player] div[data-lrc="inner"] p').eq(lrc.select(ap.audio.currentTime))[0]
-            if (before != after) {
+            let after = $('[data-player] div[data-lrc="inner"] p').eq(nowLrc)[0]
+            if (before != after && nowLrc > -1) {
                 $('[data-player] div[data-lrc="inner"] p').removeClass('mdui-text-color-theme-accent')
-                $('[data-player] div[data-lrc="inner"] p').eq(lrc.select(ap.audio.currentTime)).addClass('mdui-text-color-theme-accent')
+                $('[data-player] div[data-lrc="inner"] p').eq(nowLrc).addClass('mdui-text-color-theme-accent')
                 let sh = $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].offsetTop - $('[data-player] .info>div[data-lrc]').height() / 2 - $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].clientHeight
                 $('[data-player] .info>div[data-lrc]').animate({ scrollTop: sh }, 300);
             }
@@ -925,11 +926,12 @@ function show_lrc() {
     }
     ap.on("timeupdate", function() {
         // 歌詞亮亮
+        let nowLrc = lrc.select(ap.audio.currentTime)
         let before = $('#content>div[data-lrc]>div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0]
-        let after = $('#content>div[data-lrc]>div[data-lrc="inner"] p').eq(lrc.select(ap.audio.currentTime))[0]
-        if (before != after) {
+        let after = $('#content>div[data-lrc]>div[data-lrc="inner"] p').eq(nowLrc)[0]
+        if (before != after && nowLrc > -1) {
             $('#content>div[data-lrc]>div[data-lrc="inner"] p').removeClass('mdui-text-color-theme-accent')
-            $('#content>div[data-lrc]>div[data-lrc="inner"] p').eq(lrc.select(ap.audio.currentTime)).addClass('mdui-text-color-theme-accent')
+            $('#content>div[data-lrc]>div[data-lrc="inner"] p').eq(nowLrc).addClass('mdui-text-color-theme-accent')
             let top = $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].offsetTop - $('div[data-lrc]').height() / 2 - $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].clientHeight
             $('#content>div[data-lrc]').animate({ scrollTop: top }, 300);
         }
