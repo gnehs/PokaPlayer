@@ -13,6 +13,7 @@ ap.on("play", async function() {
 })
 ap.on("canplay", async function() {
     lrc.load(`[00:00.000]歌詞讀取中`)
+    $("div[data-lrc]").html(`<p class="loading">歌詞讀取中</p>`)
     var nowPlaying = ap.list.audios[ap.list.index],
         name = nowPlaying.name,
         artist = nowPlaying.artist
