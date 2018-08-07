@@ -486,6 +486,10 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 /* 歌詞頁籤 */
 
+[data-lrc="inner"] {
+    padding: 30vh 0;
+}
+
 [data-lrc] p.loading {
     opacity: 0;
 }
