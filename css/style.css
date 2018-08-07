@@ -529,7 +529,6 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 #content>[data-lrc] {
     padding-top: 80px;
-    padding-bottom: 80px;
     text-align: center;
     height: calc(100vh - 96px - 20px - 32px - 80px);
     overflow-y: scroll;

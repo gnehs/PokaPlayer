@@ -16,12 +16,18 @@ ap.on("loadedmetadata", async function() {
     $("div[data-lrc]").html(`<p class="loading">歌詞讀取中</p>`)
     var nowPlaying = ap.list.audios[ap.list.index],
         name = nowPlaying.name,
-        artist = nowPlaying.artist
-    var lrc_result = await getLrc(artist, name),
+        id = nowPlaying.id,
+        artist = nowPlaying.artist,
         lyric_regex = /\[([0-9.:]*)\]/i
-    if (lrc_result && lrc_result.lyrics[0].additional.full_lyrics.match(lyric_regex)) {
-        var full_lyrics = lrc_result.lyrics[0].additional.full_lyrics
-        lrc.load(full_lyrics);
+
+    var lrc_result = await getLrcByID(id),
+        lrc_s = lrc_result.lyrics
+    if (lrc_s == "") {
+        lrc_result = await getLrc(artist, name)
+        lrc_s = lrc_result.lyrics[0].additional.full_lyrics
+    }
+    if (lrc_s && lrc_s.match(lyric_regex)) {
+        lrc.load(lrc_s);
     } else
         lrc.load(`[00:00.000]無歌詞`)
     if ($("div[data-lrc]").length > 0) {
@@ -1237,6 +1243,10 @@ async function getLrc(artist, title) {
     var lrc = await getAPI("AudioStation/lyrics_search.cgi", "SYNO.AudioStation.LyricsSearch", "searchlyrics", PARAMS_JSON, 2)
     return lrc.data
 
+}
+async function getLrcByID(id) {
+    var lrc = await getAPI("AudioStation/lyrics.cgi", "SYNO.AudioStation.Lyrics", "getlyrics", [{ key: "id", "value": id }], 2)
+    return lrc.data
 }
 
 //- 取得歌曲連結
