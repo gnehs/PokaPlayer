@@ -440,6 +440,7 @@ header.mdui-appbar.mdui-appbar-fixed {
         padding-top: 55px;
         position: relative;
         mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+        -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
         /* 1390 * 690*/
     }
     [data-player]>.info>[data-lrc] p {
@@ -508,6 +509,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     margin-bottom: -64px;
     font-size: 14px;
     mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
 }
 
 #content>[data-lrc] p {
