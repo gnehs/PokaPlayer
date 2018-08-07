@@ -438,6 +438,7 @@ header.mdui-appbar.mdui-appbar-fixed {
         display: block;
         min-height: 55px;
         padding-top: 55px;
+        padding-bottom: 55px;
         position: relative;
         mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
         -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
@@ -503,6 +504,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 #content>[data-lrc] {
     padding-top: 80px;
+    padding-bottom: 80px;
     text-align: center;
     height: calc(100vh - 96px - 20px - 32px - 80px);
     overflow-y: scroll;
