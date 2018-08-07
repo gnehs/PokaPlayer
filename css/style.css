@@ -445,9 +445,9 @@ header.mdui-appbar.mdui-appbar-fixed {
         /* 1390 * 690*/
     }
     [data-player]>.info>[data-lrc] p {
-        font-size: 13px;
-        line-height: 18px;
-        height: 36px;
+        font-size: 14px;
+        line-height: 30px;
+        height: 30px;
         overflow: hidden;
         margin-top: 0;
         margin-bottom: 5px;

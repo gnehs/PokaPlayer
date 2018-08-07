@@ -11,7 +11,7 @@ ap.on("play", async function() {
     if (ap.list.audios.length == 0) play_random();
     updateMediaSession()
 })
-ap.on("canplay", async function() {
+ap.on("loadedmetadata", async function() {
     lrc.load(`[00:00.000]歌詞讀取中`)
     $("div[data-lrc]").html(`<p class="loading">歌詞讀取中</p>`)
     var nowPlaying = ap.list.audios[ap.list.index],
@@ -878,7 +878,7 @@ async function show_now() {
                 $('[data-player] div[data-lrc] p').eq(lrc.select(ap.audio.currentTime)).addClass('mdui-text-color-theme-accent')
                     //$('div[data-lrc] p').eq(lrc.select(ap.audio.currentTime))[0].scrollHeight
                     //$('div[data-lrc]')[0].scrollHeight
-                let sh = 41 * lrc.select(ap.audio.currentTime) - $('[data-player] div[data-lrc]').height() / 2 + 55
+                let sh = 35 * lrc.select(ap.audio.currentTime) - $('[data-player] div[data-lrc]').height() / 2 + 20
                 $('[data-player] div[data-lrc]').animate({ scrollTop: sh }, 150);
             }
         }
