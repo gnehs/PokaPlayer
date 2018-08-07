@@ -450,9 +450,6 @@ header.mdui-appbar.mdui-appbar-fixed {
         margin-top: 0;
         margin-bottom: 5px;
     }
-    [data-player]>.info>[data-lrc] p.loading {
-        opacity: 0;
-    }
 }
 
 @media screen and (max-width: 554px) {
@@ -492,6 +489,10 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 /* 歌詞頁籤 */
 
+[data-lrc] p.loading {
+    opacity: 0;
+}
+
 [data-lrc] p.loading.mdui-text-color-theme-accent {
     transition: all 0.3s ease-in-out;
     animation-name: flash;
@@ -502,10 +503,10 @@ header.mdui-appbar.mdui-appbar-fixed {
 #content>[data-lrc] {
     padding-top: 80px;
     text-align: center;
-    height: calc(100vh - 96px - 20px - 150px - 32px - 80px);
+    height: calc(100vh - 96px - 20px - 32px - 80px);
     overflow-y: scroll;
     margin-bottom: -64px;
-    font-size: 18px;
+    font-size: 14px;
     mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
 }
 
@@ -517,10 +518,16 @@ header.mdui-appbar.mdui-appbar-fixed {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    opacity: .7;
 }
 
 #content>[data-lrc] p.mdui-text-color-theme-accent {
-    font-size: 20px;
+    font-size: 16px;
     line-height: 30px;
     height: 30px;
+}
+
+#content>[data-lrc] p.mdui-text-color-theme-accent,
+#content>[data-lrc] p.mdui-text-color-theme-accent+p {
+    opacity: 1;
 }

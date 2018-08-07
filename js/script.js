@@ -11,8 +11,7 @@ ap.on("play", async function() {
     if (ap.list.audios.length == 0) play_random();
     updateMediaSession()
 })
-ap.on("loadstart", async function() {
-    // 弄歌詞
+ap.on("canplay", async function() {
     lrc.load(`[00:00.000]歌詞讀取中`)
     var nowPlaying = ap.list.audios[ap.list.index],
         name = nowPlaying.name,
@@ -849,7 +848,17 @@ async function show_now() {
         mdui.updateSliders()
 
         // 歌詞
-        $("div[data-lrc]").html(`<p class="loading">歌詞讀取中</p>`)
+        if (lrc.getLyrics()) {
+            var html = ``
+            for (i = 0; i < lrc.getLyrics().length; i++) {
+                let text = lrc.getLyrics()[i].text
+                if (text == "歌詞讀取中")
+                    html += `<p class="loading">${text}</p>`
+                else
+                    html += `<p>${text}</p>`
+            }
+            $("div[data-lrc]").html(html)
+        }
     })
     ap.on("timeupdate", function() {
         currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00"
@@ -895,8 +904,7 @@ async function show_now() {
 }
 //- 歌詞
 function show_lrc() {
-    var header = HTML_getHeader("歌詞")
-    $("#content").html(header + `<div data-lrc></div>`)
+    $("#content").html(`<div data-lrc></div>`)
         // 歌詞
     if (lrc.getLyrics()) {
         var html = ``
