@@ -532,7 +532,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 [data-lrc] p.mdui-text-color-theme-accent,
-[data-lrc] p.mdui-text-color-theme-accent+p {
+[data-lrc] p.mdui-text-color-theme-accent:not(:empty)+p {
     opacity: 1;
 }
 
