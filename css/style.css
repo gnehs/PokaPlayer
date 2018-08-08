@@ -25,6 +25,17 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 
+/* 設定頁面 */
+
+#PP_bg .mdui-btn+.mdui-btn {
+    margin-left: 5px;
+}
+
+#PP_bg .mdui-btn {
+    margin-top: 5px;
+}
+
+
 /* header-wrapper */
 
 #header-wrapper {
