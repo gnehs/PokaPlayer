@@ -448,7 +448,7 @@ header.mdui-appbar.mdui-appbar-fixed {
         font-size: calc(8px + 1vmin);
     }
     [data-player]>.info>[data-lrc]>[data-lrc="inner"] {
-        padding: 80px 0;
+        padding: 20px 0;
     }
 }
 
@@ -519,9 +519,13 @@ header.mdui-appbar.mdui-appbar-fixed {
         transform: scaleX(0);
         opacity: 0;
     }
-    100% {
+    90% {
         transform: scaleX(1);
         opacity: 1;
+    }
+    100% {
+        transform: scaleX(1);
+        opacity: 0;
     }
 }
 
@@ -532,7 +536,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 [data-lrc] p.mdui-text-color-theme-accent,
-[data-lrc] p.mdui-text-color-theme-accent+p {
+[data-lrc] p.mdui-text-color-theme-accent:not(:empty)+p {
     opacity: 1;
 }
 
