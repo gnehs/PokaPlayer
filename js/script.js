@@ -936,7 +936,7 @@ async function show_settings() {
                         if (update.data == "upgrade") {
                             mdui.snackbar('伺服器重新啟動', {
                                 buttonText: '重新連接',
-                                onButtonClick: () => window.location.replace('//' + window.location.hostname),
+                                onButtonClick: () => window.location.reload(),
                             })
                         }
                         else if (update.data == "socket") {
