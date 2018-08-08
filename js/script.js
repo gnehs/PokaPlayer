@@ -780,9 +780,36 @@ async function show_settings() {
         <div class="mdui-typo-caption-opacity">載入所有圖片，就像平常那樣</div>
     </div>` }
     var bg = (s) => { return `<div class="mdui-textfield">
-        <input class="mdui-textfield-input" placeholder="隨機圖片" value="${s=="/og/og.png"?'':s}"/>
-        <div class="mdui-textfield-helper">填入網址、Base64 Image或任何你認為他會正常運作的東西來取代原本的隨機圖片，若要回復預設值直接將欄位清空即可</div>
+        <input class="mdui-textfield-input" placeholder="隨機圖片" value="${s}"/>
+        <div class="mdui-textfield-helper">填入網址或是點擊下方來源來取代原本的隨機圖片</div>
     </div>` }
+    var bgSrc = () => {
+        var imgs = [{
+            name: '預設',
+            src: '/og/og.png'
+        }, {
+            name: 'The Dog API',
+            src: 'https://api.thedogapi.com/v1/images/search?format=src&mime_types=image/gif'
+        }, {
+            name: 'The Cat API',
+            src: 'https://thecatapi.com/api/images/get?format=src&type=gif'
+        }, {
+            name: 'LoremFlickr',
+            src: 'https://loremflickr.com/1920/1080'
+        }, {
+            name: 'Unsplash Source',
+            src: 'https://source.unsplash.com/random'
+        }, {
+            name: 'Picsum Photos',
+            src: 'https://picsum.photos/1920/1080/?random'
+        }]
+        var html = ''
+        for (i = 0; i < imgs.length; i++) {
+            var img = imgs[i]
+            html += `<a class="mdui-btn mdui-ripple mdui-btn-raised" data-src="${img.src}">${img.name}</a>`
+        }
+        return html
+    }
 
     var setting_theme = title("主題") +
         subtitle("主題色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Theme">${themecolor(window.localStorage["mdui-theme-color"])}</form>` +
@@ -793,7 +820,7 @@ async function show_settings() {
 
     var imgRes = title("圖片流量節省") + `<form class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4" id="PP_imgRes">${imgRes(window.localStorage["imgRes"])}</form>`
 
-    var bg = title("隨機圖片設定") + `<form id="PP_bg">${bg(window.localStorage["randomImg"])}</form>`
+    var bg = title("隨機圖片設定") + `<form id="PP_bg">${bg(window.localStorage["randomImg"])}<br>${bgSrc()}</form>`
 
     var info = title("Audio Station 狀態") + `<div id="DSMinfo" class="mdui-typo"><strong>版本</strong> 載入中</div>`
 
@@ -809,21 +836,24 @@ async function show_settings() {
     mdui.mutation();
 
     $("#PP_bg input").change(function() {
-        if ($(this).val()) {
-            window.localStorage["randomImg"] = $(this).val()
-            mdui.snackbar({
-                message: `隨機圖片已變更為 ${$(this).val()}，該變更並不會在此頁生效`,
-                position: getSnackbarPosition(),
-                timeout: 1500
-            });
-        } else {
-            window.localStorage["randomImg"] = "/og/og.png"
-            mdui.snackbar({
-                message: `隨機圖片已回復預設值，該變更並不會在此頁生效`,
-                position: getSnackbarPosition(),
-                timeout: 1500
-            });
-        }
+        window.localStorage["randomImg"] = $(this).val()
+        mdui.snackbar({
+            message: `隨機圖片已變更為 ${$(this).val()}，該變更並不會在此頁生效`,
+            position: getSnackbarPosition(),
+            timeout: 1500
+        });
+    })
+    $("#PP_bg [data-src]").click(function() {
+        let name = $(this).text()
+        let src = $(this).attr('data-src')
+        window.localStorage["randomImg"] = src
+        $('#PP_bg input').val(src);
+        mdui.snackbar({
+            message: `隨機圖片已變更為 ${name}，該變更並不會在此頁生效`,
+            position: getSnackbarPosition(),
+            timeout: 1500
+        });
+
     })
     $("#PP_Res input").change(function() {
         window.localStorage["musicRes"] = $(this).val()
