@@ -10,6 +10,7 @@ ap.on("play", async function() {
     //沒歌就隨機播放
     if (ap.list.audios.length == 0) play_random();
     updateMediaSession()
+    lrc.load(`[00:00.000]歌詞讀取中`) // 歌詞清空
 })
 ap.on("loadedmetadata", async function() {
     lrc.load(`[00:00.000]歌詞讀取中`)
