@@ -74,6 +74,21 @@ function pp_decode(str) {
     return base64.decode(decodeURIComponent(str))
 }
 
+// 更新
+
+app.get('/upgrade', (req, res) => {
+    if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
+        res.status(403).send('Permission Denied Desu')
+    else {
+        require('simple-git')()
+            .pull((err, update) => {
+                if(update && update.summary.changes) {
+                    process.exit()
+                }
+            });
+    }
+})
+
 // get info
 app.get('/info', (req, res) => {
     if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
