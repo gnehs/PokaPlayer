@@ -794,6 +794,9 @@ async function show_settings() {
             name: 'The Cat API',
             src: 'https://thecatapi.com/api/images/get?format=src&type=gif'
         }, {
+            name: 'LoremFlickr',
+            src: 'https://loremflickr.com/1920/1080'
+        }, {
             name: 'Unsplash Source',
             src: 'https://source.unsplash.com/random'
         }, {
