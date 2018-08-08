@@ -11,7 +11,7 @@
         "type": "git",
         "url": "git+https://github.com/gnehs/PokaPlayer.git"
     },
-    "author": "gnehs",
+    "author": "gnehs, rextw.com",
     "license": "MIT",
     "bugs": {
         "url": "https://github.com/gnehs/PokaPlayer/issues"
