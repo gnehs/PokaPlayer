@@ -83,7 +83,14 @@ app.get('/upgrade', (req, res) => {
         res.status(403).send('Permission Denied Desu')
     else {
         res.send('upgrade')
-        process.exit()
+        require('child_process').exec('npm restart', (error, stdout, stderr) => {
+            if (error) {
+                console.error(`exec error: ${error}`);
+                return;
+            }
+            console.log(`stdout: ${stdout}`);
+            console.log(`stderr: ${stderr}`);
+        });
     }
 })
 
