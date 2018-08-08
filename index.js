@@ -82,15 +82,8 @@ app.get('/upgrade', (req, res) => {
     if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
         res.status(403).send('Permission Denied Desu')
     else {
-        require('simple-git')()
-            .pull((err, update) => {
-                if (update && update.summary.changes) {
-                    res.send('upgrade')
-                    process.exit()
-                } else {
-                    res.send('no update')
-                }
-            });
+        res.send('upgrade')
+        process.exit()
     }
 })
 
