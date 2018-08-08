@@ -785,7 +785,7 @@ async function show_settings() {
     </div>` }
     var bgSrc = () => {
         var imgs = [{
-            name: '預設',
+            name: '預設圖庫',
             src: '/og/og.png'
         }, {
             name: 'The Dog API',
