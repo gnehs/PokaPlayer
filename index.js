@@ -10,6 +10,7 @@ const helmet = require('helmet'); // 防範您的應用程式出現已知的 Web
 const bodyParser = require('body-parser'); // 讀入 post 請求
 const app = express(); // Node.js Web 架構
 const FileStore = require('session-file-store')(session); // session
+const git = require('simple-git/promise')(__dirname);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'pug')
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -82,15 +83,36 @@ app.get('/upgrade', (req, res) => {
     if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
         res.status(403).send('Permission Denied Desu')
     else {
-        res.send('upgrade')
-        require('child_process').exec('npm restart', (error, stdout, stderr) => {
-            if (error) {
-                console.error(`exec error: ${error}`);
-                return;
-            }
-            console.log(`stdout: ${stdout}`);
-            console.log(`stderr: ${stderr}`);
-        });
+        if (!config.PokaPlayer.instantUpgradeProcess) {
+            git
+                .fetch(["--all"])
+                .then(() => git.reset(["--hard", "origin/dev"]))
+                .then(() => res.send('upgrade'))
+                .then(() => process.exit())
+                .catch(err => {
+                    console.error('failed: ', err)
+                    res.send("error");
+                });
+        }
+        else {
+            res.send('socket')
+            let io = require('socket.io')(3001);
+            let upgrade = io
+                .on('connection', socket => {
+                    socket.emit('init')
+                    socket.on('restart', () => process.exit())
+                    git
+                        .fetch(["--all"])
+                        .then(() => socket.emit('git', 'fetch'))
+                        .then(() => git.reset(["--hard", "origin/dev"]))
+                        .then(() => socket.emit('git', 'reset'))
+                        .then(() => socket.emit('restart'))
+                        .catch(err => {
+                            console.error('failed: ', err)
+                            socket.emit('err', err.toString())
+                        })
+                })
+        }
     }
 })
 

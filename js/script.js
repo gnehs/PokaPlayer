@@ -931,10 +931,46 @@ async function show_settings() {
                 {
                     text: '對啦',
                     onClick: async function(inst) {
-                        mdui.alert('正在更新');
-                        var update = await axios.get('/upgrade/')
+                        mdui.snackbar('正在更新...');
+                        let update = await axios.get('/upgrade/')
                         if (update.data == "upgrade") {
-                            mdui.alert('重啟中');
+                            mdui.snackbar('伺服器重新啟動', {
+                                buttonText: '重新連接',
+                                onButtonClick: () => window.location.replace('//' + window.location.hostname),
+                            })
+                        }
+                        else if (update.data == "socket") {
+                            $.getScript('https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js')
+                                .done(() => {
+                                    const socket = io('//' + window.location.hostname + ':3001');
+                                    socket.on('init', () => mdui.snackbar('正在初始化...', {
+                                            timeout: 3000,
+                                        })
+                                    )
+                                    socket.on('git', data => mdui.snackbar({
+                                        fetch: '初始化完成',
+                                        reset: '更新檔下載完成'
+                                        }[data], {
+                                        timeout: 3000,
+                                    }))
+                                    socket.on('restart', () => {
+                                        socket.emit('restart')
+                                        mdui.snackbar('伺服器正在重新啟動...', {
+                                        buttonText: '重新連接',
+                                        onButtonClick: () => window.location.reload(),
+                                    })
+                                }
+                                    )
+                                    socket.on('err', data => mdui.snackbar('錯誤: ' + data, {
+                                        timeout: 8000,
+                                    })
+                                    )
+                                })
+                            .fail(() => {
+                                mdui.snackbar('錯誤: ' + 'js load error.', {
+                                    timeout: 8000,
+                                })
+                            })
                         }
                     }
                 }
