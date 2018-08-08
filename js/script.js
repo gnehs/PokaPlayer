@@ -569,6 +569,12 @@ async function show_now() {
                 html += `<p>${text}</p>`
         }
         $('div[data-lrc="inner"]').html(html)
+        let nowLrc = lrc.select(ap.audio.currentTime)
+        if (nowLrc > -1) {
+            $('[data-player] div[data-lrc="inner"] p').eq(nowLrc).addClass('mdui-text-color-theme-accent')
+            let sh = $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].offsetTop - $('[data-player] .info>div[data-lrc]').height() / 2 - $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].clientHeight
+            $('[data-player] .info>div[data-lrc]').scrollTop(sh);
+        }
     }
 
     ap.on("pause", function() {
@@ -665,6 +671,12 @@ function show_lrc() {
                 html += `<p>${text}</p>`
         }
         $("#content>div[data-lrc]>[data-lrc=\"inner\"]").html(html)
+        let nowLrc = lrc.select(ap.audio.currentTime)
+        if (nowLrc > -1) {
+            $('#content>div[data-lrc]>div[data-lrc="inner"] p').eq(nowLrc).addClass('mdui-text-color-theme-accent')
+            let top = $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].offsetTop - $('div[data-lrc]').height() / 2 - $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].clientHeight * 2
+            $('#content>div[data-lrc]').animate({ scrollTop: top }, 0);
+        }
     }
     ap.on("timeupdate", function() {
         // 歌詞亮亮

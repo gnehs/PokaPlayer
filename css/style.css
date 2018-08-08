@@ -448,7 +448,7 @@ header.mdui-appbar.mdui-appbar-fixed {
         font-size: calc(8px + 1vmin);
     }
     [data-player]>.info>[data-lrc]>[data-lrc="inner"] {
-        padding: 80px 0;
+        padding: 20px 0;
     }
 }
 
