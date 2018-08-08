@@ -905,8 +905,6 @@ async function show_settings() {
                         var update = await axios.get('/upgrade/')
                         if (update.data == "upgrade") {
                             mdui.alert('重啟中');
-                        } else {
-                            mdui.alert('更新完畢');
                         }
                     }
                 }

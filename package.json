@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "test": "nodemon index.js --ignore '.git/*' --watch 'index.js'",
-        "start": "npm install --production && node index.js"
+        "start": "git fetch --all && git reset --hard origin/master && npm install --production && node index.js"
     },
     "repository": {
         "type": "git",
