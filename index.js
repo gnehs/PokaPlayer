@@ -84,8 +84,11 @@ app.get('/upgrade', (req, res) => {
     else {
         require('simple-git')()
             .pull((err, update) => {
-                if(update && update.summary.changes) {
+                if (update && update.summary.changes) {
+                    res.send('upgrade')
                     process.exit()
+                } else {
+                    res.send('no update')
                 }
             });
     }

@@ -872,10 +872,35 @@ async function show_settings() {
     // PokaPlayer 詳細資料
     var getinfo = await axios.get('/info/');
     var checkupdate = await axios.get(`https://api.github.com/repos/gnehs/PokaPlayer/releases`);
-    var update = getinfo.data.version != checkupdate.data[0].tag_name ? `新版本已發佈，請立即更新 <a href="${checkupdate.data[0].html_url}" target="_blank">查看更新資訊</a>` : `您的 PokaPlayer 已是最新版本`
+    var update = getinfo.data.version != checkupdate.data[0].tag_name ? `新版本已發佈，請立即更新 <a href="javascript:void(0)" data-upgrade>更新</a>` : `您的 PokaPlayer 已是最新版本`
     var about = `PokaPlayer 是 Synology Audio Ststion 的新朋友！ <a href="https://github.com/gnehs/PokaPlayer" target="_blank">GitHub</a>
         <p><strong>版本</strong> ${getinfo.data.version} / <strong>開發者</strong> ${getinfo.data.author} / ${update}</p>`
     $("#about").html(about)
+
+
+    $("[data-upgrade]").click(function() {
+        mdui.dialog({
+            title: '您確定要現在更新嗎',
+            content: '這將導致您在更新完畢前暫時無法使用 PokaPlayer',
+            buttons: [{
+                    text: '算ㄌ'
+                },
+                {
+                    text: '對啦',
+                    onClick: async function(inst) {
+                        mdui.alert('正在更新');
+                        var update = await axios.get('/upgrade/')
+                        if (update.data == "upgrade") {
+                            mdui.alert('重啟中');
+                        } else {
+                            mdui.alert('更新完畢');
+                        }
+                    }
+                }
+            ]
+        });
+    })
+
 
 }
 //- 播放音樂
