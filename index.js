@@ -86,7 +86,7 @@ app.get('/upgrade', (req, res) => {
         if (!config.PokaPlayer.instantUpgradeProcess) {
             git
                 .fetch(["--all"])
-                .then(() => git.reset(["--hard", "origin/dev"]))
+                .then(() => git.reset(["--hard", "origin/master"]))
                 .then(() => res.send('upgrade'))
                 .then(() => process.exit())
                 .catch(err => {
@@ -104,7 +104,7 @@ app.get('/upgrade', (req, res) => {
                     git
                         .fetch(["--all"])
                         .then(() => socket.emit('git', 'fetch'))
-                        .then(() => git.reset(["--hard", "origin/dev"]))
+                        .then(() => git.reset(["--hard", "origin/master"]))
                         .then(() => socket.emit('git', 'reset'))
                         .then(() => socket.emit('restart'))
                         .catch(err => {
