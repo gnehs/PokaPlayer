@@ -1,14 +1,16 @@
 FROM node:10-alpine
 
+RUN mkdir /app
 WORKDIR /app
 
-COPY package.json /app  
-RUN apk add --no-cache make gcc g++ python
+RUN apk add --no-cache make gcc g++ python git
+RUN git clone https://github.com/gnehs/PokaPlayer.git .
+RUN npm install forever -g
 RUN npm install --production
-
-COPY . /app 
 
 ENV NODE_ENV=production
 
 EXPOSE 3000
-CMD ["node", "index.js"]
+
+CMD forever -c "npm start" ./
+
