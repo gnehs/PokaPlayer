@@ -1,6 +1,11 @@
 // 宣告全域變數
 songList = [];
 const lrc = new Lyrics(`[00:00.000]`);
+const socket = io();
+socket.on("hello", function() {
+    console.log('hello')
+    socket.emit('login')
+});
 // 初始化播放器
 const ap = new APlayer({
     container: document.getElementById('aplayer'),
@@ -957,7 +962,7 @@ async function show_settings() {
                 {
                     text: '對啦',
                     onClick: async function(inst) {
-                        mdui.snackbar('正在更新...');
+                        mdui.snackbar('正在更新...', { position: getSnackbarPosition() });
                         let update = await axios.get('/upgrade/')
                         if (update.data == "upgrade") {
                             mdui.snackbar('伺服器重新啟動', {
@@ -965,24 +970,33 @@ async function show_settings() {
                                 onButtonClick: () => window.location.reload(),
                             })
                         } else if (update.data == "socket") {
+                            socket.emit('update')
+                            socket.on('Permission Denied Desu', () => mdui.snackbar('Permission Denied', {
+                                timeout: 3000,
+                                position: getSnackbarPosition()
+                            }))
                             socket.on('init', () => mdui.snackbar('正在初始化...', {
                                 timeout: 3000,
+                                position: getSnackbarPosition()
                             }))
                             socket.on('git', data => mdui.snackbar({
                                 fetch: '初始化完成',
                                 reset: '更新檔下載完成'
                             }[data], {
                                 timeout: 3000,
+                                position: getSnackbarPosition()
                             }))
                             socket.on('restart', () => {
                                 socket.emit('restart')
                                 mdui.snackbar('伺服器正在重新啟動...', {
                                     buttonText: '重新連接',
                                     onButtonClick: () => window.location.reload(),
+                                    position: getSnackbarPosition()
                                 })
                             })
                             socket.on('err', data => mdui.snackbar('錯誤: ' + data, {
                                 timeout: 8000,
+                                position: getSnackbarPosition()
                             }))
                         }
                     }

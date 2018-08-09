@@ -5,23 +5,27 @@ const schedule = require('node-schedule'); // 很會計時ㄉ朋友
 const base64 = require('base-64');
 //express
 const express = require('express');
-const session = require('express-session');
-const helmet = require('helmet'); // 防範您的應用程式出現已知的 Web 漏洞
-const bodyParser = require('body-parser'); // 讀入 post 請求
-const app = express(); // Node.js Web 架構
-const FileStore = require('session-file-store')(session); // session
-const git = require('simple-git/promise')(__dirname);
-const server = require('http').createServer(app),
-    io = require('socket.io').listen(server)
-app.set('views', __dirname + '/views');
-app.set('view engine', 'pug')
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(helmet.hidePoweredBy({ setTo: 'PHP/7.1.20' }));
-app.use(session({
+const FileStore = require('session-file-store')(require('express-session')); // session
+const session = require('express-session')({
     store: new FileStore(),
     secret: config.PokaPlayer.sessionSecret,
     resave: false,
     saveUninitialized: true
+});
+const helmet = require('helmet'); // 防範您的應用程式出現已知的 Web 漏洞
+const bodyParser = require('body-parser'); // 讀入 post 請求
+const app = express(); // Node.js Web 架構
+const git = require('simple-git/promise')(__dirname);
+const server = require('http').createServer(app),
+    io = require('socket.io').listen(server),
+    sharedsession = require("express-socket.io-session")
+app.set('views', __dirname + '/views');
+app.set('view engine', 'pug')
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(helmet.hidePoweredBy({ setTo: 'PHP/7.1.20' }));
+app.use(session);
+io.use(sharedsession(session, {
+    autoSave: true
 }));
 // 時間處理
 const moment = require('moment-timezone');
@@ -78,7 +82,37 @@ app.get('/', (req, res) => {
 function pp_decode(str) {
     return base64.decode(decodeURIComponent(str))
 }
+io.on('connection', socket => {
+    socket.emit('hello')
+        // Accept a login event with user's data
+    socket.on("login", function(userdata) {
+        socket.handshake.session.userdata = userdata;
+        socket.handshake.session.save();
+    });
+    socket.on("logout", function(userdata) {
+        if (socket.handshake.session.userdata) {
+            delete socket.handshake.session.userdata;
+            socket.handshake.session.save();
+        }
+    });
+    socket.on('update', (userdata) => {
+        if (socket.handshake.session.pass == config.PokaPlayer.password) {
+            socket.emit('init')
+            git
+                .fetch(["--all"])
+                .then(() => socket.emit('git', 'fetch'))
+                .then(() => git.reset(["--hard", "origin/" + config.PokaPlayer.debug ? 'dev' : 'master']))
+                .then(() => socket.emit('git', 'reset'))
+                .then(() => socket.emit('restart'))
+                .then(() => process.exit())
+                .catch(err => {
+                    console.error('failed: ', err)
+                    socket.emit('err', err.toString())
+                })
+        } else { socket.emit('Permission Denied Desu') }
+    })
 
+});
 // 更新
 
 app.get('/upgrade', (req, res) => {
@@ -88,7 +122,7 @@ app.get('/upgrade', (req, res) => {
         if (!config.PokaPlayer.instantUpgradeProcess) {
             git
                 .fetch(["--all"])
-                .then(() => git.reset(["--hard", "origin/master"]))
+                .then(() => git.reset(["--hard", "origin/" + config.PokaPlayer.debug ? 'dev' : 'master']))
                 .then(() => res.send('upgrade'))
                 .then(() => process.exit())
                 .catch(err => {
@@ -97,20 +131,6 @@ app.get('/upgrade', (req, res) => {
                 });
         } else {
             res.send('socket')
-            io.on('connection', socket => {
-                socket.emit('init')
-                socket.on('restart', () => process.exit())
-                git
-                    .fetch(["--all"])
-                    .then(() => socket.emit('git', 'fetch'))
-                    .then(() => git.reset(["--hard", "origin/master"]))
-                    .then(() => socket.emit('git', 'reset'))
-                    .then(() => socket.emit('restart'))
-                    .catch(err => {
-                        console.error('failed: ', err)
-                        socket.emit('err', err.toString())
-                    })
-            })
         }
     }
 })
@@ -122,6 +142,10 @@ app.get('/info', (req, res) => {
     else {
         res.json(package)
     }
+})
+
+if (config.PokaPlayer.debug) app.get('/debug', (req, res) => {
+    res.send('true')
 })
 
 // get song
