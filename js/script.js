@@ -1,6 +1,6 @@
 // 宣告全域變數
 songList = [];
-const lrc = new Lyrics(`[00:00.000]歌詞讀取中`);
+const lrc = new Lyrics(`[00:00.000]`);
 // 初始化播放器
 const ap = new APlayer({
     container: document.getElementById('aplayer'),
