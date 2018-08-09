@@ -88,7 +88,7 @@ app.get('/upgrade', (req, res) => {
         if (!config.PokaPlayer.instantUpgradeProcess) {
             git
                 .fetch(["--all"])
-                .then(() => git.reset(["--hard", "origin/master"]))
+                .then(() => git.reset(["--hard", "origin/" + config.PokaPlayer.debug ? 'dev' : 'master']))
                 .then(() => res.send('upgrade'))
                 .then(() => process.exit())
                 .catch(err => {
@@ -103,7 +103,7 @@ app.get('/upgrade', (req, res) => {
                 git
                     .fetch(["--all"])
                     .then(() => socket.emit('git', 'fetch'))
-                    .then(() => git.reset(["--hard", "origin/master"]))
+                    .then(() => git.reset(["--hard", "origin/" + config.PokaPlayer.debug ? 'dev' : 'master']))
                     .then(() => socket.emit('git', 'reset'))
                     .then(() => socket.emit('restart'))
                     .catch(err => {
@@ -122,6 +122,10 @@ app.get('/info', (req, res) => {
     else {
         res.json(package)
     }
+})
+
+if (config.PokaPlayer.debug) app.get('/debug', (req, res) => {
+    res.send('true')
 })
 
 // get song

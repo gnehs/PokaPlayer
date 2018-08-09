@@ -3,7 +3,8 @@
         "password": "CUSTOM_PASSWORD_HERE",
         "passwordSwitch": true,
         "sessionSecret": "hello!!",
-        "instantUpgradeProcess": false
+        "instantUpgradeProcess": false,
+        "debug": false
     },
     "DSM": {
         "protocol": "https",
