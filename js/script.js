@@ -962,7 +962,7 @@ async function show_settings() {
                 {
                     text: '對啦',
                     onClick: async function(inst) {
-                        mdui.snackbar('正在更新...');
+                        mdui.snackbar('正在更新...', { position: getSnackbarPosition() });
                         let update = await axios.get('/upgrade/')
                         if (update.data == "upgrade") {
                             mdui.snackbar('伺服器重新啟動', {
