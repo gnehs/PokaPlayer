@@ -80,6 +80,34 @@ function pp_decode(str) {
 }
 io.on('connection', socket => {
     socket.emit('hello')
+        // Accept a login event with user's data
+    socket.on("login", function(userdata) {
+        console.log(userdata)
+        socket.handshake.session.userdata = userdata;
+        socket.handshake.session.save();
+    });
+    socket.on("logout", function(userdata) {
+        if (socket.handshake.session.userdata) {
+            delete socket.handshake.session.userdata;
+            socket.handshake.session.save();
+        }
+    });
+    socket.on('update', (userdata) => {
+        console.log(userdata)
+        socket.emit('init')
+        git
+            .fetch(["--all"])
+            .then(() => socket.emit('git', 'fetch'))
+            .then(() => git.reset(["--hard", "origin/" + config.PokaPlayer.debug ? 'dev' : 'master']))
+            .then(() => socket.emit('git', 'reset'))
+            .then(() => socket.emit('restart'))
+            .then(() => process.exit())
+            .catch(err => {
+                console.error('failed: ', err)
+                socket.emit('err', err.toString())
+            })
+    })
+
 });
 // 更新
 
@@ -99,20 +127,6 @@ app.get('/upgrade', (req, res) => {
                 });
         } else {
             res.send('socket')
-            io.on('connection', socket => {
-                socket.emit('init')
-                socket.on('restart', () => process.exit())
-                git
-                    .fetch(["--all"])
-                    .then(() => socket.emit('git', 'fetch'))
-                    .then(() => git.reset(["--hard", "origin/" + config.PokaPlayer.debug ? 'dev' : 'master']))
-                    .then(() => socket.emit('git', 'reset'))
-                    .then(() => socket.emit('restart'))
-                    .catch(err => {
-                        console.error('failed: ', err)
-                        socket.emit('err', err.toString())
-                    })
-            })
         }
     }
 })

@@ -969,6 +969,7 @@ async function show_settings() {
                                 onButtonClick: () => window.location.reload(),
                             })
                         } else if (update.data == "socket") {
+                            socket.emit('update')
                             socket.on('init', () => mdui.snackbar('正在初始化...', {
                                 timeout: 3000,
                             }))
