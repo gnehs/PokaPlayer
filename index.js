@@ -78,7 +78,9 @@ app.get('/', (req, res) => {
 function pp_decode(str) {
     return base64.decode(decodeURIComponent(str))
 }
-
+io.on('connection', socket => {
+    socket.emit('hello')
+});
 // 更新
 
 app.get('/upgrade', (req, res) => {

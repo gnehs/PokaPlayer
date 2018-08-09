@@ -1,6 +1,10 @@
 // 宣告全域變數
 songList = [];
 const lrc = new Lyrics(`[00:00.000]`);
+const socket = io();
+socket.on("hello", function() {
+    console.log('hello')
+});
 // 初始化播放器
 const ap = new APlayer({
     container: document.getElementById('aplayer'),
