@@ -971,24 +971,32 @@ async function show_settings() {
                             })
                         } else if (update.data == "socket") {
                             socket.emit('update')
+                            socket.on('Permission Denied Desu', () => mdui.snackbar('Permission Denied', {
+                                timeout: 3000,
+                                position: getSnackbarPosition()
+                            }))
                             socket.on('init', () => mdui.snackbar('正在初始化...', {
                                 timeout: 3000,
+                                position: getSnackbarPosition()
                             }))
                             socket.on('git', data => mdui.snackbar({
                                 fetch: '初始化完成',
                                 reset: '更新檔下載完成'
                             }[data], {
                                 timeout: 3000,
+                                position: getSnackbarPosition()
                             }))
                             socket.on('restart', () => {
                                 socket.emit('restart')
                                 mdui.snackbar('伺服器正在重新啟動...', {
                                     buttonText: '重新連接',
                                     onButtonClick: () => window.location.reload(),
+                                    position: getSnackbarPosition()
                                 })
                             })
                             socket.on('err', data => mdui.snackbar('錯誤: ' + data, {
                                 timeout: 8000,
+                                position: getSnackbarPosition()
                             }))
                         }
                     }
