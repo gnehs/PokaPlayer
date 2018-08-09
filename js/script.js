@@ -1,6 +1,6 @@
 // 宣告全域變數
 songList = [];
-const lrc = new Lyrics(`[00:00.000]歌詞讀取中`);
+const lrc = new Lyrics(`[00:00.000]`);
 // 初始化播放器
 const ap = new APlayer({
     container: document.getElementById('aplayer'),
@@ -10,7 +10,7 @@ ap.on("play", async function() {
     //沒歌就隨機播放
     if (ap.list.audios.length == 0) play_random();
     updateMediaSession()
-    lrc.load(`[00:00.000]歌詞讀取中`) // 歌詞清空
+    lrc.load(`[00:00.000]`) // 歌詞清空
 })
 ap.on("loadedmetadata", async function() {
     lrc.load(`[00:00.000]歌詞讀取中`)
@@ -74,10 +74,14 @@ function updateMediaSession() {
 }
 // 初始化網頁
 $(function() {
+    // 載入首頁
     show_home()
+    $('#content').attr('data-page', 'home')
+
     $('[data-link]').click(function() {
         $('[data-link]').removeClass('mdui-list-item-active')
         $(this).addClass('mdui-list-item-active')
+        $('#content').attr('data-page', $(this).attr('data-link'))
         $("#player").removeClass('hide')
     })
     if ($(window).width() < 1024) {
@@ -213,10 +217,10 @@ async function show_search(keyword) {
             // 演出者
         if (result.artistTotal > 0) result_html += `<div id="search-artists">${HTML_showArtist(result.artists)}</div>`
         else result_html += `<div id="search-artists">${noResult()}</div>`
-
-        $("#content").html(html + tabs + result_html)
-        mdui.mutation()
-
+        if ($("#content").attr('data-page') == 'search') {
+            $("#content").html(html + tabs + result_html)
+            mdui.mutation()
+        }
     } else
         $("#content").html(html)
     mdui.mutation() //初始化
@@ -254,15 +258,18 @@ async function show_album() {
         </div>`,
         html = `<div id="album-albums">${album}</div>
                 <div id="recently-albums">${recently}</div>`
-    $("#content").html(header + tabs + html)
-    $("#content>:not(#header-wrapper):not(#recently-albums)").animateCss("fadeIn")
-    mdui.mutation()
+    if ($("#content").attr('data-page') == 'album') {
+        $("#content").html(header + tabs + html)
+        $("#content>:not(#header-wrapper):not(#recently-albums)").animateCss("fadeIn")
+        mdui.mutation()
+    }
 }
 //- 展示專輯歌曲
 async function show_album_songs(artist, album, album_artist) {
     //如果從首頁按進去頁籤沒切換
     $('[data-link]').removeClass('mdui-list-item-active')
     $('[data-link="album"]').addClass('mdui-list-item-active')
+    $("#content").attr('data-page', 'album')
     var albumInfo = `
     <div class="album-info">
         <div class="cover mdui-shadow-1" 
@@ -295,8 +302,10 @@ async function show_album_songs(artist, album, album_artist) {
     //抓資料
     var data = await getAlbumSong(album, album_artist, artist),
         html = HTML_showSongs(data.data.songs)
-    $("#content").html(albumInfo + html)
-    $("#content>:not(.album-info):not(.mdui-divider)").animateCss("fadeIn")
+    if ($("#content").attr('data-page') == 'album') {
+        $("#content").html(albumInfo + html)
+        $("#content>:not(.album-info):not(.mdui-divider)").animateCss("fadeIn")
+    }
 
     // 獲取總時間
     var time = 0
@@ -309,6 +318,7 @@ async function show_album_songs(artist, album, album_artist) {
 async function show_folder(folder) {
     $('[data-link]').removeClass('mdui-list-item-active')
     $('[data-link="folder"]').addClass('mdui-list-item-active')
+    $("#content").attr('data-page', 'folder')
         // 展示讀取中
     var header = HTML_getHeader("資料夾")
     $("#content").html(header + HTML_getSpinner())
@@ -326,13 +336,16 @@ async function show_folder(folder) {
     }
     var data = await getAPI("AudioStation/folder.cgi", "SYNO.AudioStation.Folder", "list", PARAMS_JSON, 2),
         folderHTML = HTML_showFolder(data.data.items)
-    $("#content").html(header + folderHTML)
-    $("#content>:not(#header-wrapper)").animateCss("fadeIn")
+    if ($("#content").attr('data-page') == 'folder') {
+        $("#content").html(header + folderHTML)
+        $("#content>:not(#header-wrapper)").animateCss("fadeIn")
+    }
 }
 async function show_artist(artist) {
     var header = HTML_getHeader("演出者")
     $('[data-link]').removeClass('mdui-list-item-active')
     $('[data-link="artist"]').addClass('mdui-list-item-active')
+    $("#content").attr('data-page', 'artist')
     $("#content").html(header + HTML_getSpinner())
     mdui.mutation()
     if (artist) {
@@ -348,7 +361,8 @@ async function show_artist(artist) {
         ]
         var data = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3),
             albumHTML = HTML_showAlbums(data.data.albums)
-        $("#content").html(header + albumHTML)
+        if ($("#content").attr('data-page') == 'artist')
+            $("#content").html(header + albumHTML)
     } else {
         //請求資料囉
         var PARAMS_JSON = [
@@ -360,14 +374,17 @@ async function show_artist(artist) {
         ]
         var data = await getAPI("AudioStation/artist.cgi", "SYNO.AudioStation.Artist", "list", PARAMS_JSON, 4),
             artistsHTML = HTML_showArtist(data.data.artists)
-        $("#content").html(header + artistsHTML)
+        if ($("#content").attr('data-page') == 'artist')
+            $("#content").html(header + artistsHTML)
     }
-    $("#content>:not(#header-wrapper)").animateCss("fadeIn")
+    if ($("#content").attr('data-page') == 'artist')
+        $("#content>:not(#header-wrapper)").animateCss("fadeIn")
 }
 async function show_composer(composer) {
     var header = HTML_getHeader("作曲者")
     $('[data-link]').removeClass('mdui-list-item-active')
     $('[data-link="composer"]').addClass('mdui-list-item-active')
+    $("#content").attr('data-page', 'composer')
     $("#content").html(header + HTML_getSpinner())
     mdui.mutation()
     if (composer) {
@@ -383,7 +400,8 @@ async function show_composer(composer) {
             ],
             data = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3),
             albumHTML = HTML_showAlbums(data.data.albums)
-        $("#content").html(header + albumHTML)
+        if ($("#content").attr('data-page') == 'composer')
+            $("#content").html(header + albumHTML)
     } else {
         //請求資料囉
         var PARAMS_JSON = [
@@ -395,9 +413,11 @@ async function show_composer(composer) {
             ],
             data = await getAPI("AudioStation/composer.cgi", "SYNO.AudioStation.Composer", "list", PARAMS_JSON, 2),
             composersHTML = HTML_showComposer(data.data.composers)
-        $("#content").html(header + composersHTML)
+        if ($("#content").attr('data-page') == 'composer')
+            $("#content").html(header + composersHTML)
     }
-    $("#content>:not(#header-wrapper)").animateCss("fadeIn")
+    if ($("#content").attr('data-page') == 'composer')
+        $("#content>:not(#header-wrapper)").animateCss("fadeIn")
 }
 //- 播放清單
 async function show_playlist() {
@@ -411,16 +431,19 @@ async function show_playlist() {
         { key: "sort_by", "value": "" },
         { key: "sort_direction", "value": "ASC" }
     ], 3)
-    if (playlist.data.playlists.length < 0) {
-        $("#content").html(header + `<div class="mdui-valign" style="height:150px"><p class="mdui-center">沒有任何播放清單</p></div>`)
+    if ($("#content").attr('data-page') == 'playlist') {
+        if (playlist.data.playlists.length < 0) {
+            $("#content").html(header + `<div class="mdui-valign" style="height:150px"><p class="mdui-center">沒有任何播放清單</p></div>`)
+        }
+        $("#content").html(header + HTML_showPlaylists(playlist.data.playlists))
     }
-    $("#content").html(header + HTML_showPlaylists(playlist.data.playlists))
 }
 //- 播放清單歌曲
 async function show_playlist_songs(id) {
-    //如果從首頁按進去頁籤沒切換
+    //如果從首頁按進去
     $('[data-link]').removeClass('mdui-list-item-active')
     $('[data-link="playlist"]').addClass('mdui-list-item-active')
+    $("#content").attr('data-page', 'playlist')
 
     // 展示讀取中
     var header = HTML_getHeader("正在讀取播放清單")
@@ -440,10 +463,10 @@ async function show_playlist_songs(id) {
     var name = result.name
     var songs = HTML_showSongs(result.additional.songs)
     var header = HTML_getHeader(name)
-    $("#content").html(header + songs)
-    $("#content>:not(#header-wrapper)").animateCss("fadeIn")
-
-
+    if ($("#content").attr('data-page') == 'playlist') {
+        $("#content").html(header + songs)
+        $("#content>:not(#header-wrapper)").animateCss("fadeIn")
+    }
 }
 //- 隨機播放
 async function show_random() {
@@ -460,8 +483,10 @@ async function show_random() {
         ],
         data = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "list", PARAMS_JSON, 1),
         album = HTML_showSongs(data.data.songs)
-    $("#content").html(header + album)
-    $("#content>:not(#header-wrapper)").animateCss("fadeIn")
+    if ($("#content").attr('data-page') == 'random') {
+        $("#content").html(header + album)
+        $("#content>:not(#header-wrapper)").animateCss("fadeIn")
+    }
 }
 async function play_random() {
     show_now()
@@ -938,39 +963,26 @@ async function show_settings() {
                                 buttonText: '重新連接',
                                 onButtonClick: () => window.location.reload(),
                             })
-                        }
-                        else if (update.data == "socket") {
-                            $.getScript('https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js')
-                                .done(() => {
-                                    const socket = io('//' + window.location.hostname + ':3001');
-                                    socket.on('init', () => mdui.snackbar('正在初始化...', {
-                                            timeout: 3000,
-                                        })
-                                    )
-                                    socket.on('git', data => mdui.snackbar({
-                                        fetch: '初始化完成',
-                                        reset: '更新檔下載完成'
-                                        }[data], {
-                                        timeout: 3000,
-                                    }))
-                                    socket.on('restart', () => {
-                                        socket.emit('restart')
-                                        mdui.snackbar('伺服器正在重新啟動...', {
-                                        buttonText: '重新連接',
-                                        onButtonClick: () => window.location.reload(),
-                                    })
-                                }
-                                    )
-                                    socket.on('err', data => mdui.snackbar('錯誤: ' + data, {
-                                        timeout: 8000,
-                                    })
-                                    )
-                                })
-                            .fail(() => {
-                                mdui.snackbar('錯誤: ' + 'js load error.', {
-                                    timeout: 8000,
+                        } else if (update.data == "socket") {
+                            socket.on('init', () => mdui.snackbar('正在初始化...', {
+                                timeout: 3000,
+                            }))
+                            socket.on('git', data => mdui.snackbar({
+                                fetch: '初始化完成',
+                                reset: '更新檔下載完成'
+                            }[data], {
+                                timeout: 3000,
+                            }))
+                            socket.on('restart', () => {
+                                socket.emit('restart')
+                                mdui.snackbar('伺服器正在重新啟動...', {
+                                    buttonText: '重新連接',
+                                    onButtonClick: () => window.location.reload(),
                                 })
                             })
+                            socket.on('err', data => mdui.snackbar('錯誤: ' + data, {
+                                timeout: 8000,
+                            }))
                         }
                     }
                 }

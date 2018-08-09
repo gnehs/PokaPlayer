@@ -11,6 +11,8 @@ const bodyParser = require('body-parser'); // 讀入 post 請求
 const app = express(); // Node.js Web 架構
 const FileStore = require('session-file-store')(session); // session
 const git = require('simple-git/promise')(__dirname);
+const server = require('http').createServer(app),
+    io = require('socket.io').listen(server)
 app.set('views', __dirname + '/views');
 app.set('view engine', 'pug')
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -36,7 +38,7 @@ app.use('/css', express.static('css'))
 app.use('/img', express.static('img'))
 
 // 啟動囉
-app.listen(3000, async() => {
+server.listen(3000, async() => {
     console.log("/////  PokaPlayer  /////")
     console.log("🌏 http://localhost:3000")
     console.log(moment().format("🕒 YYYY/MM/DD HH:mm"))
@@ -93,25 +95,22 @@ app.get('/upgrade', (req, res) => {
                     console.error('failed: ', err)
                     res.send("error");
                 });
-        }
-        else {
+        } else {
             res.send('socket')
-            let io = require('socket.io')(3001);
-            let upgrade = io
-                .on('connection', socket => {
-                    socket.emit('init')
-                    socket.on('restart', () => process.exit())
-                    git
-                        .fetch(["--all"])
-                        .then(() => socket.emit('git', 'fetch'))
-                        .then(() => git.reset(["--hard", "origin/master"]))
-                        .then(() => socket.emit('git', 'reset'))
-                        .then(() => socket.emit('restart'))
-                        .catch(err => {
-                            console.error('failed: ', err)
-                            socket.emit('err', err.toString())
-                        })
-                })
+            io.on('connection', socket => {
+                socket.emit('init')
+                socket.on('restart', () => process.exit())
+                git
+                    .fetch(["--all"])
+                    .then(() => socket.emit('git', 'fetch'))
+                    .then(() => git.reset(["--hard", "origin/master"]))
+                    .then(() => socket.emit('git', 'reset'))
+                    .then(() => socket.emit('restart'))
+                    .catch(err => {
+                        console.error('failed: ', err)
+                        socket.emit('err', err.toString())
+                    })
+            })
         }
     }
 })
