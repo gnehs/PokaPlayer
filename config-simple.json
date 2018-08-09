@@ -1,0 +1,15 @@
+{
+    "PokaPlayer": {
+        "password": "CUSTOM_PASSWORD_HERE",
+        "passwordSwitch": true,
+        "sessionSecret": "hello!!",
+        "instantUpgradeProcess": false
+    },
+    "DSM": {
+        "protocol": "https",
+        "host": "192.168.x.x",
+        "port": 5000,
+        "account": "YOUR_ACCOUNT",
+        "password": "YOUR_PASSWORD"
+    }
+}

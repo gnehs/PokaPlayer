@@ -1,0 +1,571 @@
+header.mdui-appbar.mdui-appbar-fixed {
+    z-index: 5001;
+}
+
+#content {
+    padding-top: 64px;
+    padding-bottom: 96px;
+}
+
+.mdui-container-fluid {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+
+/* 側邊欄 */
+
+@media screen and (min-width:1024px) {
+    .mdui-list-item {
+        border-radius: 5px 5px;
+    }
+    #drawer .mdui-list-item {
+        border-radius: 0 500em 500em 0;
+    }
+}
+
+
+/* 設定頁面 */
+
+#PP_bg .mdui-btn {
+    margin-right: 5px;
+    margin-top: 7px;
+}
+
+
+/* header-wrapper */
+
+#header-wrapper {
+    margin-bottom: 32px;
+    padding: 0 30px;
+    min-height: 150px;
+    background-size: cover;
+    background-position: center;
+}
+
+#header-wrapper h1 {
+    text-shadow: 0 1px 8px #000000ad;
+}
+
+#header-wrapper+.mdui-tab {
+    margin-top: -32px;
+    margin-bottom: 32px;
+}
+
+
+/* 專輯頁面檢視 */
+
+.albums {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    margin: -0.875em -0.5em;
+}
+
+.album {
+    --album-size: calc(16.6% - 1em);
+    height: 0;
+    width: var(--album-size);
+    padding-bottom: var(--album-size);
+    font-size: 10px;
+    margin: .875em 0.5em;
+    background-position: center;
+    background-size: cover;
+}
+
+.album .mdui-card-media {
+    position: unset;
+}
+
+.album .mdui-card-primary-title {
+    font-size: 1.5em;
+    line-height: 1.6em;
+}
+
+.album>.mdui-card-media>img {
+    object-fit: cover;
+    align-items: center;
+    justify-content: center;
+    max-width: 100%;
+}
+
+@media (max-width: 575.98px) {
+    .album {
+        --album-size: calc(50% - 1em);
+        font-size: 9px;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .album {
+        --album-size: calc(33.3% - 1em);
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .album {
+        --album-size: calc(25% - 1em);
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .album {
+        --album-size: calc(20% - 1em);
+    }
+}
+
+@media (min-width: 1200px) {
+    .album {
+        --album-size: calc(16.6% - 1em);
+    }
+}
+
+#aplayer {
+    display: none;
+}
+
+
+/* 專輯歌曲頁面 - 專輯簡介 */
+
+.album-info {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.album-info * {
+    transition: all .3s ease;
+}
+
+.album-info>.cover {
+    height: 200px;
+    width: 200px;
+    align-content: center;
+    flex-direction: column;
+    background-size: cover;
+    background-position: center;
+}
+
+.album-info>.info {
+    flex: 1;
+    flex-direction: column;
+    display: flex;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 8px;
+    overflow: hidden;
+}
+
+.album-info>.info>.album-name {
+    font-size: 40px;
+    line-height: 48px;
+    font-weight: bold;
+}
+
+.album-info>.info>.artist-name {
+    font-size: 32px;
+    line-height: 40px;
+}
+
+.album-info>.info>.grow {
+    flex: 1;
+}
+
+.album-info>.info>.footer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.album-info>.info>.footer>.time {
+    flex: 1;
+}
+
+.album-info>.info .time {
+    font-size: 20px;
+    line-height: 42px;
+}
+
+.album-info>.info .actions .mdui-btn {
+    height: 42px;
+    width: 42px;
+}
+
+@media screen and (max-width: 768px) {
+    .album-info>.info {
+        padding-left: 12px;
+        padding-right: 0;
+    }
+    .album-info>.cover {
+        height: 150px;
+        width: 150px;
+    }
+    .album-info>.info>.album-name {
+        font-size: 24px;
+        line-height: 30px;
+    }
+    .album-info>.info>.artist-name {
+        font-size: 20px;
+        line-height: 25px;
+    }
+    .album-info>.info .time {
+        font-size: 16px;
+    }
+}
+
+
+/* 底部吸附播放器 */
+
+#player {
+    width: 100vw;
+    height: 64px;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    z-index: 1999;
+    background: #fff;
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+    align-items: center;
+    border-radius: 10px 10px 0 0;
+    overflow: hidden;
+    box-shadow: 0 0 10px #0000004d;
+    transform: translateY(0);
+    transition: transform .3s ease, width .3s ease, border-radius .3s ease, box-shadow .3s ease;
+    margin: 0 auto;
+}
+
+.mdui-theme-layout-dark #player {
+    background-color: #303030;
+}
+
+#player.hide {
+    transform: translateY(64px);
+    box-shadow: none
+}
+
+#player .mdui-btn {
+    width: 48px;
+    height: 48px;
+    margin: 8px 0;
+}
+
+#player img {
+    width: 64px;
+    height: 64px;
+    margin-top: 3px;
+    object-fit: cover;
+}
+
+#player .song-info {
+    padding: 8px 0 8px 6px;
+}
+
+#player .song-info .name,
+#player .song-info .artist {
+    line-height: 24px;
+    font-size: 16px;
+    height: 24px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#player .song-info .name {
+    font-size: 15px;
+}
+
+#player .song-info .artist {
+    font-size: 14px;
+}
+
+#player .ctrl {
+    position: absolute;
+    width: 144px;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+#player .ctrl button {
+    transition: none !important;
+}
+
+@media screen and (min-width: 768px) {
+    #player {
+        width: 400px;
+    }
+    #player .song-info .name,
+    #player .song-info .artist {
+        width: calc(400px - 64px - 144px - 6px);
+    }
+}
+
+@media screen and (max-width: 767px) {
+    #player {
+        border-radius: 0;
+    }
+    #player .song-info .name,
+    #player .song-info .artist {
+        width: calc(100vw - 64px - 144px - 6px);
+    }
+}
+
+
+/* 播放器 */
+
+[data-player] {
+    margin-top: 32px;
+}
+
+[data-player]>.info {
+    margin-top: 10px;
+}
+
+[data-player] .info .title {
+    color: rgba(0, 0, 0, .87);
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 20px;
+    min-height: 20px;
+}
+
+[data-player] .info .artist {
+    margin-top: 5px;
+    font-size: 17.5px;
+    color: rgba(0, 0, 0, .54);
+    min-height: calc(5px + 17.5px * 2);
+}
+
+[data-player]>.mdui-card {
+    --main-size: 150px;
+    width: var(--main-size);
+    height: var(--main-size);
+    background-size: cover;
+    background-position: center;
+    background-color: #0000;
+}
+
+[data-player]>.mdui-card .mdui-card-media img {
+    min-height: 100%;
+    min-height: 100%;
+    height: auto;
+    width: auto;
+    object-fit: cover;
+}
+
+.mdui-slider input[type="range"] {
+    left: 0
+}
+
+@media screen and (min-width: 555px) {
+    [data-player] {
+        margin-top: 32px;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    [data-player]>.info {
+        margin-top: 10px;
+        flex: 1;
+        flex-direction: column;
+        padding-left: 15px;
+        display: flex;
+        max-width: calc(100vw - 100px - 200px);
+    }
+    [data-player]>.mdui-card {
+        display: flex;
+    }
+    [data-player]>.footer {
+        display: flex;
+    }
+    [data-player]>.info>.grow {
+        flex-grow: 1
+    }
+    [data-player]>.mdui-card {
+        --main-size: 200px;
+    }
+}
+
+@media screen and (min-width: 850px) and (min-height: 560px) {
+    /* 超大兩欄檢視模式 */
+    [data-player-container] {
+        display: flex;
+        margin-bottom: -100px;
+    }
+    [data-player-container]>ul {
+        flex: 1;
+        flex-direction: column;
+        height: calc(100vh - 64px - 20px);
+        overflow-y: scroll;
+        margin-bottom: -64px;
+    }
+    [data-player] {
+        margin-top: 32px;
+        display: block;
+        width: 320px;
+        padding: 0 10px
+    }
+    [data-player]>.info {
+        margin-top: 10px;
+        padding-left: 0;
+        display: block;
+        text-align: center;
+    }
+    [data-player]>.mdui-card {
+        display: block;
+    }
+    [data-player]>.footer {
+        display: block;
+    }
+    [data-player]>.mdui-card {
+        --main-size: 300px;
+    }
+}
+
+[data-player]>.info>[data-lrc] {
+    display: none;
+    /* 1390 *600*/
+}
+
+@media screen and (min-width: 850px) and (min-height: 750px) {
+    [data-player]>.info {
+        display: flex;
+        max-width: 320px;
+        height: calc(100vh - 64px - 350px);
+    }
+    [data-player]>.info>[data-lrc] {
+        margin: 5px 0;
+        max-width: 320px;
+        overflow-x: hidden;
+        overflow-y: scroll;
+        flex-grow: 1;
+        display: block;
+        min-height: 55px;
+        padding-top: 55px;
+        padding-bottom: 55px;
+        position: relative;
+        mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+        -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+        /* 1390 * 690*/
+    }
+    [data-player]>.info>[data-lrc] p {
+        font-size: calc(8px + 1vmin);
+    }
+    [data-player]>.info>[data-lrc]>[data-lrc="inner"] {
+        padding: 20px 0;
+    }
+}
+
+@media screen and (max-width: 554px) {
+    [data-player]>.mdui-card {
+        margin: 0 auto;
+    }
+    [data-player]>.info {
+        text-align: center;
+    }
+}
+
+[data-player]>.info .ctrl {
+    text-align: center;
+    margin-top: 10px;
+}
+
+[data-player]>.info .ctrl .mdui-btn-icon {
+    width: 48px;
+    height: 48px;
+}
+
+[data-player]>.info>.ctrl>.random,
+[data-player]>.info>.ctrl>.loop {
+    font-size: 0;
+}
+
+[data-player]>.info>.ctrl>.mdui-btn svg {
+    height: 24px;
+    width: 24px;
+    font-size: 24px;
+}
+
+.mdui-theme-layout-dark [data-player]>.info>.ctrl>.mdui-btn svg {
+    filter: Invert(1);
+}
+
+
+/* 歌詞頁籤 */
+
+[data-lrc] p.loading {
+    opacity: 0;
+}
+
+[data-lrc] p.loading.mdui-text-color-theme-accent {
+    transition: all 0.3s ease-in-out;
+    position: relative;
+}
+
+[data-lrc] p.loading.mdui-text-color-theme-accent::after {
+    content: '';
+    position: absolute;
+    width: 5.5em;
+    height: 2px;
+    background: currentColor;
+    margin: 0 auto;
+    top: calc(1.5em + 3px);
+    left: 0;
+    right: 0;
+    animation-name: lrcloading;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    transform-origin: 0% 0%;
+}
+
+@keyframes lrcloading {
+    0% {
+        transform: scaleX(0);
+        opacity: 0;
+    }
+    90% {
+        transform: scaleX(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scaleX(1);
+        opacity: 0;
+    }
+}
+
+[data-lrc] p {
+    transition: all 0.3s ease-in-out;
+    opacity: .7;
+    min-height: 1em;
+}
+
+[data-lrc] p.mdui-text-color-theme-accent,
+[data-lrc] p.mdui-text-color-theme-accent:not(:empty)+p {
+    opacity: 1;
+}
+
+#content>[data-lrc] {
+    padding-top: 80px;
+    text-align: center;
+    height: calc(100vh - 96px - 20px - 32px - 80px);
+    overflow: hidden;
+    overflow-y: scroll;
+    margin-bottom: -64px;
+    mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+}
+
+#content>[data-lrc]>[data-lrc="inner"] {
+    padding: 30vh 0;
+}
+
+#content>[data-lrc] p {
+    font-size: calc(12px + 1vmin);
+    line-height: 2em;
+    margin: 0;
+    transition: color .3s linear, opacity .3s linear;
+}
