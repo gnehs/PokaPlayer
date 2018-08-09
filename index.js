@@ -5,23 +5,27 @@ const schedule = require('node-schedule'); // 很會計時ㄉ朋友
 const base64 = require('base-64');
 //express
 const express = require('express');
-const session = require('express-session');
-const helmet = require('helmet'); // 防範您的應用程式出現已知的 Web 漏洞
-const bodyParser = require('body-parser'); // 讀入 post 請求
-const app = express(); // Node.js Web 架構
-const FileStore = require('session-file-store')(session); // session
-const git = require('simple-git/promise')(__dirname);
-const server = require('http').createServer(app),
-    io = require('socket.io').listen(server)
-app.set('views', __dirname + '/views');
-app.set('view engine', 'pug')
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(helmet.hidePoweredBy({ setTo: 'PHP/7.1.20' }));
-app.use(session({
+const session = require('express-session')({
     store: new FileStore(),
     secret: config.PokaPlayer.sessionSecret,
     resave: false,
     saveUninitialized: true
+});
+const helmet = require('helmet'); // 防範您的應用程式出現已知的 Web 漏洞
+const bodyParser = require('body-parser'); // 讀入 post 請求
+const app = express(); // Node.js Web 架構
+const FileStore = require('session-file-store')(require('express-session')); // session
+const git = require('simple-git/promise')(__dirname);
+const server = require('http').createServer(app),
+    io = require('socket.io').listen(server),
+    sharedsession = require("express-socket.io-session")
+app.set('views', __dirname + '/views');
+app.set('view engine', 'pug')
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(helmet.hidePoweredBy({ setTo: 'PHP/7.1.20' }));
+app.use(session);
+io.use(sharedsession(session, {
+    autoSave: true
 }));
 // 時間處理
 const moment = require('moment-timezone');
