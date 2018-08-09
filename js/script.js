@@ -1,6 +1,6 @@
 // 宣告全域變數
 songList = [];
-const lrc = new Lyrics(`[00:00.000]`);
+const lrc = new Lyrics(`[00:00.000]歌詞讀取中`);
 // 初始化播放器
 const ap = new APlayer({
     container: document.getElementById('aplayer'),
@@ -84,7 +84,6 @@ $(function() {
         $('#content').attr('data-page', $(this).attr('data-link'))
         $("#player").removeClass('hide')
     })
-
     if ($(window).width() < 1024) {
         $('[data-link]').attr("mdui-drawer", "{target: '#drawer', swipe: true}")
         mdui.mutation()
