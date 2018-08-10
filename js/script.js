@@ -232,6 +232,7 @@ async function show_search(keyword) {
     mdui.mutation() //初始化
 
     $('#search').change(async function() {
+        $('#search+.mdui-textfield-error+.mdui-textfield-helper').text('搜尋中...')
         show_search($(this).val())
     });
 }
