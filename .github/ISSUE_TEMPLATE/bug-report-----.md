@@ -1,6 +1,6 @@
 ---
 name: Bug report 錯誤回報
-about: Create a report to help us improve
+about: Create a report to help us improve 建立一個回報以幫助我們改進
 
 ---
 
