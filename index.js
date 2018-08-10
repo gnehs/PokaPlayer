@@ -114,7 +114,6 @@ io.on('connection', socket => {
 
 });
 // 更新
-
 app.get('/upgrade', (req, res) => {
     if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
         res.status(403).send('Permission Denied Desu')
