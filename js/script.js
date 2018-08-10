@@ -868,8 +868,9 @@ async function show_settings() {
 
     $("#PP_bg input").change(function() {
         window.localStorage["randomImg"] = $(this).val()
+        $('#header-wrapper').attr("style", `background-image: url(${$(this).val()});`)
         mdui.snackbar({
-            message: `隨機圖片已變更為 ${$(this).val()}，該變更並不會在此頁生效`,
+            message: `隨機圖片已變更為 ${$(this).val()}`,
             position: getSnackbarPosition(),
             timeout: 1500
         });
@@ -878,9 +879,10 @@ async function show_settings() {
         let name = $(this).text()
         let src = $(this).attr('data-src')
         window.localStorage["randomImg"] = src
+        $('#header-wrapper').attr("style", `background-image: url(${src});`)
         $('#PP_bg input').val(src);
         mdui.snackbar({
-            message: `隨機圖片已變更為 ${name}，該變更並不會在此頁生效`,
+            message: `隨機圖片已變更為 ${name}`,
             position: getSnackbarPosition(),
             timeout: 1500
         });
