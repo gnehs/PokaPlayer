@@ -11,11 +11,48 @@ const ap = new APlayer({
     container: document.getElementById('aplayer'),
     fixed: true
 });
+//吼吼路由
+var router = new Navigo(null, true, '#!');
+router
+    .on({
+        'search/:keyword': function(params) { show_search(params.keyword) },
+        'search': function() { show_search() },
+        'album/:artist/:name/:album_artist': function(params) { show_album_songs(params.artist, params.name, params.album_artist) },
+        'album': function() { show_album() },
+        'folder/:dir': function(params) { show_folder(params.dir) },
+        'folder': function() { show_folder() },
+        'artist/:artist': function(params) { show_artist(params.artist) },
+        'artist': function() { show_artist() },
+        'composer/:composer': function(params) { show_composer(params.composer) },
+        'composer': function() { show_composer() },
+        'playlist/:playlistType/:playlistID': function(params) { show_playlist_songs(params.playlistType + '/' + params.playlistID) },
+        'playlist': function() { show_playlist() },
+        'random': function() { show_random() },
+        'now': function() { show_now() },
+        'lrc': function() { show_lrc() },
+        'settings': function() { show_settings() },
+        '*': function() { show_home() }
+    })
+    .resolve()
+router
+    .hooks({
+        before: function(done, params) {
+            $("#player").removeClass('hide')
+            done()
+        },
+        after: function(params) {
+            $('#drawer a').removeClass('mdui-list-item-active')
+            $(`#drawer a[href="${$('#content').attr('data-page')}"]`).addClass('mdui-list-item-active')
+        }
+    })
+
 ap.on("play", async function() {
     //沒歌就隨機播放
-    if (ap.list.audios.length == 0) play_random();
+    if (ap.list.audios.length == 0) play_random().then(() => {
+        router.navigate('now');
+        show_now()
+    })
     updateMediaSession()
-    lrc.load(`[00:00.000]`) // 歌詞清空
 })
 ap.on("loadedmetadata", async function() {
     lrc.load(`[00:00.000]歌詞讀取中`)
@@ -79,48 +116,14 @@ function updateMediaSession() {
 }
 // 初始化網頁
 $(function() {
-    // 載入首頁
-    show_home()
-    $('#content').attr('data-page', 'home')
-
-    $('[data-link]').click(function() {
-        $('[data-link]').removeClass('mdui-list-item-active')
-        $(this).addClass('mdui-list-item-active')
-        $('#content').attr('data-page', $(this).attr('data-link'))
-        $("#player").removeClass('hide')
-    })
-
+    $(`#drawer a[href="${$('#content').attr('data-page')}"]`).addClass('mdui-list-item-active')
     if ($(window).width() < 1024) {
-        $('[data-link]').attr("mdui-drawer", "{target: '#drawer', swipe: true}")
+        $('#drawer a').attr("mdui-drawer", "{target: '#drawer', swipe: true}")
         mdui.mutation()
     }
-
-    $('[data-link="home"]').click(function() { show_home() })
-    $('[data-link="search"]').click(function() { show_search() })
-    $('[data-link="album"]').click(function() { show_album() })
-    $('[data-link="folder"]').click(function() { show_folder() })
-    $('[data-link="artist"]').click(function() { show_artist() })
-    $('[data-link="composer"]').click(function() { show_composer() })
-    $('[data-link="playlist"]').click(function() { show_playlist() })
-    $('[data-link="random"]').click(function() { show_random() })
-    $('[data-link="now"]').click(function() { show_now() })
-    $('[data-link="lrc"]').click(function() { show_lrc() })
-    $('[data-link="settings"]').click(function() { show_settings() })
-
     $('#player>*:not(.ctrl)').click(function() {
-        show_now()
+        router.navigate('now')
     });
-    //圖片讀取錯誤
-    $("img").on('error', function() { tryRelogin() }).attr('src', "/img/PokaPlayer.png");
-    //返回攔截
-    /* window.history.pushState(null, null, "#");
-     window.addEventListener("popstate", function(e) {
-         //show_album()
-         window.history.pushState(null, null, "#");
-         mdui.snackbar({
-             message: "點擊返回"
-         });
-     })*/
     // 初始化 MediaSession
     updateMediaSession()
 });
@@ -160,7 +163,8 @@ function secondToTime(second) {
 
 // 首頁
 async function show_home() {
-    // 展示讀取中
+    $('#content').attr('data-page', 'home')
+        // 展示讀取中
     var header = HTML_getHeader("PokaPlayer")
     $("#content").html(header + HTML_getSpinner())
     mdui.mutation()
@@ -168,10 +172,13 @@ async function show_home() {
     var data = await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "list", [{ key: "limit", "value": -1 }, { key: "offset", "value": 0 }]),
         album = HTML_showPins(data.data.items)
     $("#content").html(header + album)
-    $("#content>:not(#header-wrapper)").animateCss("fadeIn")
+    $("#content>:not(#header-wrapper)")
+    router.updatePageLinks()
 }
 //- 搜尋
 async function show_search(keyword) {
+
+    $('#content').attr('data-page', 'search')
     var html = `
     <div class="mdui-row">
         <div class="mdui-col-md-6 mdui-col-offset-md-3">
@@ -232,13 +239,15 @@ async function show_search(keyword) {
     mdui.mutation() //初始化
 
     $('#search').change(async function() {
-        show_search($(this).val())
+        $('#search+.mdui-textfield-error+.mdui-textfield-helper').text('搜尋中...')
+        router.navigate('search/' + $(this).val())
     });
 }
 //- 列出專輯
 async function show_album() {
     // 展示讀取中
     var header = HTML_getHeader("專輯")
+    $('#content').attr('data-page', 'album')
     $("#content").html(header + HTML_getSpinner())
     mdui.mutation()
     var albums_albums = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", [
@@ -266,15 +275,18 @@ async function show_album() {
                 <div id="recently-albums">${recently}</div>`
     if ($("#content").attr('data-page') == 'album') {
         $("#content").html(header + tabs + html)
-        $("#content>:not(#header-wrapper):not(#recently-albums)").animateCss("fadeIn")
+        $("#content>:not(#header-wrapper):not(#recently-albums)")
         mdui.mutation()
+        router.updatePageLinks()
     }
 }
 //- 展示專輯歌曲
-async function show_album_songs(artist, album, album_artist) {
+async function show_album_songs(a, b, c) {
+    var artist = a == '#' ? '' : a,
+        album = b == '#' ? '' : b,
+        album_artist = c == '#' ? '' : c
+
     //如果從首頁按進去頁籤沒切換
-    $('[data-link]').removeClass('mdui-list-item-active')
-    $('[data-link="album"]').addClass('mdui-list-item-active')
     $("#content").attr('data-page', 'album')
     var albumInfo = `
     <div class="album-info">
@@ -302,7 +314,7 @@ async function show_album_songs(artist, album, album_artist) {
     </button>`
 
     // 展示讀取中
-    $("#content").html(albumInfo + HTML_getSpinner()).animateCss("fadeIn")
+    $("#content").html(albumInfo + HTML_getSpinner())
     mdui.mutation()
 
     //抓資料
@@ -310,20 +322,18 @@ async function show_album_songs(artist, album, album_artist) {
         html = HTML_showSongs(data.data.songs)
     if ($("#content").attr('data-page') == 'album') {
         $("#content").html(albumInfo + html)
-        $("#content>:not(.album-info):not(.mdui-divider)").animateCss("fadeIn")
+        $("#content>:not(.album-info):not(.mdui-divider)")
     }
 
     // 獲取總時間
     var time = 0
     for (i = 0; i < data.data.songs.length; i++) time += data.data.songs[i].additional.song_audio.duration
-    $("#content .album-info .time").html(`${data.data.songs.length} 首歌曲/${secondToTime(time)}`).animateCss("fadeIn")
-    $("#content .album-info .actions").html(actions).animateCss("fadeIn")
+    $("#content .album-info .time").html(`${data.data.songs.length} 首歌曲/${secondToTime(time)}`)
+    $("#content .album-info .actions").html(actions)
 
 }
 // 資料夾
 async function show_folder(folder) {
-    $('[data-link]').removeClass('mdui-list-item-active')
-    $('[data-link="folder"]').addClass('mdui-list-item-active')
     $("#content").attr('data-page', 'folder')
         // 展示讀取中
     var header = HTML_getHeader("資料夾")
@@ -344,13 +354,12 @@ async function show_folder(folder) {
         folderHTML = HTML_showFolder(data.data.items)
     if ($("#content").attr('data-page') == 'folder') {
         $("#content").html(header + folderHTML)
-        $("#content>:not(#header-wrapper)").animateCss("fadeIn")
+        $("#content>:not(#header-wrapper)")
+        router.updatePageLinks()
     }
 }
 async function show_artist(artist) {
     var header = HTML_getHeader("演出者")
-    $('[data-link]').removeClass('mdui-list-item-active')
-    $('[data-link="artist"]').addClass('mdui-list-item-active')
     $("#content").attr('data-page', 'artist')
     $("#content").html(header + HTML_getSpinner())
     mdui.mutation()
@@ -383,13 +392,13 @@ async function show_artist(artist) {
         if ($("#content").attr('data-page') == 'artist')
             $("#content").html(header + artistsHTML)
     }
-    if ($("#content").attr('data-page') == 'artist')
-        $("#content>:not(#header-wrapper)").animateCss("fadeIn")
+    if ($("#content").attr('data-page') == 'artist') {
+        $("#content>:not(#header-wrapper)")
+        router.updatePageLinks()
+    }
 }
 async function show_composer(composer) {
     var header = HTML_getHeader("作曲者")
-    $('[data-link]').removeClass('mdui-list-item-active')
-    $('[data-link="composer"]').addClass('mdui-list-item-active')
     $("#content").attr('data-page', 'composer')
     $("#content").html(header + HTML_getSpinner())
     mdui.mutation()
@@ -422,14 +431,17 @@ async function show_composer(composer) {
         if ($("#content").attr('data-page') == 'composer')
             $("#content").html(header + composersHTML)
     }
-    if ($("#content").attr('data-page') == 'composer')
-        $("#content>:not(#header-wrapper)").animateCss("fadeIn")
+    if ($("#content").attr('data-page') == 'composer') {
+        $("#content>:not(#header-wrapper)")
+        router.updatePageLinks()
+    }
 }
 //- 播放清單
 async function show_playlist() {
     // 展示讀取中
     var header = HTML_getHeader("所有清單")
     $("#content").html(header + HTML_getSpinner())
+    $('#content').attr('data-page', 'playlist')
     mdui.mutation()
     var playlist = await getAPI("AudioStation/playlist.cgi", "SYNO.AudioStation.Playlist", "list", [
         { key: "limit", "value": 1000 },
@@ -442,13 +454,12 @@ async function show_playlist() {
             $("#content").html(header + `<div class="mdui-valign" style="height:150px"><p class="mdui-center">沒有任何播放清單</p></div>`)
         }
         $("#content").html(header + HTML_showPlaylists(playlist.data.playlists))
+        router.updatePageLinks()
     }
 }
 //- 播放清單歌曲
 async function show_playlist_songs(id) {
     //如果從首頁按進去
-    $('[data-link]').removeClass('mdui-list-item-active')
-    $('[data-link="playlist"]').addClass('mdui-list-item-active')
     $("#content").attr('data-page', 'playlist')
 
     // 展示讀取中
@@ -471,7 +482,7 @@ async function show_playlist_songs(id) {
     var header = HTML_getHeader(name)
     if ($("#content").attr('data-page') == 'playlist') {
         $("#content").html(header + songs)
-        $("#content>:not(#header-wrapper)").animateCss("fadeIn")
+        $("#content>:not(#header-wrapper)")
     }
 }
 //- 隨機播放
@@ -479,6 +490,7 @@ async function show_random() {
     // 展示讀取中
     var header = HTML_getHeader("隨機播放")
     $("#content").html(header + HTML_getSpinner())
+    $('#content').attr('data-page', 'random')
     mdui.mutation()
 
     var PARAMS_JSON = [
@@ -491,11 +503,11 @@ async function show_random() {
         album = HTML_showSongs(data.data.songs)
     if ($("#content").attr('data-page') == 'random') {
         $("#content").html(header + album)
-        $("#content>:not(#header-wrapper)").animateCss("fadeIn")
+        $("#content>:not(#header-wrapper)")
     }
 }
 async function play_random() {
-    show_now()
+    router.navigate('now')
     var PARAMS_JSON = [
             { key: "additional", "value": "song_tag,song_audio,song_rating" },
             { key: "library", "value": "shared" },
@@ -504,12 +516,10 @@ async function play_random() {
         ],
         data = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "list", PARAMS_JSON, 1)
     playSongs(data.data.songs, false, false)
-    show_now()
 }
 //- 現正播放
 async function show_now() {
-    $('[data-link]').removeClass('mdui-list-item-active')
-    $('[data-link="now"]').addClass('mdui-list-item-active')
+    $('#content').attr('data-page', 'now')
     var html = `<ul class="mdui-list songs">`
     for (i = 0; i < ap.list.audios.length; i++) {
         let focus = ap.list.index == i ? 'mdui-list-item-active' : '',
@@ -530,6 +540,7 @@ async function show_now() {
         </li>`　
     }
     html += `</ul>`
+
 
     var nowPlaying = ap.list.audios[ap.list.index],
         name = nowPlaying ? nowPlaying.name : "PokaPlayer",
@@ -692,6 +703,7 @@ async function show_now() {
 //- 歌詞
 function show_lrc() {
     $("#content").html(`<div data-lrc><div data-lrc="inner"></div></div>`)
+    $('#content').attr('data-page', 'lrc')
         // 歌詞
     if (lrc.getLyrics()) {
         var html = ``
@@ -725,7 +737,9 @@ function show_lrc() {
 }
 //- 設定
 async function show_settings() {
-    ///給定預設值
+
+    $('#content').attr('data-page', 'settings')
+        ///給定預設值
     if (!window.localStorage["musicRes"]) window.localStorage["musicRes"] = "wav"
     if (!window.localStorage["randomImg"]) window.localStorage["randomImg"] = "/og/og.png"
         ///
@@ -868,8 +882,9 @@ async function show_settings() {
 
     $("#PP_bg input").change(function() {
         window.localStorage["randomImg"] = $(this).val()
+        $('#header-wrapper').attr("style", `background-image: url(${$(this).val()});`)
         mdui.snackbar({
-            message: `隨機圖片已變更為 ${$(this).val()}，該變更並不會在此頁生效`,
+            message: `隨機圖片已變更為 ${$(this).val()}`,
             position: getSnackbarPosition(),
             timeout: 1500
         });
@@ -878,9 +893,10 @@ async function show_settings() {
         let name = $(this).text()
         let src = $(this).attr('data-src')
         window.localStorage["randomImg"] = src
+        $('#header-wrapper').attr("style", `background-image: url(${src});`)
         $('#PP_bg input').val(src);
         mdui.snackbar({
-            message: `隨機圖片已變更為 ${name}，該變更並不會在此頁生效`,
+            message: `隨機圖片已變更為 ${name}`,
             position: getSnackbarPosition(),
             timeout: 1500
         });
@@ -946,7 +962,7 @@ async function show_settings() {
     // PokaPlayer 詳細資料
     var getinfo = await axios.get('/info/');
     var checkupdate = await axios.get(`https://api.github.com/repos/gnehs/PokaPlayer/releases`);
-    var update = getinfo.data.version != checkupdate.data[0].tag_name ? `新版本已發佈，請立即更新 <a href="javascript:void(0)" data-upgrade>更新</a>` : `您的 PokaPlayer 已是最新版本`
+    var update = getinfo.data.version != checkupdate.data[0].tag_name ? `新版本 <a href="${checkupdate.data[0].html_url}" target="_blank">${checkupdate.data[0].tag_name}</a> 已發佈，請立即更新 <a href="javascript:void(0)" data-upgrade>更新</a>` : `您的 PokaPlayer 已是最新版本`
     var about = `PokaPlayer 是 Synology Audio Ststion 的新朋友！ <a href="https://github.com/gnehs/PokaPlayer" target="_blank">GitHub</a>
         <p><strong>版本</strong> ${getinfo.data.version} / <strong>開發者</strong> ${getinfo.data.author} / ${update}</p>`
     $("#about").html(about)
@@ -1087,30 +1103,3 @@ function getSnackbarPosition() {
     else
         return "left-bottom"
 }
-// animate css
-$.fn.extend({
-    animateCss: function(animationName, callback) {
-        var animationEnd = (function(el) {
-            var animations = {
-                animation: 'animationend',
-                OAnimation: 'oAnimationEnd',
-                MozAnimation: 'mozAnimationEnd',
-                WebkitAnimation: 'webkitAnimationEnd',
-            };
-
-            for (var t in animations) {
-                if (el.style[t] !== undefined) {
-                    return animations[t];
-                }
-            }
-        })(document.createElement('div'));
-
-        this.addClass('animated ' + animationName).one(animationEnd, function() {
-            $(this).removeClass('animated ' + animationName);
-
-            if (typeof callback === 'function') callback();
-        });
-
-        return this;
-    },
-});

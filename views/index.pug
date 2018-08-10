@@ -5,7 +5,6 @@ html
         meta(name='viewport', content='width=device-width, initial-scale=1.0')       
         link(href='//cdnjs.cloudflare.com/ajax/libs/mdui/0.4.1/css/mdui.min.css',rel='stylesheet')
         link(href='/css/style.css',rel='stylesheet')
-        link(href='//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css',rel='stylesheet')
         script(src='//cdnjs.cloudflare.com/ajax/libs/mdui/0.4.1/js/mdui.min.js')
         //-app
         meta(name="theme-color" content="#3f51b5")
@@ -29,10 +28,10 @@ html
         #drawer.mdui-drawer.mdui-appbar-with-toolbar
             .mdui-list
                 mixin link(name,link,icon)
-                    a.mdui-list-item.mdui-ripple(href='javascript:void(0)',data-link=link)&attributes(attributes)
+                    a.mdui-list-item.mdui-ripple(href=link,data-navigo)&attributes(attributes)
                         i.mdui-list-item-icon.mdui-icon.material-icons=icon
                         .mdui-list-item-content=name
-                +link("首頁","home","home")(class="mdui-list-item-active")
+                +link("首頁","home","home")
                 +link("現正播放","now","play_circle_filled")
                 +link("歌詞","lrc","subtitles")
                 .mdui-subheader 音樂庫
@@ -67,6 +66,7 @@ html
         script(src='//cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js')
+        script(src='//unpkg.com/navigo@6')
         script(src='/js/lyrics.min.js')
         script(src='/js/base64.js')
         script(src='/js/template.js')

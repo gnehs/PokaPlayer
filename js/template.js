@@ -24,20 +24,21 @@ function HTML_showPins(items) {
                 var img = getCover(type, pin.criteria.artist)
                 var title = pin.name
                 var subtitle = '演出者'
-                var onclickActions = `show_artist(\`${pin.criteria.artist}\`)`
+                var link = `artist/${encodeURIComponent(pin.criteria.artist)}`
                 break;
             case "composer":
                 //作曲者
                 var img = getCover(type, pin.criteria.composer)
                 var title = pin.name
                 var subtitle = '作曲者'
-                var onclickActions = `show_composer(\`${pin.criteria.composer}\`)`
+                var link = `composer/${encodeURIComponent(pin.criteria.composer)}`
                 break;
             case "genre":
                 //作曲者
                 var img = getCover(type, pin.criteria.genre)
                 var title = pin.name
                 var subtitle = '類型'
+                var link = ''
                 var onclickActions = `mdui.snackbar({message: '沒打算做喔，不過資料都給了就給你看一下啦',timeout:500,position:'${getSnackbarPosition()}'});`
                 break;
             case "folder":
@@ -45,14 +46,14 @@ function HTML_showPins(items) {
                 var img = getCover(type, pin.criteria.folder)
                 var title = pin.name
                 var subtitle = '資料夾'
-                var onclickActions = `show_folder(\`${pin.criteria.folder}\`)`
+                var link = `folder/${encodeURIComponent(pin.criteria.folder)}`
                 break;
             case "playlist":
                 //資料夾
                 var img = getBackground()
                 var title = pin.name
                 var subtitle = '播放清單'
-                var onclickActions = `show_playlist_songs(\`${pin.criteria.playlist}\`) `
+                var link = `playlist/${encodeURIComponent(pin.criteria.playlist)} `
                 break;
             case "album":
                 //專輯
@@ -63,14 +64,16 @@ function HTML_showPins(items) {
                 var img = getCover("album", name, artist, album_artist)
                 var title = name
                 var subtitle = artist
-                var onclickActions = `show_album_songs(\`${artist}\`,\`${name}\`,\`${album_artist}\`)`
+                var link = `album/${artist?encodeURIComponent(artist):'#'}/${name?encodeURIComponent(name):'#'}/${album_artist?encodeURIComponent(album_artist):'#'}`
                 break;
         }
         //await getAlbumSong(albumData.criteria.album, albumData.criteria.album_artist, albumData.criteria.artist)
         html += `<div class="mdui-card mdui-ripple mdui-hoverable album" 
-                      onclick="${onclickActions}" 
+                      href="${link}" 
                       style="background-image:url(${img});" 
-                      title="${title}&#10;${subtitle}">
+                      title="${title}&#10;${subtitle}"
+                      ${onclickActions?`onclick="${onclickActions}"`:''}
+                      data-navigo>
                 <div class="mdui-card-media">
                     <div class="mdui-card-media-covered mdui-card-media-covered-gradient">
                         <div class="mdui-card-primary">
@@ -110,7 +113,7 @@ function HTML_showFolder(items) {
             html += `
             <li class="mdui-list-item mdui-ripple">
                 ${img}
-                <div class="mdui-list-item-content" onclick="playSongs(songList,\`${id}\`)">
+                <div class="mdui-list-item-content" onclick="playSongs(songList,\`${id}\`);router.navigate('now');">
                     <div class="mdui-list-item-title">${title}</div>
                     <div class="mdui-list-item-text">${subtitle}</div>
                     <div class="mdui-list-item-text">${filedetail}</div>
@@ -121,7 +124,7 @@ function HTML_showFolder(items) {
                 </button>
             </li>`
         } else {
-            html += `<li class="mdui-list-item mdui-ripple" onclick="show_folder(\`${id}\`)">
+            html += `<li class="mdui-list-item mdui-ripple" href="folder/${id}" data-navigo>
                         <i class="mdui-list-item-avatar mdui-icon material-icons">${icon}</i>
                         <div class="mdui-list-item-content">${title}</div>
                     </li>`
@@ -148,9 +151,10 @@ function HTML_showAlbums(items) {
         //await getAlbumSong(albumData.criteria.album, albumData.criteria.album_artist, albumData.criteria.artist)
         album += `
         <div class="mdui-card mdui-ripple mdui-hoverable album" 
-            onclick="show_album_songs(\`${artist}\`,\`${name}\`,\`${album_artist}\`)"  
+            href="album/${artist?encodeURIComponent(artist):'#'}/${name?encodeURIComponent(name):'#'}/${album_artist?encodeURIComponent(album_artist):'#'}"  
             style="background-image:url(${img});"
-            title="${name}${artist ? '&#10;' + artist : ''}">
+            title="${name}${artist ? '&#10;' + artist : ''}"
+            data-navigo>
             <div class="mdui-card-media">
                 <div class="mdui-card-media-covered mdui-card-media-covered-gradient">
                     <div class="mdui-card-primary">
@@ -172,7 +176,7 @@ function HTML_showPlaylists(playlists) {
         let name = playlist.name
         let id = playlist.id
         html += `
-        <li class="mdui-list-item mdui-ripple" onclick="show_playlist_songs(\`${id}\`)">
+        <li class="mdui-list-item mdui-ripple" href="playlist/${id}" data-navigo>
             <i class="mdui-list-item-avatar mdui-icon material-icons">playlist_play</i>
             <div class="mdui-list-item-content">
                ${name}
@@ -192,7 +196,7 @@ function HTML_showSongs(songs) {
         let artist = song.additional.song_tag.artist
         let album_artist = song.additional.song_tag.album_artist
         let album = song.additional.song_tag.album
-        let clickAction = `onclick="playSongs(songList,\`${song.id}\`);show_now()" `
+        let clickAction = `onclick="playSongs(songList,\`${song.id}\`);router.navigate('now');" `
         let addAction = `onclick="addSong(songList,'${song.id}')"`
 
         let img = window.localStorage["imgRes"] == "true" ? '' :
@@ -228,7 +232,7 @@ function HTML_showArtist(artists) {
         let name = artist.name ? artist.name : "未知"
         let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${getCover("artist", name)}"/></div>`
         html += `
-        <li class="mdui-list-item mdui-ripple" onclick="show_artist(\`${name}\`)">
+        <li class="mdui-list-item mdui-ripple" href="artist/${encodeURIComponent(name)}" data-navigo>
             ${img}
             <div class="mdui-list-item-content">
                ${name}
@@ -246,7 +250,7 @@ function HTML_showComposer(composers) {
         let name = composer.name ? composer.name : "未知"
         let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${getCover("composer", name)}"/></div>`
         html += `
-        <li class="mdui-list-item mdui-ripple" onclick="show_composer(\`${name}\`)">
+        <li class="mdui-list-item mdui-ripple" href="composer/${encodeURIComponent(name)}" data-navigo>
             ${img}
             <div class="mdui-list-item-content">
                ${name}
