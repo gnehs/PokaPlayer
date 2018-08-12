@@ -12,7 +12,6 @@ var HTML = {
         let html = '<div class="albums">'
         for (i = 0; i < items.length; i++) {　
             let pin = items[i]
-            let title = pin.name
             let type = pin.type
             let img, title, subtitle, link, onclickActions = ''
             switch (type) {

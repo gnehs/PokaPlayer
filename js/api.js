@@ -7,14 +7,15 @@ function getBackground() {
 }
 //- 取得封面
 function getCover(type, info, artist_name, album_artist_name) {
+    let url;
     if (type == "album") {
         let q = ''
         q += info ? `&album_name=${encodeURIComponent(info)}` : ``
         q += artist_name ? `&artist_name=${encodeURIComponent(artist_name)}` : ``
         q += album_artist_name ? `&album_artist_name=${encodeURIComponent(album_artist_name)}` : `&album_artist_name=`
-        let url = `/cover/album/` + ppEncode(q)
+        url = `/cover/album/` + ppEncode(q)
     } else {
-        let url = `/cover/${encodeURIComponent(type)}/${encodeURIComponent(info)}`
+        url = `/cover/${encodeURIComponent(type)}/${encodeURIComponent(info)}`
     }
     if (window.localStorage["imgRes"] == "true")
         return getBackground()

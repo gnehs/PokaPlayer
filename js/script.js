@@ -237,7 +237,7 @@ async function showSearch(keyword) {
         $("#content").html(html)
     mdui.mutation() //初始化
 
-    $('#search').change(async () => {
+    $('#search').change(async function() {
         $('#search+.mdui-textfield-error+.mdui-textfield-helper').text('搜尋中...')
         router.navigate('search/' + $(this).val())
     });
@@ -685,14 +685,14 @@ async function showNow() {
         ap.seek(time);
     })
 
-    $(".songs [data-now-play-id].songinfo").click(() => {
+    $(".songs [data-now-play-id].songinfo").click(function() {
         $(".songs>li.song").removeClass('mdui-list-item-active')
         $(this).parent().eq(0).addClass('mdui-list-item-active')
         let song = $(this).attr('data-now-play-id')
         ap.list.switch(song)
         ap.play()
     })
-    $(".songs [data-now-play-id].close").click(() => {
+    $(".songs [data-now-play-id].close").click(function() {
         let song = $(this).attr('data-now-play-id')
         if (song == ap.list.index) ap.skipForward()
         ap.list.remove(song)
@@ -743,8 +743,8 @@ async function showSettings() {
     if (!window.localStorage["randomImg"]) window.localStorage["randomImg"] = "/og/og.png"
         ///
     let header = HTML.getHeader("設定")
-    let title = (title) => `<h2 class="mdui-text-color-theme">${title}</h2>`
-    let subtitle = (subtitle) => `<h4>${subtitle}</h4>`
+    let title = title => `<h2 class="mdui-text-color-theme">${title}</h2>`
+    let subtitle = subtitle => `<h4>${subtitle}</h4>`
     let colors = [
         'red',
         'pink',
@@ -778,9 +778,9 @@ async function showSettings() {
         }
         return option
     }
-    let themecolor = (s) => { return `<div class="mdui-col"><label class="mdui-radio"><input type="radio" name="themecolor" value="false" ${s=="true"?"":"checked"}/><i class="mdui-radio-icon"></i>Light</label></div>
+    let themecolor = s => { return `<div class="mdui-col"><label class="mdui-radio"><input type="radio" name="themecolor" value="false" ${s=="true"?"":"checked"}/><i class="mdui-radio-icon"></i>Light</label></div>
   <div class="mdui-col"><label class="mdui-radio"><input type="radio" name="themecolor" value="true" ${s=="true"?"checked":""}/><i class="mdui-radio-icon"></i>Dark</label></div>` }
-    let musicRes = (s) => { return `<div class="mdui-col">
+    let musicRes = s => { return `<div class="mdui-col">
         <label class="mdui-radio">
             <input type="radio" name="musicres" value="mp3" ${s=="mp3"?"checked":""}/>
             <i class="mdui-radio-icon"></i>
@@ -804,7 +804,7 @@ async function showSettings() {
         </label>
         <div class="mdui-typo-caption-opacity">原始音質，在網路狀況許可下，建議選擇此選項聆聽高音質音樂</div>
     </div>` }
-    let imgRes = (s) => { return `<div class="mdui-col">
+    let imgRes = s => { return `<div class="mdui-col">
         <label class="mdui-radio">
             <input type="radio" name="musicres" value="true" ${s=="true"?"checked":""}/>
             <i class="mdui-radio-icon"></i>
@@ -820,7 +820,7 @@ async function showSettings() {
         </label>
         <div class="mdui-typo-caption-opacity">載入所有圖片，就像平常那樣</div>
     </div>` }
-    let bg = (s) => { return `<div class="mdui-textfield">
+    let bg = s => { return `<div class="mdui-textfield">
         <input class="mdui-textfield-input" placeholder="隨機圖片" value="${s}"/>
         <div class="mdui-textfield-helper">填入網址或是點擊下方來源來取代原本的隨機圖片</div>
     </div>` }
@@ -857,11 +857,11 @@ async function showSettings() {
         subtitle("主色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Primary" style="text-transform:capitalize;">${colorOption(colors)}</form>` +
         subtitle("強調色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Accent" style="text-transform:capitalize;">${colorOption(colors,true)}</form>`
 
-    let musicRes = title("音質") + `<form class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4" id="PP_Res">${musicRes(window.localStorage["musicRes"])}</form>`
+    musicRes = title("音質") + `<form class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4" id="PP_Res">${musicRes(window.localStorage["musicRes"])}</form>`
 
-    let imgRes = title("圖片流量節省") + `<form class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4" id="PP_imgRes">${imgRes(window.localStorage["imgRes"])}</form>`
+    imgRes = title("圖片流量節省") + `<form class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4" id="PP_imgRes">${imgRes(window.localStorage["imgRes"])}</form>`
 
-    let bg = title("隨機圖片設定") + `<form id="PP_bg">${bg(window.localStorage["randomImg"])}<br>${bgSrc()}</form>`
+    bg = title("隨機圖片設定") + `<form id="PP_bg">${bg(window.localStorage["randomImg"])}<br>${bgSrc()}</form>`
 
     let info = title("Audio Station 狀態") + `<div id="DSMinfo" class="mdui-typo"><strong>版本</strong> 載入中</div>`
 
@@ -876,7 +876,7 @@ async function showSettings() {
     //初始化
     mdui.mutation();
 
-    $("#PP_bg input").change(() => {
+    $("#PP_bg input").change(function() {
         window.localStorage["randomImg"] = $(this).val()
         $('#header-wrapper').attr("style", `background-image: url(${$(this).val()});`)
         mdui.snackbar({
@@ -885,7 +885,8 @@ async function showSettings() {
             timeout: 1500
         });
     })
-    $("#PP_bg [data-src]").click(() => {
+    $("#PP_bg [data-src]").click(function() {
+        console.log($(this).attr('data-src'))
         let name = $(this).text()
         let src = $(this).attr('data-src')
         window.localStorage["randomImg"] = src
@@ -898,7 +899,7 @@ async function showSettings() {
         });
 
     })
-    $("#PP_Res input").change(() => {
+    $("#PP_Res input").change(function() {
         window.localStorage["musicRes"] = $(this).val()
         mdui.snackbar({
             message: `音質已設定為 ${$(this).val().toUpperCase()}，該設定並不會在現正播放中生效，請重新加入歌曲`,
@@ -906,7 +907,7 @@ async function showSettings() {
             timeout: 1500
         });
     })
-    $("#PP_imgRes input").change(() => {
+    $("#PP_imgRes input").change(function() {
         window.localStorage["imgRes"] = $(this).val()
         mdui.snackbar({
             message: `圖片流量節省已${$(this).val()=="true"?"開啟":"關閉"}`,
@@ -914,7 +915,7 @@ async function showSettings() {
             timeout: 1500
         });
     })
-    $("#PP_Theme input").change(() => {
+    $("#PP_Theme input").change(function() {
         window.localStorage["mdui-theme-color"] = $(this).val()
         if ($(this).val() == "true")
             $('body').addClass("mdui-theme-layout-dark")
@@ -924,7 +925,7 @@ async function showSettings() {
         let metaThemeColor = document.querySelector("meta[name=theme-color]");
         metaThemeColor.setAttribute("content", $('header>div:first-child').css("background-color"));
     })
-    $("#PP_Primary input").change(() => {
+    $("#PP_Primary input").change(function() {
         let classStr = $('body').attr('class');
         let classes = classStr.split(' ');
         for (i = 0, len = classes.length; i < len; i++) {
@@ -938,7 +939,7 @@ async function showSettings() {
         let metaThemeColor = document.querySelector("meta[name=theme-color]");
         metaThemeColor.setAttribute("content", $('header>div:first-child').css("background-color"));
     })
-    $("#PP_Accent input").change(() => {
+    $("#PP_Accent input").change(function() {
         let classStr = $('body').attr('class');
         let classes = classStr.split(' ');
         for (i = 0, len = classes.length; i < len; i++) {
@@ -959,7 +960,7 @@ async function showSettings() {
     let getInfo = await axios.get('/info/');
     let checkUpdate = await axios.get(`https://api.github.com/repos/gnehs/PokaPlayer/releases`);
     let update = getInfo.data.version != checkUpdate.data[0].tag_name ? `新版本 <a href="${checkUpdate.data[0].html_url}" target="_blank">${checkUpdate.data[0].tag_name}</a> 已發佈，請立即更新 <a href="javascript:void(0)" data-upgrade>更新</a>` : `您的 PokaPlayer 已是最新版本`
-    let about = `PokaPlayer 是 Synology Audio Ststion 的新朋友！ <a href="https://github.com/gnehs/PokaPlayer" target="_blank">GitHub</a>
+    about = `PokaPlayer 是 Synology Audio Ststion 的新朋友！ <a href="https://github.com/gnehs/PokaPlayer" target="_blank">GitHub</a>
         <p><strong>版本</strong> ${getInfo.data.version} / <strong>開發者</strong> ${getInfo.data.author} / ${update}</p>`
     $("#about").html(about)
 
