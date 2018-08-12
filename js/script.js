@@ -962,11 +962,12 @@ async function showSettings() {
     let checkUpdate = await axios.get(`https://api.github.com/repos/gnehs/PokaPlayer/releases`);
     let update = getInfo.data.version != checkUpdate.data[0].tag_name 
         ? `新版本 <a href="${checkUpdate.data[0].html_url}" target="_blank">${checkUpdate.data[0].tag_name}</a> 已發佈，請立即更新 <a href="javascript:void(0)" data-upgrade>更新</a>` 
-        : debug.data == true
-            ? `<a href="javascript:void(0)" data-upgrade>與開發分支同步</a>` 
-            :`您的 PokaPlayer 已是最新版本`
+        : debug.data == false
+            ? `您的 PokaPlayer 已是最新版本`
+            : `<a href="javascript:void(0)" data-upgrade>與開發分支同步</a>` 
+    let version = debug.data == false ? getInfo.data.version : debug.data
     about = `PokaPlayer 是 Synology Audio Ststion 的新朋友！ <a href="https://github.com/gnehs/PokaPlayer" target="_blank">GitHub</a>
-        <p><strong>版本</strong> ${getInfo.data.version} / <strong>開發者</strong> ${getInfo.data.author} / ${update}</p>`
+        <p><strong>版本</strong> ${version} / <strong>開發者</strong> ${getInfo.data.author} / ${update}</p>`
     $("#about").html(about)
 
 
