@@ -27,6 +27,7 @@ const git = require('simple-git/promise')(__dirname);
 git
     .raw(['symbolic-ref', '--short', 'HEAD'])
     .then(branch => {
+        branch = branch.slice(0,-1) // 結果會多一個換行符
         if (branch != (config.PokaPlayer.debug ? 'dev' : 'master')) {
             git
                 .fetch(["--all"])
