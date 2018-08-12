@@ -31,8 +31,8 @@ git
         if (branch != (config.PokaPlayer.debug ? 'dev' : 'master')) {
             git
                 .fetch(["--all"])
-                .then(() => git.checkout(config.PokaPlayer.debug ? 'dev' : 'master'))
                 .then(() => git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? 'dev' : 'master')]))
+                .then(() => git.checkout(config.PokaPlayer.debug ? 'dev' : 'master'))
                 .then(process.exit)
                 .catch(err => {
                     console.error('failed: ', err)
@@ -125,8 +125,8 @@ io.on('connection', socket => {
             git
                 .fetch(["--all"])
                 .then(() => socket.emit('git', 'fetch'))
-                .then(() => git.checkout(config.PokaPlayer.debug ? 'dev' : 'master'))
                 .then(() => git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? 'dev' : 'master')]))
+                .then(() => git.checkout(config.PokaPlayer.debug ? 'dev' : 'master'))
                 .then(() => socket.emit('git', 'reset'))
                 .then(() => socket.emit('restart'))
                 .then(() => process.exit())
@@ -146,8 +146,8 @@ app.get('/upgrade', (req, res) => {
         if (!config.PokaPlayer.instantUpgradeProcess) {
             git
                 .fetch(["--all"])
-                .then(() => git.checkout(config.PokaPlayer.debug ? 'dev' : 'master'))
                 .then(() => git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? 'dev' : 'master')]))
+                .then(() => git.checkout(config.PokaPlayer.debug ? 'dev' : 'master'))
                 .then(() => res.send('upgrade'))
                 .then(() => process.exit())
                 .catch(err => {
