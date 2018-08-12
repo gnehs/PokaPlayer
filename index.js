@@ -300,7 +300,8 @@ async function api(dsm, CGI_PATH, API_NAME, METHOD, VERSION = 1, PARAMS) {
         });
     });
 }
-// 報錯處理
-process.on('uncaughtException', function(err) {
-    console.log(err);
+app.use((req, res, next) => {
+    res.status(404).redirect("/")
 });
+// 報錯處理
+process.on('uncaughtException', (err) => console.log(err));
