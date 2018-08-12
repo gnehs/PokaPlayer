@@ -3,6 +3,7 @@ const config = require('./config.json'); // 設定檔
 const package = require('./package.json'); // 設定檔
 const schedule = require('node-schedule'); // 很會計時ㄉ朋友
 const base64 = require('base-64');
+
 //express
 const express = require('express');
 const FileStore = require('session-file-store')(require('express-session')); // session
@@ -15,10 +16,32 @@ const session = require('express-session')({
 const helmet = require('helmet'); // 防範您的應用程式出現已知的 Web 漏洞
 const bodyParser = require('body-parser'); // 讀入 post 請求
 const app = express(); // Node.js Web 架構
-const git = require('simple-git/promise')(__dirname);
 const server = require('http').createServer(app),
     io = require('socket.io').listen(server),
     sharedsession = require("express-socket.io-session")
+
+const git = require('simple-git/promise')(__dirname);
+
+// 檢查 branch
+
+git
+    .raw(['symbolic-ref', '--short', 'HEAD'])
+    .then(branch => {
+        if (branch != (config.PokaPlayer.debug ? 'dev' : 'master')) {
+            git
+                .fetch(["--all"])
+                .then(() => git.reset(["--hard", "origin/" + config.PokaPlayer.debug ? 'dev' : 'master']))
+                .then(() => git.checkout(config.PokaPlayer.debug ? 'dev' : 'master'))
+                .then(process.exit)
+                .catch(err => {
+                    console.error('failed: ', err)
+                    socket.emit('err', err.toString())
+                    process.exit()
+            })
+        }
+    })
+
+
 app.set('views', __dirname + '/views');
 app.set('view engine', 'pug')
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -300,7 +323,8 @@ async function api(dsm, CGI_PATH, API_NAME, METHOD, VERSION = 1, PARAMS) {
         });
     });
 }
-// 報錯處理
-process.on('uncaughtException', function(err) {
-    console.log(err);
+app.use((req, res, next) => {
+    res.status(404).redirect("/")
 });
+// 報錯處理
+process.on('uncaughtException', (err) => console.log(err));
