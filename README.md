@@ -7,7 +7,7 @@ PokaPlayer 是 Synology Audio Ststion 的新朋友！
 
 ## 截圖
 
-<img src="https://i.imgur.com/KnrvGup.jpg" width="500px">
+<img src="https://user-images.githubusercontent.com/16719720/44003086-75cd161c-9e7f-11e8-8b56-b515612c2dd8.png" width="500px">
 
 ## 開始使用
 
@@ -46,4 +46,5 @@ PokaPlayer 是 Synology Audio Ststion 的新朋友！
 Repo 內附的背景來自 [Free Set of 40+ Material Design Backgrounds](https://www.oxygenna.com/news/brand-new-set-of-40-material-design-backgrounds)
 
 ## 貢獻者
+
 [@rexx0520](https://github.com/rexx0520)
