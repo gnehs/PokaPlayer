@@ -169,8 +169,8 @@ app.get('/info', (req, res) => {
     }
 })
 
-if (config.PokaPlayer.debug) app.get('/debug', (req, res) => {
-    res.send('true')
+app.get('/debug', async(req, res) => {
+    res.send(config.PokaPlayer.debug ? (await git.raw(['rev-parse', '--short', 'HEAD'])).slice(0,-1) : 'false')
 })
 
 // get song
