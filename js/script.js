@@ -478,7 +478,7 @@ async function showPlaylistSongs(id) {
     let result = playlist.data.playlists[0]
     let name = result.name
     let songs = HTML.showSongs(result.additional.songs)
-    let header = HTML.getHeader(name)
+    header = HTML.getHeader(name)
     if ($("#content").attr('data-page') == 'playlist') {
         $("#content").html(header + songs)
         $("#content>:not(#header-wrapper)")
