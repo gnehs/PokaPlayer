@@ -47,7 +47,7 @@ router
         }
     })
 
-ap.on("play", async () => {
+ap.on("play", async() => {
     //沒歌就隨機播放
     if (ap.list.audios.length == 0) playRandom().then(() => {
         router.navigate('now');
@@ -55,7 +55,7 @@ ap.on("play", async () => {
     })
     updateMediaSession()
 })
-ap.on("loadedmetadata", async () => {
+ap.on("loadedmetadata", async() => {
     lrc.load(`[00:00.000]歌詞讀取中`)
     $("div[data-lrc=\"inner\"]").html(`<p class="loading">歌詞讀取中</p>`)
     let nowPlaying = ap.list.audios[ap.list.index],
@@ -622,7 +622,7 @@ async function showNow() {
     ap.on("pause", () => {
         $('[data-player] button.play[onclick="ap.toggle()"] i').text("play_arrow")
     })
-    ap.on("play", async () => {
+    ap.on("play", async() => {
         //卷軸轉轉
         if ($(window).width() > 850 && $(window).height() > 560) {
             $('.mdui-list.songs').animate({ scrollTop: 72 * ap.list.index - 100 }, 400);
@@ -958,13 +958,13 @@ async function showSettings() {
 
     // PokaPlayer 詳細資料
     let getInfo = await axios.get('/info/');
-    let debug =  await axios.get('/debug/')
+    let debug = await axios.get('/debug/')
     let checkUpdate = await axios.get(`https://api.github.com/repos/gnehs/PokaPlayer/releases`);
-    let update = getInfo.data.version != checkUpdate.data[0].tag_name 
-        ? `新版本 <a href="${checkUpdate.data[0].html_url}" target="_blank">${checkUpdate.data[0].tag_name}</a> 已發佈，請立即更新 <a href="javascript:void(0)" data-upgrade>更新</a>` 
-        : debug.data == false
-            ? `您的 PokaPlayer 已是最新版本`
-            : `<a href="javascript:void(0)" data-upgrade>與開發分支同步</a>` 
+    let update = getInfo.data.version != checkUpdate.data[0].tag_name ?
+        `新版本 <a href="${checkUpdate.data[0].html_url}" target="_blank">${checkUpdate.data[0].tag_name}</a> 已發佈，請立即更新 <a href="javascript:void(0)" data-upgrade>更新</a>` :
+        debug.data == false ?
+        `您的 PokaPlayer 已是最新版本` :
+        `<a href="javascript:void(0)" data-upgrade>與開發分支同步</a>`
     let version = debug.data == false ? getInfo.data.version : debug.data
     about = `PokaPlayer 是 Synology Audio Ststion 的新朋友！ <a href="https://github.com/gnehs/PokaPlayer" target="_blank">GitHub</a>
         <p><strong>版本</strong> ${version} / <strong>開發者</strong> ${getInfo.data.author} / ${update}</p>`
@@ -1038,7 +1038,7 @@ function playSongs(songlist, song = false, clear = true) {
         let name = nowsong.title
         let artist = nowsong.additional.song_tag.artist
         let album = nowsong.additional.song_tag.album
-        let albumArtist = nowsong.additional.song_tag.albumArtist
+        let albumArtist = nowsong.additional.song_tag.album_artist
         let poster = getCover("album", album, artist, albumArtist)
         playlist.push({
             url: src,
@@ -1069,7 +1069,7 @@ function addSong(songlist, songID = 0) {
             let name = nowsong.title
             let artist = nowsong.additional.song_tag.artist
             let album = nowsong.additional.song_tag.album
-            let albumArtist = nowsong.additional.song_tag.albumArtist
+            let albumArtist = nowsong.additional.song_tag.album_artist
             let poster = getCover("album", album, artist, albumArtist)
             playlist.push({
                 url: src,

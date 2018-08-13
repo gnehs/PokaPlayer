@@ -27,7 +27,7 @@ const git = require('simple-git/promise')(__dirname);
 git
     .raw(['symbolic-ref', '--short', 'HEAD'])
     .then(branch => {
-        branch = branch.slice(0,-1) // 結果會多一個換行符
+        branch = branch.slice(0, -1) // 結果會多一個換行符
         if (branch != (config.PokaPlayer.debug ? 'dev' : 'master')) {
             git
                 .fetch(["--all"])
@@ -38,7 +38,7 @@ git
                     console.error('failed: ', err)
                     socket.emit('err', err.toString())
                     process.exit()
-            })
+                })
         }
     })
 
@@ -170,7 +170,7 @@ app.get('/info', (req, res) => {
 })
 
 app.get('/debug', async(req, res) => {
-    res.send(config.PokaPlayer.debug ? (await git.raw(['rev-parse', '--short', 'HEAD'])).slice(0,-1) : 'false')
+    res.send(config.PokaPlayer.debug ? (await git.raw(['rev-parse', '--short', 'HEAD'])).slice(0, -1) : 'false')
 })
 
 // get song
@@ -228,6 +228,7 @@ app.get('/cover/:type/:info', async(req, res) => {
                 //專輯
                 var info = pp_decode(req.params.info)
                 url += info
+                console.log(info)
                 break;
         }
         rProxy(req, res, url)
