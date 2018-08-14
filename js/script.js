@@ -3,7 +3,7 @@ songList = [];
 const lrc = new Lyrics(`[00:00.000]`);
 const socket = io();
 socket.on("hello", () => {
-    console.log('hello')
+    //console.log('hello')
     socket.emit('login')
 });
 // 初始化播放器
@@ -886,7 +886,6 @@ async function showSettings() {
         });
     })
     $("#PP_bg [data-src]").click(function() {
-        console.log($(this).attr('data-src'))
         let name = $(this).text()
         let src = $(this).attr('data-src')
         window.localStorage["randomImg"] = src

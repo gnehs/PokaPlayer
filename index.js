@@ -228,7 +228,6 @@ app.get('/cover/:type/:info', async(req, res) => {
                 //專輯
                 var info = pp_decode(req.params.info)
                 url += info
-                console.log(info)
                 break;
         }
         rProxy(req, res, url)
