@@ -53,6 +53,13 @@ ap.on("play", async() => {
         router.navigate('now');
         showNow()
     })
+    let nowPlaying = ap.list.audios[ap.list.index],
+        name, artist
+    if (nowPlaying) {
+        name = nowPlaying.name
+        artist = nowPlaying.artist
+        $(document).attr("title", `${name} - ${artist}`);
+    }
     updateMediaSession()
 })
 ap.on("loadedmetadata", async() => {
@@ -63,6 +70,7 @@ ap.on("loadedmetadata", async() => {
         id = nowPlaying.id,
         artist = nowPlaying.artist,
         lyricRegex = /\[([0-9.:]*)\]/i
+    $(document).attr("title", `${name} - ${artist}`);
 
     let lrcResult = await getLrcByID(id),
         lrcs = lrcResult.lyrics
@@ -98,6 +106,7 @@ ap.on("timeupdate", () => {
 })
 ap.on("pause", () => {
     $('#player button.play[onclick="ap.toggle()"] i').text("play_arrow")
+    $(document).attr("title", `Pokaplayer`);
 })
 
 function updateMediaSession() {
