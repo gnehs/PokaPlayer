@@ -581,11 +581,11 @@ async function showNow() {
     // random＆loop
     $("[data-player]>.info>.ctrl>.random").html($('.aplayer-icon.aplayer-icon-order').html())
     $("[data-player]>.info>.ctrl>.loop").html($('.aplayer-icon.aplayer-icon-loop').html())
-    $("[data-player]>.info>.ctrl>.random").click(() => {
+    $("[data-player]>.info>.ctrl>.random").click(function() {
         $('#aplayer .aplayer-icon.aplayer-icon-order').click()
         $(this).html($('.aplayer-icon.aplayer-icon-order').html())
     })
-    $("[data-player]>.info>.ctrl>.loop").click(() => {
+    $("[data-player]>.info>.ctrl>.loop").click(function() {
         $('#aplayer .aplayer-icon.aplayer-icon-loop').click()
         $(this).html($('.aplayer-icon.aplayer-icon-loop').html())
     });
