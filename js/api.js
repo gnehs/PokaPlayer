@@ -95,6 +95,6 @@ async function getAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 1)
         "PARAMS": PARAMS
     }
     req_json = JSON.stringify(req_json)
-    const response = await axios.get('/api/' + ppEncode(req_json));
+    let response = await axios.get('/api/' + ppEncode(req_json));
     return response.data
 }

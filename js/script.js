@@ -53,6 +53,13 @@ ap.on("play", async() => {
         router.navigate('now');
         showNow()
     })
+    let nowPlaying = ap.list.audios[ap.list.index],
+        name, artist
+    if (nowPlaying) {
+        name = nowPlaying.name
+        artist = nowPlaying.artist
+        $(document).attr("title", `${name} - ${artist}`);
+    }
     updateMediaSession()
 })
 ap.on("loadedmetadata", async() => {
@@ -63,6 +70,7 @@ ap.on("loadedmetadata", async() => {
         id = nowPlaying.id,
         artist = nowPlaying.artist,
         lyricRegex = /\[([0-9.:]*)\]/i
+    $(document).attr("title", `${name} - ${artist}`);
 
     let lrcResult = await getLrcByID(id),
         lrcs = lrcResult.lyrics
@@ -84,20 +92,18 @@ ap.on("loadedmetadata", async() => {
     }
 })
 ap.on("timeupdate", () => {
-    let name = ap.list.audios[ap.list.index].name || ""
-    let artist = ap.list.audios[ap.list.index].artist || ""
-
-    let img = window.localStorage["imgRes"] != "true" ? ap.list.audios[ap.list.index].cover : getBackground() //一定會有圖片
+    let name = ap.list.audios[ap.list.index].name || "",
+        artist = ap.list.audios[ap.list.index].artist || "",
+        img = window.localStorage["imgRes"] != "true" ? ap.list.audios[ap.list.index].cover : getBackground() //一定會有圖片
     $('#player button.play[onclick="ap.toggle()"] i').text("pause")
-    if (name != $('#player .song-info .name').text()) { //歌名有變才更新
-        $('#player .song-info .name').text(name)
-        $('#player .song-info .artist').text(artist)
-        $('#player img').attr('src', img)
-    }
+    $('#player .song-info .name').text(name)
+    $('#player .song-info .artist').text(artist)
+    $('#player img').attr('src', img)
     updateMediaSession()
 })
 ap.on("pause", () => {
     $('#player button.play[onclick="ap.toggle()"] i').text("play_arrow")
+    $(document).attr("title", `Pokaplayer`);
 })
 
 function updateMediaSession() {
