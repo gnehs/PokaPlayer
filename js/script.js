@@ -12,6 +12,12 @@ const ap = new APlayer({
     fixed: true
 });
 
+ // 避免關閉 meting 後歌詞模組錯誤
+axios.get('/meting').then(data => {
+    let metingIsEnabled = data.data.enabled;
+    if (!metingIsEnabled && window.localStorage["lrcSource"] == 'meting') window.localStorage.removeItem("lrcSource")
+})
+
 // 路由
 const router = new Navigo(null, true, '#!');
 router
@@ -822,22 +828,31 @@ async function showSettings() {
         </label>
         <div class="mdui-typo-caption-opacity">載入所有圖片，就像平常那樣</div>
     </div>` }
-    let lrcSource = s => { return `<div class="mdui-col">
+    let lrcSource = async(s) => {
+        let metingIsEnabled = (await axios.get('/meting')).data.enabled
+        let result = `<div class="mdui-col">
         <label class="mdui-radio">
-            <input type="radio" name="lrcSource" value="dsm" ${s=="dsm"?"checked":""}/>
+            <input type="radio" name="lrcSource" value="dsm" ${s=='dsm'?"checked":""}/>
             <i class="mdui-radio-icon"></i>
             DSM
         </label>
         <div class="mdui-typo-caption-opacity">使用 DSM 當中的歌詞搜尋器</div>
-    </div>
-    <div class="mdui-col">
-        <label class="mdui-radio">
-            <input type="radio" name="lrcSource" value="meting" ${s=="meting"?"checked":""}/>
-            <i class="mdui-radio-icon"></i>
-            Meting
-        </label>
-        <div class="mdui-typo-caption-opacity">Meting,such a powerful music API framework</div>
-    </div>` }
+        </div>
+        `
+        if (metingIsEnabled) {
+            result += `
+            <div class="mdui-col">
+            <label class="mdui-radio">
+                <input type="radio" name="lrcSource" value="meting" ${s=="meting"?"checked":""}/>
+                <i class="mdui-radio-icon"></i>
+                Meting
+            </label>
+            <div class="mdui-typo-caption-opacity">Meting, such a powerful music API framework</div>
+            </div>
+            `
+        }
+        return result}
+    
     let bg = s => { return `<div class="mdui-textfield">
         <input class="mdui-textfield-input" placeholder="隨機圖片" value="${s}"/>
         <div class="mdui-textfield-helper">填入網址或是點擊下方來源來取代原本的隨機圖片</div>
@@ -877,7 +892,7 @@ async function showSettings() {
 
     musicRes = title("音質") + `<form class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4" id="PP_Res">${musicRes(window.localStorage["musicRes"])}</form>`
 
-    lrcSource = title("歌詞來源") + `<form class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4" id="PP_lrcSource">${lrcSource(window.localStorage["lrcSource"])}</form>`
+    lrcSource = title("歌詞來源") + `<form class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4" id="PP_lrcSource">${await lrcSource(window.localStorage["lrcSource"])}</form>`
 
     imgRes = title("圖片流量節省") + `<form class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4" id="PP_imgRes">${imgRes(window.localStorage["imgRes"])}</form>`
 

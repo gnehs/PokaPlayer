@@ -173,6 +173,10 @@ app.get('/debug', async(req, res) => {
     res.send(config.PokaPlayer.debug ? (await git.raw(['rev-parse', '--short', 'HEAD'])).slice(0, -1) : 'false')
 })
 
+app.get('/meting', (req, res) => {
+    res.send(config.Meting)
+})
+
 // get song
 app.get('/song/:res/:id', async(req, res) => {
     if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)

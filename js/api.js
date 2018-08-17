@@ -51,13 +51,14 @@ async function getLrc(artist, title, id = false) {
             return result && result.match(lyricRegex) ? result : false
         }
     }
-    //如果設定是 meting
+    // 如果設定是 meting
     if (window.localStorage["lrcSource"] == 'meting') {
-        let meting = '',
+        let meting = (await axios.get('/meting')).data.url,
             server = 'netease',
             id
+
         let searchRequest = await axios.get(`${meting}?server=${server}&type=search&keyword=${encodeURIComponent(`${title} ${artist}`)}`);
-        //console.log(searchRequest)
+        // console.log(searchRequest)
         if (searchRequest.data[0] && searchRequest.data[0].name == title) {
         // 歌名必須匹配才找歌詞
             id  = searchRequest.data[0].id
