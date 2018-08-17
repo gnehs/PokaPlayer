@@ -68,18 +68,13 @@ ap.on("loadedmetadata", async() => {
     let nowPlaying = ap.list.audios[ap.list.index],
         name = nowPlaying.name,
         id = nowPlaying.id,
-        artist = nowPlaying.artist,
-        lyricRegex = /\[([0-9.:]*)\]/i
+        artist = nowPlaying.artist
     $(document).attr("title", `${name} - ${artist}`);
 
-    let lrcResult = await getLrcByID(id),
-        lrcs = lrcResult.lyrics
-    if (lrcs == "" || !lrcs.match(lyricRegex)) {
-        lrcResult = await getLrc(artist, name)
-        lrcs = lrcResult ? lrcResult.lyrics[0].additional.full_lyrics : false
-    }
-    if (lrcs && lrcs.match(lyricRegex)) {
-        lrc.load(lrcs);
+    let lrcResult = await getLrc(artist, name, id)
+    console.log(lrcResult)
+    if (lrcResult) {
+        lrc.load(lrcResult);
     } else
         lrc.load(`[00:00.000]無歌詞`)
     if ($("div[data-lrc]").length > 0) {
@@ -642,7 +637,7 @@ async function showNow() {
         let name = nowPlaying ? nowPlaying.name : "PokaPlayer"
         let artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點擊播放鍵開始隨機播放"
         let album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>"
-        let img = (nowPlaying && window.localStorage["imgRes"] != "true") ? nowPlaying.cover : getBackground() //一定會有圖片
+        let img = (nowPlaying && window.localStorage["imgRes"] != "true") ? nowPlaying.cover : getBackground(); //一定會有圖片
         $('[data-player]>.mdui-card').attr('style', `background-image:url(${img});`)
         $('[data-player]>.info .title').text(name)
         $('[data-player]>.info .artist').html(artist + album)
@@ -747,6 +742,7 @@ async function showSettings() {
         ///給定預設值
     if (!window.localStorage["musicRes"]) window.localStorage["musicRes"] = "wav"
     if (!window.localStorage["randomImg"]) window.localStorage["randomImg"] = "/og/og.png"
+    if (!window.localStorage["lrcSource"]) window.localStorage["lrcSource"] = "dsm"
         ///
     let header = HTML.getHeader("設定")
     let title = title => `<h2 class="mdui-text-color-theme">${title}</h2>`
@@ -826,6 +822,22 @@ async function showSettings() {
         </label>
         <div class="mdui-typo-caption-opacity">載入所有圖片，就像平常那樣</div>
     </div>` }
+    let lrcSource = s => { return `<div class="mdui-col">
+        <label class="mdui-radio">
+            <input type="radio" name="lrcSource" value="dsm" ${s=="dsm"?"checked":""}/>
+            <i class="mdui-radio-icon"></i>
+            DSM
+        </label>
+        <div class="mdui-typo-caption-opacity">使用 DSM 當中的歌詞搜尋器</div>
+    </div>
+    <div class="mdui-col">
+        <label class="mdui-radio">
+            <input type="radio" name="lrcSource" value="meting" ${s=="meting"?"checked":""}/>
+            <i class="mdui-radio-icon"></i>
+            Meting
+        </label>
+        <div class="mdui-typo-caption-opacity">Meting,such a powerful music API framework</div>
+    </div>` }
     let bg = s => { return `<div class="mdui-textfield">
         <input class="mdui-textfield-input" placeholder="隨機圖片" value="${s}"/>
         <div class="mdui-textfield-helper">填入網址或是點擊下方來源來取代原本的隨機圖片</div>
@@ -865,6 +877,8 @@ async function showSettings() {
 
     musicRes = title("音質") + `<form class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4" id="PP_Res">${musicRes(window.localStorage["musicRes"])}</form>`
 
+    lrcSource = title("歌詞來源") + `<form class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4" id="PP_lrcSource">${lrcSource(window.localStorage["lrcSource"])}</form>`
+
     imgRes = title("圖片流量節省") + `<form class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4" id="PP_imgRes">${imgRes(window.localStorage["imgRes"])}</form>`
 
     bg = title("隨機圖片設定") + `<form id="PP_bg">${bg(window.localStorage["randomImg"])}<br>${bgSrc()}</form>`
@@ -876,7 +890,7 @@ async function showSettings() {
         <p><strong>版本</strong> 載入中 / <strong>開發者</strong> 載入中 / 正在檢查更新</p>
     </div>`
 
-    let html = header + settingTheme + musicRes + imgRes + bg + info + about
+    let html = header + settingTheme + musicRes + lrcSource + imgRes + bg + info + about
     $("#content").html(html)
 
     //初始化
@@ -908,6 +922,14 @@ async function showSettings() {
         window.localStorage["musicRes"] = $(this).val()
         mdui.snackbar({
             message: `音質已設定為 ${$(this).val().toUpperCase()}，該設定並不會在現正播放中生效，請重新加入歌曲`,
+            position: getSnackbarPosition(),
+            timeout: 1500
+        });
+    })
+    $("#PP_lrcSource input").change(function() {
+        window.localStorage["lrcSource"] = $(this).val()
+        mdui.snackbar({
+            message: `歌詞來源已設定為 ${$(this).val().toUpperCase()}`,
             position: getSnackbarPosition(),
             timeout: 1500
         });
@@ -1110,4 +1132,25 @@ function getSnackbarPosition() {
         return "left-top"
     else
         return "left-bottom"
+}
+
+function showLrcChoose() {
+    let list = (item) => {
+        let r = '<ul class="mdui-list">';
+        for (i = 0; i < item.length; i++) {
+            r += `<li class="mdui-list-item mdui-ripple" mdui-dialog-close>
+                    <div class="mdui-list-item-content">
+                        <div class="mdui-list-item-title mdui-list-item-one-line">Photos</div>
+                        <div class="mdui-list-item-text mdui-list-item-two-line">You've got to get enough sleep. Other travelling salesmen live a life of luxury. You've got to get enough sleep. Other travelling salesmen live a life of luxury.</div>
+                    </div>
+                  </li>`
+        }
+        r += `</ul>`
+        return r
+    }
+    mdui.dialog({
+        title: '歌詞選擇',
+        content: list([{}]),
+        history: false
+    });
 }
