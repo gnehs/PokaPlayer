@@ -170,7 +170,30 @@ app.get('/info', (req, res) => {
 })
 
 app.get('/debug', async(req, res) => {
-    res.send(config.PokaPlayer.debug ? (await git.raw(['rev-parse', '--short', 'HEAD'])).slice(0, -1) : 'false')
+    if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
+        res.status(403).send('Permission Denied Desu')
+    else
+        res.send(config.PokaPlayer.debug ? (await git.raw(['rev-parse', '--short', 'HEAD'])).slice(0, -1) : 'false')
+
+})
+
+app.get('/meting', (req, res) => {
+    if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
+        res.status(403).send('Permission Denied Desu')
+    else
+        res.json(config.Meting)
+})
+
+app.post('/restart', (req, res) => {
+    if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
+        res.status(403).send('Permission Denied Desu')
+    else
+        res.send('k')
+    process.exit()
+})
+
+app.get('/ping', (req, res) => {
+    res.send("PONG")
 })
 
 // get song

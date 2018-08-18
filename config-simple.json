@@ -12,5 +12,9 @@
         "port": 5000,
         "account": "YOUR_ACCOUNT",
         "password": "YOUR_PASSWORD"
+    },
+    "Meting": {
+        "enabled": false,
+        "url": "METING_URL"
     }
 }

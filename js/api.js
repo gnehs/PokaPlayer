@@ -24,22 +24,64 @@ function getCover(type, info, artist_name, album_artist_name) {
 }
 
 //- 取得歌詞
-async function getLrc(artist, title) {
-    let PARAMS_JSON = [
-        { key: "additional", "value": "full_lyrics" },
-        { key: "limit", "value": 1 }
-    ]
-    if (artist) PARAMS_JSON.push({ key: "artist", "value": artist })
-    if (title) PARAMS_JSON.push({ key: "title", "value": title })
-    let lrc = await getAPI("AudioStation/lyrics_search.cgi", "SYNO.AudioStation.LyricsSearch", "searchlyrics", PARAMS_JSON, 2)
-    return lrc.data
-
+async function getLrc(artist, title, id = false) {
+    let lyricRegex = /\[([0-9.:]*)\]/i,
+        result = false,
+        lrc;
+    // 如果沒有設定或是設定是 DSM，進行 DSM 搜尋
+    if (window.localStorage["lrcSource"] == 'dsm' || !window.localStorage["lrcSource"]) {
+        if (id) {
+            result = (await getAPI("AudioStation/lyrics.cgi", "SYNO.AudioStation.Lyrics", "getlyrics", [{ key: "id", "value": id }], 2)).data.lyrics
+            if (result.match(lyricRegex))
+                return result
+            else
+                result = false
+        }
+        if (!result) {
+            let PARAMS_JSON = [
+                { key: "additional", "value": "full_lyrics" },
+                { key: "limit", "value": 1 }
+            ]
+            if (artist) PARAMS_JSON.push({ key: "artist", "value": artist })
+            if (title) PARAMS_JSON.push({ key: "title", "value": title })
+            result = (await getAPI("AudioStation/lyrics_search.cgi", "SYNO.AudioStation.LyricsSearch", "searchlyrics", PARAMS_JSON, 2)).data
+            if (result && result.lyrics[0].title == title && result.lyrics[0].artist == artist)
+                result = result.lyrics[0].additional.full_lyrics
+            else
+                result = false
+            return result && result.match(lyricRegex) ? result : false
+        }
+    }
+    // 如果設定是 meting
+    if (window.localStorage["lrcSource"] == 'meting') {
+        let search = await getMetingSearchResult(`${title} ${artist}`)
+            // 歌名必須匹配才找歌詞
+        if (search && search.name.toUpperCase() == title.toUpperCase())
+            return await getMetingLrcById(search.id)
+        else
+            return false
+    }
 }
-async function getLrcByID(id) {
-    let lrc = await getAPI("AudioStation/lyrics.cgi", "SYNO.AudioStation.Lyrics", "getlyrics", [{ key: "id", "value": id }], 2)
-    return lrc.data
+async function getMetingSearchResult(keyword, limit = 1) {
+    let meting = window.localStorage["lrcMetingUrl"],
+        server = 'netease',
+        search = await axios.get(`${meting}?server=${server}&type=search&keyword=${encodeURIComponent(keyword)}`);
+    if (limit == 1) return search.data[0]
+    else return search.data
 }
-
+async function getMetingLrcById(id) {
+    let meting = window.localStorage["lrcMetingUrl"],
+        server = 'netease',
+        lyricRegex = /\[([0-9.:]*)\]/i
+    result = (await axios.get(`${meting}?server=${server}&type=lrc&id=${id}`)).data
+    try {
+        result = result.lyric && result.tlyric ? migrate(result.lyric, result.tlyric) : result.lyric
+    } catch (e) {
+        result = result.lyric
+        console.error(e)
+    }
+    return result && result.match(lyricRegex) ? result : false
+}
 
 //- 取得歌曲連結
 function getSong(song) {
