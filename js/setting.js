@@ -5,6 +5,7 @@ $(async() => {
     if (!window.localStorage["randomImg"]) window.localStorage["randomImg"] = "/og/og.png"
     if (!window.localStorage["randomImgName"]) window.localStorage["randomImgName"] = "預設圖庫"
     if (!window.localStorage["lrcSource"]) window.localStorage["lrcSource"] = "dsm"
+    window.localStorage["lrcMetingUrl"] = (await axios.get('/meting')).data.url
     window.localStorage["PokaPlayerVersion"] = (await axios.get('/info/')).data.version
 });
 

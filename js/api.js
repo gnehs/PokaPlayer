@@ -63,20 +63,20 @@ async function getLrc(artist, title, id = false) {
     }
 }
 async function getMetingSearchResult(keyword, limit = 1) {
-    let meting = (await axios.get('/meting')).data.url,
+    let meting = window.localStorage["lrcMetingUrl"],
         server = 'netease',
         search = await axios.get(`${meting}?server=${server}&type=search&keyword=${encodeURIComponent(keyword)}`);
     if (limit == 1) return search.data[0]
     else return search.data
 }
 async function getMetingLrcById(id) {
-    let meting = (await axios.get('/meting')).data.url,
+    let meting = window.localStorage["lrcMetingUrl"],
         server = 'netease',
         lyricRegex = /\[([0-9.:]*)\]/i
     result = (await axios.get(`${meting}?server=${server}&type=lrc&id=${id}`)).data
     try {
         result = result.lyric && result.tlyric ? migrate(result.lyric, result.tlyric) : result.lyric
-    } catch(e) {
+    } catch (e) {
         result = result.lyric
         console.error(e)
     }
