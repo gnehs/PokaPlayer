@@ -29,7 +29,7 @@ async function getLrc(artist, title, id = false) {
         result = false,
         lrc;
     // 如果沒有設定或是設定是 DSM，進行 DSM 搜尋
-    if (window.localStorage["lrcSource"] == 'dsm' || !window.localStorage["lrcSource"]) {
+    if (window.localStorage["lrcSource"] == 'DSM' || !window.localStorage["lrcSource"]) {
         if (id) {
             result = (await getAPI("AudioStation/lyrics.cgi", "SYNO.AudioStation.Lyrics", "getlyrics", [{ key: "id", "value": id }], 2)).data.lyrics
             if (result.match(lyricRegex))
@@ -53,7 +53,7 @@ async function getLrc(artist, title, id = false) {
         }
     }
     // 如果設定是 meting
-    if (window.localStorage["lrcSource"] == 'meting') {
+    if (window.localStorage["lrcSource"] == 'Meting') {
         let search = await getMetingSearchResult(`${title} ${artist}`)
             // 歌名必須匹配才找歌詞
         if (search && search.name.toUpperCase() == title.toUpperCase())
@@ -86,7 +86,7 @@ async function getMetingLrcById(id) {
 //- 取得歌曲連結
 function getSong(song) {
     let id = song.id
-    let res = window.localStorage["musicRes"]
+    let res = window.localStorage["musicRes"].toLowerCase()
     let bitrate = song.additional.song_audio.bitrate / 1000
     if (res == "wav" && bitrate > 320)
         res = "wav"

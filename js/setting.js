@@ -1,17 +1,17 @@
 // 初始化設定值
 $(async() => {
     ///給定預設值
-    if (!window.localStorage["musicRes"]) window.localStorage["musicRes"] = "wav"
+    if (!window.localStorage["musicRes"]) window.localStorage["musicRes"] = "WAV"
     if (!window.localStorage["randomImg"]) window.localStorage["randomImg"] = "/og/og.png"
     if (!window.localStorage["randomImgName"]) window.localStorage["randomImgName"] = "預設圖庫"
-    if (!window.localStorage["lrcSource"]) window.localStorage["lrcSource"] = "dsm"
+    if (!window.localStorage["lrcSource"]) window.localStorage["lrcSource"] = "DSM"
     let lrcMetingEnabled = (await axios.get('/meting')).data.enabled
     if (lrcMetingEnabled) {
         window.localStorage["lrcMetingEnabled"] = "true"
         window.localStorage["lrcMetingUrl"] = (await axios.get('/meting')).data.url
     } else {
         // 避免關閉 meting 後歌詞模組錯誤
-        window.localStorage["lrcSource"] = "dsm"
+        window.localStorage["lrcSource"] = "DSM"
         window.localStorage["lrcMetingEnabled"] = "false"
     }
     window.localStorage["PokaPlayerVersion"] = (await axios.get('/info/')).data.version
@@ -32,7 +32,7 @@ async function showSettings() {
     }
     let settingItems = `<ul class="mdui-list">
         ${item("主題","設定主題色、主色及強調色","color_lens","settings/theme")}
-        ${item("音質",window.localStorage["musicRes"].toUpperCase(),"music_note","","data-music-res")}
+        ${item("音質",window.localStorage["musicRes"],"music_note","","data-music-res")}
         <li class="mdui-list-item mdui-ripple" data-imgRes>
             <i class="mdui-list-item-icon mdui-icon material-icons">image</i>
             <div class="mdui-list-item-content">
@@ -45,7 +45,7 @@ async function showSettings() {
             </label>
         </li>
         ${item("隨機圖片",window.localStorage["randomImgName"],"shuffle","settings/pic")}
-        ${item("歌詞來源",window.localStorage["lrcSource"].toUpperCase(),"subtitles","","data-lrc-source")}
+        ${item("歌詞來源",window.localStorage["lrcSource"],"subtitles","","data-lrc-source")}
         ${item("關於","PokaPlayer "+window.localStorage["PokaPlayerVersion"],"info","settings/about","data-about")}
     </ul>`
     $("#content").html(header + settingItems);
@@ -54,19 +54,19 @@ async function showSettings() {
         mdui.dialog({
             title: '音質設定',
             content: `<ul class="mdui-list">
-            <li class="mdui-list-item mdui-ripple" onclick="window.localStorage['musicRes']='mp3'" mdui-dialog-close>
+            <li class="mdui-list-item mdui-ripple" onclick="window.localStorage['musicRes']='MP3'" mdui-dialog-close>
                 <div class="mdui-list-item-content">
                     <div class="mdui-list-item-title">MP3</div>
                     <div class="mdui-list-item-text">128K，夭壽靠北，在網路夭壽慢的情況下請選擇此選項</div>
                 </div>
             </li>
-            <li class="mdui-list-item mdui-ripple" onclick="window.localStorage['musicRes']='wav'" mdui-dialog-close> 
+            <li class="mdui-list-item mdui-ripple" onclick="window.localStorage['musicRes']='WAV'" mdui-dialog-close> 
                 <div class="mdui-list-item-content">
                     <div class="mdui-list-item-title">WAV</div>
                     <div class="mdui-list-item-text">較高音質，音質較原始音質略差，可在 4G 網路下流暢的串流</div>
                 </div>
             </li>
-            <li class="mdui-list-item mdui-ripple" onclick="window.localStorage['musicRes']='original'" mdui-dialog-close>
+            <li class="mdui-list-item mdui-ripple" onclick="window.localStorage['musicRes']='Original'" mdui-dialog-close>
                 <div class="mdui-list-item-content">
                     <div class="mdui-list-item-title">Original</div>
                     <div class="mdui-list-item-text">原始音質，在網路狀況許可下，建議選擇此選項聆聽高音質音樂</div>
@@ -77,7 +77,7 @@ async function showSettings() {
             buttons: [{
                 text: '取消'
               }],
-            onClose: ()=>$("[data-music-res] .mdui-list-item-text").text(window.localStorage["musicRes"].toUpperCase())
+            onClose: ()=>$("[data-music-res] .mdui-list-item-text").text(window.localStorage["musicRes"])
           });
     });
     // 圖片流量節省
@@ -91,13 +91,13 @@ async function showSettings() {
         mdui.dialog({
             title: '歌詞來源',
             content: `<ul class="mdui-list">
-                <li class="mdui-list-item mdui-ripple" onclick="window.localStorage['lrcSource']='dsm'" mdui-dialog-close>
+                <li class="mdui-list-item mdui-ripple" onclick="window.localStorage['lrcSource']='DSM'" mdui-dialog-close>
                     <div class="mdui-list-item-content">
                         <div class="mdui-list-item-title">DSM</div>
                         <div class="mdui-list-item-text">使用 DSM 當中的歌詞搜尋器</div>
                     </div>
                 </li>
-                <li class="mdui-list-item mdui-ripple ${isMetingEnabled?"":"mdui-hidden"}" onclick="${isMetingEnabled?"window.localStorage['lrcSource']='meting'":''}" mdui-dialog-close> 
+                <li class="mdui-list-item mdui-ripple ${isMetingEnabled?"":"mdui-hidden"}" onclick="${isMetingEnabled?"window.localStorage['lrcSource']='Meting'":''}" mdui-dialog-close> 
                     <div class="mdui-list-item-content">
                         <div class="mdui-list-item-title">Meting</div>
                         <div class="mdui-list-item-text">Meting, such a powerful music API framework</div>
@@ -108,7 +108,7 @@ async function showSettings() {
             buttons: [{
                 text: '取消'
               }],
-            onClose: () => $("[data-lrc-source] .mdui-list-item-text").text(window.localStorage["lrcSource"].toUpperCase())
+            onClose: () => $("[data-lrc-source] .mdui-list-item-text").text(window.localStorage["lrcSource"])
         });
     });
 }

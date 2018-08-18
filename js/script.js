@@ -828,7 +828,7 @@ function getSnackbarPosition() {
 }
 
 async function showLrcChoose() {
-    if (ap.list.audios[ap.list.index] && window.localStorage["lrcSource"] == 'meting') {
+    if (ap.list.audios[ap.list.index] && window.localStorage["lrcSource"] == 'Meting') {
         let nowPlaying = ap.list.audios[ap.list.index],
             name = nowPlaying.name || '',
             artist = nowPlaying.artist || ''
