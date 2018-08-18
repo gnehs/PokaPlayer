@@ -78,14 +78,13 @@ ap.on("loadedmetadata", async() => {
 
     let lrcResult = await getLrc(artist, name, id)
     setLrc(lrcResult)
-
 })
 
 function setLrc(lrcResult) {
     if (lrcResult) {
         lrc.load(lrcResult);
     } else
-        lrc.load(`[00:00.000]無歌詞`)
+        lrc.load(`[00:00.000]無歌詞\n[00:00.001]`)
     if ($("div[data-lrc]").length > 0) {
         let html = ``
         for (i = 0; i < lrc.getLyrics().length; i++) {
@@ -879,7 +878,7 @@ async function showLrcChoose() {
             title: '歌詞選擇',
             content: `<div lrc-choose style="min-height:400px">${list()}</div>
             <div class="mdui-dialog-actions">
-                <button class="mdui-btn mdui-ripple" mdui-dialog-confirm>完成</button>
+                <button class="mdui-btn mdui-ripple" mdui-dialog-confirm data-lrc-done>完成</button>
             </div>`,
             history: false
         });
@@ -905,6 +904,7 @@ async function showLrcChoose() {
                     setLrc(false)
                 }
                 $(this).children().children('.mdui-list-item-text').text(text)
+                $('[data-lrc-done]').click()
             })
             $("input#searchLrc").change(function() {
                 $("input#searchLrc + * + .mdui-textfield-helper").text('搜尋中...')
