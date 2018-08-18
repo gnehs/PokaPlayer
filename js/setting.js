@@ -5,7 +5,15 @@ $(async() => {
     if (!window.localStorage["randomImg"]) window.localStorage["randomImg"] = "/og/og.png"
     if (!window.localStorage["randomImgName"]) window.localStorage["randomImgName"] = "預設圖庫"
     if (!window.localStorage["lrcSource"]) window.localStorage["lrcSource"] = "dsm"
-    window.localStorage["lrcMetingUrl"] = (await axios.get('/meting')).data.url
+    let lrcMetingEnabled = (await axios.get('/meting')).data.enabled
+    if (lrcMetingEnabled) {
+        window.localStorage["lrcMetingEnabled"] = "true"
+        window.localStorage["lrcMetingUrl"] = (await axios.get('/meting')).data.url
+    } else {
+        // 避免關閉 meting 後歌詞模組錯誤
+        window.localStorage["lrcSource"] = "dsm"
+        window.localStorage["lrcMetingEnabled"] = "false"
+    }
     window.localStorage["PokaPlayerVersion"] = (await axios.get('/info/')).data.version
 });
 
@@ -71,7 +79,6 @@ async function showSettings() {
               }],
             onClose: ()=>$("[data-music-res] .mdui-list-item-text").text(window.localStorage["musicRes"].toUpperCase())
           });
-          
     });
     // 圖片流量節省
     $("[data-imgRes]").click(function() {
@@ -79,30 +86,30 @@ async function showSettings() {
         window.localStorage["imgRes"] = $("[data-imgRes] input").prop('checked');
         $("[data-imgRes] .mdui-list-item-text").text($("[data-imgRes] input").prop('checked') ? "已開啟" : "已關閉");
     });
-    $("[data-lrc-source]").click(async function() {
-        let isMetingEnabled = (await axios.get('/meting')).data.enabled
+    $("[data-lrc-source]").click( function() {
+        let isMetingEnabled = window.localStorage["lrcMetingEnabled"] == "true"
         mdui.dialog({
             title: '歌詞來源',
             content: `<ul class="mdui-list">
-            <li class="mdui-list-item mdui-ripple" onclick="window.localStorage['lrcSource']='dsm'" mdui-dialog-close>
-                <div class="mdui-list-item-content">
-                    <div class="mdui-list-item-title">DSM</div>
-                    <div class="mdui-list-item-text">使用 DSM 當中的歌詞搜尋器</div>
-                </div>
-            </li>
-            <li class="mdui-list-item mdui-ripple ${isMetingEnabled?"":"mdui-hidden"}" onclick="${isMetingEnabled?"window.localStorage['lrcSource']='meting'":''}" mdui-dialog-close> 
-                <div class="mdui-list-item-content">
-                    <div class="mdui-list-item-title">Meting</div>
-                    <div class="mdui-list-item-text">Meting, such a powerful music API framework</div>
-                </div>
-            </li>
-        </ul>`,
+                <li class="mdui-list-item mdui-ripple" onclick="window.localStorage['lrcSource']='dsm'" mdui-dialog-close>
+                    <div class="mdui-list-item-content">
+                        <div class="mdui-list-item-title">DSM</div>
+                        <div class="mdui-list-item-text">使用 DSM 當中的歌詞搜尋器</div>
+                    </div>
+                </li>
+                <li class="mdui-list-item mdui-ripple ${isMetingEnabled?"":"mdui-hidden"}" onclick="${isMetingEnabled?"window.localStorage['lrcSource']='meting'":''}" mdui-dialog-close> 
+                    <div class="mdui-list-item-content">
+                        <div class="mdui-list-item-title">Meting</div>
+                        <div class="mdui-list-item-text">Meting, such a powerful music API framework</div>
+                    </div>
+                </li>
+            </ul>`,
             history: false,
             buttons: [{
                 text: '取消'
               }],
-            onClose: ()=>$("[data-lrc-source] .mdui-list-item-text").text(window.localStorage["lrcSource"].toUpperCase())
-          });
+            onClose: () => $("[data-lrc-source] .mdui-list-item-text").text(window.localStorage["lrcSource"].toUpperCase())
+        });
     });
 }
 async function showSettingsTheme() {
