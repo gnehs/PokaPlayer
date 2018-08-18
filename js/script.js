@@ -3,7 +3,6 @@ songList = [];
 const lrc = new Lyrics(`[00:00.000]`);
 const socket = io();
 socket.on("hello", () => {
-    //console.log('hello')
     socket.emit('login')
 });
 // 初始化播放器
@@ -716,7 +715,8 @@ async function showNow() {
 function showLrc() {
     $("#content").html(`<div data-lrc><div data-lrc="inner"></div></div>`)
     $('#content').attr('data-page', 'lrc')
-        // 歌詞
+
+    // 歌詞
     if (lrc.getLyrics()) {
         let html = ``
         for (i = 0; i < lrc.getLyrics().length; i++) {
@@ -746,6 +746,9 @@ function showLrc() {
             $('#content>div[data-lrc]').animate({ scrollTop: top }, 300);
         }
     });
+    $('#content>div[data-lrc]').dblclick(function() {
+        showLrcChoose()
+    })
 }
 //- 播放音樂
 
@@ -829,7 +832,7 @@ function getSnackbarPosition() {
 }
 
 async function showLrcChoose() {
-    if (ap.list.audios[ap.list.index]) {
+    if (ap.list.audios[ap.list.index] && window.localStorage["lrcSource"] == 'meting') {
         let nowPlaying = ap.list.audios[ap.list.index],
             name = nowPlaying.name || '',
             artist = nowPlaying.artist || ''

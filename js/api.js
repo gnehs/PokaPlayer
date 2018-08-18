@@ -70,7 +70,6 @@ async function getMetingSearchResult(keyword, limit = 1) {
     else return search.data
 }
 async function getMetingLrcById(id) {
-    console.log(id)
     let meting = (await axios.get('/meting')).data.url,
         server = 'netease',
         lyricRegex = /\[([0-9.:]*)\]/i
