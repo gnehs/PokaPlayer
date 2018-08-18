@@ -11,12 +11,6 @@ const ap = new APlayer({
     fixed: true
 });
 
-// 避免關閉 meting 後歌詞模組錯誤
-axios.get('/meting').then(data => {
-    let metingIsEnabled = data.data.enabled;
-    if (!metingIsEnabled && window.localStorage["lrcSource"] == 'meting') window.localStorage.removeItem("lrcSource")
-})
-
 // 路由
 const router = new Navigo(null, true, '#!');
 router
@@ -834,7 +828,7 @@ function getSnackbarPosition() {
 }
 
 async function showLrcChoose() {
-    if (ap.list.audios[ap.list.index] && window.localStorage["lrcSource"] == 'meting') {
+    if (ap.list.audios[ap.list.index] && window.localStorage["lrcSource"] == 'Meting') {
         let nowPlaying = ap.list.audios[ap.list.index],
             name = nowPlaying.name || '',
             artist = nowPlaying.artist || ''
