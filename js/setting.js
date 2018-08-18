@@ -357,6 +357,13 @@ async function showSettingsAbout() {
                 <div class="mdui-list-item-text mdui-list-item-one-line">前往 PokaPlayer 的 GitHub</div>
             </div>
         </a>
+        <li class="mdui-list-item mdui-ripple" data-restart>
+            <i class="mdui-list-item-icon mdui-icon material-icons">refresh</i>
+            <div class="mdui-list-item-content">
+                <div class="mdui-list-item-title mdui-list-item-one-line">重新啟動</div>
+                <div class="mdui-list-item-text mdui-list-item-one-line">process.exit()</div>
+            </div>
+        </li>
         <li class="mdui-list-item mdui-ripple" data-as-version>
             <i class="mdui-list-item-icon mdui-icon material-icons">info</i>
             <div class="mdui-list-item-content">
@@ -389,7 +396,14 @@ async function showSettingsAbout() {
         $("[data-upgrade]").attr('data-upgrade', true)
     if (debug.data)
         $("[data-version] .mdui-list-item-text").text(`${window.localStorage["PokaPlayerVersion"]}(${debug.data})`)
-
+    //重啟
+    $("[data-restart]").click(() => {
+        mdui.confirm('這將導致您在重新啟動完畢前暫時無法使用 PokaPlayer', '確定要重新啟動嗎', 
+            function(){
+                mdui.alert('正在重新啟動','','',{history: false});
+                axios.post('/restart')
+            },'',{history: false})
+    })
     //更新
     $("[data-upgrade=\"true\"]").click(() => {
         mdui.dialog({
