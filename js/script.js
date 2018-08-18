@@ -37,6 +37,9 @@ router
         'now': showNow,
         'lrc': showLrc,
         'settings': showSettings,
+        'settings/theme': showSettingsTheme,
+        'settings/pic': showSettingsPic,
+        'settings/about': showSettingsAbout,
         '*': showHome
     })
     .resolve()

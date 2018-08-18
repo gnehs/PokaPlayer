@@ -1,122 +1,280 @@
-//- 設定
-async function showSettings() {
-
-    $('#content').attr('data-page', 'settings')
-        ///給定預設值
+// 初始化設定值
+$(async() => {
+    ///給定預設值
     if (!window.localStorage["musicRes"]) window.localStorage["musicRes"] = "wav"
     if (!window.localStorage["randomImg"]) window.localStorage["randomImg"] = "/og/og.png"
+    if (!window.localStorage["randomImgName"]) window.localStorage["randomImgName"] = "預設圖庫"
     if (!window.localStorage["lrcSource"]) window.localStorage["lrcSource"] = "dsm"
-        ///
-    let header = HTML.getHeader("設定")
-    let title = title => `<h2 class="mdui-text-color-theme">${title}</h2>`
-    let subtitle = subtitle => `<h4>${subtitle}</h4>`
-    let colors = [
-        'red',
-        'pink',
-        'purple',
-        'deep-purple',
-        'indigo',
-        'blue',
-        'light-blue',
-        'cyan',
-        'teal',
-        'green',
-        'light-green',
-        'lime',
-        'yellow',
-        'amber',
-        'orange',
-        'deep-orange',
-        'brown',
-        'grey',
-        'blue-grey'
-    ]
-    let colorOption = (colors, accent = false) => {
-        let option = ''
-        for (i = 0; i < colors.length; i++) {
-            let color = colors[i]
-            let checked = window.localStorage[accent ? "mdui-theme-accent" : "mdui-theme-primary"] == color ? " checked" : ''
-            if (i <= (colors.length - 3 - 1) && accent || !accent)
-                option += `<div class="mdui-col"><label class="mdui-radio mdui-text-color-${color}${accent?"-accent":''}">
-            <input type="radio" name="group${accent?"1":"2"}" value="${color}"${checked}/>
-            <i class="mdui-radio-icon"></i>${color.replace("-"," ")}</label></div>`
-        }
-        return option
-    }
-    let themecolor = s => { return `<div class="mdui-col"><label class="mdui-radio"><input type="radio" name="themecolor" value="false" ${s=="true"?"":"checked"}/><i class="mdui-radio-icon"></i>Light</label></div>
-  <div class="mdui-col"><label class="mdui-radio"><input type="radio" name="themecolor" value="true" ${s=="true"?"checked":""}/><i class="mdui-radio-icon"></i>Dark</label></div>` }
-    let musicRes = s => { return `<div class="mdui-col">
-        <label class="mdui-radio">
-            <input type="radio" name="musicres" value="mp3" ${s=="mp3"?"checked":""}/>
-            <i class="mdui-radio-icon"></i>
-            MP3
-        </label>
-        <div class="mdui-typo-caption-opacity">128K，夭壽靠北，在網路夭壽慢的情況下請選擇此選項</div>
-    </div>
-    <div class="mdui-col">
-        <label class="mdui-radio">
-            <input type="radio" name="musicres" value="wav" ${s=="wav"?"checked":""}/>
-            <i class="mdui-radio-icon"></i>
-            WAV
-        </label>
-        <div class="mdui-typo-caption-opacity">較高音質，音質較原始音質略差，可在 4G 網路下流暢的串流</div>
-    </div>
-    <div class="mdui-col">
-        <label class="mdui-radio">
-            <input type="radio" name="musicres" value="original" ${s=="original"?"checked":""}/>
-            <i class="mdui-radio-icon"></i>
-            Original
-        </label>
-        <div class="mdui-typo-caption-opacity">原始音質，在網路狀況許可下，建議選擇此選項聆聽高音質音樂</div>
-    </div>` }
-    let imgRes = s => { return `<div class="mdui-col">
-        <label class="mdui-radio">
-            <input type="radio" name="musicres" value="true" ${s=="true"?"checked":""}/>
-            <i class="mdui-radio-icon"></i>
-            開啟
-        </label>
-        <div class="mdui-typo-caption-opacity">停止載入所有圖片，以節省流量及讀取時間，音樂仍會按照您所設定的音質播放</div>
-    </div>
-    <div class="mdui-col">
-        <label class="mdui-radio">
-            <input type="radio" name="musicres" value="false" ${s=="true"?"":"checked"}/>
-            <i class="mdui-radio-icon"></i>
-            關閉
-        </label>
-        <div class="mdui-typo-caption-opacity">載入所有圖片，就像平常那樣</div>
-    </div>` }
-    let lrcSource = async(s) => {
-        let metingIsEnabled = (await axios.get('/meting')).data.enabled
-        let result = `<div class="mdui-col">
-        <label class="mdui-radio">
-            <input type="radio" name="lrcSource" value="dsm" ${s=='dsm'?"checked":""}/>
-            <i class="mdui-radio-icon"></i>
-            DSM
-        </label>
-        <div class="mdui-typo-caption-opacity">使用 DSM 當中的歌詞搜尋器</div>
-        </div>
-        `
-        if (metingIsEnabled) {
-            result += `
-            <div class="mdui-col">
-            <label class="mdui-radio">
-                <input type="radio" name="lrcSource" value="meting" ${s=="meting"?"checked":""}/>
-                <i class="mdui-radio-icon"></i>
-                Meting
-            </label>
-            <div class="mdui-typo-caption-opacity">Meting, such a powerful music API framework</div>
-            </div>
-            `
-        }
-        return result
-    }
+    window.localStorage["PokaPlayerVersion"] = (await axios.get('/info/')).data.version
+});
 
-    let bg = s => { return `<div class="mdui-textfield">
-        <input class="mdui-textfield-input" placeholder="隨機圖片" value="${s}"/>
-        <div class="mdui-textfield-helper">填入網址或是點擊下方來源來取代原本的隨機圖片</div>
-    </div>` }
-    let bgSrc = () => {
-        let imgs = [{
+//- 設定
+async function showSettings() {
+    $('#content').attr('data-page', 'settings')
+    let header = HTML.getHeader("設定")
+    let item = (title, text = '', icon = '', link = '', data = '') => {
+            return `<li class="mdui-list-item mdui-ripple" ${link?`onclick="router.navigate('${link}')"`:''} ${data}>
+            <i class="mdui-list-item-icon mdui-icon material-icons">${icon}</i>
+            <div class="mdui-list-item-content">
+                <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
+                <div class="mdui-list-item-text mdui-list-item-one-line">${text}</div>
+            </div>
+        </li>`
+    }
+    let settingItems = `<ul class="mdui-list">
+        ${item("主題","設定主題色、主色及強調色","color_lens","settings/theme")}
+        ${item("音質",window.localStorage["musicRes"].toUpperCase(),"music_note","","data-music-res")}
+        <li class="mdui-list-item mdui-ripple" data-imgRes>
+            <i class="mdui-list-item-icon mdui-icon material-icons">image</i>
+            <div class="mdui-list-item-content">
+                <div class="mdui-list-item-title mdui-list-item-one-line">圖片流量節省</div>
+                <div class="mdui-list-item-text mdui-list-item-one-line">${window.localStorage["imgRes"]=="true"? "已開啟" : "已關閉"}</div>
+            </div>
+            <label class="mdui-switch">
+                <input type="checkbox" ${window.localStorage["imgRes"]=="true"?"checked":""}/>
+                <i class="mdui-switch-icon"></i>
+            </label>
+        </li>
+        ${item("隨機圖片",window.localStorage["randomImgName"],"shuffle","settings/pic")}
+        ${item("歌詞來源",window.localStorage["lrcSource"].toUpperCase(),"subtitles","","data-lrc-source")}
+        ${item("關於","PokaPlayer "+window.localStorage["PokaPlayerVersion"],"info","settings/about","data-about")}
+    </ul>`
+    $("#content").html(header + settingItems);
+    // 音質設定
+    $("[data-music-res]").click(function() {
+        mdui.dialog({
+            title: '音質設定',
+            content: `<ul class="mdui-list">
+            <li class="mdui-list-item mdui-ripple" onclick="window.localStorage['musicRes']='mp3'" mdui-dialog-close>
+                <div class="mdui-list-item-content">
+                    <div class="mdui-list-item-title">MP3</div>
+                    <div class="mdui-list-item-text">128K，夭壽靠北，在網路夭壽慢的情況下請選擇此選項</div>
+                </div>
+            </li>
+            <li class="mdui-list-item mdui-ripple" onclick="window.localStorage['musicRes']='wav'" mdui-dialog-close> 
+                <div class="mdui-list-item-content">
+                    <div class="mdui-list-item-title">WAV</div>
+                    <div class="mdui-list-item-text">較高音質，音質較原始音質略差，可在 4G 網路下流暢的串流</div>
+                </div>
+            </li>
+            <li class="mdui-list-item mdui-ripple" onclick="window.localStorage['musicRes']='original'" mdui-dialog-close>
+                <div class="mdui-list-item-content">
+                    <div class="mdui-list-item-title">Original</div>
+                    <div class="mdui-list-item-text">原始音質，在網路狀況許可下，建議選擇此選項聆聽高音質音樂</div>
+                </div>
+            </li>
+        </ul>`,
+            history: false,
+            buttons: [{
+                text: '取消'
+              }],
+            onClose: ()=>$("[data-music-res] .mdui-list-item-text").text(window.localStorage["musicRes"].toUpperCase())
+          });
+          
+    });
+    // 圖片流量節省
+    $("[data-imgRes]").click(function() {
+        $("[data-imgRes] input").prop('checked', !$("[data-imgRes] input").prop('checked'))
+        window.localStorage["imgRes"] = $("[data-imgRes] input").prop('checked');
+        $("[data-imgRes] .mdui-list-item-text").text($("[data-imgRes] input").prop('checked') ? "已開啟" : "已關閉");
+    });
+    $("[data-lrc-source]").click(async function() {
+        let isMetingEnabled = (await axios.get('/meting')).data.enabled
+        mdui.dialog({
+            title: '歌詞來源',
+            content: `<ul class="mdui-list">
+            <li class="mdui-list-item mdui-ripple" onclick="window.localStorage['lrcSource']='dsm'" mdui-dialog-close>
+                <div class="mdui-list-item-content">
+                    <div class="mdui-list-item-title">DSM</div>
+                    <div class="mdui-list-item-text">使用 DSM 當中的歌詞搜尋器</div>
+                </div>
+            </li>
+            <li class="mdui-list-item mdui-ripple ${isMetingEnabled?"":"mdui-hidden"}" onclick="${isMetingEnabled?"window.localStorage['lrcSource']='meting'":''}" mdui-dialog-close> 
+                <div class="mdui-list-item-content">
+                    <div class="mdui-list-item-title">Meting</div>
+                    <div class="mdui-list-item-text">Meting, such a powerful music API framework</div>
+                </div>
+            </li>
+        </ul>`,
+            history: false,
+            buttons: [{
+                text: '取消'
+              }],
+            onClose: ()=>$("[data-lrc-source] .mdui-list-item-text").text(window.localStorage["lrcSource"].toUpperCase())
+          });
+    });
+}
+async function showSettingsTheme() {
+    $('#content').attr('data-page', 'settings')
+    let header = HTML.getHeader("設定 / 主題"), 
+        settingItems = `<ul class="mdui-list">
+        <li class="mdui-list-item mdui-ripple" onclick="router.navigate('settings')">
+            <i class="mdui-list-item-icon mdui-icon material-icons">arrow_back</i>
+            <div class="mdui-list-item-content">
+                <div class="mdui-list-item-title mdui-list-item-one-line">返回</div>
+                <div class="mdui-list-item-text mdui-list-item-one-line">回到設定頁面</div>
+            </div>
+        </li>
+        <li class="mdui-list-item mdui-ripple" data-theme="mdui-theme-color">
+            <i class="mdui-list-item-icon mdui-icon material-icons">color_lens</i>
+            <div class="mdui-list-item-content">
+                <div class="mdui-list-item-title mdui-list-item-one-line">主題色</div>
+                <div class="mdui-list-item-text mdui-list-item-one-line">${window.localStorage["mdui-theme-color"]=='true'?'Dark':'Light'}</div>
+            </div>
+        </li>
+        <li class="mdui-list-item mdui-ripple" data-theme="mdui-theme-primary">
+            <i class="mdui-list-item-icon mdui-icon material-icons">color_lens</i>
+            <div class="mdui-list-item-content">
+                <div class="mdui-list-item-title mdui-list-item-one-line">主色</div>
+                <div class="mdui-list-item-text mdui-list-item-one-line" style="text-transform:capitalize;">${window.localStorage["mdui-theme-primary"].replace("-"," ")}</div>
+            </div>
+        </li>
+        <li class="mdui-list-item mdui-ripple" data-theme="mdui-theme-accent">
+            <i class="mdui-list-item-icon mdui-icon material-icons">color_lens</i>
+            <div class="mdui-list-item-content">
+                <div class="mdui-list-item-title mdui-list-item-one-line">強調色</div>
+                <div class="mdui-list-item-text mdui-list-item-one-line" style="text-transform:capitalize;">${window.localStorage["mdui-theme-accent"].replace("-"," ")}</div>
+            </div>
+        </li>
+    </ul>`
+    $("#content").html(header + settingItems)
+    $('[data-theme="mdui-theme-color"]').click(function() {
+        mdui.dialog({
+            title: '設定主題色',
+            content: `<ul class="mdui-list">
+            <li class="mdui-list-item mdui-ripple" onclick="window.localStorage['mdui-theme-color']='false'" mdui-dialog-close>
+                <div class="mdui-list-item-content">Light</div>
+            </li>
+            <li class="mdui-list-item mdui-ripple" onclick="window.localStorage['mdui-theme-color']='true'" mdui-dialog-close> 
+                <div class="mdui-list-item-content">Dark</div>
+            </li>
+        </ul>`,
+            history: false,
+            buttons: [{
+                text: '取消'
+              }],
+            onClose: ()=>{
+                $('[data-theme="mdui-theme-color"] .mdui-list-item-text').text(window.localStorage["mdui-theme-color"]=='true'?'Dark':'Light')
+                if (window.localStorage["mdui-theme-color"]== "true")
+                    $('body').addClass("mdui-theme-layout-dark")
+                else
+                    $('body').removeClass("mdui-theme-layout-dark")
+                    //設定顏色
+                let metaThemeColor = document.querySelector("meta[name=theme-color]");
+                metaThemeColor.setAttribute("content", $('header>div:first-child').css("background-color"));
+            }
+          });  
+    });
+    $('[data-theme="mdui-theme-primary"]').click(function() {
+        let colorOption = (colors) => {
+            let option = ''
+            for (i = 0; i < colors.length; i++) {
+                let color = colors[i]
+                option += `
+                <li class="mdui-list-item mdui-ripple" data-primary-color="${color}"> 
+                    <div class="mdui-list-item-content mdui-text-color-${color}">${color.replace("-"," ")}</div>
+                </li>`
+            }
+            return option
+        }, 
+        colors = ['red','pink','purple','deep-purple','indigo','blue','light-blue','cyan','teal','green','light-green','lime','yellow','amber','orange','deep-orange','brown','grey','blue-grey']
+        mdui.dialog({
+            title: '設定主色',
+            content: `<ul class="mdui-list" style="text-transform:capitalize;">${colorOption(colors)}</ul>`,
+            history: false,
+            buttons: [{text: '確定'}]
+        });  
+        $('[data-primary-color]').click(function(){
+            let color = $(this).attr('data-primary-color')
+            let classStr = $('body').attr('class');
+            let classes = classStr.split(' ');
+            for (i = 0, len = classes.length; i < len; i++) {
+                if (classes[i].indexOf('mdui-theme-primary-') === 0) {
+                    $('body').removeClass(classes[i])
+                }
+            }
+            $('[data-theme="mdui-theme-primary"] .mdui-list-item-text').text(color)
+            $('body').addClass(`mdui-theme-primary-${color}`)
+            window.localStorage["mdui-theme-primary"] = color
+            //設定顏色
+            let metaThemeColor = document.querySelector("meta[name=theme-color]");
+            metaThemeColor.setAttribute("content", $('header>div:first-child').css("background-color"));
+        })
+    });
+    $('[data-theme="mdui-theme-accent"]').click(function() {
+        let colorOption = (colors, accent = false) => {
+            let option = ''
+            for (i = 0; i < colors.length; i++) {
+                let color = colors[i]
+                option += `
+                <li class="mdui-list-item mdui-ripple" data-accent-color="${color}"> 
+                    <div class="mdui-list-item-content mdui-text-color-${color}-accent">${color.replace("-"," ")}</div>
+                </li>`
+            }
+            return option
+        }, 
+        colors = ['red','pink','purple','deep-purple','indigo','blue','light-blue','cyan','teal','green','light-green','lime','yellow','amber','orange','deep-orange']
+        mdui.dialog({
+            title: '設定強調色',
+            content: `<ul class="mdui-list" style="text-transform:capitalize;">${colorOption(colors)}</ul>`,
+            history: false,
+            buttons: [{text: '確定'}]
+        });  
+        $('[data-accent-color]').click(function(){
+            let color = $(this).attr('data-accent-color')
+            let classStr = $('body').attr('class');
+            let classes = classStr.split(' ');
+            for (i = 0, len = classes.length; i < len; i++) {
+                if (classes[i].indexOf('mdui-theme-accent-') === 0) {
+                    $('body').removeClass(classes[i])
+                }
+            }
+            $('[data-theme="mdui-theme-accent"] .mdui-list-item-text').text(color)
+            window.localStorage["mdui-theme-accent"] = color
+            $('body').addClass(`mdui-theme-accent-${color}`)
+        })
+    });
+}
+async function showSettingsPic() {
+    $('#content').attr('data-page', 'settings')
+    let header = HTML.getHeader("設定 / 隨機圖片")
+    let settingItems = `<ul class="mdui-list">
+        <li class="mdui-list-item mdui-ripple" onclick="router.navigate('settings')">
+            <i class="mdui-list-item-icon mdui-icon material-icons">arrow_back</i>
+            <div class="mdui-list-item-content">
+                <div class="mdui-list-item-title mdui-list-item-one-line">返回</div>
+                <div class="mdui-list-item-text mdui-list-item-one-line">回到設定頁面</div>
+            </div>
+        </li>
+        <li class="mdui-list-item mdui-ripple" data-pic-source>
+            <i class="mdui-list-item-icon mdui-icon material-icons">image</i>
+            <div class="mdui-list-item-content">
+                <div class="mdui-list-item-title mdui-list-item-one-line">圖片來源</div>
+                <div class="mdui-list-item-text mdui-list-item-one-line">${window.localStorage["randomImgName"]}</div>
+            </div>
+        </li>
+        <li class="mdui-list-item mdui-ripple" data-pic-custom-link>
+            <i class="mdui-list-item-icon mdui-icon material-icons">link</i>
+            <div class="mdui-list-item-content">
+                <div class="mdui-list-item-title mdui-list-item-one-line">自訂圖片來源</div>
+                <div class="mdui-list-item-text mdui-list-item-one-line">${window.localStorage["randomImg"]}</div>
+            </div>
+        </li>
+    </ul>`
+    $("#content").html(header + settingItems)
+    $('[data-pic-source]').click(function() {
+        let imgsOption = (imgs) => {
+            let option = ''
+            for (i = 0; i < imgs.length; i++) {
+                let img = imgs[i]
+                option += `
+                <li class="mdui-list-item mdui-ripple" data-img-src="${img.src}" mdui-dialog-close> 
+                    <div class="mdui-list-item-content">${img.name}</div>
+                </li>`
+            }
+            return option
+        }, 
+         imgs = [{
             name: '預設圖庫',
             src: '/og/og.png'
         }, {
@@ -135,146 +293,109 @@ async function showSettings() {
             name: 'Picsum Photos',
             src: 'https://picsum.photos/1920/1080/?random'
         }]
-        let html = ''
-        for (i = 0; i < imgs.length; i++) {
-            let img = imgs[i]
-            html += `<a class="mdui-btn mdui-ripple mdui-btn-raised" data-src="${img.src}">${img.name}</a>`
-        }
-        return html
-    }
-
-    let settingTheme = title("主題") +
-        subtitle("主題色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Theme">${themecolor(window.localStorage["mdui-theme-color"])}</form>` +
-        subtitle("主色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Primary" style="text-transform:capitalize;">${colorOption(colors)}</form>` +
-        subtitle("強調色") + `<form class="mdui-row-xs-2 mdui-row-sm-3 mdui-row-md-5 mdui-row-lg-6" id="PP_Accent" style="text-transform:capitalize;">${colorOption(colors,true)}</form>`
-
-    musicRes = title("音質") + `<form class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4" id="PP_Res">${musicRes(window.localStorage["musicRes"])}</form>`
-
-    lrcSource = title("歌詞來源") + `<form class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4" id="PP_lrcSource">${await lrcSource(window.localStorage["lrcSource"])}</form>`
-
-    imgRes = title("圖片流量節省") + `<form class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4" id="PP_imgRes">${imgRes(window.localStorage["imgRes"])}</form>`
-
-    bg = title("隨機圖片設定") + `<form id="PP_bg">${bg(window.localStorage["randomImg"])}<br>${bgSrc()}</form>`
-
-    let info = title("Audio Station 狀態") + `<div id="DSMinfo" class="mdui-typo"><strong>版本</strong> 載入中</div>`
-
-    let about = title("關於 PokaPlayer") + `<div id="about" class="mdui-typo">
-    PokaPlayer 是 Synology Audio Ststion 的新朋友！ <a href="https://github.com/gnehs/PokaPlayer" target="_blank">GitHub</a>
-        <p><strong>版本</strong> 載入中 / <strong>開發者</strong> 載入中 / 正在檢查更新</p>
-    </div>`
-
-    let html = header + settingTheme + musicRes + lrcSource + imgRes + bg + info + about
-    $("#content").html(html)
-
-    //初始化
-    mdui.mutation();
-
-    $("#PP_bg input").change(function() {
-        window.localStorage["randomImg"] = $(this).val()
-        $('#header-wrapper').attr("style", `background-image: url(${$(this).val()});`)
-        mdui.snackbar({
-            message: `隨機圖片已變更為 ${$(this).val()}`,
-            position: getSnackbarPosition(),
-            timeout: 1500
+        mdui.dialog({
+            title: '設定圖片來源',
+            content: `<ul class="mdui-list">${imgsOption(imgs)}</ul>`,
+            history: false
         });
-    })
-    $("#PP_bg [data-src]").click(function() {
-        let name = $(this).text()
-        let src = $(this).attr('data-src')
-        window.localStorage["randomImg"] = src
-        $('#header-wrapper').attr("style", `background-image: url(${src});`)
-        $('#PP_bg input').val(src);
-        mdui.snackbar({
-            message: `隨機圖片已變更為 ${name}`,
-            position: getSnackbarPosition(),
-            timeout: 1500
-        });
-
-    })
-    $("#PP_Res input").change(function() {
-        window.localStorage["musicRes"] = $(this).val()
-        mdui.snackbar({
-            message: `音質已設定為 ${$(this).val().toUpperCase()}，該設定並不會在現正播放中生效，請重新加入歌曲`,
-            position: getSnackbarPosition(),
-            timeout: 1500
-        });
-    })
-    $("#PP_lrcSource input").change(function() {
-        window.localStorage["lrcSource"] = $(this).val()
-        mdui.snackbar({
-            message: `歌詞來源已設定為 ${$(this).val().toUpperCase()}`,
-            position: getSnackbarPosition(),
-            timeout: 1500
-        });
-    })
-    $("#PP_imgRes input").change(function() {
-        window.localStorage["imgRes"] = $(this).val()
-        mdui.snackbar({
-            message: `圖片流量節省已${$(this).val()=="true"?"開啟":"關閉"}`,
-            position: getSnackbarPosition(),
-            timeout: 1500
-        });
-    })
-    $("#PP_Theme input").change(function() {
-        window.localStorage["mdui-theme-color"] = $(this).val()
-        if ($(this).val() == "true")
-            $('body').addClass("mdui-theme-layout-dark")
-        else
-            $('body').removeClass("mdui-theme-layout-dark")
-            //設定顏色
-        let metaThemeColor = document.querySelector("meta[name=theme-color]");
-        metaThemeColor.setAttribute("content", $('header>div:first-child').css("background-color"));
-    })
-    $("#PP_Primary input").change(function() {
-        let classStr = $('body').attr('class');
-        let classes = classStr.split(' ');
-        for (i = 0, len = classes.length; i < len; i++) {
-            if (classes[i].indexOf('mdui-theme-primary-') === 0) {
-                $('body').removeClass(classes[i])
+        $('[data-img-src]').click(function(){
+            let src = $(this).attr('data-img-src')
+            let name = $(this).children().text()
+            window.localStorage["randomImg"] = src
+            window.localStorage["randomImgName"] = name
+            $('#header-wrapper').attr("style", `background-image: url(${src});`)
+            $('[data-pic-source] .mdui-list-item-text').text(name)
+            $('[data-pic-custom-link] .mdui-list-item-text').text(src)
+        })
+    });
+    $('[data-pic-custom-link]').click(function(){
+        mdui.prompt('請輸入圖片網址', '自訂圖片來源',
+            value => {
+                if (value){
+                    window.localStorage["randomImg"] = value
+                    $('[data-pic-custom-link] .mdui-list-item-text').text(value)
+                    window.localStorage["randomImgName"] = "自訂"
+                    $('#header-wrapper').attr("style", `background-image: url(${value});`)
+                }
+            },
+            function (value) {},
+            {
+                history: false
             }
-        }
-        $('body').addClass(`mdui-theme-primary-${$(this).val()}`)
-        window.localStorage["mdui-theme-primary"] = $(this).val()
-            //設定顏色
-        let metaThemeColor = document.querySelector("meta[name=theme-color]");
-        metaThemeColor.setAttribute("content", $('header>div:first-child').css("background-color"));
+        );
     })
-    $("#PP_Accent input").change(function() {
-        let classStr = $('body').attr('class');
-        let classes = classStr.split(' ');
-        for (i = 0, len = classes.length; i < len; i++) {
-            if (classes[i].indexOf('mdui-theme-accent-') === 0) {
-                $('body').removeClass(classes[i])
-            }
-        }
-        window.localStorage["mdui-theme-accent"] = $(this).val()
-        $('body').addClass(`mdui-theme-accent-${$(this).val()}`)
-    })
-
-
+}
+async function showSettingsAbout() {
+    $('#content').attr('data-page', 'settings')
+    let header = HTML.getHeader("設定 / 關於")
+    let settingItems = `<ul class="mdui-list">
+        <li class="mdui-list-item mdui-ripple" onclick="router.navigate('settings')">
+            <i class="mdui-list-item-icon mdui-icon material-icons">arrow_back</i>
+            <div class="mdui-list-item-content">
+                <div class="mdui-list-item-title mdui-list-item-one-line">返回</div>
+                <div class="mdui-list-item-text mdui-list-item-one-line">回到設定頁面</div>
+            </div>
+        </li>
+        <li class="mdui-list-item mdui-ripple" data-upgrade>
+            <i class="mdui-list-item-icon mdui-icon material-icons">system_update</i>
+            <div class="mdui-list-item-content">
+                <div class="mdui-list-item-title mdui-list-item-one-line">更新</div>
+                <div class="mdui-list-item-text mdui-list-item-one-line">正在檢查更新...</div>
+            </div>
+        </li>
+        <li class="mdui-list-item mdui-ripple" data-dev>
+            <i class="mdui-list-item-icon mdui-icon material-icons">supervisor_account</i>
+            <div class="mdui-list-item-content">
+                <div class="mdui-list-item-title mdui-list-item-one-line">開發者</div>
+                <div class="mdui-list-item-text mdui-list-item-one-line">載入中...</div>
+            </div>
+        </li>
+        <a class="mdui-list-item mdui-ripple" href="https://github.com/gnehs/PokaPlayer" target="_blank">
+            <i class="mdui-list-item-icon mdui-icon material-icons">language</i>
+            <div class="mdui-list-item-content">
+                <div class="mdui-list-item-title mdui-list-item-one-line">GitHub</div>
+                <div class="mdui-list-item-text mdui-list-item-one-line">前往 PokaPlayer 的 GitHub</div>
+            </div>
+        </a>
+        <li class="mdui-list-item mdui-ripple" data-as-version>
+            <i class="mdui-list-item-icon mdui-icon material-icons">info</i>
+            <div class="mdui-list-item-content">
+                <div class="mdui-list-item-title mdui-list-item-one-line">Audio Station 版本</div>
+                <div class="mdui-list-item-text mdui-list-item-one-line">載入中...</div>
+            </div>
+        </li>
+        <li class="mdui-list-item mdui-ripple" data-version>
+            <i class="mdui-list-item-icon mdui-icon material-icons">info</i>
+            <div class="mdui-list-item-content">
+                <div class="mdui-list-item-title mdui-list-item-one-line">PokaPlayer 版本</div>
+                <div class="mdui-list-item-text mdui-list-item-one-line">${window.localStorage["PokaPlayerVersion"]}</div>
+            </div>
+        </li>
+    </ul>`
+    $("#content").html(header + settingItems)
+    
     // DSM 詳細資料
     let getDSMInfo = await getAPI("AudioStation/info.cgi", "SYNO.AudioStation.Info", "getinfo", [], 4)
-    $("#DSMinfo").html(`<strong>版本</strong> ${getDSMInfo.data.version_string?getDSMInfo.data.version_string:"版本：未知"}`)
+    $("[data-as-version] .mdui-list-item-text").text(getDSMInfo.data.version_string?getDSMInfo.data.version_string:"未知")
 
     // PokaPlayer 詳細資料
     let getInfo = await axios.get('/info/');
+    $("[data-dev] .mdui-list-item-text").text(getInfo.data.author)
     let debug = await axios.get('/debug/')
     let checkUpdate = await axios.get(`https://api.github.com/repos/gnehs/PokaPlayer/releases`);
-    let update = getInfo.data.version != checkUpdate.data[0].tag_name ?
-        `新版本 <a href="${checkUpdate.data[0].html_url}" target="_blank">${checkUpdate.data[0].tag_name}</a> 已發佈，請立即更新 <a href="javascript:void(0)" data-upgrade>更新</a>` :
-        debug.data == false ?
-        `您的 PokaPlayer 已是最新版本` :
-        `<a href="javascript:void(0)" data-upgrade>與開發分支同步</a>`
-    let version = debug.data == false ? getInfo.data.version : debug.data
-    about = `PokaPlayer 是 Synology Audio Ststion 的新朋友！ <a href="https://github.com/gnehs/PokaPlayer" target="_blank">GitHub</a>
-        <p><strong>版本</strong> ${version} / <strong>開發者</strong> ${getInfo.data.author} / ${update}</p>`
-    $("#about").html(about)
+    let update = getInfo.data.version != checkUpdate.data[0].tag_name ? `更新到 ${checkUpdate.data[0].tag_name}` : debug.data == false ? `您的 PokaPlayer 已是最新版本` : `與開發分支同步`
+    $("[data-upgrade] .mdui-list-item-text").text(update)
+    if (getInfo.data.version != checkUpdate.data[0].tag_name || debug.data)
+        $("[data-upgrade]").attr('data-upgrade', true)
+    if (debug.data)
+        $("[data-version] .mdui-list-item-text").text(`${window.localStorage["PokaPlayerVersion"]}(${debug.data})`)
 
-
-    $("[data-upgrade]").click(() => {
+    //更新
+    $("[data-upgrade=\"true\"]").click(() => {
         mdui.dialog({
-            title: '您確定要現在更新嗎',
+            title: '您確定要更新嗎',
             content: '這將導致您在更新完畢前暫時無法使用 PokaPlayer',
+            history: false,
             buttons: [{
                     text: '算ㄌ'
                 },
@@ -323,6 +444,4 @@ async function showSettings() {
             ]
         });
     })
-
-
 }

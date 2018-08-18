@@ -1,9 +1,7 @@
 $(() => {
     // 檢查有沒有設定顏色
-    if (!window.localStorage["mdui-theme-primary"])
-        window.localStorage["mdui-theme-primary"] = "indigo"
-    if (!window.localStorage["mdui-theme-accent"])
-        window.localStorage["mdui-theme-accent"] = "pink"
+    if (!window.localStorage["mdui-theme-primary"]) window.localStorage["mdui-theme-primary"] = "indigo"
+    if (!window.localStorage["mdui-theme-accent"]) window.localStorage["mdui-theme-accent"] = "pink"
 
     // 顏色設定
     $('body').addClass(`mdui-theme-primary-${window.localStorage["mdui-theme-primary"]}`)
