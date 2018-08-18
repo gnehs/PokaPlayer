@@ -31,8 +31,7 @@ async function getLrc(artist, title, id = false) {
     // 如果沒有設定或是設定是 DSM，進行 DSM 搜尋
     if (window.localStorage["lrcSource"] == 'dsm' || !window.localStorage["lrcSource"]) {
         if (id) {
-            lrc = await getAPI("AudioStation/lyrics.cgi", "SYNO.AudioStation.Lyrics", "getlyrics", [{ key: "id", "value": id }], 2)
-            result = lrc.data.lyrics
+            result = (await getAPI("AudioStation/lyrics.cgi", "SYNO.AudioStation.Lyrics", "getlyrics", [{ key: "id", "value": id }], 2)).data.lyrics
             if (result.match(lyricRegex))
                 return result
             else
@@ -45,29 +44,39 @@ async function getLrc(artist, title, id = false) {
             ]
             if (artist) PARAMS_JSON.push({ key: "artist", "value": artist })
             if (title) PARAMS_JSON.push({ key: "title", "value": title })
-            lrc = await getAPI("AudioStation/lyrics_search.cgi", "SYNO.AudioStation.LyricsSearch", "searchlyrics", PARAMS_JSON, 2)
-            if (lrc.data && lrc.data.lyrics[0].title == title && lrc.data.lyrics[0].artist == artist)
-                result = lrc.data.lyrics[0].additional.full_lyrics
+            result = (await getAPI("AudioStation/lyrics_search.cgi", "SYNO.AudioStation.LyricsSearch", "searchlyrics", PARAMS_JSON, 2)).data
+            if (result && result.lyrics[0].title == title && result.lyrics[0].artist == artist)
+                result = result.lyrics[0].additional.full_lyrics
+            else
+                result = false
             return result && result.match(lyricRegex) ? result : false
         }
     }
     // 如果設定是 meting
     if (window.localStorage["lrcSource"] == 'meting') {
-        let meting = (await axios.get('/meting')).data.url,
-            server = 'netease',
-            id
-
-        let searchRequest = await axios.get(`${meting}?server=${server}&type=search&keyword=${encodeURIComponent(`${title} ${artist}`)}`);
-        // console.log(searchRequest)
-        if (searchRequest.data[0] && searchRequest.data[0].name == title) {
-        // 歌名必須匹配才找歌詞
-            id  = searchRequest.data[0].id
-            lrc = await axios.get(`${meting}?server=${server}&type=lrc&id=${id}`);
-            lrc = lrc.data
-            result = lrc.lyric && lrc.tlyric ? migrate(lrc.lyric, lrc.tlyric) : lrc.lyric
-            return result && result.match(lyricRegex) ? result : false
-        }
+        let search = await getMetingSearchResult(`${title} ${artist}`)
+            // 歌名必須匹配才找歌詞
+        if (search && search.name.toUpperCase() == title.toUpperCase())
+            return await getMetingLrcById(search.id)
+        else
+            return false
     }
+}
+async function getMetingSearchResult(keyword, limit = 1) {
+    let meting = (await axios.get('/meting')).data.url,
+        server = 'netease',
+        search = await axios.get(`${meting}?server=${server}&type=search&keyword=${encodeURIComponent(keyword)}`);
+    if (limit == 1) return search.data[0]
+    else return search.data
+}
+async function getMetingLrcById(id) {
+    console.log(id)
+    let meting = (await axios.get('/meting')).data.url,
+        server = 'netease',
+        lyricRegex = /\[([0-9.:]*)\]/i
+    result = (await axios.get(`${meting}?server=${server}&type=lrc&id=${id}`)).data
+    result = result.lyric && result.tlyric ? migrate(result.lyric, result.tlyric) : result.lyric
+    return result && result.match(lyricRegex) ? result : false
 }
 
 //- 取得歌曲連結
