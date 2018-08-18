@@ -74,7 +74,12 @@ async function getMetingLrcById(id) {
         server = 'netease',
         lyricRegex = /\[([0-9.:]*)\]/i
     result = (await axios.get(`${meting}?server=${server}&type=lrc&id=${id}`)).data
-    result = result.lyric && result.tlyric ? migrate(result.lyric, result.tlyric) : result.lyric
+    try {
+        result = result.lyric && result.tlyric ? migrate(result.lyric, result.tlyric) : result.lyric
+    } catch(e) {
+        result = result.lyric
+        console.error(e)
+    }
     return result && result.match(lyricRegex) ? result : false
 }
 
