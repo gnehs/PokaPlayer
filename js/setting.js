@@ -20,7 +20,6 @@ $(async() => {
         navigator.serviceWorker
             .register('/sw.js', { scope: '/' })
             .then(reg => {
-                console.log("Service Worker Registered", reg)
                 if (version != window.localStorage["PokaPlayerVersion"]) {
                     reg.update()
                 }
@@ -268,18 +267,6 @@ async function showSettingsAbout() {
     // DSM 詳細資料
     let getDSMInfo = await getAPI("AudioStation/info.cgi", "SYNO.AudioStation.Info", "getinfo", [], 4)
     $("[data-as-version] .mdui-list-item-text").text(getDSMInfo.data.version_string?getDSMInfo.data.version_string:"未知")
-
-    // PokaPlayer 詳細資料
-    let getInfo = await axios.get('/info/');
-    $("[data-dev] .mdui-list-item-text").text(getInfo.data.author)
-    let debug = await axios.get('/debug/')
-    let checkUpdate = await axios.get(`https://api.github.com/repos/gnehs/PokaPlayer/releases`);
-    let update = getInfo.data.version != checkUpdate.data[0].tag_name ? `更新到 ${checkUpdate.data[0].tag_name}` : debug.data == false ? `您的 PokaPlayer 已是最新版本` : `與開發分支同步`
-    $("[data-upgrade] .mdui-list-item-text").text(update)
-    if (getInfo.data.version != checkUpdate.data[0].tag_name || debug.data)
-        $("[data-upgrade]").attr('data-upgrade', true)
-    if (debug.data)
-        $("[data-version] .mdui-list-item-text").text(`${window.localStorage["PokaPlayerVersion"]}(${debug.data})`)
     //重啟
     $("[data-restart]").click(() => {
         mdui.confirm('注意：若您未開啟 Docker 的自動重啟功能，您必須手動開啟 PokaPlayer', '確定要重新啟動嗎', 
@@ -293,6 +280,17 @@ async function showSettingsAbout() {
         mdui.confirm('確定要清除嗎', '', 
             function(){ caches.delete('PokaPlayer');},'',{history: false})
     })
+    // PokaPlayer 詳細資料
+    let getInfo = await axios.get('/info/');
+    $("[data-dev] .mdui-list-item-text").text(getInfo.data.author)
+    let debug = await axios.get('/debug/')
+    let checkUpdate = await axios.get(`https://api.github.com/repos/gnehs/PokaPlayer/releases`);
+    let update = getInfo.data.version != checkUpdate.data[0].tag_name ? `更新到 ${checkUpdate.data[0].tag_name}` : debug.data == false ? `您的 PokaPlayer 已是最新版本` : `與開發分支同步`
+    $("[data-upgrade] .mdui-list-item-text").text(update)
+    if (getInfo.data.version != checkUpdate.data[0].tag_name || debug.data)
+        $("[data-upgrade]").attr('data-upgrade', true)
+    if (debug.data)
+        $("[data-version] .mdui-list-item-text").text(`${window.localStorage["PokaPlayerVersion"]}(${debug.data})`)
     //更新
     $("[data-upgrade=\"true\"]").click(() => {
         mdui.dialog({
