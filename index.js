@@ -94,6 +94,9 @@ app.get('/og/og.png', (req, res) => {
 
     res.sendFile(img)
 });
+app.get('/sw.js', (req, res) => {
+    res.sendFile(__dirname + "/js/sw.js")
+});
 // 首頁
 app.get('/', (req, res) => {
     // 沒登入的快去啦

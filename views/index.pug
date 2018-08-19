@@ -4,11 +4,13 @@ html
         title PokaPlayer
         meta(name='viewport', content='width=device-width, initial-scale=1.0')       
         link(href='//cdnjs.cloudflare.com/ajax/libs/mdui/0.4.1/css/mdui.min.css',rel='stylesheet')
+        link(href='//fonts.googleapis.com/css?family=Product+Sans',rel='stylesheet')
         link(href='/css/style.css',rel='stylesheet')
         script(src='//cdnjs.cloudflare.com/ajax/libs/mdui/0.4.1/js/mdui.min.js')
         //-app
         meta(name="theme-color" content="#3f51b5")
         link(rel="icon" href="/img/PokaPlayer.png")
+        link(rel="manifest" href="/manifest.json")
         //-Add to home screen for Safari on iOS
         meta(name="apple-mobile-web-app-capable" content="yes")
         meta(name="apple-mobile-web-app-status-bar-style" content="black")
@@ -49,6 +51,12 @@ html
                 //-+link("登出","logout","account_circle")(href='/logout/')
         #content.mdui-container
         #aplayer
+        #offline.mdui-dialog
+            .mdui-dialog-title 您已離線
+            .mdui-dialog-content 請連上網路來使用 PokaPlayer
+            .mdui-dialog-actions
+                .mdui-btn.mdui-ripple(mdui-dialog-close) 我知道了
+
         #player
             .mdui-ripple
                 img(src="/img/PokaPlayer.png")
@@ -65,9 +73,10 @@ html
         script(src='//cdnjs.cloudflare.com/ajax/libs/aplayer/1.10.1/APlayer.min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js')
-        script(src='//cdn.jsdelivr.net/npm/navigo@7.1.2/lib/navigo.min.js')
+        script(src='//cdnjs.cloudflare.com/ajax/libs/offline-js/0.7.19/offline.min.js')
         script(src='/socket.io/socket.io.js')
         script(src='//cdn.rawgit.com/rexx0520/LyriConv-js/f8316b3/modules/migrate.js')
+        script(src='/js/navigo.min.js')
         script(src='/js/lyrics.min.js')
         script(src='/js/base64.js')
         script(src='/js/template.js')
