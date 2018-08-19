@@ -1,5 +1,9 @@
-body {
-    font-family: 'Product Sans', 'Roboto,Noto', Helvetica, Arial, sans-serif;
+#header-wrapper,
+#drawer,
+[data-page="settings"],
+header.mdui-appbar,
+.mdui-dialog {
+    font-family: 'Product Sans', Roboto, Noto, Helvetica, Arial, sans-serif;
 }
 
 header.mdui-appbar.mdui-appbar-fixed {
@@ -14,6 +18,14 @@ header.mdui-appbar.mdui-appbar-fixed {
 .mdui-container-fluid {
     padding-left: 0;
     padding-right: 0;
+}
+
+
+/* 設定頁面 */
+
+[data-theme="mdui-theme-accent"],
+[data-theme="mdui-theme-primary"] {
+    text-transform: capitalize;
 }
 
 
