@@ -1,7 +1,7 @@
 {
     "short_name": "PokaPlayer",
     "name": "PokaPlayer",
-    "icon": [{
+    "icons": [{
         "src": "/img/PokaPlayer.png",
         "type": "image/png",
         "sizes": "512x512"
