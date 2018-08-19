@@ -39,7 +39,7 @@ PokaPlayer 是 Synology Audio Ststion 的新朋友！
 -   主題切換
 -   MediaSession
 
-<img src="https://i.imgur.com/x4cEjrx.png" width="500px">
+<img src="https://user-images.githubusercontent.com/16719720/44306459-de655a80-a3c1-11e8-94ec-adc51f971b98.png" width="500px">
 
 ## 備註
 
