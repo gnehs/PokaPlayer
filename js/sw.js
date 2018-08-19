@@ -1,6 +1,5 @@
 // install
 self.addEventListener('install', event => {
-    console.log('Service Worker Installing…');
     // 如果監聽到了 service worker 已經安裝成功的話，就會調用 event.waitUntil 回調函數
     event.waitUntil(
         // 安裝成功後操作 CacheStorage 快取，使用之前需要先通過 caches.open() 打開對應快取空間。
@@ -26,10 +25,6 @@ self.addEventListener('install', event => {
     );
 });
 
-// activate
-self.addEventListener('activate', event => {
-    console.log('Now ready to handle fetches!');
-});
 
 
 self.addEventListener('fetch', function(event) {

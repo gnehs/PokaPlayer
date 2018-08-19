@@ -1,3 +1,10 @@
+// 初始化播放器
+const ap = new APlayer({
+    container: document.getElementById('aplayer'),
+    fixed: true
+});
+// 初始化歌詞解析
+const lrc = new Lyrics(`[00:00.000]`);
 // 路由
 const router = new Navigo(null, true, '#!');
 router
@@ -38,6 +45,9 @@ router
 
 // 初始化網頁
 $(() => {
+    // 在進入網頁時嘗試登入
+    tryRelogin()
+
     // 離線提示
     var offlineDialog = new mdui.Dialog("#offline", { history: false });
     Offline.options = {
@@ -65,15 +75,9 @@ $(() => {
 });
 // 宣告全域變數
 songList = [];
-const lrc = new Lyrics(`[00:00.000]`);
 const socket = io();
 socket.on("hello", () => {
     socket.emit('login')
-});
-// 初始化播放器
-const ap = new APlayer({
-    container: document.getElementById('aplayer'),
-    fixed: true
 });
 ap.on("play", async() => {
     //沒歌就隨機播放
@@ -152,17 +156,21 @@ function updateMediaSession() {
 var loginFailureCount = 0
 
 function tryRelogin() {
-    if (window.localStorage["userPASS"] || loginFailureCount <= 10) { //如果有存到密碼或是嘗試次數少於 10 次就嘗試登入
+    //如果有存到密碼或是嘗試次數少於 10 次就嘗試登入
+    if (window.localStorage["userPASS"] || loginFailureCount <= 10) {
+        console.log("[Login] 正在嘗試登入")
         $.post("/login/", { userPASS: window.localStorage["userPASS"] }, data => {
             if (data == 'success') {
+                console.log("[Login] 登入成功")
                 loginFailureCount = 0
-                    //mdui.snackbar({ message: 'Session 過期，重新登入成功', timeout: 1000 });
             } else {
+                console.error("[Login] 登入失敗")
                 mdui.snackbar({ message: 'Session 過期，請重新登入', timeout: 1000, position: getSnackbarPosition() });
                 document.location.href = "/login/";
             }
         });
     } else if (loginFailureCount > 10) {
+        console.log("[Login] 登入失敗超過十次，已放棄")
         mdui.snackbar({ message: '發生了未知錯誤', timeout: 1000, position: getSnackbarPosition() });
     }
 }

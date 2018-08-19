@@ -20,7 +20,6 @@ $(async() => {
         navigator.serviceWorker
             .register('/sw.js', { scope: '/' })
             .then(reg => {
-                console.log("Service Worker Registered", reg)
                 if (version != window.localStorage["PokaPlayerVersion"]) {
                     reg.update()
                 }
