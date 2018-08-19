@@ -125,18 +125,26 @@ async function searchAll(keyword) {
 }
 //- API 請求
 async function getAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 1) {
-    let PARAMS = ''
+    let PARAMS = '',
+        reqUrl, reqJson
     for (i = 0; i < PARAMS_JSON.length; i++) {　
         PARAMS += '&' + PARAMS_JSON[i].key + '=' + encodeURIComponent(PARAMS_JSON[i].value)
     }
-    let req_json = {
+    //location.origin
+    reqJson = {
         "CGI_PATH": CGI_PATH,
         "API_NAME": API_NAME,
         "METHOD": METHOD,
         "VERSION": VERSION,
         "PARAMS": PARAMS
     }
-    req_json = JSON.stringify(req_json)
-    let response = await axios.get('/api/' + ppEncode(req_json));
-    return response.data
+    reqUrl = '/api/' + ppEncode(JSON.stringify(reqJson))
+
+    //如果是隨機的會先刪除再請求
+    if (PARAMS.match('random')) {
+        caches.open('PokaPlayer').then(function(cache) {
+            cache.delete(reqUrl)
+        })
+    }
+    return (await axios.get(reqUrl)).data
 }

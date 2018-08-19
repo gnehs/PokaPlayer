@@ -14,7 +14,20 @@ $(async() => {
         window.localStorage["lrcSource"] = "DSM"
         window.localStorage["lrcMetingEnabled"] = "false"
     }
-    window.localStorage["PokaPlayerVersion"] = (await axios.get('/info/')).data.version
+    let version = (await axios.get('/info/')).data.version
+        //serviceWorker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker
+            .register('/sw.js', { scope: '/' })
+            .then(reg => {
+                console.log("Service Worker Registered", reg)
+                if (version != window.localStorage["PokaPlayerVersion"]) {
+                    reg.update()
+                }
+            })
+            .catch(err => console.log('Error!', err));
+    }
+    window.localStorage["PokaPlayerVersion"] = version;
 });
 //- 設定頁面用的範本
 var settingsItem = (title, text = '', icon = '', link = '', data = '', other = '', cssClass = '') => {
@@ -247,6 +260,7 @@ async function showSettingsAbout() {
         ${settingsItem("錯誤回報","若有任何錯誤或是任何建議歡迎填寫，並協助我們變得更好","feedback","",`onclick="window.open('https://github.com/gnehs/PokaPlayer/issues/new/choose','_blank')"`)}
         ${settingsItem("Audio Station 版本","載入中...","info","","data-as-version")}
         ${settingsItem("PokaPlayer 版本",window.localStorage["PokaPlayerVersion"],"info","","data-version")}
+        ${settingsItem("清除 Service Worker 快取","","delete_forever","","data-clean")}
         ${settingsItem("重新啟動","","refresh","","data-restart")}
     </ul>`
     $("#content").html(header + settingItems)
@@ -273,6 +287,11 @@ async function showSettingsAbout() {
                 mdui.alert('正在重新啟動','','',{history: false});
                 axios.post('/restart')
             },'',{history: false})
+    })
+    // 快取清理
+    $("[data-clean]").click(() => {
+        mdui.confirm('確定要清除嗎', '', 
+            function(){ caches.delete('PokaPlayer');},'',{history: false})
     })
     //更新
     $("[data-upgrade=\"true\"]").click(() => {

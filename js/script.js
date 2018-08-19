@@ -1,16 +1,3 @@
-// 宣告全域變數
-songList = [];
-const lrc = new Lyrics(`[00:00.000]`);
-const socket = io();
-socket.on("hello", () => {
-    socket.emit('login')
-});
-// 初始化播放器
-const ap = new APlayer({
-    container: document.getElementById('aplayer'),
-    fixed: true
-});
-
 // 路由
 const router = new Navigo(null, true, '#!');
 router
@@ -49,6 +36,45 @@ router
         }
     })
 
+// 初始化網頁
+$(() => {
+    // 離線提示
+    var offlineDialog = new mdui.Dialog("#offline", { history: false });
+    Offline.options = {
+        checks: { xhr: { url: '/ping' } },
+        checkOnLoad: true,
+        interceptRequests: false
+    }
+    Offline.check()
+    Offline.on('down', function() {
+        offlineDialog.open()
+    });
+    Offline.on('up', function() {
+        offlineDialog.close()
+    });
+
+
+    $(`#drawer a[href="${$('#content').attr('data-page')}"]`).addClass('mdui-list-item-active')
+    if ($(window).width() < 1024) {
+        $('#drawer a').attr("mdui-drawer", "{target: '#drawer', swipe: true}")
+        mdui.mutation()
+    }
+    $('#player>*:not(.ctrl)').click(() => router.navigate('now'));
+    // 初始化 MediaSession
+    updateMediaSession()
+});
+// 宣告全域變數
+songList = [];
+const lrc = new Lyrics(`[00:00.000]`);
+const socket = io();
+socket.on("hello", () => {
+    socket.emit('login')
+});
+// 初始化播放器
+const ap = new APlayer({
+    container: document.getElementById('aplayer'),
+    fixed: true
+});
 ap.on("play", async() => {
     //沒歌就隨機播放
     if (ap.list.audios.length == 0) playRandom().then(() => {
@@ -121,17 +147,7 @@ function updateMediaSession() {
         navigator.mediaSession.setActionHandler('nexttrack', () => { ap.skipForward() });
     }
 }
-// 初始化網頁
-$(() => {
-    $(`#drawer a[href="${$('#content').attr('data-page')}"]`).addClass('mdui-list-item-active')
-    if ($(window).width() < 1024) {
-        $('#drawer a').attr("mdui-drawer", "{target: '#drawer', swipe: true}")
-        mdui.mutation()
-    }
-    $('#player>*:not(.ctrl)').click(() => router.navigate('now'));
-    // 初始化 MediaSession
-    updateMediaSession()
-});
+
 
 var loginFailureCount = 0
 
@@ -142,12 +158,12 @@ function tryRelogin() {
                 loginFailureCount = 0
                     //mdui.snackbar({ message: 'Session 過期，重新登入成功', timeout: 1000 });
             } else {
-                mdui.snackbar({ message: 'Session 過期，請重新登入', timeout: 1000 });
+                mdui.snackbar({ message: 'Session 過期，請重新登入', timeout: 1000, position: getSnackbarPosition() });
                 document.location.href = "/login/";
             }
         });
     } else if (loginFailureCount > 10) {
-        mdui.snackbar({ message: '發生了未知錯誤', timeout: 1000 });
+        mdui.snackbar({ message: '發生了未知錯誤', timeout: 1000, position: getSnackbarPosition() });
     }
 }
 //-- 加解密
@@ -156,7 +172,7 @@ function ppEncode(str) {
 }
 
 function ppDecode(str) {
-    return decodeURIComponent(base64.decode(str))
+    return base64.decode(decodeURIComponent(str))
 }
 //-- 秒數轉時間
 function secondToTime(second) {
@@ -497,7 +513,6 @@ async function showRandom() {
     $("#content").html(header + HTML.getSpinner())
     $('#content').attr('data-page', 'random')
     mdui.mutation()
-
     let PARAMS_JSON = [
             { key: "additional", "value": "song_tag,song_audio,song_rating" },
             { key: "library", "value": "shared" },
