@@ -111,7 +111,7 @@ function setLrc(lrcResult) {
     if (lrcResult) {
         lrc.load(lrcResult);
     } else
-        lrc.load(`[00:00.000]無歌詞\n[00:00.001]`)
+        lrc.load(`[00:00.000]無歌詞`)
     if ($("div[data-lrc]").length > 0) {
         let html = ``
         for (i = 0; i < lrc.getLyrics().length; i++) {

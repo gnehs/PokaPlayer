@@ -1,3 +1,46 @@
+/* scrollbar fix for Windows */
+
+body {
+    overflow-y: scroll
+}
+
+body::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+    background: transparent;
+}
+
+@media (min-width: 1024px) {
+    body::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+}
+
+body::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, .2);
+}
+
+body.mdui-theme-layout-dark::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+    background: transparent;
+}
+
+@media (min-width: 1024px) {
+    body.mdui-theme-layout-dark::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+}
+
+body.mdui-theme-layout-dark::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, .3);
+}
+
+
+/* Product Sans */
+
 #header-wrapper,
 #drawer,
 [data-page="settings"],
@@ -461,8 +504,8 @@ header.mdui-appbar.mdui-appbar-fixed {
         flex-grow: 1;
         display: block;
         min-height: 55px;
-        padding-top: 55px;
-        padding-bottom: 55px;
+        padding-top: 10%;
+        padding-bottom: 10%;
         position: relative;
         mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
         -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
@@ -576,7 +619,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 #content>[data-lrc]>[data-lrc="inner"] {
-    padding: 30vh 0;
+    padding: 10vh 0;
 }
 
 #content>[data-lrc] p {
