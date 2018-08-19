@@ -22,8 +22,8 @@ var settingsItem = (title, text = '', icon = '', link = '', data = '', other = '
     ${icon?`<i class="mdui-list-item-icon mdui-icon material-icons">${icon}</i>`:''}
     <!-- 有 text 才輸出 Title 跟 Text -->
     ${text != '' ? `<div class="mdui-list-item-content">
-        <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
-        <div class="mdui-list-item-text mdui-list-item-one-line">${text}</div>
+        <div class="mdui-list-item-title">${title}</div>
+        <div class="mdui-list-item-text">${text}</div>
     </div>` : `<div class="mdui-list-item-content">${title}</div>`}
     ${other}
     </li>`
@@ -94,7 +94,7 @@ async function showSettingsTheme() {
     $('#content').attr('data-page', 'settings')
     let header = HTML.getHeader("設定 / 主題"), 
         settingItems = `<ul class="mdui-list">
-        ${settingsItem("返回","回到設定頁面","arrow_back","settings")}
+        ${settingsItem("返回","","arrow_back","settings")}
         ${settingsItem("主題色",window.localStorage["mdui-theme-color"]=='true'?'Dark':'Light',"color_lens","",`data-theme="mdui-theme-color"`)}
         ${settingsItem("主色",window.localStorage["mdui-theme-primary"].replace("-"," "),"color_lens","",`data-theme="mdui-theme-primary"`)}
         ${settingsItem("強調色",window.localStorage["mdui-theme-accent"].replace("-"," "),"color_lens","",`data-theme="mdui-theme-accent"`)}
@@ -173,7 +173,7 @@ async function showSettingsPic() {
     $('#content').attr('data-page', 'settings')
     let header = HTML.getHeader("設定 / 隨機圖片")
     let settingItems = `<ul class="mdui-list">
-        ${settingsItem("返回","回到設定頁面","arrow_back","settings")}
+        ${settingsItem("返回","","arrow_back","settings")}
         ${settingsItem("圖片來源",window.localStorage["randomImgName"],"image","","data-pic-source")}
         ${settingsItem("自訂圖片來源",window.localStorage["randomImg"],"link","","data-pic-custom-link")}
     </ul>`
@@ -240,13 +240,14 @@ async function showSettingsAbout() {
     $('#content').attr('data-page', 'settings')
     let header = HTML.getHeader("設定 / 關於")
     let settingItems = `<ul class="mdui-list">
-        ${settingsItem("返回","回到設定頁面","arrow_back","settings")}
+        ${settingsItem("返回","","arrow_back","settings")}
         ${settingsItem("更新","正在檢查更新...","system_update","","data-upgrade")}
         ${settingsItem("開發者","載入中...","supervisor_account","","data-dev")}
-        ${settingsItem("GitHub","前往 PokaPlayer 的 GitHub","language","",`href="https://github.com/gnehs/PokaPlayer" target="_blank"`)}
-        ${settingsItem("重新啟動","process.exit()","refresh","","data-restart")}
+        ${settingsItem("GitHub","前往 PokaPlayer 的 GitHub","language","",`onclick="window.open('https://github.com/gnehs/PokaPlayer','_blank')"`)}
+        ${settingsItem("錯誤回報","若有任何錯誤或是任何建議歡迎填寫，並協助我們變得更好","feedback","",`onclick="window.open('https://github.com/gnehs/PokaPlayer/issues/new/choose','_blank')"`)}
         ${settingsItem("Audio Station 版本","載入中...","info","","data-as-version")}
         ${settingsItem("PokaPlayer 版本",window.localStorage["PokaPlayerVersion"],"info","","data-version")}
+        ${settingsItem("重新啟動","","refresh","","data-restart")}
     </ul>`
     $("#content").html(header + settingItems)
     
@@ -267,7 +268,7 @@ async function showSettingsAbout() {
         $("[data-version] .mdui-list-item-text").text(`${window.localStorage["PokaPlayerVersion"]}(${debug.data})`)
     //重啟
     $("[data-restart]").click(() => {
-        mdui.confirm('這將導致您在重新啟動完畢前暫時無法使用 PokaPlayer', '確定要重新啟動嗎', 
+        mdui.confirm('注意：若您未開啟 Docker 的自動重啟功能，您必須手動開啟 PokaPlayer', '確定要重新啟動嗎', 
             function(){
                 mdui.alert('正在重新啟動','','',{history: false});
                 axios.post('/restart')
@@ -277,7 +278,7 @@ async function showSettingsAbout() {
     $("[data-upgrade=\"true\"]").click(() => {
         mdui.dialog({
             title: '您確定要更新嗎',
-            content: '這將導致您在更新完畢前暫時無法使用 PokaPlayer',
+            content: '注意：若您未開啟 Docker 的自動重啟功能，您必須手動開啟 PokaPlayer',
             history: false,
             buttons: [{
                     text: '算ㄌ'
