@@ -19,8 +19,11 @@ const app = express(); // Node.js Web 架構
 const server = require('http').createServer(app),
     io = require('socket.io').listen(server),
     sharedsession = require("express-socket.io-session")
-
 const git = require('simple-git/promise')(__dirname);
+
+// 資料模組
+const dataModule = require('./dataModule.js');
+app.use('/pokaapi', dataModule);
 
 // 檢查 branch
 
