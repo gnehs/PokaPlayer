@@ -25,8 +25,8 @@ const server = require('http').createServer(app),
 const git = require('simple-git/promise')(__dirname);
 
 // 資料模組
-const dataModule = require('./dataModule.js');
-app.use('/pokaapi', dataModule);
+//const dataModule = require('./dataModule.js');
+//app.use('/pokaapi', dataModule);
 
 // 檢查 branch
 
