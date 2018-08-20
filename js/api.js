@@ -130,6 +130,10 @@ async function getAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 1)
     for (i = 0; i < PARAMS_JSON.length; i++) {　
         PARAMS += '&' + PARAMS_JSON[i].key + '=' + encodeURIComponent(PARAMS_JSON[i].value)
     }
+    //如果是隨機的會新增一組隨機字串來讓 SW 辨識為不同的請求
+    if (PARAMS.indexOf('random') > -1) {
+        PARAMS += '&ramdomhash=' + Math.random().toString(36).substring(7);
+    }
     //location.origin
     reqJson = {
         "CGI_PATH": CGI_PATH,
@@ -140,11 +144,5 @@ async function getAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 1)
     }
     reqUrl = '/api/' + ppEncode(JSON.stringify(reqJson))
 
-    //如果是隨機的會先刪除再請求
-    if (PARAMS.match('random')) {
-        caches.open('PokaPlayer').then(function(cache) {
-            cache.delete(reqUrl)
-        })
-    }
     return (await axios.get(reqUrl)).data
 }
