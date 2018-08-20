@@ -259,6 +259,7 @@ async function showSettingsAbout() {
         ${settingsItem("錯誤回報","若有任何錯誤或是任何建議歡迎填寫，並協助我們變得更好","feedback","",`onclick="window.open('https://github.com/gnehs/PokaPlayer/issues/new/choose','_blank')"`)}
         ${settingsItem("Audio Station 版本","載入中...","info","","data-as-version")}
         ${settingsItem("PokaPlayer 版本",window.localStorage["PokaPlayerVersion"],"info","","data-version")}
+        ${settingsItem("嘗試重新登入","","account_circle","",`onclick="location.href='/login'"`)}
         ${settingsItem("清除 Service Worker 快取","","delete_forever","","data-clean")}
         ${settingsItem("重新啟動","","refresh","","data-restart")}
     </ul>`
