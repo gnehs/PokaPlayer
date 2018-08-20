@@ -3,6 +3,8 @@ const config = require('./config.json'); // 設定檔
 const package = require('./package.json'); // 設定檔
 const schedule = require('node-schedule'); // 很會計時ㄉ朋友
 const base64 = require('base-64');
+const request = require('request').defaults({ jar: require('request').jar() }) // 很會請求ㄉ朋友
+const git = require('simple-git/promise')(__dirname);
 
 //express
 const express = require('express');
@@ -22,11 +24,9 @@ const app = express(); // Node.js Web 架構
 const server = require('http').createServer(app),
     io = require('socket.io').listen(server),
     sharedsession = require("express-socket.io-session")
-const git = require('simple-git/promise')(__dirname);
 
 // 資料模組
-//const dataModule = require('./dataModule.js');
-//app.use('/pokaapi', dataModule);
+app.use('/pokaapi', require('./dataModule.js'));
 
 // 檢查 branch
 
@@ -41,7 +41,7 @@ git
                 .then(() => git.checkout(config.PokaPlayer.debug ? 'dev' : 'master'))
                 .then(process.exit)
                 .catch(err => {
-                    console.error('failed: ', err)
+                    console.error('[Git] failed: ', err)
                     socket.emit('err', err.toString())
                     process.exit()
                 })
@@ -61,10 +61,6 @@ io.use(sharedsession(session, {
 const moment = require('moment-timezone');
 moment.locale('zh-tw');
 moment.tz.setDefault("Asia/Taipei");
-//請求
-var request = require('request');
-var j = request.jar()
-var request = request.defaults({ jar: j })
 
 // 設定 js icon css 目錄
 app.use('/js', express.static('js'))
@@ -73,10 +69,8 @@ app.use('/img', express.static('img'))
 
 // 啟動囉
 server.listen(3000, async() => {
-    console.log("/////  PokaPlayer  /////")
-    console.log("🌏 http://localhost:3000")
-    console.log(moment().format("🕒 YYYY/MM/DD HH:mm"))
-    console.log("////////////////////////")
+    console.log("[PokaPlayer]  URL: http://localhost:3000")
+    console.log("[PokaPlayer] Time: " + moment().format("YYYY/MM/DD HH:mm"))
 
     var a = await login(config.DSM)
     if (!a.success) {
