@@ -16,7 +16,7 @@ $(async() => {
     }
     let version = (await axios.get('/info/')).data.version
         //serviceWorker
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator && !(await axios.get('/debug/')).data) {
         navigator.serviceWorker
             .register('/sw.js', { scope: '/' })
             .then(reg => {
