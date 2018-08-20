@@ -26,7 +26,7 @@ const server = require('http').createServer(app),
     sharedsession = require("express-socket.io-session")
 
 // 資料模組
-app.use('/pokaapi', require('./dataModule.js'));
+if (config.PokaPlayer.debug) app.use('/pokaapi', require('./dataModule.js'));
 
 // 檢查 branch
 

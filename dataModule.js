@@ -16,7 +16,6 @@ fs.readdir(__dirname + "/dataModule", (err, files) => {
         }
         moduleList[moduleData.name] = moduleData;
     });
-    console.log("moduleList:", moduleList)
 })
 
 
