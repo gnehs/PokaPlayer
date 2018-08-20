@@ -7,7 +7,6 @@ self.addEventListener('install', event => {
             // 通過 cache 快取對象的 addAll 方法添加 precache 快取
             return cache.addAll([
                 '/',
-                '/login',
                 '/css/style.css',
                 '/js/api.js',
                 '/js/base64.js',
@@ -29,7 +28,7 @@ self.addEventListener('install', event => {
 
 self.addEventListener('fetch', function(event) {
     //console.log(event.request)
-    if (event.request.destination != "audio" && event.request.method == "GET" && !event.request.url.match(/socket.io|meting|info|ping|github/))
+    if (event.request.destination != "audio" && event.request.method == "GET" && !event.request.url.match(/socket.io|meting|info|ping|github|login/))
         event.respondWith(
             caches.match(event.request).then(function(response) {
                 // 擷取 HTTP 請求
