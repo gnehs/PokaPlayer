@@ -11,7 +11,10 @@ const session = require('express-session')({
     store: new FileStore(),
     secret: config.PokaPlayer.sessionSecret,
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
+    cookie: {
+        expires: new Date(Date.now() + 60 * 60 * 1000 * 24 * 7)
+    }
 });
 const helmet = require('helmet'); // 防範您的應用程式出現已知的 Web 漏洞
 const bodyParser = require('body-parser'); // 讀入 post 請求
@@ -19,8 +22,11 @@ const app = express(); // Node.js Web 架構
 const server = require('http').createServer(app),
     io = require('socket.io').listen(server),
     sharedsession = require("express-socket.io-session")
-
 const git = require('simple-git/promise')(__dirname);
+
+// 資料模組
+//const dataModule = require('./dataModule.js');
+//app.use('/pokaapi', dataModule);
 
 // 檢查 branch
 
