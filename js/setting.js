@@ -16,7 +16,7 @@ $(async() => {
     }
     let version = (await axios.get('/info/')).data.version
         //serviceWorker
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator && !(await axios.get('/debug/')).data) {
         navigator.serviceWorker
             .register('/sw.js', { scope: '/' })
             .then(reg => {
@@ -195,9 +195,7 @@ async function showSettingsPic() {
             let option = ''
             for (i = 0; i < imgs.length; i++) {
                 let img = imgs[i]
-                option += `<li class="mdui-list-item mdui-ripple" data-img-src="${img.src}" mdui-dialog-close>
-                    <div class="mdui-list-item-content">${img.name}</div>
-                </li>`
+                option += settingsItem(img.name,  '', '',  '', `data-img-src="${img.src}" mdui-dialog-close`)
             }
             return option
         }, 
@@ -205,25 +203,44 @@ async function showSettingsPic() {
             name: '預設圖庫',
             src: '/og/og.png'
         }, {
+            name: 'Bing 每日圖片',
+            src: 'https://area.sinaapp.com/bingImg/'
+        }, {
+            name: 'Bing 隨機每日圖片(uploadbeta.com)',
+            src: 'https://uploadbeta.com/api/pictures/random/?key=BingEverydayWallpaperPicture'
+        }, {
+            name: 'LoremFlickr',
+            src: 'https://loremflickr.com/1920/1080'
+        }, {
+            name: 'Picsum Photos',
+            src: 'https://picsum.photos/1920/1080/?random'
+        }, {
             name: 'The Dog API',
             src: 'https://api.thedogapi.com/v1/images/search?format=src&mime_types=image/gif'
         }, {
             name: 'The Cat API',
             src: 'https://thecatapi.com/api/images/get?format=src&type=gif'
-        }, {
-            name: 'LoremFlickr',
-            src: 'https://loremflickr.com/1920/1080'
-        }, {
+        },  {
             name: 'Unsplash Source',
             src: 'https://source.unsplash.com/random'
+        },  {
+            name: '隨機二次元圖片 API(清風醬)',
+            src: 'https://api.3ewl.cc/acg/img.php'
         }, {
-            name: 'Picsum Photos',
-            src: 'https://picsum.photos/1920/1080/?random'
+            name: '隨機二次元背景(api.yuntuchuang.com)',
+            src: 'https://api.yuntuchuang.com/api/acg.php'
+        },  {
+            name: '隨機遊戲背景(api.yuntuchuang.com)',
+            src: 'https://api.yuntuchuang.com/api/youxi.php'
+        },  {
+            name: '隨機簡約背景(api.yuntuchuang.com)',
+            src: 'https://api.yuntuchuang.com/api/jianyue.php'
         }]
         mdui.dialog({
             title: '設定圖片來源',
             content: `<ul class="mdui-list">${imgsOption(imgs)}</ul>`,
-            history: false
+            history: false,
+            buttons: [{text: '取消'}]
         });
         $('[data-img-src]').click(function(){
             let src = $(this).attr('data-img-src')
@@ -244,7 +261,7 @@ async function showSettingsPic() {
                     window.localStorage["randomImgName"] = "自訂"
                     $('#header-wrapper').attr("style", `background-image: url(${value});`)
                 }
-            },'',{history: false}
+            },()=>{},{history: false}
         );
     })
 }
@@ -256,7 +273,7 @@ async function showSettingsAbout() {
         ${settingsItem("更新","正在檢查更新...","system_update","","data-upgrade")}
         ${settingsItem("開發者","載入中...","supervisor_account","","data-dev")}
         ${settingsItem("GitHub","前往 PokaPlayer 的 GitHub","language","",`onclick="window.open('https://github.com/gnehs/PokaPlayer','_blank')"`)}
-        ${settingsItem("錯誤回報","若有任何錯誤或是任何建議歡迎填寫，並協助我們變得更好","feedback","",`onclick="window.open('https://github.com/gnehs/PokaPlayer/issues/new/choose','_blank')"`)}
+        ${settingsItem("錯誤回報","若有任何錯誤或是建議歡迎填寫，並協助我們變得更好","feedback","",`onclick="window.open('https://github.com/gnehs/PokaPlayer/issues/new/choose','_blank')"`)}
         ${settingsItem("Audio Station 版本","載入中...","info","","data-as-version")}
         ${settingsItem("PokaPlayer 版本",window.localStorage["PokaPlayerVersion"],"info","","data-version")}
         ${settingsItem("嘗試重新登入","","account_circle","",`onclick="location.href='/login'"`)}
@@ -278,7 +295,7 @@ async function showSettingsAbout() {
     })
     // 快取清理
     $("[data-clean]").click(() => {
-        mdui.confirm('確定要清除嗎', '', 
+        mdui.confirm('確定要清除嗎', '清除 Service Worker 快取', 
             function(){ caches.delete('PokaPlayer');},'',{history: false})
     })
     // PokaPlayer 詳細資料

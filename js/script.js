@@ -265,7 +265,10 @@ async function showSearch(keyword) {
         }
     } else
         $("#content").html(html)
-    mdui.mutation() //初始化
+
+    //初始化
+    mdui.mutation()
+    router.updatePageLinks()
 
     $('#search').change(async function() {
         $('#search+.mdui-textfield-error+.mdui-textfield-helper').text('搜尋中...')
