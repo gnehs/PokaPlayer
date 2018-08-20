@@ -11,7 +11,10 @@ const session = require('express-session')({
     store: new FileStore(),
     secret: config.PokaPlayer.sessionSecret,
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
+    cookie: {
+        expires: new Date(Date.now() + 60 * 60 * 1000 * 24 * 7)
+    }
 });
 const helmet = require('helmet'); // 防範您的應用程式出現已知的 Web 漏洞
 const bodyParser = require('body-parser'); // 讀入 post 請求
