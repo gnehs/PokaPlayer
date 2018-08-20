@@ -40,15 +40,17 @@ router.get('/cover/:moduleName/:data', async(req, res) => {
 });
 // 取得歌曲
 router.get('/song', (req, res) => {
-    let songs = []
+    let songs = {}
     Object.keys(moduleList).forEach(x => {
         x = moduleList[x]
         let y = require(x.js)
-        if (x.active.indexOf('getSongs') > -1) {
-            let items = y.getSongs() || null
-            console.log(items)
-            if (items)
-                songs.push({ moduleName: x.name, data: items })
+        if ('getSong' in x.active) {
+            let songList = await y.getSongs() || null
+            console.log(songList)
+            if (songList) {
+                if (!songs[moduleName]) songs[moduleName] = songList
+                else songs[moduleName].concat(songList)
+            }
         }
     })
     res.json(songs);

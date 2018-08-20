@@ -16,7 +16,7 @@ async function onLoaded() {
     });
 }
 
-async function getSong(song) {
+async function getSongs(song) {
     return [{ name: 'song form testa', link: 'blah' }];
 }
 
@@ -105,7 +105,7 @@ async function searchLrc(keyword) {
 module.exports = {
     name: 'DSM',
     onLoaded,
-    getSong,
+    getSongs,
     getCover,
     search,
     getAlbumSongs,
