@@ -16,5 +16,12 @@
     "Meting": {
         "enabled": false,
         "url": "METING_URL"
+    },
+    "auth": {
+        "jwtPassword": "test",
+        "jwtIss": "PokaPlayer",
+        "jwtExpirePeriod": 600,
+        "userFilesDir": "./users",
+        "dbType": "fs"
     }
 }
