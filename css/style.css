@@ -557,7 +557,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 /* 歌詞頁籤 */
 
 [data-lrc] p {
-    transition: all 0.5s cubic-bezier(.77, 0, .18, 1);
+    transition: all .5s cubic-bezier(.77, 0, .18, 1), color .2s linear, opacity .2s linear;
     opacity: .5;
     min-height: 1em;
     transform: scale(.95);
