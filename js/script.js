@@ -48,22 +48,6 @@ $(() => {
     // 在進入網頁時嘗試登入
     tryRelogin()
 
-    // 離線提示
-    var offlineDialog = new mdui.Dialog("#offline", { history: false });
-    Offline.options = {
-        checks: { xhr: { url: '/ping' } },
-        checkOnLoad: true,
-        interceptRequests: false
-    }
-    Offline.check()
-    Offline.on('down', function() {
-        offlineDialog.open()
-    });
-    Offline.on('up', function() {
-        offlineDialog.close()
-    });
-
-
     $(`#drawer a[href="${$('#content').attr('data-page')}"]`).addClass('mdui-list-item-active')
     if ($(window).width() < 1024) {
         $('#drawer a').attr("mdui-drawer", "{target: '#drawer', swipe: true}")
