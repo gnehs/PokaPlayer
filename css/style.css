@@ -556,13 +556,27 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 /* 歌詞頁籤 */
 
-[data-lrc] p.loading {
-    opacity: 0;
+[data-lrc] p {
+    transition: all 0.5s cubic-bezier(.77, 0, .18, 1);
+    opacity: .5;
+    min-height: 1em;
+    transform: scale(.95);
+    position: relative;
 }
 
-[data-lrc] p.loading.mdui-text-color-theme-accent {
-    transition: all 0.3s ease-in-out;
-    position: relative;
+[data-lrc] p.mdui-text-color-theme-accent {
+    opacity: 1;
+    transform: scale(1);
+    font-weight: 700;
+}
+
+[data-lrc] p.mdui-text-color-theme-accent:not(:empty)+p {
+    opacity: .85;
+    transform: scale(.98);
+}
+
+[data-lrc] p.loading {
+    opacity: 0;
 }
 
 [data-lrc] p.loading.mdui-text-color-theme-accent::after {
@@ -596,17 +610,6 @@ header.mdui-appbar.mdui-appbar-fixed {
     }
 }
 
-[data-lrc] p {
-    transition: all 0.3s ease-in-out;
-    opacity: .7;
-    min-height: 1em;
-}
-
-[data-lrc] p.mdui-text-color-theme-accent,
-[data-lrc] p.mdui-text-color-theme-accent:not(:empty)+p {
-    opacity: 1;
-}
-
 #content>[data-lrc] {
     padding-top: 80px;
     text-align: center;
@@ -623,8 +626,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 #content>[data-lrc] p {
-    font-size: calc(12px + 1vmin);
+    font-size: calc(12px + 1.2vmin);
     line-height: 2em;
     margin: 0;
-    transition: color .3s linear, opacity .3s linear;
 }
