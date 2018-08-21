@@ -11,7 +11,7 @@ fs.readdir(__dirname + "/dataModule", (err, files) => {
             "active": Object.keys(_module),
             "js": uri
         }
-        if (moduleData.active.indexOf('onLoaded')) { // 如果模組想要初始化
+        if (moduleData.active.indexOf('onLoaded') > -1) { // 如果模組想要初始化
             _module.onLoaded()
         }
         moduleList[moduleData.name] = moduleData;
