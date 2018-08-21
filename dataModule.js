@@ -41,7 +41,7 @@ router.get('/cover/:moduleName/:data', async(req, res) => {
 // 取得歌曲
 router.get('/song', (req, res) => {
     let songs = {}
-    Object.keys(moduleList).forEach(x => {
+    Object.keys(moduleList).forEach(async(x) => {
         x = moduleList[x]
         let y = require(x.js)
         if ('getSong' in x.active) {
