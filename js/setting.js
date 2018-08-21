@@ -81,7 +81,7 @@ async function showSettings() {
     $("[data-imgRes]").click(function() {
         $("[data-imgRes] input").prop('checked', !$("[data-imgRes] input").prop('checked'))
         window.localStorage["imgRes"] = $("[data-imgRes] input").prop('checked');
-        $("[data-imgRes] .mdui-list-item-text").text($("[data-imgRes] input").prop('checked') ? "已開啟" : "已關閉");
+        $("[data-imgRes] .mdui-list-item-text").text($("[data-imgRes] input").prop('checked') ? "將會把所有圖片替換為您指定的隨機圖片" : "已關閉");
     });
     $("[data-lrc-source]").click( function() {
         let isMetingEnabled = window.localStorage["lrcMetingEnabled"] == "true"
@@ -116,12 +116,10 @@ async function showSettingsTheme() {
         mdui.dialog({
             title: '設定主題色',
             content: `<ul class="mdui-list">
-            <li class="mdui-list-item mdui-ripple" onclick="window.localStorage['mdui-theme-color']='false'" mdui-dialog-close>
-                <div class="mdui-list-item-content">Light</div>
-            </li>
-            <li class="mdui-list-item mdui-ripple" onclick="window.localStorage['mdui-theme-color']='true'" mdui-dialog-close> 
-                <div class="mdui-list-item-content">Dark</div>
-            </li>
+            ${settingsItem("Light","","","",
+                            `onclick="window.localStorage['mdui-theme-color']='false'" mdui-dialog-close`)}
+            ${settingsItem("Dark","","","",
+                            `onclick="window.localStorage['mdui-theme-color']='true'" mdui-dialog-close`)}
         </ul>`,
             history: false,
             buttons: [{
@@ -191,7 +189,7 @@ async function showSettingsPic() {
     </ul>`
     $("#content").html(header + settingItems)
     $('[data-pic-source]').click(function() {
-        let imgsOption = (imgs) => {
+        let imgsOption = imgs => {
             let option = ''
             for (i = 0; i < imgs.length; i++) {
                 let img = imgs[i]
@@ -288,15 +286,15 @@ async function showSettingsAbout() {
     //重啟
     $("[data-restart]").click(() => {
         mdui.confirm('注意：若您未開啟 Docker 的自動重啟功能，您必須手動開啟 PokaPlayer', '確定要重新啟動嗎', 
-            function(){
+            ()=>{
                 mdui.alert('正在重新啟動','','',{history: false});
                 axios.post('/restart')
-            },'',{history: false})
+            },()=>{},{history: false})
     })
     // 快取清理
     $("[data-clean]").click(() => {
         mdui.confirm('確定要清除嗎', '清除 Service Worker 快取', 
-            function(){ caches.delete('PokaPlayer');},'',{history: false})
+            ()=>caches.delete('PokaPlayer'),()=>{},{history: false})
     })
     // PokaPlayer 詳細資料
     let getInfo = await axios.get('/info/');

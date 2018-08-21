@@ -16,7 +16,7 @@ async function onLoaded() {
     });
 }
 
-async function getSong(song) {
+async function getSongs(song) {
     return [{ name: 'song form testa', link: 'blah' }];
 }
 
@@ -93,6 +93,9 @@ async function getPlaylists() {
 async function getPlaylistSongs(id) {
     return [{ name: 'song form testa', link: 'blah' }];
 }
+async function getRandomPlaylistSongs(id) {
+    return [{ name: 'song form testa', link: 'blah' }];
+}
 
 async function getLrc(id) {
     return [{ name: 'song form testa', link: 'blah' }];
@@ -105,7 +108,7 @@ async function searchLrc(keyword) {
 module.exports = {
     name: 'DSM',
     onLoaded,
-    getSong,
+    getSongs,
     getCover,
     search,
     getAlbumSongs,
@@ -117,6 +120,7 @@ module.exports = {
     getComposerAlbums,
     getPlaylists,
     getPlaylistSongs,
+    getRandomPlaylistSongs,
     getLrc,
     searchLrc
 };
