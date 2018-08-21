@@ -93,6 +93,9 @@ async function getPlaylists() {
 async function getPlaylistSongs(id) {
     return [{ name: 'song form testa', link: 'blah' }];
 }
+async function getRandomPlaylistSongs(id) {
+    return [{ name: 'song form testa', link: 'blah' }];
+}
 
 async function getLrc(id) {
     return [{ name: 'song form testa', link: 'blah' }];
@@ -117,6 +120,7 @@ module.exports = {
     getComposerAlbums,
     getPlaylists,
     getPlaylistSongs,
+    getRandomPlaylistSongs,
     getLrc,
     searchLrc
 };
