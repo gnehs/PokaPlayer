@@ -42,8 +42,27 @@ async function getAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 1)
     });
 }
 
-async function getSongs(song) {
-    return [{ name: 'song form testa', link: 'blah' }];
+async function getSong(req, songRes, songId) {
+    let url = dsmURL
+    switch (songRes) {
+        case "wav":
+            url += `/webapi/AudioStation/stream.cgi/0.wav?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=wav&id=`
+            break;
+        case "mp3":
+            url += `/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=mp3&id=`
+            break;
+        default:
+            url += `/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=stream&id=`
+            break;
+    }
+    url += songId
+    return request.get({
+        url: url,
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36',
+            'range': req.headers.range
+        }
+    })
 }
 
 async function getCover(data) {
@@ -66,12 +85,11 @@ async function getCover(data) {
             url = `${dsmURL}/webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getfoldercover&view=default&id=${coverData.info}`
             break;
         case 'album': //專輯
-            url += `&album_name=${encodeURIComponent(coverData.info.album_name)||''}`
-            url += `&artist_name=${encodeURIComponent(coverData.info.artist_name)||''}`
-            url += `&album_artist_name=${encodeURIComponent(coverData.info.album_artist_name)||''}`
+            url += coverData.info.album_name ? `&album_name=${encodeURIComponent( coverData.info.album_name)}` : ``
+            url += coverData.info.artist_name ? `&artist_name=${encodeURIComponent(coverData.info.artist_name)}` : ``
+            url += coverData.info.album_artist_name ? `&album_artist_name=${encodeURIComponent(coverData.info.album_artist_name)}` : `&album_artist_name=`
             break;
     }
-    console.log(url)
     return request.get(url)
 }
 
@@ -129,7 +147,7 @@ async function searchLrc(keyword) {
 module.exports = {
     name: 'DSM',
     onLoaded,
-    getSongs,
+    getSong,
     getCover,
     search,
     getAlbumSongs,

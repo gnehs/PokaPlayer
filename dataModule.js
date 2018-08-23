@@ -37,17 +37,40 @@ router.get('/cover/:moduleName/:data', async(req, res) => {
     let moduleName = req.params.moduleName
     let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
     // 沒這東西
-    if (!_module) return res.send("The required module is currently unavailable :(")
+    if (!_module) return res.status(501).send("The required module is currently unavailable :(")
 
     //http://localhost:3000/pokaapi/cover/DSM/eyJ0eXBlIjoiYXJ0aXN0IiwiaW5mbyI6IuOCjeOCkyJ9
     // -> {"type":"artist","info":"ろん"}
-    //http://localhost:3000/pokaapi/cover/DSM/eyJ0eXBlIjoiYXJ0aXN0IiwiaW5mbyI6eyJhbGJ1bV9uYW1lIjoi5q6%2F5aCC4oWiIiwiYXJ0aXN0X25hbWUiOiLnuq%2Fnmb0sIERpZ2dlciBmZWF0LiDkuZDmraPnu6ssIOa0m%2BWkqeS%2BnSIsImFsYnVtX2FydGlzdF9uYW1lIjoiVmFyaW91cyBBcnRpc3RzIn19
-    // -> {"type":"artist","info":{"album_name":"殿堂Ⅲ","artist_name":"纯白, Digger feat. 乐正绫, 洛天依","album_artist_name":"Various Artists"}}
+    //http://localhost:3000/pokaapi/cover/DSM/eyJ0eXBlIjoiYWxidW0iLCJpbmZvIjp7ImFsYnVtX25hbWUiOiLmrr%2FloILihaIiLCJhcnRpc3RfbmFtZSI6Iue6r%2BeZvSwgRGlnZ2VyIGZlYXQuIOS5kOato%2Be7qywg5rSb5aSp5L6dIiwiYWxidW1fYXJ0aXN0X25hbWUiOiJWYXJpb3VzIEFydGlzdHMifX0%3D
+    // -> {"type":"album","info":{"album_name":"殿堂Ⅲ","artist_name":"纯白, Digger feat. 乐正绫, 洛天依","album_artist_name":"Various Artists"}}
     let cover = await _module.getCover(pokaDecode(req.params.data))
-    return cover.pipe(res)
+    if (typeof cover == 'string')
+        return res.redirect(cover)
+    else
+        return cover.pipe(res)
 });
 // 取得歌曲
-router.get('/song', (req, res) => {
+router.get('/song/:moduleName/:songRes/:songId', async(req, res) => {
+    let moduleName = req.params.moduleName
+    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+    // 沒這東西
+    if (!_module) return res.status(501).send("The required module is currently unavailable :(")
+    let song = await _module.getSong(req, req.params.songRes, req.params.songId)
+    if (typeof song == 'string')
+        return res.redirect(song)
+    else
+        return song.on('response', function(response) {
+            //針對 Audio 寫入 Header 避免 Chrome 時間軸不能跳
+            res.writeHead(206, {
+                "Accept-Ranges": response.headers['accept-ranges'] ? response.headers['accept-ranges'] : '',
+                "Content-Length": response.headers['content-length'] ? response.headers['content-length'] : '',
+                "Content-Range": response.headers['content-range'] ? response.headers['content-range'] : '',
+                "Content-Type": response.headers['content-type'] ? response.headers['content-type'] : ''
+            })
+        }).pipe(res)
+});
+// 取得歌曲
+/*router.get('/song/:moduleName/:data', (req, res) => {
     let songs = {}
     Object.keys(moduleList).forEach(async(x) => {
         x = moduleList[x]
@@ -62,6 +85,6 @@ router.get('/song', (req, res) => {
         }
     })
     res.json(songs);
-});
+});*/
 
 module.exports = router;
