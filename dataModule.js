@@ -81,7 +81,7 @@ router.get('/cover/', async(req, res) => {
     let moduleName = req.query.moduleName
     let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
     // 沒這東西
-    if (!_module) return res.status(501).send("The required module is currently unavailable :(")
+    if (!_module || moduleList[moduleName].active.indexOf('getCover') == -1) return res.status(501).send("The required module is currently unavailable :(")
 
     //http://localhost:3000/pokaapi/cover/?moduleName=DSM&data={%22type%22:%22artist%22,%22info%22:%22%E3%82%8D%E3%82%93%22}
     // -> {"type":"artist","info":"ろん"}
@@ -93,6 +93,37 @@ router.get('/cover/', async(req, res) => {
     else
         return cover.pipe(res)
 });
+// 取得資料夾清單
+router.get('/folders/', async(req, res) => {
+    //http://localhost:3000/pokaapi/folders
+    let folders = { folders: [], songs: [] }
+    for (i = 0; i < Object.keys(moduleList).length; i++) {
+        let x = moduleList[Object.keys(moduleList)[i]]
+        let y = require(x.js)
+        if (x.active.indexOf('getFolders') > -1) {
+            let folderList = await y.getFolders() || null
+            if (folderList) {
+                for (i = 0; i < folderList.folders.length; i++) folders.folders.push(folderList.folders[i])
+                for (i = 0; i < folderList.songs.length; i++) folders.songs.push(folderList.songs[i])
+            }
+        }
+    }
+    res.json(folders);
+});
+// 取得資料夾清單 by id
+router.get('/folderFiles/', async(req, res) => {
+    //http://localhost:3000/pokaapi/folderFiles/?moduleName=DSM&id=dir_194
+    let moduleName = req.query.moduleName
+    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+    // 沒這東西
+    if (!_module || moduleList[moduleName].active.indexOf('getFolderFiles') == -1) return res.status(501).send("The required module is currently unavailable :(")
+
+    let resData = { folders: [], songs: [] }
+    let info = await _module.getFolderFiles(req.query.id)
+    for (i = 0; i < info.folders.length; i++) resData.folders.push(info.folders[i])
+    for (i = 0; i < info.songs.length; i++) resData.songs.push(info.songs[i])
+    return res.json(resData)
+});
 // 取得專輯清單
 router.get('/albums/', async(req, res) => {
     //http://localhost:3000/pokaapi/albums
@@ -103,7 +134,7 @@ router.get('/albums/', async(req, res) => {
         if (x.active.indexOf('getAlbums') > -1) {
             let albumList = await y.getAlbums() || null
             if (albumList) {
-                for (i = 0; i < albumList.length; i++) albums.albums.push(albumList[i])
+                for (i = 0; i < albumList.albums.length; i++) albums.albums.push(albumList[i])
             }
         }
     }
@@ -114,7 +145,7 @@ router.get('/albumSongs/', async(req, res) => {
     let moduleName = req.query.moduleName
     let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
     // 沒這東西
-    if (!_module) return res.status(501).send("The required module is currently unavailable :(")
+    if (!_module || moduleList[moduleName].active.indexOf('getAlbums') == -1) return res.status(501).send("The required module is currently unavailable :(")
 
     //http://localhost:3000/pokaapi/albumSongs/?moduleName=DSM&data={%22album_name%22:%22%E2%8A%BF%22,%22artist_name%22:%22Perfume%22,%22album_artist_name%22:%22Perfume%22}
     // -> {"album_name":"⊿","artist_name":"Perfume","album_artist_name":"Perfume"}

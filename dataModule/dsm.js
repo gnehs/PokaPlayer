@@ -176,11 +176,57 @@ async function getAlbumSongs(id) {
 }
 
 async function getFolders() {
-    return [{ name: 'song form testa', link: 'blah' }];
+    return await getFolderFiles()
 }
 
 async function getFolderFiles(id) {
-    return [{ name: 'song form testa', link: 'blah' }];
+    let paramsJson = [
+        { key: "additional", "value": "song_tag,song_audio,song_rating" },
+        { key: "library", "value": "shared" },
+        { key: "limit", "value": 1000 },
+        { key: "method", "value": 'list' },
+        { key: "sort_by", "value": "title" },
+        { key: "sort_direction", "value": "ASC" }
+    ]
+    if (id) paramsJson.push({ key: "id", "value": id })
+    let info = await getAPI("AudioStation/folder.cgi", "SYNO.AudioStation.Folder", "list", paramsJson, 2)
+    let songs = [],
+        folders = []
+    for (i = 0; i < info.data.items.length; i++) {
+        let item = info.data.items[i]
+        if (item.type == 'folder')
+            folders.push({
+                name: item.title,
+                source: 'DSM',
+                id: item.id
+            })
+        if (item.type == 'file') {
+            let cover = `/pokaapi/cover/?moduleName=DSM&data=` + encodeURIComponent(JSON.stringify({
+                "type": "album",
+                "info": {
+                    "album_name": item.additional.song_tag.album || '',
+                    "artist_name": item.additional.song_tag.artist || '',
+                    "album_artist_name": item.additional.song_tag.album_artist || ''
+                }
+            }))
+            songs.push({
+                name: item.title,
+                artist: item.additional.song_tag.artist,
+                album: item.additional.song_tag.album,
+                cover: cover,
+                url: '/pokaapi/song/?moduleName=DSM&songId=' + item.id,
+                bitrate: item.additional.song_audio.bitrate,
+                codec: item.additional.song_audio.codec,
+                lrc: '',
+                source: "DSM",
+                id: item.id
+            })
+        }
+    }
+    return {
+        songs: songs,
+        folders: folders
+    }
 }
 
 async function getArtists() {
@@ -226,8 +272,8 @@ module.exports = {
     search,
     getAlbums, //done
     getAlbumSongs, //done
-    getFolders,
-    getFolderFiles,
+    getFolders, //done
+    getFolderFiles, //done
     getArtists,
     getArtistAlbums,
     getComposers,
