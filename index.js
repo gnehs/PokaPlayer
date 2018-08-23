@@ -208,7 +208,7 @@ app.get('/song/:res/:id', async(req, res) => {
         res.status(403).send('Permission Denied Desu')
     else {
         var url = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}/`
-        switch (req.params.url) {
+        switch (req.params.res) {
             case "wav":
                 url += `webapi/AudioStation/stream.cgi/0.wav?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=wav&id=`
                 break;

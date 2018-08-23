@@ -641,7 +641,7 @@ async function showNow() {
     ap.on("play", async() => {
         //卷軸轉轉
         if ($(window).width() > 850 && $(window).height() > 560) {
-            $('.mdui-list.songs').animate({ scrollTop: 72 * ap.list.index - 100 }, 100);
+            $('.mdui-list.songs').animate({ scrollTop: 72 * ap.list.index - 100 }, 250);
         }
         //- list 切換 active
         $(".songs>li.song").removeClass('mdui-list-item-active')
@@ -691,7 +691,7 @@ async function showNow() {
                 $('[data-player] div[data-lrc="inner"] p').removeClass('mdui-text-color-theme-accent')
                 $('[data-player] div[data-lrc="inner"] p').eq(nowLrc).addClass('mdui-text-color-theme-accent')
                 let sh = $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].offsetTop - $('[data-player] .info>div[data-lrc]').height() / 2 - $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].clientHeight
-                $('[data-player] .info>div[data-lrc]').animate({ scrollTop: sh }, 100);
+                $('[data-player] .info>div[data-lrc]').animate({ scrollTop: sh }, 250);
             }
         }
     });
@@ -737,7 +737,7 @@ function showLrc() {
         if (nowLrc > -1) {
             $('#content>div[data-lrc]>div[data-lrc="inner"] p').eq(nowLrc).addClass('mdui-text-color-theme-accent')
             let top = $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].offsetTop - $('div[data-lrc]').height() / 2 - $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].clientHeight * 2
-            $('#content>div[data-lrc]').animate({ scrollTop: top }, 0);
+            $('#content>div[data-lrc]').scrollTop(top);
         }
     }
     ap.on("timeupdate", () => {
@@ -749,7 +749,7 @@ function showLrc() {
             $('#content>div[data-lrc]>div[data-lrc="inner"] p').removeClass('mdui-text-color-theme-accent')
             $('#content>div[data-lrc]>div[data-lrc="inner"] p').eq(nowLrc).addClass('mdui-text-color-theme-accent')
             let top = $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].offsetTop - $('div[data-lrc]').height() / 2 - $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].clientHeight * 2
-            $('#content>div[data-lrc]').animate({ scrollTop: top }, 100);
+            $('#content>div[data-lrc]').animate({ scrollTop: top }, 250);
         }
     });
     $('#content>div[data-lrc]').dblclick(function() {
