@@ -7,7 +7,7 @@ PokaPlayer 是 Synology Audio Ststion 的新朋友！
 
 ## 截圖
 
-<img src="https://user-images.githubusercontent.com/16719720/44003086-75cd161c-9e7f-11e8-8b56-b515612c2dd8.png" width="500px">
+<img src="https://user-images.githubusercontent.com/16719720/44414375-30fc6d80-a5a0-11e8-8791-64b666b7d385.png" width="500px">
 
 ## 開始使用
 

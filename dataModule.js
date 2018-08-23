@@ -1,5 +1,6 @@
 const fs = require('fs')
 const router = require('express').Router()
+
 let moduleList = {};
 fs.readdir(__dirname + "/dataModule", (err, files) => {
     if (err) return console.error(err)
@@ -18,6 +19,10 @@ fs.readdir(__dirname + "/dataModule", (err, files) => {
     });
 })
 
+function pokaDecode(str) {
+    return Buffer.from(str, 'base64').toString('utf-8')
+
+}
 
 // 先在這裡蹦蹦蹦再轉交給其他好朋友
 router.use((req, res, next) => {
@@ -34,9 +39,12 @@ router.get('/cover/:moduleName/:data', async(req, res) => {
     // 沒這東西
     if (!_module) return res.send("The required module is currently unavailable :(")
 
-    let cover = await _module.getCover(data)
-    return res.send(cover)
-        // 不然我要怎麼傳圖片
+    //http://localhost:3000/pokaapi/cover/DSM/eyJ0eXBlIjoiYXJ0aXN0IiwiaW5mbyI6IuOCjeOCkyJ9
+    // -> {"type":"artist","info":"ろん"}
+    //http://localhost:3000/pokaapi/cover/DSM/eyJ0eXBlIjoiYXJ0aXN0IiwiaW5mbyI6eyJhbGJ1bV9uYW1lIjoi5q6%2F5aCC4oWiIiwiYXJ0aXN0X25hbWUiOiLnuq%2Fnmb0sIERpZ2dlciBmZWF0LiDkuZDmraPnu6ssIOa0m%2BWkqeS%2BnSIsImFsYnVtX2FydGlzdF9uYW1lIjoiVmFyaW91cyBBcnRpc3RzIn19
+    // -> {"type":"artist","info":{"album_name":"殿堂Ⅲ","artist_name":"纯白, Digger feat. 乐正绫, 洛天依","album_artist_name":"Various Artists"}}
+    let cover = await _module.getCover(pokaDecode(req.params.data))
+    return cover.pipe(res)
 });
 // 取得歌曲
 router.get('/song', (req, res) => {
