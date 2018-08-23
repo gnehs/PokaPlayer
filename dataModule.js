@@ -134,11 +134,27 @@ router.get('/albums/', async(req, res) => {
         if (x.active.indexOf('getAlbums') > -1) {
             let albumList = await y.getAlbums() || null
             if (albumList) {
-                for (i = 0; i < albumList.albums.length; i++) albums.albums.push(albumList[i])
+                for (i = 0; i < albumList.albums.length; i++) albums.albums.push(albumList.albums[i])
             }
         }
     }
     res.json(albums);
+});
+// 取得播放清單的清單
+router.get('/playlists/', async(req, res) => {
+    //http://localhost:3000/pokaapi/playlists
+    let r = { playlists: [] }
+    for (i = 0; i < Object.keys(moduleList).length; i++) {
+        let x = moduleList[Object.keys(moduleList)[i]]
+        let y = require(x.js)
+        if (x.active.indexOf('getPlaylists') > -1) {
+            let list = await y.getPlaylists() || null
+            if (list) {
+                for (i = 0; i < list.playlists.length; i++) r.playlists.push(list.playlists[i])
+            }
+        }
+    }
+    res.json(r);
 });
 // 取得專輯歌曲
 router.get('/albumSongs/', async(req, res) => {

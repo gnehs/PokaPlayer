@@ -3,6 +3,70 @@ const config = require('../config.json'), // 很會設定ㄉ朋友
     request = require('request').defaults({ jar: require('request').jar() }), //很會請求ㄉ朋友
     dsmURL = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}`
 
+function parseSongs(songs) {
+    let r = []
+    for (i = 0; i < songs.length; i++) {
+        let song = songs[i]
+        let cover = `/pokaapi/cover/?moduleName=DSM&data=` + encodeURIComponent(JSON.stringify({
+            "type": "album",
+            "info": {
+                "album_name": song.additional.song_tag.album || '',
+                "artist_name": song.additional.song_tag.artist || '',
+                "album_artist_name": song.additional.song_tag.album_artist || ''
+            }
+        }))
+        r.push({
+            name: song.title,
+            artist: song.additional.song_tag.artist,
+            album: song.additional.song_tag.album,
+            cover: cover,
+            url: '/pokaapi/song/?moduleName=DSM&songId=' + song.id,
+            bitrate: song.additional.song_audio.bitrate,
+            codec: song.additional.song_audio.codec,
+            lrc: '',
+            source: "DSM",
+            id: song.id,
+        })
+    }
+    return r
+}
+
+function parseAlbums(albums) {
+    let r = []
+    for (i = 0; i < albums.length; i++) {
+        let album = albums[i]
+        let coverInfo = {
+            "album_name": album.name || '',
+            "artist_name": album.artist || '',
+            "album_artist_name": album.album_artist || ''
+        }
+        let cover = `/pokaapi/cover/?moduleName=DSM&data=` + encodeURIComponent(JSON.stringify({
+            "type": "album",
+            "info": coverInfo
+        }))
+        r.push({
+            name: album.name,
+            artist: album.artist,
+            year: album.year,
+            cover: cover,
+            source: 'DSM',
+            id: JSON.stringify(coverInfo)
+        })
+    }
+    return r
+}
+
+function parsePlaylists(playlists) {
+    let r = []
+    for (i = 0; i < playlists.length; i++) {
+        r.push({
+            name: playlists[i].name,
+            source: 'DSM',
+            id: playlists[i].id
+        })
+    }
+    return r
+}
 async function onLoaded() {
     login();
     schedule.scheduleJob("'* */12 * * *'", async function() {
@@ -104,36 +168,13 @@ async function search(keyword, options = {}) {
 
 async function getAlbums() {
     let albumsData = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", [
-            { key: "additional", "value": "avg_rating" },
-            { key: "library", "value": "shared" },
-            { key: "limit", "value": 1000 },
-            { key: "sort_by", "value": "name" },
-            { key: "sort_direction", "value": "ASC" },
-        ], 3)
-        //console.log(albumsData)
-    let albums = []
-    for (i = 0; i < albumsData.data.albums.length; i++) {
-
-        let album = albumsData.data.albums[i]
-        let coverInfo = {
-            "album_name": album.name || '',
-            "artist_name": album.artist || '',
-            "album_artist_name": album.album_artist || ''
-        }
-        let cover = `/pokaapi/cover/?moduleName=DSM&data=` + encodeURIComponent(JSON.stringify({
-            "type": "album",
-            "info": coverInfo
-        }))
-        albums.push({
-            name: album.name,
-            artist: album.artist,
-            year: album.year,
-            cover: cover,
-            source: 'DSM',
-            id: JSON.stringify(coverInfo)
-        })
-    }
-    return albums
+        { key: "additional", "value": "avg_rating" },
+        { key: "library", "value": "shared" },
+        { key: "limit", "value": 1000 },
+        { key: "sort_by", "value": "name" },
+        { key: "sort_direction", "value": "ASC" },
+    ], 3)
+    return { albums: parseAlbums(albumsData.data.albums) }
 }
 async function getAlbumSongs(id) {
     albumData = JSON.parse(id)
@@ -148,30 +189,7 @@ async function getAlbumSongs(id) {
     if (albumData.album_artist_name) PARAMS_JSON.push({ key: "album_artist", "value": albumData.album_artist_name })
     if (albumData.artist_name) PARAMS_JSON.push({ key: "artist", "value": albumData.artist_name })
     let info = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "list", PARAMS_JSON, 3)
-    let songs = []
-    for (i = 0; i < info.data.songs.length; i++) {
-        let song = info.data.songs[i]
-        let cover = `/pokaapi/cover/?moduleName=DSM&data=` + encodeURIComponent(JSON.stringify({
-            "type": "album",
-            "info": {
-                "album_name": song.additional.song_tag.album || '',
-                "artist_name": song.additional.song_tag.artist || '',
-                "album_artist_name": song.additional.song_tag.album_artist || ''
-            }
-        }))
-        songs.push({
-            name: song.title,
-            artist: song.additional.song_tag.artist,
-            album: song.additional.song_tag.album,
-            cover: cover,
-            url: '/pokaapi/song/?moduleName=DSM&songId=' + song.id,
-            bitrate: song.additional.song_audio.bitrate,
-            codec: song.additional.song_audio.codec,
-            lrc: '',
-            source: "DSM",
-            id: song.id,
-        })
-    }
+    let songs = parseSongs(info.data.songs)
     return { songs: songs }
 }
 
@@ -190,8 +208,9 @@ async function getFolderFiles(id) {
     ]
     if (id) paramsJson.push({ key: "id", "value": id })
     let info = await getAPI("AudioStation/folder.cgi", "SYNO.AudioStation.Folder", "list", paramsJson, 2)
-    let songs = [],
+    let songs = parseSongs((info.data.items).filter(({ type }) => type === 'file')),
         folders = []
+
     for (i = 0; i < info.data.items.length; i++) {
         let item = info.data.items[i]
         if (item.type == 'folder')
@@ -200,28 +219,6 @@ async function getFolderFiles(id) {
                 source: 'DSM',
                 id: item.id
             })
-        if (item.type == 'file') {
-            let cover = `/pokaapi/cover/?moduleName=DSM&data=` + encodeURIComponent(JSON.stringify({
-                "type": "album",
-                "info": {
-                    "album_name": item.additional.song_tag.album || '',
-                    "artist_name": item.additional.song_tag.artist || '',
-                    "album_artist_name": item.additional.song_tag.album_artist || ''
-                }
-            }))
-            songs.push({
-                name: item.title,
-                artist: item.additional.song_tag.artist,
-                album: item.additional.song_tag.album,
-                cover: cover,
-                url: '/pokaapi/song/?moduleName=DSM&songId=' + item.id,
-                bitrate: item.additional.song_audio.bitrate,
-                codec: item.additional.song_audio.codec,
-                lrc: '',
-                source: "DSM",
-                id: item.id
-            })
-        }
     }
     return {
         songs: songs,
@@ -234,7 +231,17 @@ async function getArtists() {
 }
 
 async function getArtistAlbums(id) {
-    return [{ name: 'song form testa', link: 'blah' }];
+    let PARAMS_JSON = [
+        { key: "additional", "value": "avg_rating" },
+        { key: "library", "value": "shared" },
+        { key: "limit", "value": 1000 },
+        { key: "method", "value": 'list' },
+        { key: "sort_by", "value": "display_artist" },
+        { key: "sort_direction", "value": "ASC" },
+        { key: "artist", "value": id },
+    ]
+    let data = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3)
+    return { albums: parseAlbums(data.data.albums) }
 }
 
 async function getComposers() {
@@ -242,15 +249,47 @@ async function getComposers() {
 }
 
 async function getComposerAlbums(id) {
-    return [{ name: 'song form testa', link: 'blah' }];
+    let PARAMS_JSON = [
+            { key: "additional", "value": "avg_rating" },
+            { key: "library", "value": "shared" },
+            { key: "limit", "value": 1000 },
+            { key: "method", "value": 'list' },
+            { key: "sort_by", "value": "display_artist" },
+            { key: "sort_direction", "value": "ASC" },
+            { key: "composer", "value": id },
+        ],
+        data = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3)
+    return { albums: parseAlbums(data.data.albums) }
 }
 
 async function getPlaylists() {
-    return [{ name: 'song form testa', link: 'blah' }];
+    let playlist = await getAPI("AudioStation/playlist.cgi", "SYNO.AudioStation.Playlist", "list", [
+        { key: "limit", "value": 1000 },
+        { key: "library", "value": "shared" },
+        { key: "sort_by", "value": "" },
+        { key: "sort_direction", "value": "ASC" }
+    ], 3)
+    return { playlists: parsePlaylists(playlist.data.playlists) }
 }
 
 async function getPlaylistSongs(id) {
-    return [{ name: 'song form testa', link: 'blah' }];
+    let playlist = await getAPI("AudioStation/playlist.cgi", "SYNO.AudioStation.Playlist", "getinfo", [
+        { key: "limit", "value": 1000 },
+        { key: "library", "value": "shared" },
+        { key: "sort_by", "value": "" },
+        { key: "additional", "value": "songs_song_tag,songs_song_audio,songs_song_rating,sharing_info" },
+        { key: "id", "value": id },
+        { key: "sort_direction", "value": "ASC" }
+    ], 3)
+    let result = playlist.data.playlists[0]
+    return {
+        songs: parseSongs(result.additional.songs),
+        playlists: [{
+            name: result.name,
+            source: 'DSM',
+            id: result.id
+        }]
+    }
 }
 async function getRandomPlaylistSongs(id) {
     return [{ name: 'song form testa', link: 'blah' }];
@@ -275,11 +314,11 @@ module.exports = {
     getFolders, //done
     getFolderFiles, //done
     getArtists,
-    getArtistAlbums,
+    getArtistAlbums, //done
     getComposers,
-    getComposerAlbums,
-    getPlaylists,
-    getPlaylistSongs,
+    getComposerAlbums, //done
+    getPlaylists, //done
+    getPlaylistSongs, //done
     getRandomPlaylistSongs,
     getLrc,
     searchLrc
