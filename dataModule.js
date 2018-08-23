@@ -80,7 +80,7 @@ playlist {
 router.get('/folders/', async(req, res) => {
     //http://localhost:3000/pokaapi/folders
     let folders = { folders: [], songs: [] }
-    for (i = 0; i < Object.keys(moduleList).length; i++) {
+    for (var i in Object.keys(moduleList)) {
         let x = moduleList[Object.keys(moduleList)[i]]
         let y = require(x.js)
         if (x.active.indexOf('getFolders') > -1) {
@@ -108,12 +108,40 @@ router.get('/folderFiles/', async(req, res) => {
     return res.json(resData)
 });
 
+//-----------------------------> 搜尋
+// 搜尋
+router.get('/search/', async(req, res) => {
+    //http://localhost:3000/pokaapi/search/?keyword=a
+    let resData = { folders: [], songs: [], albums: [], songs: [], artists: [], composers: [], playlists: [] }
+    for (var i in Object.keys(moduleList)) {
+        let x = moduleList[Object.keys(moduleList)[i]]
+        let y = require(x.js)
+        if (x.active.indexOf('search') > -1) {
+            let result = await y.search(req.query.keyword) || null
+            if (result) {
+                if (result.folders)
+                    for (i = 0; i < result.folders.length; i++) resData.folders.push(result.folders[i])
+                if (result.songs)
+                    for (i = 0; i < result.songs.length; i++) resData.songs.push(result.songs[i])
+                if (result.albums)
+                    for (i = 0; i < result.albums.length; i++) resData.albums.push(result.albums[i])
+                if (result.artists)
+                    for (i = 0; i < result.artists.length; i++) resData.artists.push(result.artists[i])
+                if (result.composers)
+                    for (i = 0; i < result.composers.length; i++) resData.composers.push(result.composers[i])
+                if (result.playlists)
+                    for (i = 0; i < result.playlists.length; i++) resData.playlists.push(result.playlists[i])
+            }
+        }
+    }
+    return res.json(resData)
+});
 //-----------------------------> 專輯
 // 取得專輯清單
 router.get('/albums/', async(req, res) => {
     //http://localhost:3000/pokaapi/albums
     let albums = { albums: [] }
-    for (i = 0; i < Object.keys(moduleList).length; i++) {
+    for (var i in Object.keys(moduleList)) {
         let x = moduleList[Object.keys(moduleList)[i]]
         let y = require(x.js)
         if (x.active.indexOf('getAlbums') > -1) {
@@ -142,7 +170,7 @@ router.get('/albumSongs/', async(req, res) => {
 router.get('/playlists/', async(req, res) => {
     //http://localhost:3000/pokaapi/playlists
     let r = { playlists: [] }
-    for (i = 0; i < Object.keys(moduleList).length; i++) {
+    for (var i in Object.keys(moduleList)) {
         let x = moduleList[Object.keys(moduleList)[i]]
         let y = require(x.js)
         if (x.active.indexOf('getPlaylists') > -1) {
@@ -170,7 +198,7 @@ router.get('/playlistSongs/', async(req, res) => {
 router.get('/artists/', async(req, res) => {
     //http://localhost:3000/pokaapi/artists
     let r = { artists: [] }
-    for (i = 0; i < Object.keys(moduleList).length; i++) {
+    for (var i in Object.keys(moduleList)) {
         let x = moduleList[Object.keys(moduleList)[i]]
         let y = require(x.js)
         if (x.active.indexOf('getArtists') > -1) {
@@ -197,7 +225,7 @@ router.get('/artistAlbums/', async(req, res) => {
 router.get('/composers/', async(req, res) => {
     //http://localhost:3000/pokaapi/composers
     let r = { composers: [] }
-    for (i = 0; i < Object.keys(moduleList).length; i++) {
+    for (var i in Object.keys(moduleList)) {
         let x = moduleList[Object.keys(moduleList)[i]]
         let y = require(x.js)
         if (x.active.indexOf('getComposers') > -1) {
@@ -221,7 +249,7 @@ router.get('/composerAlbums/', async(req, res) => {
     return res.json(r)
 });
 //-----------------------------> 歌曲
-// 取得歌曲
+// 取得歌曲串流
 router.get('/song/', async(req, res) => {
     // http://localhost:3000/pokaapi/song/?moduleName=DSM&songRes=original&songId=music_758 //這首 Chrome 會出錯
     // http://localhost:3000/pokaapi/song/?moduleName=DSM&songRes=original&songId=music_941

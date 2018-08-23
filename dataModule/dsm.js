@@ -189,18 +189,31 @@ async function getCover(data) {
 }
 
 async function search(keyword, options = {}) {
-    return [{ name: 'song form testa', link: 'blah' }];
+    let PARAMS_JSON = [
+        { key: "additional", "value": "song_tag,song_audio,song_rating" },
+        { key: "library", "value": "shared" },
+        { key: "limit", "value": 1000 },
+        { key: "sort_by", "value": "title" },
+        { key: "sort_direction", "value": "ASC" },
+        { key: "keyword", "value": keyword },
+    ]
+    let result = await getAPI("AudioStation/search.cgi", "SYNO.AudioStation.Search", "list", PARAMS_JSON, 1)
+    return {
+        albums: parseAlbums(result.data.albums || ''),
+        songs: parseSongs(result.data.songs || ''),
+        artists: parseArtists(result.data.artists || '')
+    }
 }
 
 async function getAlbums() {
-    let albumsData = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", [
+    let result = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", [
         { key: "additional", "value": "avg_rating" },
         { key: "library", "value": "shared" },
         { key: "limit", "value": 1000 },
         { key: "sort_by", "value": "name" },
         { key: "sort_direction", "value": "ASC" },
     ], 3)
-    return { albums: parseAlbums(albumsData.data.albums) }
+    return { albums: parseAlbums(result.data.albums) }
 }
 async function getAlbumSongs(id) {
     albumData = JSON.parse(id)
@@ -214,9 +227,8 @@ async function getAlbumSongs(id) {
     if (albumData.album_name) PARAMS_JSON.push({ key: "album", "value": albumData.album_name })
     if (albumData.album_artist_name) PARAMS_JSON.push({ key: "album_artist", "value": albumData.album_artist_name })
     if (albumData.artist_name) PARAMS_JSON.push({ key: "artist", "value": albumData.artist_name })
-    let info = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "list", PARAMS_JSON, 3)
-    let songs = parseSongs(info.data.songs)
-    return { songs: songs }
+    let result = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "list", PARAMS_JSON, 3)
+    return { songs: parseSongs(result.data.songs) }
 }
 
 async function getFolders() {
@@ -233,12 +245,12 @@ async function getFolderFiles(id) {
         { key: "sort_direction", "value": "ASC" }
     ]
     if (id) paramsJson.push({ key: "id", "value": id })
-    let info = await getAPI("AudioStation/folder.cgi", "SYNO.AudioStation.Folder", "list", paramsJson, 2)
-    let songs = parseSongs((info.data.items).filter(({ type }) => type === 'file')),
+    let result = await getAPI("AudioStation/folder.cgi", "SYNO.AudioStation.Folder", "list", paramsJson, 2)
+    let songs = parseSongs((result.data.items).filter(({ type }) => type === 'file')),
         folders = []
 
-    for (i = 0; i < info.data.items.length; i++) {
-        let item = info.data.items[i]
+    for (i = 0; i < result.data.items.length; i++) {
+        let item = result.data.items[i]
         if (item.type == 'folder')
             folders.push({
                 name: item.title,
@@ -260,8 +272,8 @@ async function getArtists() {
         { key: "sort_by", "value": "name" },
         { key: "sort_direction", "value": "ASC" }
     ]
-    let data = await getAPI("AudioStation/artist.cgi", "SYNO.AudioStation.Artist", "list", PARAMS_JSON, 4)
-    return { artists: parseArtists(data.data.artists) }
+    let result = await getAPI("AudioStation/artist.cgi", "SYNO.AudioStation.Artist", "list", PARAMS_JSON, 4)
+    return { artists: parseArtists(result.data.artists) }
 }
 
 async function getArtistAlbums(id) {
@@ -274,8 +286,8 @@ async function getArtistAlbums(id) {
             { key: "sort_direction", "value": "ASC" },
             { key: "artist", "value": id },
         ],
-        data = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3)
-    return { albums: parseAlbums(data.data.albums) }
+        result = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3)
+    return { albums: parseAlbums(result.data.albums) }
 }
 
 async function getComposers() {
@@ -286,8 +298,8 @@ async function getComposers() {
             { key: "sort_by", "value": "name" },
             { key: "sort_direction", "value": "ASC" }
         ],
-        data = await getAPI("AudioStation/composer.cgi", "SYNO.AudioStation.Composer", "list", PARAMS_JSON, 2)
-    return { composers: parseComposers(data.data.composers) }
+        result = await getAPI("AudioStation/composer.cgi", "SYNO.AudioStation.Composer", "list", PARAMS_JSON, 2)
+    return { composers: parseComposers(result.data.composers) }
 }
 
 async function getComposerAlbums(id) {
@@ -300,8 +312,8 @@ async function getComposerAlbums(id) {
             { key: "sort_direction", "value": "ASC" },
             { key: "composer", "value": id },
         ],
-        data = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3)
-    return { albums: parseAlbums(data.data.albums) }
+        result = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3)
+    return { albums: parseAlbums(result.data.albums) }
 }
 
 async function getPlaylists() {
