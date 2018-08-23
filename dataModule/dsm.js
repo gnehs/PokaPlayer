@@ -51,6 +51,9 @@ async function getSong(req, songRes, songId) {
         case "mp3":
             url += `/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=mp3&id=`
             break;
+        case "original":
+            url += `/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=stream&id=`
+            break;
         default:
             url += `/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=stream&id=`
             break;
@@ -60,7 +63,9 @@ async function getSong(req, songRes, songId) {
         url: url,
         headers: {
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36',
-            'range': req.headers.range
+            'Range': req.headers.range,
+            'Accept': req.headers.accept,
+            'Host': config.DSM.host
         }
     })
 }
@@ -98,7 +103,43 @@ async function search(keyword, options = {}) {
 }
 
 async function getAlbumSongs(id) {
-    return [{ name: 'song form testa', link: 'blah' }];
+    albumData = JSON.parse(id)
+    let PARAMS_JSON = [
+        { key: "additional", "value": "song_tag,song_audio,song_rating" },
+        { key: "library", "value": "shared" },
+        { key: "limit", "value": 100000 },
+        { key: "sort_by", "value": "title" },
+        { key: "sort_direction", "value": "ASC" },
+    ]
+    if (albumData.album_name) PARAMS_JSON.push({ key: "album", "value": albumData.album_name })
+    if (albumData.album_artist_name) PARAMS_JSON.push({ key: "album_artist", "value": albumData.album_artist_name })
+    if (albumData.artist_name) PARAMS_JSON.push({ key: "artist", "value": albumData.artist_name })
+    let info = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "list", PARAMS_JSON, 3)
+    let songs = []
+    for (i = 0; i < info.data.songs.length; i++) {
+        let song = info.data.songs[i]
+        let cover = `/pokaapi/cover/?moduleName=DSM&data=` + encodeURIComponent(JSON.stringify({
+            "type": "album",
+            "info": {
+                "album_name": song.additional.song_tag.album || '',
+                "artist_name": song.additional.song_tag.artist || '',
+                "album_artist_name": song.additional.song_tag.album_artist || ''
+            }
+        }))
+        songs.push({
+            name: song.title,
+            artist: song.additional.song_tag.artist,
+            album: song.additional.song_tag.album,
+            cover: cover,
+            url: '/pokaapi/song/?moduleName=DSM&songId=' + song.id,
+            bitrate: song.additional.song_audio.bitrate,
+            codec: song.additional.song_audio.codec,
+            lrc: '',
+            source: "DSM",
+            id: song.id,
+        })
+    }
+    return { songs: songs }
 }
 
 async function getFolders() {

@@ -32,30 +32,86 @@ router.use((req, res, next) => {
 router.get('/', (req, res) => {
     res.send('PokaPlayer API');
 });
+
+/*
+song {
+    name:'',
+    artist:'',
+    album:'',
+    cover:'',
+    url:'',
+    bitrate: 320000,
+    lrc:'',
+    source:'',
+    id:'',
+}
+album {
+    name:'',
+    artist:'',
+    year:'',
+    source:'',
+    id:''
+}
+artist {
+    name:'',
+    source:'',
+    id:''
+}
+composer {
+    name:'',
+    source:'',
+    id:''
+}
+folder {
+    name:'',
+    source:'',
+    id:''
+}
+playlist {
+    name: '',
+    source:'',
+    id: ''
+}
+*/
 // 取得封面
-router.get('/cover/:moduleName/:data', async(req, res) => {
-    let moduleName = req.params.moduleName
+router.get('/cover/', async(req, res) => {
+    let moduleName = req.query.moduleName
     let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
     // 沒這東西
     if (!_module) return res.status(501).send("The required module is currently unavailable :(")
 
-    //http://localhost:3000/pokaapi/cover/DSM/eyJ0eXBlIjoiYXJ0aXN0IiwiaW5mbyI6IuOCjeOCkyJ9
+    //http://localhost:3000/pokaapi/cover/?moduleName=DSM&data={%22type%22:%22artist%22,%22info%22:%22%E3%82%8D%E3%82%93%22}
     // -> {"type":"artist","info":"ろん"}
-    //http://localhost:3000/pokaapi/cover/DSM/eyJ0eXBlIjoiYWxidW0iLCJpbmZvIjp7ImFsYnVtX25hbWUiOiLmrr%2FloILihaIiLCJhcnRpc3RfbmFtZSI6Iue6r%2BeZvSwgRGlnZ2VyIGZlYXQuIOS5kOato%2Be7qywg5rSb5aSp5L6dIiwiYWxidW1fYXJ0aXN0X25hbWUiOiJWYXJpb3VzIEFydGlzdHMifX0%3D
+    //http://localhost:3000/pokaapi/cover/?moduleName=DSM&data={%22type%22:%22album%22,%22info%22:{%22album_name%22:%22%E6%AE%BF%E5%A0%82%E2%85%A2%22,%22artist_name%22:%22%E7%BA%AF%E7%99%BD,%20Digger%20feat.%20%E4%B9%90%E6%AD%A3%E7%BB%AB,%20%E6%B4%9B%E5%A4%A9%E4%BE%9D%22,%22album_artist_name%22:%22Various%20Artists%22}}
     // -> {"type":"album","info":{"album_name":"殿堂Ⅲ","artist_name":"纯白, Digger feat. 乐正绫, 洛天依","album_artist_name":"Various Artists"}}
-    let cover = await _module.getCover(pokaDecode(req.params.data))
+    let cover = await _module.getCover(req.query.data)
     if (typeof cover == 'string')
         return res.redirect(cover)
     else
         return cover.pipe(res)
 });
-// 取得歌曲
-router.get('/song/:moduleName/:songRes/:songId', async(req, res) => {
-    let moduleName = req.params.moduleName
+// 取得專輯歌曲
+router.get('/albumSongs/', async(req, res) => {
+    let moduleName = req.query.moduleName
     let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
     // 沒這東西
     if (!_module) return res.status(501).send("The required module is currently unavailable :(")
-    let song = await _module.getSong(req, req.params.songRes, req.params.songId)
+
+    //http://localhost:3000/pokaapi/albumSongs/?moduleName=DSM&data={%22album_name%22:%22%E2%8A%BF%22,%22artist_name%22:%22Perfume%22,%22album_artist_name%22:%22Perfume%22}
+    // -> {"album_name":"⊿","artist_name":"Perfume","album_artist_name":"Perfume"}
+    let albumSongs = await _module.getAlbumSongs(req.query.data)
+    return res.json(albumSongs)
+});
+// 取得歌曲
+router.get('/song/', async(req, res) => {
+    // http://localhost:3000/pokaapi/song/?moduleName=DSM&songRes=original&songId=music_758 //這首 Chrome 會出錯
+    // http://localhost:3000/pokaapi/song/?moduleName=DSM&songRes=original&songId=music_941
+    // -> getSong(req, "original", "music_758")
+    let moduleName = req.query.moduleName
+    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+    // 沒這東西
+    if (!_module) return res.status(501).send("The required module is currently unavailable :(")
+    let song = await _module.getSong(req, req.query.songRes, req.query.songId)
     if (typeof song == 'string')
         return res.redirect(song)
     else
@@ -86,5 +142,10 @@ router.get('/song/:moduleName/:songRes/:songId', async(req, res) => {
     })
     res.json(songs);
 });*/
+router.use((req, res, next) => {
+    res
+        .status(404)
+        .send('PokaPlayer API - 404');
+});
 
 module.exports = router;
