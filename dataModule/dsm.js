@@ -362,7 +362,7 @@ module.exports = {
     onLoaded, //done 
     getSong, //done 
     getCover, //done 
-    search,
+    search, //done 
     getAlbums, //done 
     getAlbumSongs, //done
     getFolders, //done 
