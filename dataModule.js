@@ -49,17 +49,20 @@ album {
     name:'',
     artist:'',
     year:'',
+    cover:'',
     source:'',
     id:''
 }
 artist {
     name:'',
     source:'',
+    cover:'',
     id:''
 }
 composer {
     name:'',
     source:'',
+    cover:'',
     id:''
 }
 folder {
@@ -89,6 +92,25 @@ router.get('/cover/', async(req, res) => {
         return res.redirect(cover)
     else
         return cover.pipe(res)
+});
+// 取得專輯清單
+router.get('/albums/', async(req, res) => {
+    //http://localhost:3000/pokaapi/albums
+    let albums = {}
+    for (i = 0; i < Object.keys(moduleList).length; i++) {
+        let x = moduleList[Object.keys(moduleList)[i]]
+        let y = require(x.js)
+        if (x.active.indexOf('getAlbums') > -1) {
+            let albumList = await y.getAlbums() || null
+            if (albumList) {
+                if (!albums[x.name])
+                    albums[x.name] = albumList
+                else
+                    albums[x.name].concat(albumList)
+            }
+        }
+    }
+    res.json(albums);
 });
 // 取得專輯歌曲
 router.get('/albumSongs/', async(req, res) => {

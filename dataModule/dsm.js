@@ -102,6 +102,39 @@ async function search(keyword, options = {}) {
     return [{ name: 'song form testa', link: 'blah' }];
 }
 
+async function getAlbums() {
+    let albumsData = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", [
+            { key: "additional", "value": "avg_rating" },
+            { key: "library", "value": "shared" },
+            { key: "limit", "value": 1000 },
+            { key: "sort_by", "value": "name" },
+            { key: "sort_direction", "value": "ASC" },
+        ], 3)
+        //console.log(albumsData)
+    let albums = []
+    for (i = 0; i < albumsData.data.albums.length; i++) {
+
+        let album = albumsData.data.albums[i]
+        let coverInfo = {
+            "album_name": album.name || '',
+            "artist_name": album.artist || '',
+            "album_artist_name": album.album_artist || ''
+        }
+        let cover = `/pokaapi/cover/?moduleName=DSM&data=` + encodeURIComponent(JSON.stringify({
+            "type": "album",
+            "info": coverInfo
+        }))
+        albums.push({
+            name: album.name,
+            artist: album.artist,
+            year: album.year,
+            cover: cover,
+            source: 'DSM',
+            id: JSON.stringify(coverInfo)
+        })
+    }
+    return albums
+}
 async function getAlbumSongs(id) {
     albumData = JSON.parse(id)
     let PARAMS_JSON = [
@@ -187,11 +220,12 @@ async function searchLrc(keyword) {
 
 module.exports = {
     name: 'DSM',
-    onLoaded,
-    getSong,
-    getCover,
+    onLoaded, //done
+    getSong, //done
+    getCover, //done
     search,
-    getAlbumSongs,
+    getAlbums, //done
+    getAlbumSongs, //done
     getFolders,
     getFolderFiles,
     getArtists,
