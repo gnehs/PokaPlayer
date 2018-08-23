@@ -96,17 +96,14 @@ router.get('/cover/', async(req, res) => {
 // 取得專輯清單
 router.get('/albums/', async(req, res) => {
     //http://localhost:3000/pokaapi/albums
-    let albums = {}
+    let albums = { albums: [] }
     for (i = 0; i < Object.keys(moduleList).length; i++) {
         let x = moduleList[Object.keys(moduleList)[i]]
         let y = require(x.js)
         if (x.active.indexOf('getAlbums') > -1) {
             let albumList = await y.getAlbums() || null
             if (albumList) {
-                if (!albums[x.name])
-                    albums[x.name] = albumList
-                else
-                    albums[x.name].concat(albumList)
+                for (i = 0; i < albumList.length; i++) albums.albums.push(albumList[i])
             }
         }
     }
