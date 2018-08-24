@@ -63,9 +63,7 @@ moment.locale('zh-tw');
 moment.tz.setDefault("Asia/Taipei");
 
 // 設定 js icon css 目錄
-app.use('/js', express.static('js'))
-app.use('/css', express.static('css'))
-app.use('/img', express.static('img'))
+app.use(express.static('public'))
 
 // 啟動囉
 server.listen(3000, async() => {
@@ -93,12 +91,6 @@ app.get('/og/og.png', (req, res) => {
     var img = __dirname + "/ogimage/" + files[imgnum]
 
     res.sendFile(img)
-});
-app.get('/sw.js', (req, res) => {
-    res.sendFile(__dirname + "/js/sw.js")
-});
-app.get('/manifest.json', (req, res) => {
-    res.sendFile(__dirname + "/manifest.json")
 });
 // 首頁
 app.get('/', (req, res) => {
