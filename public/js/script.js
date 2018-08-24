@@ -11,7 +11,7 @@ router
     .on({
         'search/:keyword': params => showSearch(params.keyword),
         'search': showSearch,
-        'album/:artist/:name/:albumArtist': params => showAlbumSongs(params.artist, params.name, params.albumArtist),
+        'album/:source/:id': params => showAlbumSongs(params.source, params.id),
         'album': showAlbum,
         'folder/:source/:dir': params => showFolder(params.source, params.dir),
         'folder': showFolder,
@@ -266,51 +266,29 @@ async function showAlbum() {
     $('#content').attr('data-page', 'album')
     $("#content").html(header + template.getSpinner())
     mdui.mutation()
-    let albums = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", [
-            { key: "additional", "value": "avg_rating" },
-            { key: "library", "value": "shared" },
-            { key: "limit", "value": 1000 },
-            { key: "sort_by", "value": "name" },
-            { key: "sort_direction", "value": "ASC" },
-        ], 3),
-        album = HTML.showAlbums(albums.data.albums),
-        recentlyAlbums = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", [
-            { key: "additional", "value": "avg_rating" },
-            { key: "library", "value": "shared" },
-            { key: "limit", "value": 1000 },
-            { key: "method", "value": 'list' },
-            { key: "sort_by", "value": "time" },
-            { key: "sort_direction", "value": "desc" },
-        ], 3),
-        recently = HTML.showAlbums(recentlyAlbums.data.albums),
-        tabs = `<div class="mdui-tab" mdui-tab>
-            <a href="#album-albums" class="mdui-tab-active mdui-ripple">專輯列表</a>
-            <a href="#recently-albums" class="mdui-ripple">最近加入</a>
-        </div>`,
-        html = `<div id="album-albums">${album}</div>
-                <div id="recently-albums">${recently}</div>`
+    let result = await axios.get('/pokaapi/albums')
+    let html = template.parseAlbums(result.data.albums)
     if ($("#content").attr('data-page') == 'album') {
-        $("#content").html(header + tabs + html)
-        $("#content>:not(#header-wrapper):not(#recently-albums)")
+        $("#content").html(header + html)
         mdui.mutation()
         router.updatePageLinks()
     }
 }
 //- 展示專輯歌曲
-async function showAlbumSongs(a, b, c) {
-    let artist = a == '#' ? '' : a,
-        album = b == '#' ? '' : b,
-        albumArtist = c == '#' ? '' : c
-
-    //如果從首頁按進去頁籤沒切換
+async function showAlbumSongs(albumSource, albumID) {
+    let albumData = JSON.parse(albumID)
+    let name = albumData.album_name
+    let artist = albumData.album_artist_name
+    let cover = `/pokaapi/cover/?moduleName=${albumSource}&data=${encodeURIComponent(JSON.stringify({type:"album",info:albumData}))}`
+        //如果從首頁按進去頁籤沒切換
     $("#content").attr('data-page', 'album')
     let albumInfo = `
     <div class="album-info">
         <div class="cover mdui-shadow-1" 
-             style="background-image:url('${getCover("album", album,artist,albumArtist)}')"></div>
+             style="background-image:url('${cover}')"></div>
         <div class="info">
             <div class="album-name mdui-text-truncate mdui-text-color-theme-text" 
-                 title="${album}">${album}</div>
+                 title="${name}">${name}</div>
             <div class="artist-name mdui-text-truncate mdui-text-color-theme-secondary" 
                  title="${artist}">${artist}</div>
             <div class="grow"></div>
@@ -334,19 +312,13 @@ async function showAlbumSongs(a, b, c) {
     mdui.mutation()
 
     //抓資料
-    let data = await getAlbumSong(album, albumArtist, artist),
-        html = HTML.showSongs(data.data.songs)
+    let result = await axios.get(`/pokaapi/albumSongs/?moduleName=${albumSource}&data=${albumID}`)
+    html = template.parseSongs(result.data.songs)
     if ($("#content").attr('data-page') == 'album') {
         $("#content").html(albumInfo + html)
-        $("#content>:not(.album-info):not(.mdui-divider)")
+        $("#content .album-info .time").html(`${result.data.songs.length} 首歌曲`)
+        $("#content .album-info .actions").html(actions)
     }
-
-    // 獲取總時間
-    let time = 0
-    for (i = 0; i < data.data.songs.length; i++) time += data.data.songs[i].additional.song_audio.duration
-    $("#content .album-info .time").html(`${data.data.songs.length} 首歌曲/${secondToTime(time)}`)
-    $("#content .album-info .actions").html(actions)
-
 }
 // 資料夾
 async function showFolder(moduleName, folderId) {
@@ -366,7 +338,7 @@ async function showFolder(moduleName, folderId) {
     console.log(result)
 
 
-    let folderHTML = template.praseFolder(result.data.folders) + template.praseSongs(result.data.songs)
+    let folderHTML = template.parseFolder(result.data.folders) + template.parseSongs(result.data.songs)
 
     if ($("#content").attr('data-page') == 'folder') {
         $("#content").html(header + folderHTML)

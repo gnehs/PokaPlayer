@@ -96,21 +96,6 @@ function getSong(song) {
     return '/song/' + res + '/' + id
 }
 
-//- 取得專輯歌曲
-async function getAlbumSong(album_name, album_artist_name, artist_name) {
-    let PARAMS_JSON = [
-        { key: "additional", "value": "song_tag,song_audio,song_rating" },
-        { key: "library", "value": "shared" },
-        { key: "limit", "value": 100000 },
-        { key: "sort_by", "value": "title" },
-        { key: "sort_direction", "value": "ASC" },
-    ]
-    if (album_name) PARAMS_JSON.push({ key: "album", "value": album_name })
-    if (album_artist_name) PARAMS_JSON.push({ key: "album_artist", "value": album_artist_name })
-    if (artist_name) PARAMS_JSON.push({ key: "artist", "value": artist_name })
-    let info = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "list", PARAMS_JSON, 3)
-    return info
-}
 //- 取得搜尋結果
 async function searchAll(keyword) {
     let PARAMS_JSON = [

@@ -6,8 +6,7 @@ const template = {
             </div>`
     },
     getSpinner: () => `<div class="mdui-spinner mdui-spinner-colorful mdui-center" style="margin-top:80px"></div>`,
-
-    praseFolder: folders => {
+    parseFolder: folders => {
         let html = `<ul class="mdui-list">`
         for (i = 0; i < folders.length; i++) {
             let folder = folders[i]
@@ -19,14 +18,13 @@ const template = {
         html += `</ul>`
         return html
     },
-    praseSongs: songs => {
+    parseSongs: songs => {
         songList = songs
         let html = `<div class="songs"><div class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4">`
         for (i = 0; i < songs.length; i++) {
             let song = songs[i]
             let title = song.name
             let artist = song.artist
-            let album = song.album
             let clickAction = `onclick="playSongs(songList,\`${song.id}\`);router.navigate('now');" `
             let addAction = `onclick="addSong(songList,'${song.id}')"`
 
@@ -54,5 +52,31 @@ const template = {
         html += '</div></div>'
         return html
 
+    },
+    parseAlbums: albums => {
+        let r = '<div class="albums">'
+        for (i = 0; i < albums.length; i++) {　
+            let album = albums[i]
+            let name = album.name
+            let artist = album.artist
+            let img = album.cover
+            r += `
+               <div class="mdui-card mdui-ripple mdui-hoverable album" 
+                   href="album/${album.source}/${encodeURIComponent(album.id)}"  
+                   style="background-image:url('${img}');"
+                   title="${name}${artist ? '&#10;' + artist : ''}"
+                   data-navigo>
+                   <div class="mdui-card-media">
+                       <div class="mdui-card-media-covered mdui-card-media-covered-gradient">
+                           <div class="mdui-card-primary">
+                                <div class="mdui-card-primary-title mdui-text-truncate">${name}</div>
+                                <div class="mdui-card-primary-subtitle mdui-text-truncate">${artist}</div>
+                           </div>
+                       </div>
+                   </div>
+               </div>`
+        }
+        r += "</div>"
+        return r
     }
 }
