@@ -75,7 +75,7 @@ function parseArtists(artists) {
         r.push({
             name: artists[i].name,
             source: 'DSM',
-            cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(JSON.stringify({"type":"artist","info":artists[i].name}))}`,
+            cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(JSON.stringify({"type":"artist","info":artists[i].name||'未知'}))}`,
             id: artists[i].name
         })
     }
@@ -88,7 +88,7 @@ function parseComposers(composers) {
         r.push({
             name: composers[i].name,
             source: 'DSM',
-            cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(JSON.stringify({"type":"composer","info":composers[i].name}))}`,
+            cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(JSON.stringify({"type":"composer","info":composers[i].name||'未知'}))}`,
             id: composers[i].name
         })
     }
