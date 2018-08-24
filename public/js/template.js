@@ -1,9 +1,11 @@
 const template = {
     getHeader: title => {
         let style = window.localStorage["randomImg"] ? `background-image: url(${window.localStorage["randomImg"]});` : `background-image: url(/og/og.png);`
-        return `<div class="mdui-container-fluid mdui-valign mdui-typo mdui-color-theme" id="header-wrapper" style="${style}">
-                <h1 class="mdui-center mdui-text-color-white">${title}</h1>
-            </div>`
+        return `<div class="mdui-typo" id="header-wrapper">
+                    <div class="bg mdui-color-theme" style="${style}"></div>
+                    <div class="title mdui-text-color-theme-text mdui-text-truncate">${title}</div>
+                </div>`
+
     },
     getSpinner: () => `<div class="mdui-spinner mdui-spinner-colorful mdui-center" style="margin-top:80px"></div>`,
     parseFolder: folders => {

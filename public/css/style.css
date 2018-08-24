@@ -95,15 +95,30 @@ header.mdui-appbar.mdui-appbar-fixed {
 /* header-wrapper */
 
 #header-wrapper {
-    margin-bottom: 32px;
-    padding: 0 30px;
-    min-height: 150px;
-    background-size: cover;
-    background-position: center;
+    margin: -20px -25px -200px -25px;
+    width: calc(100% + 50px);
+    overflow: hidden;
 }
 
-#header-wrapper h1 {
-    text-shadow: 0 1px 8px #000000ad;
+#header-wrapper .bg {
+    min-height: 400px;
+    background-size: cover;
+    background-position: center;
+    object-fit: cover;
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 10%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 10%, transparent 100%);
+}
+
+#header-wrapper .title {
+    font-weight: bold;
+    font-size: 3.5em;
+    padding: 0 48px;
+    margin-top: -300px;
+    margin-bottom: 200px;
+    z-index: 3;
+    width: 100%;
+    position: relative;
+    max-width: calc(100% - 50px * 2);
 }
 
 #header-wrapper+.mdui-tab {
