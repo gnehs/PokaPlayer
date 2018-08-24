@@ -15,9 +15,9 @@ router
         'album': showAlbum,
         'folder/:source/:dir': params => showFolder(params.source, params.dir),
         'folder': showFolder,
-        'artist/:artist': params => showArtist(params.artist),
+        'artist/:source/:artist': params => showArtist(params.source, params.artist),
         'artist': showArtist,
-        'composer/:composer': params => showComposer(params.composer),
+        'composer/:source/:composer': params => showComposer(params.source, params.composer),
         'composer': showComposer,
         'playlist/:playlistType/:playlistID': params => showPlaylistSongs(params.playlistType + '/' + params.playlistID),
         'playlist': showPlaylist,
@@ -285,7 +285,7 @@ async function showAlbumSongs(albumSource, albumID) {
     let albumInfo = `
     <div class="album-info">
         <div class="cover mdui-shadow-1" 
-             style="background-image:url('${cover}')"></div>
+             style="background-image:url('${cover.replace(/'/g, "\\'")}')"></div>
         <div class="info">
             <div class="album-name mdui-text-truncate mdui-text-color-theme-text" 
                  title="${name}">${name}</div>
@@ -346,83 +346,46 @@ async function showFolder(moduleName, folderId) {
         router.updatePageLinks()
     }
 }
-async function showArtist(artist) {
-    let header = template.getHeader("演出者")
+async function showArtist(moduleName, artist) {
+    let header = template.getHeader(artist ? "演出者 / " + artist : "演出者")
     $("#content").attr('data-page', 'artist')
     $("#content").html(header + template.getSpinner())
     mdui.mutation()
     if (artist) {
-        let header = template.getHeader("演出者 / " + artist)
-        let PARAMS_JSON = [
-            { key: "additional", "value": "avg_rating" },
-            { key: "library", "value": "shared" },
-            { key: "limit", "value": 1000 },
-            { key: "method", "value": 'list' },
-            { key: "sort_by", "value": "display_artist" },
-            { key: "sort_direction", "value": "ASC" },
-            { key: "artist", "value": artist != "未知" ? artist : '' },
-        ]
-        let data = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3),
-            albumHTML = HTML.showAlbums(data.data.albums)
+        let result = await axios.get(`/pokaapi/artistAlbums/?moduleName=${moduleName}&id=${artist=='未知'?'':artist}`)
+        let albumHTML = template.parseAlbums(result.data.albums)
         if ($("#content").attr('data-page') == 'artist')
             $("#content").html(header + albumHTML)
     } else {
-        //請求資料囉
-        let PARAMS_JSON = [
-            { key: "limit", "value": 1000 },
-            { key: "library", "value": "shared" },
-            { key: "additional", "value": "avg_rating" },
-            { key: "sort_by", "value": "name" },
-            { key: "sort_direction", "value": "ASC" }
-        ]
-        let data = await getAPI("AudioStation/artist.cgi", "SYNO.AudioStation.Artist", "list", PARAMS_JSON, 4),
-            artistsHTML = HTML.showArtist(data.data.artists)
+        let result = await axios.get(`/pokaapi/artists`),
+            artistsHTML = template.parseArtists(result.data.artists)
         if ($("#content").attr('data-page') == 'artist')
             $("#content").html(header + artistsHTML)
     }
-    if ($("#content").attr('data-page') == 'artist') {
-        $("#content>:not(#header-wrapper)")
+    if ($("#content").attr('data-page') == 'artist')
         router.updatePageLinks()
-    }
+
 }
-async function showComposer(composer) {
-    let header = template.getHeader("作曲者")
+async function showComposer(moduleName, composer) {
+    let header = template.getHeader(composer ? "作曲者 / " + composer : "作曲者")
     $("#content").attr('data-page', 'composer')
     $("#content").html(header + template.getSpinner())
     mdui.mutation()
     if (composer) {
-        let header = template.getHeader("作曲者 / " + composer)
-        let PARAMS_JSON = [
-                { key: "additional", "value": "avg_rating" },
-                { key: "library", "value": "shared" },
-                { key: "limit", "value": 1000 },
-                { key: "method", "value": 'list' },
-                { key: "sort_by", "value": "display_artist" },
-                { key: "sort_direction", "value": "ASC" },
-                { key: "composer", "value": composer != "未知" ? composer : '' },
-            ],
-            data = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", PARAMS_JSON, 3),
-            albumHTML = HTML.showAlbums(data.data.albums)
+        let result = await axios.get(`/pokaapi/composerAlbums/?moduleName=${moduleName}&id=${composer=='未知'?'':composer}`)
+        console.log(result)
+        let albumHTML = template.parseAlbums(result.data.albums)
         if ($("#content").attr('data-page') == 'composer')
             $("#content").html(header + albumHTML)
     } else {
         //請求資料囉
-        let PARAMS_JSON = [
-                { key: "limit", "value": 1000 },
-                { key: "library", "value": "shared" },
-                { key: "additional", "value": "avg_rating" },
-                { key: "sort_by", "value": "name" },
-                { key: "sort_direction", "value": "ASC" }
-            ],
-            data = await getAPI("AudioStation/composer.cgi", "SYNO.AudioStation.Composer", "list", PARAMS_JSON, 2),
-            composersHTML = HTML.showComposer(data.data.composers)
+        let result = await axios.get(`/pokaapi/composers`),
+            composersHTML = template.parseComposers(result.data.composers)
         if ($("#content").attr('data-page') == 'composer')
             $("#content").html(header + composersHTML)
     }
-    if ($("#content").attr('data-page') == 'composer') {
-        $("#content>:not(#header-wrapper)")
+    if ($("#content").attr('data-page') == 'composer')
         router.updatePageLinks()
-    }
 }
 //- 播放清單
 async function showPlaylist() {
@@ -539,7 +502,7 @@ async function showNow() {
         timer = currentTime + '/' + duration,
         info = `
     <div data-player>
-        <div class="mdui-card" style="background-image:url('${img}');">
+        <div class="mdui-card" style="background-image:url('${img.replace(/'/g, "\\'")}');">
         </div>
         <div class="info">
             <div class="title  mdui-text-truncate mdui-text-color-theme-accent">${name}</div>
@@ -625,7 +588,7 @@ async function showNow() {
         let artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點擊播放鍵開始隨機播放"
         let album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>"
         let img = (nowPlaying && window.localStorage["imgRes"] != "true") ? nowPlaying.cover : getBackground(); //一定會有圖片
-        $('[data-player]>.mdui-card').attr('style', `background-image:url('${img}');`)
+        $('[data-player]>.mdui-card').attr('style', `background-image:url('${img.replace(/'/g, "\\'")}');`)
         $('[data-player]>.info .title').text(name)
         $('[data-player]>.info .artist').html(artist + album)
 
