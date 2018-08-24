@@ -81,7 +81,7 @@ const template = {
             let album = albums[i]
             let name = album.name
             let artist = album.artist
-            let img = album.cover.replace(/'/g, "\\'")
+            let img = window.localStorage["imgRes"] == "true" ? window.localStorage["randomImg"] : album.cover.replace(/'/g, "\\'")
             r += `
                <div class="mdui-card mdui-ripple mdui-hoverable album" 
                    href="album/${album.source}/${encodeURIComponent(album.id)}"  

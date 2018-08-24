@@ -208,7 +208,7 @@ function pokaHeader(title, subtitle = '', image = false, hide = false, blur = tr
 async function showHome() {
     $('#content').attr('data-page', 'home')
         // 展示讀取中
-    pokaHeader("歡迎使用", 'PokaPlayer')
+    pokaHeader("歡迎使用", `PokaPlayer ${window.localStorage["PokaPlayerVersion"]||''}`)
     $("#content").html(template.getSpinner())
     mdui.mutation()
 
