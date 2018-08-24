@@ -54,7 +54,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 #content {
-    padding-top: 64px;
+    padding-top: 32px;
     padding-bottom: 96px;
 }
 
@@ -99,6 +99,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     overflow: hidden;
     margin-bottom: -300px;
     position: relative;
+    z-index: -1;
 }
 
 #header-wrapper.hide {

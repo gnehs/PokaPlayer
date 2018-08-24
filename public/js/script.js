@@ -187,13 +187,15 @@ function pokaHeader(title, subtitle = '', image = false, hide = false, blur = tr
     $("#header-wrapper .title .subtitle").text(subtitle)
 
     //新增過度動畫
-
-    if (image && blur) {
-        $("#header-wrapper .bg").addClass('blur')
+    if ($("#header-wrapper .bg").hasClass('blur')) {
         $("#header-wrapper .bg2").addClass('blur')
     } else {
-        $("#header-wrapper .bg").removeClass('blur')
         $("#header-wrapper .bg2").removeClass('blur')
+    }
+    if (image && blur) {
+        $("#header-wrapper .bg").addClass('blur')
+    } else {
+        $("#header-wrapper .bg").removeClass('blur')
     }
     if ($("#header-wrapper .bg").attr('style') != style) {
         $("#header-wrapper .bg2").attr('style', $("#header-wrapper .bg").attr('style'))
