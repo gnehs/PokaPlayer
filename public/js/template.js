@@ -112,5 +112,20 @@ const template = {
         }
         html += '</ul>'
         return html
-    }
+    },
+    parsePlaylists: playlists => {
+        let html = `<ul class="mdui-list">`
+        for (i = 0; i < playlists.length; i++) {
+            let playlist = playlists[i]
+            html += `
+            <li class="mdui-list-item mdui-ripple" href="playlist/${encodeURIComponent(playlist.source)}/${encodeURIComponent(playlist.id)}" data-navigo>
+                <i class="mdui-list-item-avatar mdui-icon material-icons">playlist_play</i>
+                <div class="mdui-list-item-content">
+                   ${playlist.name}
+                </div>
+            </li>`　
+        }
+        html += '</ul>'
+        return html
+    },
 }

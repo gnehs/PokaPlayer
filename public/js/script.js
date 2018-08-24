@@ -19,7 +19,7 @@ router
         'artist': showArtist,
         'composer/:source/:composer': params => showComposer(params.source, params.composer),
         'composer': showComposer,
-        'playlist/:playlistType/:playlistID': params => showPlaylistSongs(params.playlistType + '/' + params.playlistID),
+        'playlist/:source/:playlistID': params => showPlaylistSongs(params.source, params.playlistID),
         'playlist': showPlaylist,
         'random': showRandom,
         'now': showNow,
@@ -225,26 +225,48 @@ async function showSearch(keyword) {
         '飛鴿傳書也找不到，咕咕咕',
         '我們把搜尋結果拿去餵魚了'
     ]
-    const noResult = () => { return `<div class="mdui-valign" style="height:150px"><p class="mdui-center">${noResultTexts[Math.floor(Math.random() * noResultTexts.length)]}</p></div>` }
+    let noResult = `<div class="mdui-valign" style="height:150px"><p class="mdui-center">${noResultTexts[Math.floor(Math.random() * noResultTexts.length)]}</p></div>`
     if (keyword) {
-        let result = await searchAll(keyword)
-        let tabs = `<div class="mdui-tab" mdui-tab style="margin-bottom:16px;">
-            <a class="mdui-tab-active mdui-ripple" href="#search-songs">歌曲 (${result.songTotal})</a>
-            <a class="mdui-ripple" href="#search-albums">專輯 (${result.albumTotal})</a>
-            <a class="mdui-ripple" href="#search-artists">演出者 (${result.artistTotal})</a>
-        </div>`
-        let resultHtml = ``
-            // 歌曲
-        if (result.songTotal > 0) resultHtml += `<div id="search-songs">${HTML.showSongs(result.songs)}</div>`
-        else resultHtml += `<div id="search-songs">${noResult()}</div>`
-            // 專輯
-        if (result.albumTotal > 0) resultHtml += `<div id="search-albums">${HTML.showAlbums(result.albums)}</div>`
-        else resultHtml += `<div id="search-albums">${noResult()}</div>`
-            // 演出者
-        if (result.artistTotal > 0) resultHtml += `<div id="search-artists">${HTML.showArtist(result.artists)}</div>`
-        else resultHtml += `<div id="search-artists">${noResult()}</div>`
+        let panelHeader = title => `<div class="mdui-panel-item">
+        <div class="mdui-panel-item-header">
+          <div class="mdui-panel-item-title">${title}</div>
+          <i class="mdui-panel-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+        </div><div class="mdui-panel-item-body">`,
+            panelFooter = `</div></div>`,
+            result = (await axios.get(`/pokaapi/search/?keyword=${keyword}`)).data,
+            panels = `<div class="mdui-panel" mdui-panel>`
+
+        if (result.folders.length > 0)
+            panels += panelHeader(`資料夾 (${result.folders.length})`),
+            panels += template.parseFolder(result.folders),
+            panels += panelFooter
+        if (result.songs.length > 0)
+            panels += panelHeader(`曲目 (${result.songs.length})`),
+            panels += template.parseSongs(result.songs),
+            panels += panelFooter
+        if (result.albums.length > 0)
+            panels += panelHeader(`專輯 (${result.albums.length})`),
+            panels += template.parseAlbums(result.albums),
+            panels += panelFooter
+        if (result.artists.length > 0)
+            panels += panelHeader(`演出者 (${result.artists.length})`),
+            panels += template.parseArtists(result.artists),
+            panels += panelFooter
+        if (result.folders.length > 0)
+            panels += panelHeader(`作曲者 (${result.composers.length})`),
+            panels += template.parseComposers(result.composers),
+            panels += panelFooter
+        if (result.folders.length > 0)
+            panels += panelHeader(`播放清單 (${result.playlists.length})`),
+            panels += template.parsePlaylists(result.playlists),
+            panels += panelFooter
+        panels += `</div>`
+
+        //無資料回傳
+        if (panels == `<div class="mdui-panel" mdui-panel></div>`) panels = noResult
+
         if ($("#content").attr('data-page') == 'search') {
-            $("#content").html(html + tabs + resultHtml)
+            $("#content").html(html + panels)
             mdui.mutation()
         }
     } else
@@ -279,7 +301,7 @@ async function showAlbumSongs(albumSource, albumID) {
     let albumData = JSON.parse(albumID)
     let name = albumData.album_name
     let artist = albumData.album_artist_name
-    let cover = `/pokaapi/cover/?moduleName=${albumSource}&data=${encodeURIComponent(JSON.stringify({type:"album",info:albumData}))}`
+    let cover = `/pokaapi/cover/?moduleName=${encodeURIComponent(albumSource)}&data=${encodeURIComponent(JSON.stringify({type:"album",info:albumData}))}`
         //如果從首頁按進去頁籤沒切換
     $("#content").attr('data-page', 'album')
     let albumInfo = `
@@ -312,7 +334,7 @@ async function showAlbumSongs(albumSource, albumID) {
     mdui.mutation()
 
     //抓資料
-    let result = await axios.get(`/pokaapi/albumSongs/?moduleName=${albumSource}&data=${albumID}`)
+    let result = await axios.get(`/pokaapi/albumSongs/?moduleName=${encodeURIComponent(albumSource)}&data=${encodeURIComponent(albumID)}`)
     html = template.parseSongs(result.data.songs)
     if ($("#content").attr('data-page') == 'album') {
         $("#content").html(albumInfo + html)
@@ -330,16 +352,12 @@ async function showFolder(moduleName, folderId) {
 
     let url;
     if (folderId) {
-        url = `/pokaapi/folderFiles/?moduleName=${moduleName}&id=${folderId}`
+        url = `/pokaapi/folderFiles/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(folderId)}`
     } else {
         url = `/pokaapi/folders`
     }
     let result = await axios.get(url)
-    console.log(result)
-
-
     let folderHTML = template.parseFolder(result.data.folders) + template.parseSongs(result.data.songs)
-
     if ($("#content").attr('data-page') == 'folder') {
         $("#content").html(header + folderHTML)
         $("#content>:not(#header-wrapper)")
@@ -352,7 +370,7 @@ async function showArtist(moduleName, artist) {
     $("#content").html(header + template.getSpinner())
     mdui.mutation()
     if (artist) {
-        let result = await axios.get(`/pokaapi/artistAlbums/?moduleName=${moduleName}&id=${artist=='未知'?'':artist}`)
+        let result = await axios.get(`/pokaapi/artistAlbums/?moduleName=${encodeURIComponent(moduleName)}&id=${artist=='未知'?'':encodeURIComponent(artist)}`)
         let albumHTML = template.parseAlbums(result.data.albums)
         if ($("#content").attr('data-page') == 'artist')
             $("#content").html(header + albumHTML)
@@ -372,8 +390,7 @@ async function showComposer(moduleName, composer) {
     $("#content").html(header + template.getSpinner())
     mdui.mutation()
     if (composer) {
-        let result = await axios.get(`/pokaapi/composerAlbums/?moduleName=${moduleName}&id=${composer=='未知'?'':composer}`)
-        console.log(result)
+        let result = await axios.get(`/pokaapi/composerAlbums/?moduleName=${encodeURIComponent(moduleName)}&id=${composer=='未知'?'':encodeURIComponent(composer)}`)
         let albumHTML = template.parseAlbums(result.data.albums)
         if ($("#content").attr('data-page') == 'composer')
             $("#content").html(header + albumHTML)
@@ -394,47 +411,32 @@ async function showPlaylist() {
     $("#content").html(header + template.getSpinner())
     $('#content').attr('data-page', 'playlist')
     mdui.mutation()
-    let playlist = await getAPI("AudioStation/playlist.cgi", "SYNO.AudioStation.Playlist", "list", [
-        { key: "limit", "value": 1000 },
-        { key: "library", "value": "shared" },
-        { key: "sort_by", "value": "" },
-        { key: "sort_direction", "value": "ASC" }
-    ], 3)
+    let result = await axios.get(`/pokaapi/playlists`)
     if ($("#content").attr('data-page') == 'playlist') {
-        if (playlist.data.playlists.length < 0) {
+        if (result.data.playlists.length < 0) {
             $("#content").html(header + `<div class="mdui-valign" style="height:150px"><p class="mdui-center">沒有任何播放清單</p></div>`)
         }
-        $("#content").html(header + HTML.showPlaylists(playlist.data.playlists))
+        $("#content").html(header + template.parsePlaylists(result.data.playlists))
         router.updatePageLinks()
     }
 }
 //- 播放清單歌曲
-async function showPlaylistSongs(id) {
+async function showPlaylistSongs(moduleName, playlistId) {
     //如果從首頁按進去
     $("#content").attr('data-page', 'playlist')
 
     // 展示讀取中
-    let header = template.getHeader("正在讀取播放清單")
+    let header = template.getHeader("讀取中...")
     $("#content").html(header + template.getSpinner())
     mdui.mutation()
 
     //抓資料
-    let playlist = await getAPI("AudioStation/playlist.cgi", "SYNO.AudioStation.Playlist", "getinfo", [
-        { key: "limit", "value": 1000 },
-        { key: "library", "value": "shared" },
-        { key: "sort_by", "value": "" },
-        { key: "additional", "value": "songs_song_tag,songs_song_audio,songs_song_rating,sharing_info" },
-        { key: "id", "value": id },
-        { key: "sort_direction", "value": "ASC" }
-    ], 3)
-    let result = playlist.data.playlists[0]
-    let name = result.name
-    let songs = HTML.showSongs(result.additional.songs)
+    let result = (await axios.get(`/pokaapi/playlistSongs/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(playlistId)}`)).data
+    let name = result.playlists[0].name
+    let songs = template.parseSongs(result.songs)
     header = template.getHeader(name)
-    if ($("#content").attr('data-page') == 'playlist') {
+    if ($("#content").attr('data-page') == 'playlist')
         $("#content").html(header + songs)
-        $("#content>:not(#header-wrapper)")
-    }
 }
 //- 隨機播放
 async function showRandom() {
@@ -443,29 +445,14 @@ async function showRandom() {
     $("#content").html(header + template.getSpinner())
     $('#content').attr('data-page', 'random')
     mdui.mutation()
-    let PARAMS_JSON = [
-            { key: "additional", "value": "song_tag,song_audio,song_rating" },
-            { key: "library", "value": "shared" },
-            { key: "limit", "value": 100 },
-            { key: "sort_by", "value": "random" }
-        ],
-        data = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "list", PARAMS_JSON, 1),
-        album = HTML.showSongs(data.data.songs)
-    if ($("#content").attr('data-page') == 'random') {
-        $("#content").html(header + album)
-        $("#content>:not(#header-wrapper)")
-    }
+    result = await axios.get(`/pokaapi/randomSongs`)
+    if ($("#content").attr('data-page') == 'random')
+        $("#content").html(header + template.parseSongs(result.data.songs))
 }
 async function playRandom() {
     router.navigate('now')
-    let PARAMS_JSON = [
-            { key: "additional", "value": "song_tag,song_audio,song_rating" },
-            { key: "library", "value": "shared" },
-            { key: "limit", "value": 100 },
-            { key: "sort_by", "value": "random" }
-        ],
-        data = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "list", PARAMS_JSON, 1)
-    playSongs(data.data.songs, false, false)
+    let result = await axios.get(`/pokaapi/randomSongs`)
+    playSongs(result.data.songs, false, false)
 }
 //- 現正播放
 async function showNow() {
@@ -693,34 +680,23 @@ function showLrc() {
 }
 //- 播放音樂
 
-function playSongs(songlist, song = false, clear = true) {
+function playSongs(songs, song = false, clear = true) {
     if (clear) ap.list.clear()
     let playlist = []
-    for (i = 0; i < songlist.length; i++) {
-        let nowsong = songlist[i],
-            src, name, artist, album, poster, albumArtist = ''
-        if (nowsong.url) {
-            src = nowsong.url
-            name = nowsong.name
-            artist = nowsong.artist
-            album = nowsong.album
+    for (i = 0; i < songs.length; i++) {
+        let nowsong = songs[i],
+            src = nowsong.url,
+            name = nowsong.name,
+            artist = nowsong.artist,
+            album = nowsong.album,
             poster = nowsong.cover
-        } else {
-            src = getSong(nowsong)
-            name = nowsong.title
-            artist = nowsong.additional.song_tag.artist
-            album = nowsong.additional.song_tag.album
-            albumArtist = nowsong.additional.song_tag.album_artist
-            poster = getCover("album", album, artist, albumArtist)
-        }
         playlist.push({
             url: src,
             cover: poster,
             name: name,
             artist: artist,
             album: album,
-            id: nowsong.id,
-            albumArtist: albumArtist
+            id: nowsong.id
         })
         if (nowsong.id == song) { songtoplay = i }
     }
@@ -738,20 +714,18 @@ function addSong(songlist, songID = 0) {
     for (i = 0; i < songlist.length; i++) {
         let nowsong = songlist[i]
         if (nowsong.id == songID || songID == 0) {
-            let src = getSong(nowsong)
-            let name = nowsong.title
-            let artist = nowsong.additional.song_tag.artist
-            let album = nowsong.additional.song_tag.album
-            let albumArtist = nowsong.additional.song_tag.album_artist
-            let poster = getCover("album", album, artist, albumArtist)
+            let src = nowsong.url,
+                name = nowsong.name,
+                artist = nowsong.artist,
+                album = nowsong.album,
+                poster = nowsong.cover
             playlist.push({
                 url: src,
                 cover: poster,
                 name: name,
                 artist: artist,
                 album: album,
-                id: nowsong.id,
-                albumArtist: albumArtist
+                id: nowsong.id
             })
         }
     }
