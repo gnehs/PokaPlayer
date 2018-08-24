@@ -98,35 +98,35 @@ header.mdui-appbar.mdui-appbar-fixed {
     width: 100%;
     overflow: hidden;
     margin-bottom: -300px;
+    position: relative;
 }
 
 #header-wrapper.hide {
     display: none;
 }
 
-#header-wrapper .bg.blur {
-    filter: blur(5px);
-    transform: scale(1.1);
-    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .4) 10%, transparent 90%);
-    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .4) 10%, transparent 90%);
-}
-
-#header-wrapper .bg {
+#header-wrapper .bg,
+#header-wrapper .bg2 {
+    transform: scale(1.05);
     min-height: 400px;
     background-size: cover;
     background-position: center;
     object-fit: cover;
-    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .4) 0%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .4) 0%, transparent 100%);
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .4) 10%, transparent 90%);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .4) 10%, transparent 90%);
     animation-duration: .4s;
     animation-timing-function: ease;
+    width: 100%;
+}
+
+#header-wrapper .bg.blur,
+#header-wrapper .bg2.blur {
+    filter: blur(5px);
 }
 
 #header-wrapper .bg2 {
-    min-height: 400px;
     position: absolute;
-    animation-duration: .4s;
-    animation-timing-function: ease;
+    animation-direction: reverse;
 }
 
 #header-wrapper .bg2:not(.changeing) {
@@ -139,7 +139,6 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 #header-wrapper .bg2.changeing {
     animation-name: fade;
-    animation-direction: reverse;
 }
 
 @keyframes fade {
