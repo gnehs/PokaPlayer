@@ -43,7 +43,7 @@ var settingsItem = (title, text = '', icon = '', link = '', data = '', other = '
 //- 設定
 async function showSettings() {
     $('#content').attr('data-page', 'settings')
-    let header = HTML.getHeader("設定")
+    let header = template.getHeader("設定")
     
     let settingItems = `<ul class="mdui-list">
         ${settingsItem("主題","設定主題色、主色及強調色","color_lens","settings/theme")}
@@ -104,7 +104,7 @@ async function showSettings() {
 }
 async function showSettingsTheme() {
     $('#content').attr('data-page', 'settings')
-    let header = HTML.getHeader("設定 / 主題"), 
+    let header = template.getHeader("設定 / 主題"), 
         settingItems = `<ul class="mdui-list">
         ${settingsItem("返回","","arrow_back","settings")}
         ${settingsItem("主題色",window.localStorage["mdui-theme-color"]=='true'?'Dark':'Light',"color_lens","",`data-theme="mdui-theme-color"`)}
@@ -181,7 +181,7 @@ async function showSettingsTheme() {
 }
 async function showSettingsPic() {
     $('#content').attr('data-page', 'settings')
-    let header = HTML.getHeader("設定 / 隨機圖片")
+    let header = template.getHeader("設定 / 隨機圖片")
     let settingItems = `<ul class="mdui-list">
         ${settingsItem("返回","","arrow_back","settings")}
         ${settingsItem("圖片來源",window.localStorage["randomImgName"],"image","","data-pic-source")}
@@ -265,7 +265,7 @@ async function showSettingsPic() {
 }
 async function showSettingsAbout() {
     $('#content').attr('data-page', 'settings')
-    let header = HTML.getHeader("設定 / 關於")
+    let header = template.getHeader("設定 / 關於")
     let settingItems = `<ul class="mdui-list">
         ${settingsItem("返回","","arrow_back","settings")}
         ${settingsItem("更新","正在檢查更新...","system_update","","data-upgrade")}

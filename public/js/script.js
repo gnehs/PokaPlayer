@@ -13,7 +13,7 @@ router
         'search': showSearch,
         'album/:artist/:name/:albumArtist': params => showAlbumSongs(params.artist, params.name, params.albumArtist),
         'album': showAlbum,
-        'folder/:dir': params => showFolder(params.dir),
+        'folder/:source/:dir': params => showFolder(params.source, params.dir),
         'folder': showFolder,
         'artist/:artist': params => showArtist(params.artist),
         'artist': showArtist,
@@ -178,8 +178,8 @@ function secondToTime(second) {
 async function showHome() {
     $('#content').attr('data-page', 'home')
         // 展示讀取中
-    let header = HTML.getHeader("PokaPlayer")
-    $("#content").html(header + HTML.getSpinner())
+    let header = template.getHeader("PokaPlayer")
+    $("#content").html(header + template.getSpinner())
     mdui.mutation()
 
     let data = await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "list", [{ key: "limit", "value": -1 }, { key: "offset", "value": 0 }]),
@@ -262,9 +262,9 @@ async function showSearch(keyword) {
 //- 列出專輯
 async function showAlbum() {
     // 展示讀取中
-    let header = HTML.getHeader("專輯")
+    let header = template.getHeader("專輯")
     $('#content').attr('data-page', 'album')
-    $("#content").html(header + HTML.getSpinner())
+    $("#content").html(header + template.getSpinner())
     mdui.mutation()
     let albums = await getAPI("AudioStation/album.cgi", "SYNO.AudioStation.Album", "list", [
             { key: "additional", "value": "avg_rating" },
@@ -307,7 +307,7 @@ async function showAlbumSongs(a, b, c) {
     let albumInfo = `
     <div class="album-info">
         <div class="cover mdui-shadow-1" 
-             style="background-image:url(${getCover("album", album,artist,albumArtist)})"></div>
+             style="background-image:url('${getCover("album", album,artist,albumArtist)}')"></div>
         <div class="info">
             <div class="album-name mdui-text-truncate mdui-text-color-theme-text" 
                  title="${album}">${album}</div>
@@ -330,7 +330,7 @@ async function showAlbumSongs(a, b, c) {
     </button>`
 
     // 展示讀取中
-    $("#content").html(albumInfo + HTML.getSpinner())
+    $("#content").html(albumInfo + template.getSpinner())
     mdui.mutation()
 
     //抓資料
@@ -349,25 +349,25 @@ async function showAlbumSongs(a, b, c) {
 
 }
 // 資料夾
-async function showFolder(folder) {
+async function showFolder(moduleName, folderId) {
     $("#content").attr('data-page', 'folder')
         // 展示讀取中
-    let header = HTML.getHeader("資料夾")
-    $("#content").html(header + HTML.getSpinner())
+    let header = template.getHeader("資料夾")
+    $("#content").html(header + template.getSpinner())
     mdui.mutation()
-    let PARAMS_JSON = [
-        { key: "additional", "value": "song_tag,song_audio,song_rating" },
-        { key: "library", "value": "shared" },
-        { key: "limit", "value": 1000 },
-        { key: "method", "value": 'list' },
-        { key: "sort_by", "value": "title" },
-        { key: "sort_direction", "value": "ASC" },
-    ]
-    if (folder) {
-        PARAMS_JSON.push({ key: "id", "value": folder })
+
+    let url;
+    if (folderId) {
+        url = `/pokaapi/folderFiles/?moduleName=${moduleName}&id=${folderId}`
+    } else {
+        url = `/pokaapi/folders`
     }
-    let data = await getAPI("AudioStation/folder.cgi", "SYNO.AudioStation.Folder", "list", PARAMS_JSON, 2),
-        folderHTML = HTML.showFolder(data.data.items)
+    let result = await axios.get(url)
+    console.log(result)
+
+
+    let folderHTML = template.praseFolder(result.data.folders) + template.praseSongs(result.data.songs)
+
     if ($("#content").attr('data-page') == 'folder') {
         $("#content").html(header + folderHTML)
         $("#content>:not(#header-wrapper)")
@@ -375,12 +375,12 @@ async function showFolder(folder) {
     }
 }
 async function showArtist(artist) {
-    let header = HTML.getHeader("演出者")
+    let header = template.getHeader("演出者")
     $("#content").attr('data-page', 'artist')
-    $("#content").html(header + HTML.getSpinner())
+    $("#content").html(header + template.getSpinner())
     mdui.mutation()
     if (artist) {
-        let header = HTML.getHeader("演出者 / " + artist)
+        let header = template.getHeader("演出者 / " + artist)
         let PARAMS_JSON = [
             { key: "additional", "value": "avg_rating" },
             { key: "library", "value": "shared" },
@@ -414,12 +414,12 @@ async function showArtist(artist) {
     }
 }
 async function showComposer(composer) {
-    let header = HTML.getHeader("作曲者")
+    let header = template.getHeader("作曲者")
     $("#content").attr('data-page', 'composer')
-    $("#content").html(header + HTML.getSpinner())
+    $("#content").html(header + template.getSpinner())
     mdui.mutation()
     if (composer) {
-        let header = HTML.getHeader("作曲者 / " + composer)
+        let header = template.getHeader("作曲者 / " + composer)
         let PARAMS_JSON = [
                 { key: "additional", "value": "avg_rating" },
                 { key: "library", "value": "shared" },
@@ -455,8 +455,8 @@ async function showComposer(composer) {
 //- 播放清單
 async function showPlaylist() {
     // 展示讀取中
-    let header = HTML.getHeader("所有清單")
-    $("#content").html(header + HTML.getSpinner())
+    let header = template.getHeader("所有清單")
+    $("#content").html(header + template.getSpinner())
     $('#content').attr('data-page', 'playlist')
     mdui.mutation()
     let playlist = await getAPI("AudioStation/playlist.cgi", "SYNO.AudioStation.Playlist", "list", [
@@ -479,8 +479,8 @@ async function showPlaylistSongs(id) {
     $("#content").attr('data-page', 'playlist')
 
     // 展示讀取中
-    let header = HTML.getHeader("正在讀取播放清單")
-    $("#content").html(header + HTML.getSpinner())
+    let header = template.getHeader("正在讀取播放清單")
+    $("#content").html(header + template.getSpinner())
     mdui.mutation()
 
     //抓資料
@@ -495,7 +495,7 @@ async function showPlaylistSongs(id) {
     let result = playlist.data.playlists[0]
     let name = result.name
     let songs = HTML.showSongs(result.additional.songs)
-    header = HTML.getHeader(name)
+    header = template.getHeader(name)
     if ($("#content").attr('data-page') == 'playlist') {
         $("#content").html(header + songs)
         $("#content>:not(#header-wrapper)")
@@ -504,8 +504,8 @@ async function showPlaylistSongs(id) {
 //- 隨機播放
 async function showRandom() {
     // 展示讀取中
-    let header = HTML.getHeader("隨機播放")
-    $("#content").html(header + HTML.getSpinner())
+    let header = template.getHeader("隨機播放")
+    $("#content").html(header + template.getSpinner())
     $('#content').attr('data-page', 'random')
     mdui.mutation()
     let PARAMS_JSON = [
@@ -567,7 +567,7 @@ async function showNow() {
         timer = currentTime + '/' + duration,
         info = `
     <div data-player>
-        <div class="mdui-card" style="background-image:url(${img});">
+        <div class="mdui-card" style="background-image:url('${img}');">
         </div>
         <div class="info">
             <div class="title  mdui-text-truncate mdui-text-color-theme-accent">${name}</div>
@@ -653,7 +653,7 @@ async function showNow() {
         let artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點擊播放鍵開始隨機播放"
         let album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>"
         let img = (nowPlaying && window.localStorage["imgRes"] != "true") ? nowPlaying.cover : getBackground(); //一定會有圖片
-        $('[data-player]>.mdui-card').attr('style', `background-image:url(${img});`)
+        $('[data-player]>.mdui-card').attr('style', `background-image:url('${img}');`)
         $('[data-player]>.info .title').text(name)
         $('[data-player]>.info .artist').html(artist + album)
 
@@ -762,14 +762,22 @@ function playSongs(songlist, song = false, clear = true) {
     if (clear) ap.list.clear()
     let playlist = []
     for (i = 0; i < songlist.length; i++) {
-        let nowsong = songlist[i]
-        if (nowsong.id.match(/dir_/)) continue; //這是資料夾
-        let src = getSong(nowsong)
-        let name = nowsong.title
-        let artist = nowsong.additional.song_tag.artist
-        let album = nowsong.additional.song_tag.album
-        let albumArtist = nowsong.additional.song_tag.album_artist
-        let poster = getCover("album", album, artist, albumArtist)
+        let nowsong = songlist[i],
+            src, name, artist, album, poster, albumArtist = ''
+        if (nowsong.url) {
+            src = nowsong.url
+            name = nowsong.name
+            artist = nowsong.artist
+            album = nowsong.album
+            poster = nowsong.cover
+        } else {
+            src = getSong(nowsong)
+            name = nowsong.title
+            artist = nowsong.additional.song_tag.artist
+            album = nowsong.additional.song_tag.album
+            albumArtist = nowsong.additional.song_tag.album_artist
+            poster = getCover("album", album, artist, albumArtist)
+        }
         playlist.push({
             url: src,
             cover: poster,

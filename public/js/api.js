@@ -85,6 +85,7 @@ async function getMetingLrcById(id) {
 
 //- 取得歌曲連結
 function getSong(song) {
+    if (song.url) return song.url //過度用
     let id = song.id
     let res = window.localStorage["musicRes"].toLowerCase()
     let bitrate = song.additional.song_audio.bitrate / 1000
