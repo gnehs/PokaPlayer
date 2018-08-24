@@ -1,5 +1,33 @@
 const template = {
     getSpinner: () => `<div class="mdui-spinner mdui-spinner-colorful mdui-center" style="margin-top:80px"></div>`,
+    parseHome: data => {
+        let r = ``;
+        if (data.albums.length > 0) {
+            r += `<h1>專輯</h1>`
+            r += template.parseAlbums(data.albums)
+        }
+        if (data.artists.length > 0) {
+            r += `<h1>演出者</h1>`
+            r += template.parseArtists(data.artists)
+        }
+        if (data.composers.length > 0) {
+            r += `<h1>作曲者</h1>`
+            r += template.parseComposers(data.composers)
+        }
+        if (data.playlists.length > 0) {
+            r += `<h1>播放清單</h1>`
+            r += template.parsePlaylists(data.playlists)
+        }
+        if (data.folders.length > 0) {
+            r += `<h1>資料夾</h1>`
+            r += template.parseFolder(data.folders)
+        }
+        if (data.songs.length > 0) {
+            r += `<h1>歌曲</h1>`
+            r += template.parseSongs(data.songs)
+        }
+        return r
+    },
     parseFolder: folders => {
         let html = `<ul class="mdui-list">`
         for (i = 0; i < folders.length; i++) {

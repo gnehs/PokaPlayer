@@ -97,6 +97,34 @@ lyrics {
     lyric:''
 }
 */
+//-----------------------------> 首頁
+// 取得想推薦的東西(?
+router.get('/home/', async(req, res) => {
+    //http://localhost:3000/pokaapi/home
+    let resData = { folders: [], songs: [], albums: [], songs: [], artists: [], composers: [], playlists: [] }
+    for (var i in Object.keys(moduleList)) {
+        let x = moduleList[Object.keys(moduleList)[i]]
+        let y = require(x.js)
+        if (x.active.indexOf('getHome') > -1) {
+            let result = await y.getHome() || null
+            if (result) {
+                if (result.folders)
+                    for (i = 0; i < result.folders.length; i++) resData.folders.push(result.folders[i])
+                if (result.songs)
+                    for (i = 0; i < result.songs.length; i++) resData.songs.push(result.songs[i])
+                if (result.albums)
+                    for (i = 0; i < result.albums.length; i++) resData.albums.push(result.albums[i])
+                if (result.artists)
+                    for (i = 0; i < result.artists.length; i++) resData.artists.push(result.artists[i])
+                if (result.composers)
+                    for (i = 0; i < result.composers.length; i++) resData.composers.push(result.composers[i])
+                if (result.playlists)
+                    for (i = 0; i < result.playlists.length; i++) resData.playlists.push(result.playlists[i])
+            }
+        }
+    }
+    return res.json(resData)
+});
 //-----------------------------> 資料夾
 // 取得資料夾清單(根目錄)
 router.get('/folders/', async(req, res) => {

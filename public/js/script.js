@@ -212,10 +212,9 @@ async function showHome() {
     $("#content").html(template.getSpinner())
     mdui.mutation()
 
-    let data = await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "list", [{ key: "limit", "value": -1 }, { key: "offset", "value": 0 }]),
-        album = HTML.showPins(data.data.items)
-    $("#content").html(album)
-    $("#content>:not(#header-wrapper)")
+    let result = await axios.get(`/pokaapi/home`)
+
+    $("#content").html(template.parseHome(result.data))
     router.updatePageLinks()
 }
 //- 搜尋
