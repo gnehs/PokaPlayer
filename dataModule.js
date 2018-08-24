@@ -1,5 +1,17 @@
 const fs = require('fs')
+const config = require('./config.json'); // 設定檔
 const router = require('express').Router()
+const FileStore = require('session-file-store')(require('express-session')); // session
+const session = require('express-session')({
+    store: new FileStore(),
+    secret: config.PokaPlayer.sessionSecret,
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        expires: new Date(Date.now() + 60 * 60 * 1000 * 24 * 7)
+    }
+});
+router.use(session);
 
 let moduleList = {};
 fs.readdir(__dirname + "/dataModule", (err, files) => {
@@ -23,13 +35,16 @@ function pokaDecode(str) {
     return Buffer.from(str, 'base64').toString('utf-8')
 }
 
-// 先在這裡蹦蹦蹦再轉交給其他好朋友
-router.use((req, res, next) => {
-    next();
-});
 // 首頁
 router.get('/', (req, res) => {
     res.send('PokaPlayer API');
+});
+// 先在這裡蹦蹦蹦再轉交給其他好朋友
+router.use((req, res, next) => {
+    if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
+        res.status(403).send('Permission Denied Desu')
+    else
+        next();
 });
 
 /*
