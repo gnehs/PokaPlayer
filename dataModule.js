@@ -74,6 +74,13 @@ playlist {
     source:'',
     id: ''
 }
+lyrics {
+    name:''
+    artist:''
+    source:''
+    id:'',
+    lyric:''
+}
 */
 //-----------------------------> 資料夾
 // 取得資料夾清單(根目錄)
@@ -290,6 +297,52 @@ router.get('/cover/', async(req, res) => {
     else
         return cover.pipe(res)
 });
+//-----------------------------> 歌詞
+// 搜尋歌詞
+router.get('/searchLyrics/', async(req, res) => {
+    //http://localhost:3000/pokaapi/searchLyrics/?keyword=a
+    let resData = { lyrics: [] }
+    for (var i in Object.keys(moduleList)) {
+        let x = moduleList[Object.keys(moduleList)[i]]
+        let y = require(x.js)
+        if (x.active.indexOf('searchLyrics') > -1) {
+            let result = await y.searchLyrics(req.query.keyword) || null
+            if (result && result.lyrics)
+                for (i = 0; i < result.lyrics.length; i++) resData.lyrics.push(result.lyrics[i])
+        }
+    }
+    return res.json(resData)
+});
+router.get('/lyric/', async(req, res) => {
+    //http://localhost:3000/pokaapi/lyric/?moduleName=DSM&id=music_1801
+    let moduleName = req.query.moduleName
+    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+    // 沒這東西
+    if (!_module || moduleList[moduleName].active.indexOf('getLyric') == -1) return res.status(501).send("The required module is currently unavailable :(")
+    return res.json({
+        lyric: [{
+            source: req.query.moduleName,
+            id: req.query.id,
+            lyric: await _module.getLyric(req.query.id)
+        }]
+    })
+});
+//-----------------------------> 隨機
+// 隨機歌曲
+router.get('/randomSongs/', async(req, res) => {
+    //http://localhost:3000/pokaapi/randomSongs/
+    let resData = { songs: [] }
+    for (var i in Object.keys(moduleList)) {
+        let x = moduleList[Object.keys(moduleList)[i]]
+        let y = require(x.js)
+        if (x.active.indexOf('getRandomSongs') > -1) {
+            let result = await y.getRandomSongs(req.query.keyword) || null
+            if (result && result.songs)
+                for (i = 0; i < result.songs.length; i++) resData.songs.push(result.songs[i])
+        }
+    }
+    return res.json(resData)
+});
 // 取得歌曲
 /*router.get('/song/:moduleName/:data', (req, res) => {
     let songs = {}
@@ -307,6 +360,7 @@ router.get('/cover/', async(req, res) => {
     })
     res.json(songs);
 });*/
+
 router.use((req, res, next) => {
     res
         .status(404)

@@ -1,7 +1,8 @@
 const config = require('../config.json'), // 很會設定ㄉ朋友
     schedule = require('node-schedule'), // 很會計時ㄉ朋友
     request = require('request').defaults({ jar: require('request').jar() }), //很會請求ㄉ朋友
-    dsmURL = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}`
+    dsmURL = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}`,
+    lyricRegex = /\[([0-9.:]*)\]/i
 
 function parseSongs(songs) {
     let r = []
@@ -90,6 +91,21 @@ function parseComposers(composers) {
             cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(JSON.stringify({"type":"composer","info":composers[i].name}))}`,
             id: composers[i].name
         })
+    }
+    return r
+}
+
+function parseLyrics(lyrics) {
+    let r = []
+    for (i = 0; i < lyrics.length; i++) {
+        if (lyrics[i].additional.full_lyrics.match(lyricRegex))
+            r.push({
+                name: lyrics[i].title,
+                artist: lyrics[i].artist,
+                source: 'DSM',
+                id: lyrics[i].id,
+                lyric: lyrics[i].additional.full_lyrics
+            })
     }
     return r
 }
@@ -345,35 +361,53 @@ async function getPlaylistSongs(id) {
         }]
     }
 }
-async function getRandomPlaylistSongs(id) {
-    return [{ name: 'song form testa', link: 'blah' }];
+async function getRandomSongs(id) {
+    let result = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "list", [
+        { key: "additional", "value": "song_tag,song_audio,song_rating" },
+        { key: "library", "value": "shared" },
+        { key: "limit", "value": 100 },
+        { key: "sort_by", "value": "random" }
+    ], 1)
+    return { songs: parseSongs(result.data.songs) }
 }
 
-async function getLrc(id) {
-    return [{ name: 'song form testa', link: 'blah' }];
+async function getLyric(id) {
+    let
+        result = (await getAPI("AudioStation/lyrics.cgi", "SYNO.AudioStation.Lyrics", "getlyrics", [{ key: "id", "value": id }], 2)).data.lyrics
+    if (result.match(lyricRegex))
+        return result
+    else
+        return false
 }
 
-async function searchLrc(keyword) {
-    return [{ name: 'song form testa', link: 'blah' }];
+async function searchLyrics(keyword) {
+    let PARAMS_JSON = [
+        { key: "additional", "value": "full_lyrics" },
+        { key: "limit", "value": 30 },
+        { key: "title", "value": keyword },
+        { key: "artist", "value": '' }
+    ]
+    result = (await getAPI("AudioStation/lyrics_search.cgi", "SYNO.AudioStation.LyricsSearch", "searchlyrics", PARAMS_JSON, 2)).data.lyrics
+    return { lyrics: parseLyrics(result) }
 }
 
 module.exports = {
     name: 'DSM',
-    onLoaded, //done 
-    getSong, //done 
-    getCover, //done 
-    search, //done 
-    getAlbums, //done 
-    getAlbumSongs, //done
-    getFolders, //done 
-    getFolderFiles, //done 
-    getArtists, //done 
-    getArtistAlbums, //done
-    getComposers, //done 
-    getComposerAlbums, //done
-    getPlaylists, //done 
-    getPlaylistSongs, //done 
-    getRandomPlaylistSongs,
-    getLrc,
-    searchLrc
+    onLoaded,
+    getSong,
+    getCover,
+    search,
+    getAlbums,
+    getAlbumSongs,
+    getFolders,
+    getFolderFiles,
+    getArtists,
+    getArtistAlbums,
+    getComposers,
+    getComposerAlbums,
+    getPlaylists,
+    getPlaylistSongs,
+    getRandomSongs,
+    getLyric,
+    searchLyrics
 };
