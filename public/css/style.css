@@ -58,6 +58,10 @@ header.mdui-appbar.mdui-appbar-fixed {
     padding-bottom: 96px;
 }
 
+#header-wrapper.hide+#content {
+    padding-top: 64px;
+}
+
 .mdui-container-fluid {
     padding-left: 0;
     padding-right: 0;
