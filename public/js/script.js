@@ -174,23 +174,48 @@ function secondToTime(second) {
     return MM + ":" + SS
 }
 
+function pokaHeader(title, subtitle = '', image = false, hide = false, blur = true) {
+    let style = image && window.localStorage["imgRes"] == "false" ?
+        `background-image: url('${image.replace(/'/g, "\\'")}');` :
+        window.localStorage["randomImg"] ?
+        `background-image: url('${window.localStorage["randomImg"].replace(/'/g, "\\'")}');` :
+        `background-image: url(/og/og.png);`
+
+    if (hide) $("#header-wrapper").addClass('hide')
+    else $("#header-wrapper").removeClass('hide')
+    $("#header-wrapper .title .title").text(title)
+    $("#header-wrapper .title .subtitle").text(subtitle)
+
+    //新增過度動畫
+
+    if (image && blur) $("#header-wrapper .bg").addClass('blur')
+    else $("#header-wrapper .bg").removeClass('blur')
+    if ($("#header-wrapper .bg").attr('style') != style) {
+        $("#header-wrapper .bg2").attr('style', $("#header-wrapper .bg").attr('style'))
+        $("#header-wrapper .bg").attr('style', style)
+        $("#header-wrapper .bg,#header-wrapper .bg2").addClass('changeing')
+        setTimeout(function() {
+            $("#header-wrapper .bg,#header-wrapper .bg2").removeClass('changeing')
+        }, 400)
+    }
+}
 // 首頁
 async function showHome() {
     $('#content').attr('data-page', 'home')
         // 展示讀取中
-    let header = template.getHeader("PokaPlayer")
-    $("#content").html(header + template.getSpinner())
+    pokaHeader("歡迎使用", 'PokaPlayer')
+    $("#content").html(template.getSpinner())
     mdui.mutation()
 
     let data = await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "list", [{ key: "limit", "value": -1 }, { key: "offset", "value": 0 }]),
         album = HTML.showPins(data.data.items)
-    $("#content").html(header + album)
+    $("#content").html(album)
     $("#content>:not(#header-wrapper)")
     router.updatePageLinks()
 }
 //- 搜尋
 async function showSearch(keyword) {
-
+    pokaHeader('', '', false, true)
     $('#content').attr('data-page', 'search')
     let html = `
     <div class="mdui-row">
@@ -284,14 +309,14 @@ async function showSearch(keyword) {
 //- 列出專輯
 async function showAlbum() {
     // 展示讀取中
-    let header = template.getHeader("專輯")
+    pokaHeader("專輯", "列出所有專輯")
     $('#content').attr('data-page', 'album')
-    $("#content").html(header + template.getSpinner())
+    $("#content").html(template.getSpinner())
     mdui.mutation()
     let result = await axios.get('/pokaapi/albums')
     let html = template.parseAlbums(result.data.albums)
     if ($("#content").attr('data-page') == 'album') {
-        $("#content").html(header + html)
+        $("#content").html(html)
         mdui.mutation()
         router.updatePageLinks()
     }
@@ -302,6 +327,8 @@ async function showAlbumSongs(albumSource, albumID) {
     let name = albumData.album_name
     let artist = albumData.album_artist_name
     let cover = `/pokaapi/cover/?moduleName=${encodeURIComponent(albumSource)}&data=${encodeURIComponent(JSON.stringify({type:"album",info:albumData}))}`
+
+    pokaHeader('', '', cover)
         //如果從首頁按進去頁籤沒切換
     $("#content").attr('data-page', 'album')
     let albumInfo = `
@@ -346,8 +373,8 @@ async function showAlbumSongs(albumSource, albumID) {
 async function showFolder(moduleName, folderId) {
     $("#content").attr('data-page', 'folder')
         // 展示讀取中
-    let header = template.getHeader("資料夾")
-    $("#content").html(header + template.getSpinner())
+    pokaHeader("資料夾", "檢視資料夾的項目")
+    $("#content").html(template.getSpinner())
     mdui.mutation()
 
     let url;
@@ -359,47 +386,48 @@ async function showFolder(moduleName, folderId) {
     let result = await axios.get(url)
     let folderHTML = template.parseFolder(result.data.folders) + template.parseSongs(result.data.songs)
     if ($("#content").attr('data-page') == 'folder') {
-        $("#content").html(header + folderHTML)
-        $("#content>:not(#header-wrapper)")
+        $("#content").html(folderHTML)
         router.updatePageLinks()
     }
 }
 async function showArtist(moduleName, artist) {
-    let header = template.getHeader(artist ? "演出者 / " + artist : "演出者")
+    let cover = `/pokaapi/cover/?moduleName=${encodeURIComponent(moduleName)}&data=${encodeURIComponent(JSON.stringify({"type":"artist","info":artist}))}`
+    pokaHeader(artist ? artist : "演出者", artist ? "演出者" : "列出所有演出者", artist ? cover : false)
     $("#content").attr('data-page', 'artist')
-    $("#content").html(header + template.getSpinner())
+    $("#content").html(template.getSpinner())
     mdui.mutation()
     if (artist) {
         let result = await axios.get(`/pokaapi/artistAlbums/?moduleName=${encodeURIComponent(moduleName)}&id=${artist=='未知'?'':encodeURIComponent(artist)}`)
         let albumHTML = template.parseAlbums(result.data.albums)
         if ($("#content").attr('data-page') == 'artist')
-            $("#content").html(header + albumHTML)
+            $("#content").html(albumHTML)
     } else {
         let result = await axios.get(`/pokaapi/artists`),
             artistsHTML = template.parseArtists(result.data.artists)
         if ($("#content").attr('data-page') == 'artist')
-            $("#content").html(header + artistsHTML)
+            $("#content").html(artistsHTML)
     }
     if ($("#content").attr('data-page') == 'artist')
         router.updatePageLinks()
 
 }
 async function showComposer(moduleName, composer) {
-    let header = template.getHeader(composer ? "作曲者 / " + composer : "作曲者")
+    let cover = `/pokaapi/cover/?moduleName=${encodeURIComponent(moduleName)}&data=${encodeURIComponent(JSON.stringify({"type":"composer","info":composer}))}`
+    pokaHeader(composer ? composer : "作曲者", composer ? "作曲者" : "列出所有作曲者", composer ? cover : false)
     $("#content").attr('data-page', 'composer')
-    $("#content").html(header + template.getSpinner())
+    $("#content").html(template.getSpinner())
     mdui.mutation()
     if (composer) {
         let result = await axios.get(`/pokaapi/composerAlbums/?moduleName=${encodeURIComponent(moduleName)}&id=${composer=='未知'?'':encodeURIComponent(composer)}`)
         let albumHTML = template.parseAlbums(result.data.albums)
         if ($("#content").attr('data-page') == 'composer')
-            $("#content").html(header + albumHTML)
+            $("#content").html(albumHTML)
     } else {
         //請求資料囉
         let result = await axios.get(`/pokaapi/composers`),
             composersHTML = template.parseComposers(result.data.composers)
         if ($("#content").attr('data-page') == 'composer')
-            $("#content").html(header + composersHTML)
+            $("#content").html(composersHTML)
     }
     if ($("#content").attr('data-page') == 'composer')
         router.updatePageLinks()
@@ -407,16 +435,16 @@ async function showComposer(moduleName, composer) {
 //- 播放清單
 async function showPlaylist() {
     // 展示讀取中
-    let header = template.getHeader("所有清單")
-    $("#content").html(header + template.getSpinner())
+    pokaHeader("所有清單", '播放清單')
+    $("#content").html(template.getSpinner())
     $('#content').attr('data-page', 'playlist')
     mdui.mutation()
     let result = await axios.get(`/pokaapi/playlists`)
     if ($("#content").attr('data-page') == 'playlist') {
         if (result.data.playlists.length < 0) {
-            $("#content").html(header + `<div class="mdui-valign" style="height:150px"><p class="mdui-center">沒有任何播放清單</p></div>`)
+            $("#content").html(`<div class="mdui-valign" style="height:150px"><p class="mdui-center">沒有任何播放清單</p></div>`)
         }
-        $("#content").html(header + template.parsePlaylists(result.data.playlists))
+        $("#content").html(template.parsePlaylists(result.data.playlists))
         router.updatePageLinks()
     }
 }
@@ -426,28 +454,28 @@ async function showPlaylistSongs(moduleName, playlistId) {
     $("#content").attr('data-page', 'playlist')
 
     // 展示讀取中
-    let header = template.getHeader("讀取中...")
-    $("#content").html(header + template.getSpinner())
+    pokaHeader("讀取中...", "播放清單")
+    $("#content").html(template.getSpinner())
     mdui.mutation()
 
     //抓資料
     let result = (await axios.get(`/pokaapi/playlistSongs/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(playlistId)}`)).data
     let name = result.playlists[0].name
     let songs = template.parseSongs(result.songs)
-    header = template.getHeader(name)
+    pokaHeader(name, "播放清單")
     if ($("#content").attr('data-page') == 'playlist')
-        $("#content").html(header + songs)
+        $("#content").html(songs)
 }
 //- 隨機播放
 async function showRandom() {
     // 展示讀取中
-    let header = template.getHeader("隨機播放")
-    $("#content").html(header + template.getSpinner())
+    pokaHeader("隨機播放", '隨機取出曲目')
+    $("#content").html(template.getSpinner())
     $('#content').attr('data-page', 'random')
     mdui.mutation()
     result = await axios.get(`/pokaapi/randomSongs`)
     if ($("#content").attr('data-page') == 'random')
-        $("#content").html(header + template.parseSongs(result.data.songs))
+        $("#content").html(template.parseSongs(result.data.songs))
 }
 async function playRandom() {
     router.navigate('now')
@@ -456,6 +484,7 @@ async function playRandom() {
 }
 //- 現正播放
 async function showNow() {
+    pokaHeader('', '', false, true)
     $('#content').attr('data-page', 'now')
     let html = `<ul class="mdui-list songs">`
     for (i = 0; i < ap.list.audios.length; i++) {
@@ -641,6 +670,7 @@ async function showNow() {
 }
 //- 歌詞
 function showLrc() {
+    pokaHeader('', '', false, true)
     $("#content").html(`<div data-lrc><div data-lrc="inner"></div></div>`)
     $('#content').attr('data-page', 'lrc')
 

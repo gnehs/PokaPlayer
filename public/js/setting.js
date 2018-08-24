@@ -43,8 +43,8 @@ var settingsItem = (title, text = '', icon = '', link = '', data = '', other = '
 //- 設定
 async function showSettings() {
     $('#content').attr('data-page', 'settings')
-    let header = template.getHeader("設定")
     
+    pokaHeader('設定', "PokaPlayer "+window.localStorage["PokaPlayerVersion"])
     let settingItems = `<ul class="mdui-list">
         ${settingsItem("主題","設定主題色、主色及強調色","color_lens","settings/theme")}
         ${settingsItem("音質",window.localStorage["musicRes"],"music_note","","data-music-res")}
@@ -57,7 +57,7 @@ async function showSettings() {
         ${settingsItem("歌詞來源",window.localStorage["lrcSource"],"subtitles","","data-lrc-source")}
         ${settingsItem("關於","PokaPlayer "+window.localStorage["PokaPlayerVersion"],"info","settings/about","data-about")}
     </ul>`
-    $("#content").html(header + settingItems);
+    $("#content").html(settingItems);
     // 音質設定
     $("[data-music-res]").click(function() {
         mdui.dialog({
@@ -104,14 +104,14 @@ async function showSettings() {
 }
 async function showSettingsTheme() {
     $('#content').attr('data-page', 'settings')
-    let header = template.getHeader("設定 / 主題"), 
-        settingItems = `<ul class="mdui-list">
+    pokaHeader('設定', '主題' )
+    let settingItems = `<ul class="mdui-list">
         ${settingsItem("返回","","arrow_back","settings")}
         ${settingsItem("主題色",window.localStorage["mdui-theme-color"]=='true'?'Dark':'Light',"color_lens","",`data-theme="mdui-theme-color"`)}
         ${settingsItem("主色",window.localStorage["mdui-theme-primary"].replace("-"," "),"color_lens","",`data-theme="mdui-theme-primary"`)}
         ${settingsItem("強調色",window.localStorage["mdui-theme-accent"].replace("-"," "),"color_lens","",`data-theme="mdui-theme-accent"`)}
     </ul>`
-    $("#content").html(header + settingItems)
+    $("#content").html( settingItems)
     $('[data-theme="mdui-theme-color"]').click(function() {
         mdui.dialog({
             title: '設定主題色',
@@ -181,13 +181,13 @@ async function showSettingsTheme() {
 }
 async function showSettingsPic() {
     $('#content').attr('data-page', 'settings')
-    let header = template.getHeader("設定 / 隨機圖片")
+    pokaHeader('設定', '隨機圖片' )
     let settingItems = `<ul class="mdui-list">
         ${settingsItem("返回","","arrow_back","settings")}
         ${settingsItem("圖片來源",window.localStorage["randomImgName"],"image","","data-pic-source")}
         ${settingsItem("自訂圖片來源",window.localStorage["randomImg"],"link","","data-pic-custom-link")}
     </ul>`
-    $("#content").html(header + settingItems)
+    $("#content").html(settingItems)
     $('[data-pic-source]').click(function() {
         let imgsOption = imgs => {
             let option = ''
@@ -245,7 +245,7 @@ async function showSettingsPic() {
             let name = $(this).children().text()
             window.localStorage["randomImg"] = src
             window.localStorage["randomImgName"] = name
-            $('#header-wrapper').attr("style", `background-image: url(${src});`)
+            pokaHeader('設定', '隨機圖片',src,false,false)
             $('[data-pic-source] .mdui-list-item-text').text(name)
             $('[data-pic-custom-link] .mdui-list-item-text').text(src)
         })
@@ -257,7 +257,7 @@ async function showSettingsPic() {
                     window.localStorage["randomImg"] = value
                     $('[data-pic-custom-link] .mdui-list-item-text').text(value)
                     window.localStorage["randomImgName"] = "自訂"
-                    $('#header-wrapper').attr("style", `background-image: url(${value});`)
+                    pokaHeader('設定', '隨機圖片',value,false,false)
                 }
             },()=>{},{history: false}
         );
@@ -265,7 +265,7 @@ async function showSettingsPic() {
 }
 async function showSettingsAbout() {
     $('#content').attr('data-page', 'settings')
-    let header = template.getHeader("設定 / 關於")
+    pokaHeader('設定', '關於')
     let settingItems = `<ul class="mdui-list">
         ${settingsItem("返回","","arrow_back","settings")}
         ${settingsItem("更新","正在檢查更新...","system_update","","data-upgrade")}
@@ -278,7 +278,7 @@ async function showSettingsAbout() {
         ${settingsItem("清除 Service Worker 快取","","delete_forever","","data-clean")}
         ${settingsItem("重新啟動","","refresh","","data-restart")}
     </ul>`
-    $("#content").html(header + settingItems)
+    $("#content").html(settingItems)
     
     // DSM 詳細資料
     let getDSMInfo = await getAPI("AudioStation/info.cgi", "SYNO.AudioStation.Info", "getinfo", [], 4)

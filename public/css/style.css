@@ -95,9 +95,20 @@ header.mdui-appbar.mdui-appbar-fixed {
 /* header-wrapper */
 
 #header-wrapper {
-    margin: -20px -10px -200px -10px;
-    width: calc(100% + 20px);
+    width: 100%;
     overflow: hidden;
+    margin-bottom: -300px;
+}
+
+#header-wrapper.hide {
+    display: none;
+}
+
+#header-wrapper .bg.blur {
+    filter: blur(5px);
+    transform: scale(1.1);
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .4) 10%, transparent 90%);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .4) 10%, transparent 90%);
 }
 
 #header-wrapper .bg {
@@ -107,18 +118,56 @@ header.mdui-appbar.mdui-appbar-fixed {
     object-fit: cover;
     mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .4) 0%, transparent 100%);
     -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .4) 0%, transparent 100%);
+    animation-duration: .4s;
+    animation-timing-function: ease;
 }
 
-#header-wrapper .title {
+#header-wrapper .bg2 {
+    min-height: 400px;
+    position: absolute;
+    animation-duration: .4s;
+    animation-timing-function: ease;
+}
+
+#header-wrapper .bg2:not(.changeing) {
+    opacity: 0;
+}
+
+#header-wrapper .bg.changeing {
+    animation-name: fade;
+}
+
+#header-wrapper .bg2.changeing {
+    animation-name: fade;
+    animation-direction: reverse;
+}
+
+@keyframes fade {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+#header-wrapper>.title {
     font-weight: bold;
-    font-size: 3.5em;
     padding-left: 48px;
     margin-top: -300px;
-    margin-bottom: 200px;
+    margin-bottom: 300px;
     z-index: 3;
     width: 100%;
     position: relative;
     max-width: calc(100% - 50px * 2);
+}
+
+#header-wrapper .title .title {
+    font-size: 3.5em;
+}
+
+#header-wrapper .title .subtitle {
+    font-size: 1.5em;
 }
 
 #header-wrapper+.mdui-tab {
