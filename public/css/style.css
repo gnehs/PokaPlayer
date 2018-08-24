@@ -95,8 +95,8 @@ header.mdui-appbar.mdui-appbar-fixed {
 /* header-wrapper */
 
 #header-wrapper {
-    margin: -20px -25px -200px -25px;
-    width: calc(100% + 50px);
+    margin: -20px -10px -200px -10px;
+    width: calc(100% + 20px);
     overflow: hidden;
 }
 
@@ -105,14 +105,14 @@ header.mdui-appbar.mdui-appbar-fixed {
     background-size: cover;
     background-position: center;
     object-fit: cover;
-    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 10%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 10%, transparent 100%);
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .4) 0%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .4) 0%, transparent 100%);
 }
 
 #header-wrapper .title {
     font-weight: bold;
     font-size: 3.5em;
-    padding: 0 48px;
+    padding-left: 48px;
     margin-top: -300px;
     margin-bottom: 200px;
     z-index: 3;
