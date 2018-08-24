@@ -47,7 +47,7 @@ function parseAlbums(albums) {
         }))
         r.push({
             name: album.name,
-            artist: album.artist,
+            artist: album.display_artist,
             year: album.year,
             cover: cover,
             source: 'DSM',
