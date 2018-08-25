@@ -483,5 +483,5 @@ module.exports = {
     getPlaylistSongs,
     getRandomSongs,
     getLyric,
-    searchLyrics
+    searchLyrics //太慢
 };
