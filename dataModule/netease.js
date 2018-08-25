@@ -141,111 +141,57 @@ function parseSongs(songs) {
         url_id: 22661895,
         lyric_id: 22661895,
         source: 'netease' } */
-    let r = []
-    for (i = 0; i < songs.length; i++) {
-        let song = songs[i]
-        r.push({
-            name: song.name,
-            artist: song.artist,
-            album: song.album,
-            cover: `/pokaapi/cover/?moduleName=Netease&data=${song.id}`,
-            url: `/pokaapi/song/?moduleName=Netease&songId=${song.id}`,
-            bitrate: 320000,
-            codec: "mp3",
-            lrc: song.lyric_id,
-            source: "Netease",
-            id: song.id,
-        })
-    }
-    return r
+    return songs.map(song => +{
+        name: song.name,
+        artist: song.artist,
+        album: song.album,
+        cover: `/pokaapi/cover/?moduleName=Netease&data=${song.id}`,
+        url: `/pokaapi/song/?moduleName=Netease&songId=${song.id}`,
+        bitrate: 320000,
+        codec: "mp3",
+        lrc: song.lyric_id,
+        source: "Netease",
+        id: song.id,
+    })
 }
-async function getSong(req, songRes, songId) {
-    let options = {
-        method: 'GET',
-        uri: metingUrl,
-        qs: {
-            'server': 'netease',
-            'type': 'url',
-            'id': songId
-        },
-        headers: {
-            'User-Agent': userAgent
-        },
-        json: true, // Automatically parses the JSON string in the response,
-    };
 
-    return await rp(options)
+function getSong(req, songRes, songId) {
+    let br = {low: 128, medium: 192, high:320, original:320}[songRes]
+    return `${metingUrl}/?server=netease&type=url&id=${songId}&br=${br}`
 }
-async function getSongs(song) {
+
+function getSongs(song) {
     if (typeof(song) == 'object') {
         if (Array.isArray(song)) {
             // 傳入的資料是 list
-
-            let options = {
-                method: 'POST',
-                uri: metingUrl,
-                headers: {
-                    'content-type': 'application/json'
-                },
-                qs: {
-                    'server': 'netease',
-                    'type': 'multi'
-                },
-                body: {
-                    'song': song
-                },
-                headers: {
-                    'User-Agent': userAgent
-                },
-                json: true // Automatically stringifies the body to JSON
-            };
-
-            return (await rp(options)).song
+            return song.reduce((acc, cur) => {
+                acc[cur] = `${metingUrl}/?server=netease&type=url&id=${cur}`;
+                return acc
+            }, {})
         } else {
             // 傳入的資料是 object
         }
     }
 }
 
-async function getCover(id) {
-    let options = {
-        method: 'GET',
-        uri: metingUrl,
-        qs: {
-            'server': 'netease',
-            'type': 'pic',
-            id
-        },
-        headers: {
-            'User-Agent': userAgent
-        },
-        json: true, // Automatically parses the JSON string in the response,
-    };
-    let picUrl = await rp(options)
-
-    return request.get(picUrl)
+function getCover(id) {
+    return  `${metingUrl}/?server=netease&type=pic&id=${id}`
 }
-async function getCovers(id) {
-    // 傳入的資料是 list
-    let options = {
-        method: 'POST',
-        uri: metingUrl,
-        headers: {
-            'content-type': 'application/json'
-        },
-        qs: {
-            'server': 'netease',
-            'type': 'multi'
-        },
-        body: {
-            'pic': id
-        },
-        headers: {
-            'User-Agent': userAgent
-        },
-        json: true // Automatically stringifies the body to JSON
-    };
-    return (await rp(options)).pic
+
+function getCovers(id) {
+    if (typeof(song) == 'object') {
+        if (Array.isArray(id)) {
+            // 傳入的資料是 list
+
+            return id.reduce((acc, cur) => {
+                acc[cur] = `${metingUrl}/?server=netease&type=pic&id=${cur}`;
+                return acc
+            }, {})
+
+        } else {
+            // 傳入的資料是 object
+        }
+    }
 }
 
 async function search(keyword) {
@@ -265,6 +211,7 @@ async function search(keyword) {
     let result = await rp(options)
     return { songs: parseSongs(result) }
 }
+
 async function parseLyrics(lyrics) {
     /*{ id: 22661895,
         name: 'A',
@@ -274,18 +221,18 @@ async function parseLyrics(lyrics) {
         url_id: 22661895,
         lyric_id: 22661895,
         source: 'netease' } */
-    let r = []
-    for (i = 0; i < lyrics.length; i++) {
-        if (await getLyric(lyrics[i].lyric_id))
-            r.push({
-                name: lyrics[i].name,
-                artist: lyrics[i].artist[0],
+
+    return lyrics.reduce(async (acc, cur) => {
+        if ((await getLyric(cur.lyric_id)))
+            return (await acc).concat([{
+                name: cur.name,
+                artist: cur.artist[0],
                 source: 'Netease',
-                id: lyrics[i].lyric_id,
-                lyric: await getLyric(lyrics[i].lyric_id)
-            })
-    }
-    return r
+                id: cur.lyric_id,
+                lyric: await getLyric(cur.lyric_id)
+            }])
+        return acc
+    }, [])
 }
 async function searchLyric(keyword) {
     let options = {
@@ -304,6 +251,7 @@ async function searchLyric(keyword) {
     let result = await rp(options)
     return { lyrics: await parseLyrics(result) }
 }
+
 async function getLyric(id) {
     let options = {
         method: 'GET',
@@ -380,46 +328,15 @@ async function getArtistSongs(id) {
     return (await rp(options))
 }
 
-async function getSongsUrl(song) {
+function getSongsUrl(song) {
     if (Array.isArray(song)) {
         // 傳入的資料是 list
-
-        let options = {
-            method: 'POST',
-            uri: metingUrl,
-            headers: {
-                'content-type': 'application/json'
-            },
-            qs: {
-                'server': 'netease',
-                'type': 'multi'
-            },
-            body: {
-                'url': song
-            },
-            headers: {
-                'User-Agent': userAgent
-            },
-            json: true // Automatically stringifies the body to JSON
-        }
-
-        return (await rp(options)).url
+        return song.reduce((acc, cur) => {
+            acc[cur] = `${metingUrl}/?server=netease&type=url&id=${cur}`
+            return acc
+        }, {})
     } else {
-        let options = {
-            method: 'GET',
-            uri: metingUrl,
-            qs: {
-                'server': 'netease',
-                'type': 'url',
-                id
-            },
-            headers: {
-                'User-Agent': userAgent
-            },
-            json: true, // Automatically parses the JSON string in the response,
-        };
-
-        return (await rp(options))
+        return `${metingUrl}/?server=netease&type=url&id=${song}`
     }
 }
 
@@ -442,5 +359,5 @@ module.exports = {
     // getPlaylists,
     getPlaylistSongs,
     getLyric, //done
-    //searchLyric //不會動
+    searchLyric //done
 };
