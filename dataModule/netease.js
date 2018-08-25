@@ -270,9 +270,13 @@ async function getLyric(id) {
         json: true, // Automatically parses the JSON string in the response,
     };
     let result = await rp(options)
-    if (result.tlyric)
-        result = migrate(result.lyric, result.tlyric)
-    else
+    if (result.tlyric) {
+        try {
+            result = migrate(result.lyric, result.tlyric)
+        } catch {
+            result = result.lyric
+        }
+    } else
         result = result.lyric
     return result.match(lyricRegex) ? result : false
 }
