@@ -2,8 +2,25 @@ const metingUrl = require(__dirname + '/../config.json').Meting.url,
     rp = require('request-promise'),
     request = require('request').defaults({ jar: require('request').jar() }),
     userAgent = 'PokaPlayer',
+    normalAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
     lyricRegex = /\[([0-9.:]*)\]/i
 
+const normalOptions = url => ({
+    method: 'GET',
+    uri: url,
+    headers: {
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept-Language": "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Connection": "keep-alive",
+        "Cache-Control": "max-age=0",
+        "DNT": 1,
+        "Upgrade-Insecure-Requests": 1,
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36"
+    },
+    json: true, // Automatically parses the JSON string in the response
+    followAllRedirects: true
+})
 //https://cdn.rawgit.com/rexx0520/LyriConv-js/f8316b3/modules/migrate.js
 function migrate(org, t, offset = 10 ** -3) {
     const isDigit = x => !isNaN(Number(x))
@@ -157,9 +174,24 @@ function parseSongs(songs) {
     })
 }
 
-function getSong(req, songRes, songId) {
+async function getSong(req, songRes, songId) {
     let br = { low: 128, medium: 192, high: 320, original: 320 }[songRes]
-    return `${metingUrl}/?server=netease&type=url&id=${songId}&br=${br}`
+    let options = {
+        method: 'GET',
+        uri: metingUrl,
+        qs: {
+            'server': 'netease',
+            'type': 'url',
+            'id': songId,
+            br
+        },
+        headers: {
+            'User-Agent': userAgent
+        },
+        json: true, // Automatically parses the JSON string in the response,
+    };
+    options = normalOptions(await rp(options));
+    return request(options)
 }
 
 function getSongs(song) {
@@ -167,7 +199,7 @@ function getSongs(song) {
         if (Array.isArray(song)) {
             // 傳入的資料是 list
             return song.reduce((acc, cur) => {
-                acc[cur] = `${metingUrl}/?server=netease&type=url&id=${cur}`;
+                acc[cur] = getSong(cur);
                 return acc
             }, {})
         } else {
@@ -176,8 +208,22 @@ function getSongs(song) {
     }
 }
 
-function getCover(id) {
-    return `${metingUrl}/?server=netease&type=pic&id=${id}`
+async function getCover(id) {
+    let options = {
+        method: 'GET',
+        uri: metingUrl,
+        qs: {
+            'server': 'netease',
+            'type': 'pic',
+            'id': id
+        },
+        headers: {
+            'User-Agent': userAgent
+        },
+        json: true, // Automatically parses the JSON string in the response,
+    };
+    options = normalOptions(await rp(options));
+    return request(options)
 }
 
 function getCovers(id) {
@@ -186,7 +232,7 @@ function getCovers(id) {
             // 傳入的資料是 list
 
             return id.reduce((acc, cur) => {
-                acc[cur] = `${metingUrl}/?server=netease&type=pic&id=${cur}`;
+                acc[cur] = getCover(cur);
                 return acc
             }, {})
 
@@ -272,7 +318,7 @@ async function getLyric(id) {
     if (result.tlyric) {
         try {
             result = migrate(result.lyric, result.tlyric)
-        } catch {
+        } catch (e){
             result = result.lyric
         }
     } else

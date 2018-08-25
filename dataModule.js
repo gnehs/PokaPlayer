@@ -11,6 +11,25 @@ const session = require('express-session')({
         expires: new Date(Date.now() + 60 * 60 * 1000 * 24 * 7)
     }
 });
+const rp = require('request-promise');
+
+const options = url => ({
+    method: 'GET',
+    uri: url,
+    headers: {
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Accept-Language": "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Cache-Control": "max-age=0",
+        "DNT": 1,
+        "Host": "music.126.net",
+        "Upgrade-Insecure-Requests": 1,
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36"
+    },
+    rejectUnauthorized: false,
+    followAllRedirects: true
+})
+
 router.use(session);
 
 let moduleList = {};
@@ -311,7 +330,7 @@ router.get('/song/', async(req, res) => {
     let song = await _module.getSong(req, req.query.songRes, req.query.songId)
     if (typeof song == 'string')
         return res.redirect(song)
-    else
+    else if (moduleName == 'DSM')
         return song.on('response', function(response) {
             //針對 Audio 寫入 Header 避免 Chrome 時間軸不能跳
             res.writeHead(206, {
@@ -321,6 +340,7 @@ router.get('/song/', async(req, res) => {
                 "Content-Type": response.headers['content-type'] ? response.headers['content-type'] : ''
             })
         }).pipe(res)
+    else return song.pipe(res)
 });
 //-----------------------------> 封面
 // 取得封面
@@ -335,10 +355,7 @@ router.get('/cover/', async(req, res) => {
     //http://localhost:3000/pokaapi/cover/?moduleName=DSM&data={%22type%22:%22album%22,%22info%22:{%22album_name%22:%22%E6%AE%BF%E5%A0%82%E2%85%A2%22,%22artist_name%22:%22%E7%BA%AF%E7%99%BD,%20Digger%20feat.%20%E4%B9%90%E6%AD%A3%E7%BB%AB,%20%E6%B4%9B%E5%A4%A9%E4%BE%9D%22,%22album_artist_name%22:%22Various%20Artists%22}}
     // -> {"type":"album","info":{"album_name":"殿堂Ⅲ","artist_name":"纯白, Digger feat. 乐正绫, 洛天依","album_artist_name":"Various Artists"}}
     let cover = await _module.getCover(req.query.data)
-    if (typeof cover == 'string')
-        return res.redirect(cover)
-    else
-        return cover.pipe(res)
+    return cover.pipe(res)
 });
 //-----------------------------> 歌詞
 // 搜尋歌詞
