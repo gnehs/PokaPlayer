@@ -65,7 +65,9 @@ async function showSettings() {
             content: `<ul class="mdui-list">
             ${settingsItem("Low","低音質，128K，夭壽靠北，在網路夭壽慢的情況下請選擇此選項","","",
                             `onclick="window.localStorage['musicRes']='Low'" mdui-dialog-close`)}
-            ${settingsItem("High","較高音質，音質較原始音質略差，可在 4G 網路下流暢的串流","","",
+            ${settingsItem("Medium","中等音質，音質較高音質差，可在 4G 網路下流暢的串流","","",
+                            `onclick="window.localStorage['musicRes']='High'" mdui-dialog-close`)}
+            ${settingsItem("High","高音質，音質較原始音質略差，可在 4G 網路下流暢的串流","","",
                             `onclick="window.localStorage['musicRes']='High'" mdui-dialog-close`)}
             ${settingsItem("Original","原始音質，在網路狀況許可下，建議選擇此選項聆聽高音質音樂","","",
                             `onclick="window.localStorage['musicRes']='Original'" mdui-dialog-close`)}
