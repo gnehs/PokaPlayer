@@ -221,18 +221,17 @@ async function parseLyrics(lyrics) {
         url_id: 22661895,
         lyric_id: 22661895,
         source: 'netease' } */
-
-    return lyrics.reduce(async (acc, cur) => {
+    return Promise.all(lyrics.map(async cur => {
         if ((await getLyric(cur.lyric_id)))
-            return (await acc).concat([{
+            return {
                 name: cur.name,
                 artist: cur.artist[0],
                 source: 'Netease',
                 id: cur.lyric_id,
                 lyric: await getLyric(cur.lyric_id)
-            }])
-        return acc
-    }, [])
+            }
+        return cur
+    }))
 }
 async function searchLyric(keyword) {
     let options = {
