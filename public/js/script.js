@@ -177,26 +177,25 @@ function secondToTime(second) {
 function pokaHeader(title, subtitle = '', image = false, hide = false, blur = true) {
     let style = image && window.localStorage["imgRes"] == "false" ?
         `background-image: url('${image.replace(/'/g, "\\'")}');` :
-        window.localStorage["randomImg"] ?
-        `background-image: url('${window.localStorage["randomImg"].replace(/'/g, "\\'")}');` :
-        `background-image: url(/og/og.png);`
+        `background-image: url('${window.localStorage["randomImg"].replace(/'/g, "\\'")}');`
 
     if (hide) $("#header-wrapper").addClass('hide')
     else $("#header-wrapper").removeClass('hide')
+
     $("#header-wrapper .title .title").text(title)
     $("#header-wrapper .title .subtitle").text(subtitle)
 
     //新增過度動畫
-    if ($("#header-wrapper .bg").hasClass('blur')) {
+    if ($("#header-wrapper .bg").hasClass('blur'))
         $("#header-wrapper .bg2").addClass('blur')
-    } else {
+    else
         $("#header-wrapper .bg2").removeClass('blur')
-    }
-    if (image && blur) {
+
+    if (image && blur && window.localStorage["imgRes"] == "false")
         $("#header-wrapper .bg").addClass('blur')
-    } else {
+    else
         $("#header-wrapper .bg").removeClass('blur')
-    }
+
     if ($("#header-wrapper .bg").attr('style') != style) {
         $("#header-wrapper .bg2").attr('style', $("#header-wrapper .bg").attr('style'))
         $("#header-wrapper .bg").attr('style', style)

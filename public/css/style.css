@@ -68,6 +68,13 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 
+/* 列表 */
+
+.mdui-list-item {
+    border-radius: 10px;
+}
+
+
 /* 設定頁面 */
 
 [data-theme="mdui-theme-accent"],
@@ -79,11 +86,11 @@ header.mdui-appbar.mdui-appbar-fixed {
 /* 側邊欄 */
 
 @media screen and (min-width:1024px) {
-    .mdui-list-item {
-        border-radius: 5px 5px;
-    }
     #drawer .mdui-list-item {
         border-radius: 0 500em 500em 0;
+    }
+    #drawer {
+        padding-right: 10px;
     }
 }
 
@@ -120,7 +127,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .4) 10%, transparent 90%);
     -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .4) 10%, transparent 90%);
     animation-duration: .4s;
-    animation-timing-function: ease;
+    animation-timing-function: linear;
     width: 100%;
 }
 
