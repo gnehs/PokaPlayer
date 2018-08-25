@@ -63,9 +63,9 @@ async function showSettings() {
         mdui.dialog({
             title: '音質設定',
             content: `<ul class="mdui-list">
-            ${settingsItem("Low","低音質，128K，夭壽靠北，在網路夭壽慢的情況下請選擇此選項","","",
+            ${settingsItem("Low","低音質，128K，跟 Youtube 差不多的爛音質，在網路夭壽慢的情況下請選擇此選項","","",
                             `onclick="window.localStorage['musicRes']='Low'" mdui-dialog-close`)}
-            ${settingsItem("Medium","中等音質，音質較高音質差，可在 4G 網路下流暢的串流","","",
+            ${settingsItem("Medium","中等音質，音質只比 Youtube 好那麼一點點，可在 3G 網路下流暢的串流","","",
                             `onclick="window.localStorage['musicRes']='Medium'" mdui-dialog-close`)}
             ${settingsItem("High","高音質，音質較原始音質略差，可在 4G 網路下流暢的串流","","",
                             `onclick="window.localStorage['musicRes']='High'" mdui-dialog-close`)}
