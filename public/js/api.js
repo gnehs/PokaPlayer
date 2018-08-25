@@ -5,62 +5,24 @@ function getBackground() {
     else
         return "/og/og.png"
 }
-//- 取得封面
-function getCover(type, info, artist_name, album_artist_name) {
-    let url;
-    if (type == "album") {
-        let q = ''
-        q += info ? `&album_name=${encodeURIComponent(info)}` : ``
-        q += artist_name ? `&artist_name=${encodeURIComponent(artist_name)}` : ``
-        q += album_artist_name ? `&album_artist_name=${encodeURIComponent(album_artist_name)}` : `&album_artist_name=`
-        url = `/cover/album/` + ppEncode(q)
-    } else {
-        url = `/cover/${encodeURIComponent(type)}/${encodeURIComponent(info)}`
-    }
-    if (window.localStorage["imgRes"] == "true")
-        return getBackground()
-    else
-        return url
-}
+
 
 //- 取得歌詞
-async function getLrc(artist, title, id = false) {
-    let lyricRegex = /\[([0-9.:]*)\]/i,
-        result = false,
-        lrc;
-    // 如果沒有設定或是設定是 DSM，進行 DSM 搜尋
-    if (window.localStorage["lrcSource"] == 'DSM' || !window.localStorage["lrcSource"]) {
-        if (id) {
-            result = (await getAPI("AudioStation/lyrics.cgi", "SYNO.AudioStation.Lyrics", "getlyrics", [{ key: "id", "value": id }], 2)).data.lyrics
-            if (result.match(lyricRegex))
-                return result
-            else
-                result = false
-        }
-        if (!result) {
-            let PARAMS_JSON = [
-                { key: "additional", "value": "full_lyrics" },
-                { key: "limit", "value": 1 }
-            ]
-            if (artist) PARAMS_JSON.push({ key: "artist", "value": artist })
-            if (title) PARAMS_JSON.push({ key: "title", "value": title })
-            result = (await getAPI("AudioStation/lyrics_search.cgi", "SYNO.AudioStation.LyricsSearch", "searchlyrics", PARAMS_JSON, 2)).data
-            if (result && result.lyrics[0].title == title && result.lyrics[0].artist == artist)
-                result = result.lyrics[0].additional.full_lyrics
-            else
-                result = false
-            return result && result.match(lyricRegex) ? result : false
-        }
+async function getLrc(artist, title, id = false, source) {
+    let result;
+    if (id) {
+        result = await axios.get(`/pokaapi/lyric/?moduleName=${encodeURIComponent(source)}&id=${encodeURIComponent(id)}`)
+        if (result.data.lyrics[0].lyric)
+            return result.data.lyrics[0].lyric
     }
-    // 如果設定是 meting
-    if (window.localStorage["lrcSource"] == 'Meting') {
-        let search = await getMetingSearchResult(`${title} ${artist}`)
-            // 歌名必須匹配才找歌詞
-        if (search && search.name.toUpperCase() == title.toUpperCase())
-            return await getMetingLrcById(search.id)
-        else
-            return false
-    }
+    result = await axios.get(`/pokaapi/searchLyrics/?keyword=${encodeURIComponent(title+' '+artist)}`)
+    if (result.data.lyrics[0].name == title)
+        return result.data.lyrics[0].lyric
+
+    return false
+}
+async function searchLrc(keyword) {
+    return await axios.get(`/pokaapi/searchLyrics/?keyword=${encodeURIComponent(keyword)}`)
 }
 async function getMetingSearchResult(keyword, limit = 1) {
     let meting = window.localStorage["lrcMetingUrl"],
@@ -82,8 +44,24 @@ async function getMetingLrcById(id) {
     }
     return result && result.match(lyricRegex) ? result : false
 }
-
-//- 取得歌曲連結
+//- 取得封面 (棄用)
+function getCover(type, info, artist_name, album_artist_name) {
+    let url;
+    if (type == "album") {
+        let q = ''
+        q += info ? `&album_name=${encodeURIComponent(info)}` : ``
+        q += artist_name ? `&artist_name=${encodeURIComponent(artist_name)}` : ``
+        q += album_artist_name ? `&album_artist_name=${encodeURIComponent(album_artist_name)}` : `&album_artist_name=`
+        url = `/cover/album/` + ppEncode(q)
+    } else {
+        url = `/cover/${encodeURIComponent(type)}/${encodeURIComponent(info)}`
+    }
+    if (window.localStorage["imgRes"] == "true")
+        return getBackground()
+    else
+        return url
+}
+//- 取得歌曲連結(棄用)
 function getSong(song) {
     if (song.url) return song.url //過度用
     let id = song.id
@@ -96,7 +74,7 @@ function getSong(song) {
     return '/song/' + res + '/' + id
 }
 
-//- 取得搜尋結果
+//- 取得搜尋結果(棄用)
 async function searchAll(keyword) {
     let PARAMS_JSON = [
         { key: "additional", "value": "song_tag,song_audio,song_rating" },
@@ -109,7 +87,7 @@ async function searchAll(keyword) {
     let result = await getAPI("AudioStation/search.cgi", "SYNO.AudioStation.Search", "list", PARAMS_JSON, 1)
     return result.data
 }
-//- API 請求
+//- API 請求(棄用)
 async function getAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 1) {
     let PARAMS = '',
         reqUrl, reqJson
