@@ -650,10 +650,6 @@ header.mdui-appbar.mdui-appbar-fixed {
     transform: scale(.98);
 }
 
-[data-lrc] p.loading {
-    opacity: 0;
-}
-
 [data-lrc] p.loading.mdui-text-color-theme-accent::after {
     content: '';
     position: absolute;

@@ -84,8 +84,8 @@ ap.on("loadedmetadata", async() => {
     let nowPlaying = ap.list.audios[ap.list.index],
         name = nowPlaying.name,
         id = nowPlaying.id,
-        artist = nowPlaying.artist
-    source = nowPlaying.source
+        artist = nowPlaying.artist,
+        source = nowPlaying.source
     $(document).attr("title", `${name} - ${artist}`);
 
     let lrcResult = await getLrc(artist, name, id, source)
@@ -93,9 +93,9 @@ ap.on("loadedmetadata", async() => {
 })
 
 function setLrc(lrcResult) {
-    if (lrcResult) {
-        lrc.load(lrcResult);
-    } else
+    if (lrcResult)
+        lrc.load(lrcResult)
+    else
         lrc.load(`[00:00.000]無歌詞`)
     if ($("div[data-lrc]").length > 0) {
         let html = ``
