@@ -1,7 +1,7 @@
 // 初始化設定值
 $(async() => {
     ///給定預設值
-    if (!window.localStorage["musicRes"]) window.localStorage["musicRes"] = "WAV"
+    if (!window.localStorage["musicRes"]) window.localStorage["musicRes"] = "High"
     if (!window.localStorage["randomImg"]) window.localStorage["randomImg"] = "/og/og.png"
     if (!window.localStorage["randomImgName"]) window.localStorage["randomImgName"] = "預設圖庫"
     if (!window.localStorage["lrcSource"]) window.localStorage["lrcSource"] = "DSM"
@@ -63,10 +63,10 @@ async function showSettings() {
         mdui.dialog({
             title: '音質設定',
             content: `<ul class="mdui-list">
-            ${settingsItem("MP3","128K，夭壽靠北，在網路夭壽慢的情況下請選擇此選項","","",
-                            `onclick="window.localStorage['musicRes']='MP3'" mdui-dialog-close`)}
-            ${settingsItem("WAV","較高音質，音質較原始音質略差，可在 4G 網路下流暢的串流","","",
-                            `onclick="window.localStorage['musicRes']='WAV'" mdui-dialog-close`)}
+            ${settingsItem("Low","低音質，128K，夭壽靠北，在網路夭壽慢的情況下請選擇此選項","","",
+                            `onclick="window.localStorage['musicRes']='Low'" mdui-dialog-close`)}
+            ${settingsItem("High","較高音質，音質較原始音質略差，可在 4G 網路下流暢的串流","","",
+                            `onclick="window.localStorage['musicRes']='High'" mdui-dialog-close`)}
             ${settingsItem("Original","原始音質，在網路狀況許可下，建議選擇此選項聆聽高音質音樂","","",
                             `onclick="window.localStorage['musicRes']='Original'" mdui-dialog-close`)}
             </ul>`,

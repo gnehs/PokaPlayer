@@ -223,10 +223,10 @@ async function getHome() {
 async function getSong(req, songRes, songId) {
     let url = dsmURL
     switch (songRes) {
-        case "wav":
+        case "high":
             url += `/webapi/AudioStation/stream.cgi/0.wav?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=wav&id=`
             break;
-        case "mp3":
+        case "low":
             url += `/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=mp3&id=`
             break;
         case "original":

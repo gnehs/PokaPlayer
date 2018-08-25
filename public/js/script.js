@@ -720,7 +720,7 @@ function playSongs(songs, song = false, clear = true) {
     let playlist = []
     for (i = 0; i < songs.length; i++) {
         let nowsong = songs[i],
-            src = nowsong.url,
+            src = nowsong.url + '&songRes=' + window.localStorage["musicRes"].toLowerCase(),
             name = nowsong.name,
             artist = nowsong.artist,
             album = nowsong.album,
@@ -749,7 +749,7 @@ function addSong(songlist, songID = 0) {
     for (i = 0; i < songlist.length; i++) {
         let nowsong = songlist[i]
         if (nowsong.id == songID || songID == 0) {
-            let src = nowsong.url,
+            let src = nowsong.url + '&songRes=' + window.localStorage["musicRes"].toLowerCase(),
                 name = nowsong.name,
                 artist = nowsong.artist,
                 album = nowsong.album,
