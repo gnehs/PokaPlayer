@@ -4,6 +4,7 @@ $(async() => {
     if (!window.localStorage["musicRes"]) window.localStorage["musicRes"] = "High"
     if (!window.localStorage["randomImg"]) window.localStorage["randomImg"] = "/og/og.png"
     if (!window.localStorage["randomImgName"]) window.localStorage["randomImgName"] = "預設圖庫"
+    if (!window.localStorage["imgRes"]) window.localStorage["imgRes"] = "false"
     let version = (await axios.get('/info/')).data.version
         //serviceWorker
     if ('serviceWorker' in navigator && !(await axios.get('/debug/')).data) {
