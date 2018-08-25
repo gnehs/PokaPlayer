@@ -141,22 +141,24 @@ function parseSongs(songs) {
         url_id: 22661895,
         lyric_id: 22661895,
         source: 'netease' } */
-    return songs.map(song => +{
-        name: song.name,
-        artist: song.artist,
-        album: song.album,
-        cover: `/pokaapi/cover/?moduleName=Netease&data=${song.id}`,
-        url: `/pokaapi/song/?moduleName=Netease&songId=${song.id}`,
-        bitrate: 320000,
-        codec: "mp3",
-        lrc: song.lyric_id,
-        source: "Netease",
-        id: song.id,
+    return songs.map(song => {
+        return {
+            name: song.name,
+            artist: song.artist,
+            album: song.album,
+            cover: `/pokaapi/cover/?moduleName=Netease&data=${song.id}`,
+            url: `/pokaapi/song/?moduleName=Netease&songId=${song.id}`,
+            bitrate: 320000,
+            codec: "mp3",
+            lrc: song.lyric_id,
+            source: "Netease",
+            id: song.id,
+        }
     })
 }
 
 function getSong(req, songRes, songId) {
-    let br = {low: 128, medium: 192, high:320, original:320}[songRes]
+    let br = { low: 128, medium: 192, high: 320, original: 320 }[songRes]
     return `${metingUrl}/?server=netease&type=url&id=${songId}&br=${br}`
 }
 
@@ -175,7 +177,7 @@ function getSongs(song) {
 }
 
 function getCover(id) {
-    return  `${metingUrl}/?server=netease&type=pic&id=${id}`
+    return `${metingUrl}/?server=netease&type=pic&id=${id}`
 }
 
 function getCovers(id) {
@@ -221,19 +223,21 @@ async function parseLyrics(lyrics) {
         url_id: 22661895,
         lyric_id: 22661895,
         source: 'netease' } */
-    return Promise.all(lyrics.map(async cur => {
+
+    return lyrics.reduce(async(acc, cur) => {
         if ((await getLyric(cur.lyric_id)))
-            return {
+            return (await acc).concat([{
                 name: cur.name,
                 artist: cur.artist[0],
                 source: 'Netease',
                 id: cur.lyric_id,
                 lyric: await getLyric(cur.lyric_id)
-            }
-        return cur
-    }))
+            }])
+        return acc
+    }, [])
 }
-async function searchLyric(keyword) {
+
+async function searchLyrics(keyword) {
     let options = {
         method: 'GET',
         uri: metingUrl,
@@ -358,5 +362,5 @@ module.exports = {
     // getPlaylists,
     getPlaylistSongs,
     getLyric, //done
-    searchLyric //done
+    searchLyrics //done
 };
