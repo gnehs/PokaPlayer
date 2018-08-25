@@ -209,7 +209,7 @@ async function getHome() {
                 }))
                 r.albums.push({
                     name: pin.name,
-                    artist: pin.criteria.artist || '',
+                    artist: pin.criteria.artist || pin.criteria.album_artist || '',
                     year: 0,
                     cover: cover,
                     source: 'DSM',
