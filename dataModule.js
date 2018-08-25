@@ -363,7 +363,7 @@ router.get('/lyric/', async(req, res) => {
     // 沒這東西
     if (!_module || moduleList[moduleName].active.indexOf('getLyric') == -1) return res.status(501).send("The required module is currently unavailable :(")
     return res.json({
-        lyric: [{
+        lyrics: [{
             source: req.query.moduleName,
             id: req.query.id,
             lyric: await _module.getLyric(req.query.id)

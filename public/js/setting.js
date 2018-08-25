@@ -4,16 +4,6 @@ $(async() => {
     if (!window.localStorage["musicRes"]) window.localStorage["musicRes"] = "High"
     if (!window.localStorage["randomImg"]) window.localStorage["randomImg"] = "/og/og.png"
     if (!window.localStorage["randomImgName"]) window.localStorage["randomImgName"] = "預設圖庫"
-    if (!window.localStorage["lrcSource"]) window.localStorage["lrcSource"] = "DSM"
-    let lrcMetingEnabled = (await axios.get('/meting')).data.enabled
-    if (lrcMetingEnabled) {
-        window.localStorage["lrcMetingEnabled"] = "true"
-        window.localStorage["lrcMetingUrl"] = (await axios.get('/meting')).data.url
-    } else {
-        // 避免關閉 meting 後歌詞模組錯誤
-        window.localStorage["lrcSource"] = "DSM"
-        window.localStorage["lrcMetingEnabled"] = "false"
-    }
     let version = (await axios.get('/info/')).data.version
         //serviceWorker
     if ('serviceWorker' in navigator && !(await axios.get('/debug/')).data) {
@@ -54,7 +44,6 @@ async function showSettings() {
             <i class="mdui-switch-icon"></i>
         </label>`)} 
         ${settingsItem("隨機圖片",window.localStorage["randomImgName"],"shuffle","settings/pic")}
-        ${settingsItem("歌詞來源",window.localStorage["lrcSource"],"subtitles","","data-lrc-source")}
         ${settingsItem("關於","PokaPlayer "+window.localStorage["PokaPlayerVersion"],"info","settings/about","data-about")}
     </ul>`
     $("#content").html(settingItems);
@@ -63,9 +52,9 @@ async function showSettings() {
         mdui.dialog({
             title: '音質設定',
             content: `<ul class="mdui-list">
-            ${settingsItem("Low","低音質，128K，跟 Youtube 差不多的爛音質，在網路夭壽慢的情況下請選擇此選項","","",
+            ${settingsItem("Low","低音質，128K，跟 YouTube 差不多的爛音質，在網路夭壽慢的情況下請選擇此選項","","",
                             `onclick="window.localStorage['musicRes']='Low'" mdui-dialog-close`)}
-            ${settingsItem("Medium","中等音質，音質只比 Youtube 好那麼一點點，可在 3G 網路下流暢的串流","","",
+            ${settingsItem("Medium","中等音質，音質只比 YouTube 好那麼一點點，可在 3G 網路下流暢的串流","","",
                             `onclick="window.localStorage['musicRes']='Medium'" mdui-dialog-close`)}
             ${settingsItem("High","高音質，音質較原始音質略差，可在 4G 網路下流暢的串流","","",
                             `onclick="window.localStorage['musicRes']='High'" mdui-dialog-close`)}
@@ -84,24 +73,6 @@ async function showSettings() {
         $("[data-imgRes] input").prop('checked', !$("[data-imgRes] input").prop('checked'))
         window.localStorage["imgRes"] = $("[data-imgRes] input").prop('checked');
         $("[data-imgRes] .mdui-list-item-text").text($("[data-imgRes] input").prop('checked') ? "將會把所有圖片替換為您指定的隨機圖片" : "已關閉");
-    });
-    $("[data-lrc-source]").click( function() {
-        let isMetingEnabled = window.localStorage["lrcMetingEnabled"] == "true"
-        mdui.dialog({
-            title: '歌詞來源',
-            content: `<ul class="mdui-list">
-            ${settingsItem("DSM","使用 DSM 當中的歌詞搜尋器","","",
-                            `onclick="window.localStorage['lrcSource']='DSM'" mdui-dialog-close`)}
-            ${settingsItem("Meting","Meting, such a powerful music API framework","","",
-                            `onclick="${isMetingEnabled?"window.localStorage['lrcSource']='Meting'":''}" mdui-dialog-close`,
-                            isMetingEnabled ? "" : "mdui-hidden")}
-            </ul>`,
-            history: false,
-            buttons: [{
-                text: '取消'
-              }],
-            onClose: () => $("[data-lrc-source] .mdui-list-item-text").text(window.localStorage["lrcSource"])
-        });
     });
 }
 async function showSettingsTheme() {

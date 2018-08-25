@@ -84,17 +84,18 @@ ap.on("loadedmetadata", async() => {
     let nowPlaying = ap.list.audios[ap.list.index],
         name = nowPlaying.name,
         id = nowPlaying.id,
-        artist = nowPlaying.artist
+        artist = nowPlaying.artist,
+        source = nowPlaying.source
     $(document).attr("title", `${name} - ${artist}`);
 
-    let lrcResult = await getLrc(artist, name, id)
+    let lrcResult = await getLrc(artist, name, id, source)
     setLrc(lrcResult)
 })
 
 function setLrc(lrcResult) {
-    if (lrcResult) {
-        lrc.load(lrcResult);
-    } else
+    if (lrcResult)
+        lrc.load(lrcResult)
+    else
         lrc.load(`[00:00.000]無歌詞`)
     if ($("div[data-lrc]").length > 0) {
         let html = ``
@@ -177,7 +178,7 @@ function secondToTime(second) {
 function pokaHeader(title, subtitle = '', image = false, hide = false, blur = true) {
     let style = image && window.localStorage["imgRes"] == "false" ?
         `background-image: url('${image.replace(/'/g, "\\'")}');` :
-        `background-image: url('${window.localStorage["randomImg"].replace(/'/g, "\\'")}');`
+        `background-image: url('${getBackground().replace(/'/g, "\\'")}');`
 
     if (hide) $("#header-wrapper").addClass('hide')
     else $("#header-wrapper").removeClass('hide')
@@ -724,14 +725,16 @@ function playSongs(songs, song = false, clear = true) {
             name = nowsong.name,
             artist = nowsong.artist,
             album = nowsong.album,
-            poster = nowsong.cover
+            poster = nowsong.cover,
+            source = nowsong.source
         playlist.push({
             url: src,
             cover: poster,
             name: name,
             artist: artist,
             album: album,
-            id: nowsong.id
+            id: nowsong.id,
+            source: source
         })
         if (nowsong.id == song) { songtoplay = i }
     }
@@ -753,14 +756,16 @@ function addSong(songlist, songID = 0) {
                 name = nowsong.name,
                 artist = nowsong.artist,
                 album = nowsong.album,
-                poster = nowsong.cover
+                poster = nowsong.cover,
+                source = nowsong.source
             playlist.push({
                 url: src,
                 cover: poster,
                 name: name,
                 artist: artist,
                 album: album,
-                id: nowsong.id
+                id: nowsong.id,
+                source: source
             })
         }
     }
@@ -790,12 +795,11 @@ function getSnackbarPosition() {
 }
 
 async function showLrcChoose() {
-    if (ap.list.audios[ap.list.index] && window.localStorage["lrcSource"] == 'Meting') {
-        let nowPlaying = ap.list.audios[ap.list.index],
-            name = nowPlaying.name || '',
-            artist = nowPlaying.artist || ''
-        let list = (items, keyword = '') => {
-            r = `<div class="mdui-row">
+    let nowPlaying = ap.list.audios[ap.list.index],
+        name = nowPlaying.name || '',
+        artist = nowPlaying.artist || ''
+    let list = (lyrics, keyword = '') => {
+        r = `<div class="mdui-row">
                             <div class="mdui-col-md-6 mdui-col-offset-md-3">
                                 <div class="mdui-textfield">
                                     <i class="mdui-icon material-icons">search</i>
@@ -811,65 +815,64 @@ async function showLrcChoose() {
                             </div>
                         </div>
                     <ul class="mdui-list">`;
-            r += `<li class="mdui-list-item mdui-ripple" data-lrc-id="no">
+        r += `<li class="mdui-list-item mdui-ripple" data-lrc-id="no">
                     <div class="mdui-list-item-content">
                         <div class="mdui-list-item-title mdui-list-item-one-line">不載入歌詞</div>
                         <div class="mdui-list-item-text mdui-list-item-one-line">點選清除目前的歌詞</div>
                     </div>
                 </li>`
-            if (items && items.length > 0) {
-                for (i = 0; i < items.length; i++) {
-                    let item = items[i]
-                    r += `<li class="mdui-list-item mdui-ripple" data-lrc-id="${item.id}">
+        if (lyrics && lyrics.length > 0) {
+            for (i = 0; i < lyrics.length; i++) {
+                let lyric = lyrics[i]
+                r += `<li class="mdui-list-item mdui-ripple" data-lrc-id="${i}">
                             <div class="mdui-list-item-content">
-                                <div class="mdui-list-item-title mdui-list-item-one-line">${item.name}</div>
-                                <div class="mdui-list-item-text mdui-list-item-one-line">${item.artist[0]} / ${item.album}</div>
+                                <div class="mdui-list-item-title mdui-list-item-one-line">${lyric.name}</div>
+                                <div class="mdui-list-item-text mdui-list-item-one-line">[${lyric.source}] ${lyric.artist}</div>
                             </div>
                         </li>`
-                }
             }
-
-
-            r += `</ul></div>`
-            return r
         }
-        mdui.dialog({
-            title: '歌詞選擇',
-            content: `<div lrc-choose style="min-height:400px">${list()}</div>
+
+
+        r += `</ul></div>`
+        return r
+    }
+    mdui.dialog({
+        title: '歌詞選擇',
+        content: `<div lrc-choose style="min-height:400px">${list()}</div>
             <div class="mdui-dialog-actions">
                 <button class="mdui-btn mdui-ripple" mdui-dialog-confirm data-lrc-done>完成</button>
             </div>`,
-            history: false
-        });
-        //初始化
-        $("input#searchLrc").attr('value', `${name} ${artist}`)
-        $("input#searchLrc + * + .mdui-textfield-helper").text('搜尋中...')
-        mdui.mutation();
+        history: false
+    });
+    //初始化
+    $("input#searchLrc").attr('value', `${name} ${artist}`)
+    $("input#searchLrc + * + .mdui-textfield-helper").text('搜尋中...')
+    mdui.mutation();
 
-        async function search(keyword) {
-            let searchResult = await getMetingSearchResult(keyword, 30)
-            if ($("[lrc-choose]").length > 0) {
-                $("[lrc-choose]").html(list(searchResult, keyword))
-                mdui.mutation();
-            }
-            $("[data-lrc-id]").click(async function() {
-                let lrcid = $(this).attr('data-lrc-id')
-                var text = $(this).children().children('.mdui-list-item-text').text()
-                $(this).children().children('.mdui-list-item-text').text('歌詞載入中...')
-                if (lrcid != "no") {
-                    let metinglrc = await getMetingLrcById(lrcid)
-                    setLrc(metinglrc)
-                } else {
-                    setLrc(false)
-                }
-                $(this).children().children('.mdui-list-item-text').text(text)
-                $('[data-lrc-done]').click()
-            })
-            $("input#searchLrc").change(function() {
-                $("input#searchLrc + * + .mdui-textfield-helper").text('搜尋中...')
-                search($(this).val())
-            })
+    async function search(keyword) {
+        let searchResult = (await searchLrc(keyword, 30)).data.lyrics
+        console.log(searchResult)
+        if ($("[lrc-choose]").length > 0) {
+            $("[lrc-choose]").html(list(searchResult, keyword))
+            mdui.mutation();
         }
-        search(`${name} ${artist}`)
+        $("[data-lrc-id]").click(async function() {
+            let lrcid = $(this).attr('data-lrc-id')
+            var text = $(this).children().children('.mdui-list-item-text').text()
+            $(this).children().children('.mdui-list-item-text').text('歌詞載入中...')
+            if (lrcid != "no") {
+                setLrc(searchResult[lrcid].lyric)
+            } else {
+                setLrc(false)
+            }
+            $(this).children().children('.mdui-list-item-text').text(text)
+            $('[data-lrc-done]').click()
+        })
+        $("input#searchLrc").change(function() {
+            $("input#searchLrc + * + .mdui-textfield-helper").text('搜尋中...')
+            search($(this).val())
+        })
     }
+    search(`${name} ${artist}`)
 }

@@ -463,8 +463,11 @@ async function searchLyrics(keyword) {
         { key: "title", "value": keyword },
         { key: "artist", "value": '' }
     ]
-    result = (await getAPI("AudioStation/lyrics_search.cgi", "SYNO.AudioStation.LyricsSearch", "searchlyrics", PARAMS_JSON, 2)).data.lyrics
-    return { lyrics: parseLyrics(result) }
+    result = (await getAPI("AudioStation/lyrics_search.cgi", "SYNO.AudioStation.LyricsSearch", "searchlyrics", PARAMS_JSON, 2)).data
+    if (result)
+        return { lyrics: parseLyrics(result.lyrics) }
+    else
+        return false
 }
 
 module.exports = {
@@ -486,5 +489,5 @@ module.exports = {
     getPlaylistSongs,
     getRandomSongs,
     getLyric,
-    searchLyrics //太慢
+    //searchLyrics //太慢
 };
