@@ -442,5 +442,5 @@ module.exports = {
     // getPlaylists,
     getPlaylistSongs,
     getLyric, //done
-    searchLyric
+    //searchLyric //不會動
 };
