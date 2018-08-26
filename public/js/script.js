@@ -258,46 +258,14 @@ async function showSearch(keyword) {
     ]
     let noResult = `<div class="mdui-valign" style="height:150px"><p class="mdui-center">${noResultTexts[Math.floor(Math.random() * noResultTexts.length)]}</p></div>`
     if (keyword) {
-        let panelHeader = title => `<div class="mdui-panel-item">
-        <div class="mdui-panel-item-header">
-          <div class="mdui-panel-item-title">${title}</div>
-          <i class="mdui-panel-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
-        </div><div class="mdui-panel-item-body">`,
-            panelFooter = `</div></div>`,
-            result = (await axios.get(`/pokaapi/search/?keyword=${keyword}`)).data,
-            panels = `<div class="mdui-panel" mdui-panel>`
+        let result = (await axios.get(`/pokaapi/search/?keyword=${keyword}`)).data
+        let searchResults = template.parseHome(result)
 
-        if (result.folders.length > 0)
-            panels += panelHeader(`資料夾 (${result.folders.length})`),
-            panels += template.parseFolder(result.folders),
-            panels += panelFooter
-        if (result.songs.length > 0)
-            panels += panelHeader(`曲目 (${result.songs.length})`),
-            panels += template.parseSongs(result.songs),
-            panels += panelFooter
-        if (result.albums.length > 0)
-            panels += panelHeader(`專輯 (${result.albums.length})`),
-            panels += template.parseAlbums(result.albums),
-            panels += panelFooter
-        if (result.artists.length > 0)
-            panels += panelHeader(`演出者 (${result.artists.length})`),
-            panels += template.parseArtists(result.artists),
-            panels += panelFooter
-        if (result.folders.length > 0)
-            panels += panelHeader(`作曲者 (${result.composers.length})`),
-            panels += template.parseComposers(result.composers),
-            panels += panelFooter
-        if (result.folders.length > 0)
-            panels += panelHeader(`播放清單 (${result.playlists.length})`),
-            panels += template.parsePlaylists(result.playlists),
-            panels += panelFooter
-        panels += `</div>`
-
-        //無資料回傳
-        if (panels == `<div class="mdui-panel" mdui-panel></div>`) panels = noResult
+        //無搜尋結果
+        if (!searchResults) searchResults = noResult
 
         if ($("#content").attr('data-page') == 'search') {
-            $("#content").html(html + panels)
+            $("#content").html(html + searchResults)
             mdui.mutation()
         }
     } else
