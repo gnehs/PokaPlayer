@@ -1,7 +1,8 @@
 // 初始化播放器
 const ap = new APlayer({
     container: document.getElementById('aplayer'),
-    fixed: true
+    fixed: true,
+    preload: 'metadata'
 });
 // 初始化歌詞解析
 const lrc = new Lyrics(`[00:00.000]`);
@@ -78,9 +79,11 @@ ap.on("play", async() => {
     }
     updateMediaSession()
 })
-ap.on("loadedmetadata", async() => {
+ap.on("listswitch", async() => {
     lrc.load(`[00:00.000]歌詞讀取中`)
     $("div[data-lrc=\"inner\"]").html(`<p class="loading">歌詞讀取中</p>`)
+})
+ap.on("loadedmetadata", async() => {
     let nowPlaying = ap.list.audios[ap.list.index],
         name = nowPlaying.name,
         id = nowPlaying.id,
