@@ -83,15 +83,6 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 
-/* 搜尋 */
-
-[data-page="search"] .mdui-panel-item:not(.mdui-panel-item-open) .mdui-panel-item-body {
-    height: 400px;
-    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 70%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 70%, transparent 100%);
-}
-
-
 /* 側邊欄 */
 
 @media screen and (min-width:1024px) {

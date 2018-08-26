@@ -244,9 +244,8 @@ async function showSettingsAbout() {
         ${settingsItem("返回","","arrow_back","settings")}
         ${settingsItem("更新","正在檢查更新...","system_update","","data-upgrade")}
         ${settingsItem("開發者","載入中...","supervisor_account","","data-dev")}
-        ${settingsItem("GitHub","前往 PokaPlayer 的 GitHub","language","",`onclick="window.open('https://github.com/gnehs/PokaPlayer','_blank')"`)}
-        ${settingsItem("錯誤回報","若有任何錯誤或是建議歡迎填寫，並協助我們變得更好","feedback","",`onclick="window.open('https://github.com/gnehs/PokaPlayer/issues/new/choose','_blank')"`)}
-        ${settingsItem("Audio Station 版本","載入中...","info","","data-as-version")}
+        ${settingsItem("GitHub","前往 PokaPlayer 的 GitHub","language","",`onclick="window.open('https://github.com/gnehs/PokaPlayer')"`)}
+        ${settingsItem("錯誤回報","若有任何錯誤或是建議歡迎填寫，並協助我們變得更好","feedback","",`onclick="window.open('https://github.com/gnehs/PokaPlayer/issues/new/choose')"`)}
         ${settingsItem("PokaPlayer 版本",window.localStorage["PokaPlayerVersion"],"info","","data-version")}
         ${settingsItem("嘗試重新登入","","account_circle","",`onclick="location.href='/login'"`)}
         ${settingsItem("清除 Service Worker 快取","","delete_forever","","data-clean")}
@@ -254,9 +253,6 @@ async function showSettingsAbout() {
     </ul>`
     $("#content").html(settingItems)
     
-    // DSM 詳細資料
-    let getDSMInfo = await getAPI("AudioStation/info.cgi", "SYNO.AudioStation.Info", "getinfo", [], 4)
-    $("[data-as-version] .mdui-list-item-text").text(getDSMInfo.data.version_string?getDSMInfo.data.version_string:"未知")
     //重啟
     $("[data-restart]").click(() => {
         mdui.confirm('注意：若您未開啟 Docker 的自動重啟功能，您必須手動開啟 PokaPlayer', '確定要重新啟動嗎', 
