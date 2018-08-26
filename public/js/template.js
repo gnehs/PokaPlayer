@@ -47,8 +47,8 @@ const template = {
             let song = songs[i]
             let title = song.name
             let artist = song.artist
-            let clickAction = `onclick="playSongs(songList,'${song.id.replace(/'/g,'\\')}');router.navigate('now');" `
-            let addAction = `onclick="addSong(songList,'${song.id.replace(/'/g,'\\')}')"`
+            let clickAction = `onclick="playSongs(songList,'${song.id}');router.navigate('now');" `
+            let addAction = `onclick="addSong(songList,'${song.id}')"`
 
             let img = window.localStorage["imgRes"] == "true" ? '' :
                 `<div class="mdui-list-item-avatar" ${clickAction}>
