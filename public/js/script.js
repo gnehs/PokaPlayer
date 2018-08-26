@@ -820,7 +820,6 @@ async function showLrcChoose() {
 
     async function search(keyword) {
         let searchResult = (await searchLrc(keyword, 30)).data.lyrics
-        console.log(searchResult)
         if ($("[lrc-choose]").length > 0) {
             $("[lrc-choose]").html(list(searchResult, keyword))
             mdui.mutation();
