@@ -54,13 +54,24 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 #content {
-    padding-top: 64px;
+    padding-top: 32px;
     padding-bottom: 96px;
+}
+
+#header-wrapper.hide+#content {
+    padding-top: 64px;
 }
 
 .mdui-container-fluid {
     padding-left: 0;
     padding-right: 0;
+}
+
+
+/* 列表 */
+
+.mdui-list-item {
+    border-radius: 10px;
 }
 
 
@@ -75,11 +86,11 @@ header.mdui-appbar.mdui-appbar-fixed {
 /* 側邊欄 */
 
 @media screen and (min-width:1024px) {
-    .mdui-list-item {
-        border-radius: 5px 5px;
-    }
     #drawer .mdui-list-item {
         border-radius: 0 500em 500em 0;
+    }
+    #drawer {
+        padding-right: 10px;
     }
 }
 
@@ -95,15 +106,79 @@ header.mdui-appbar.mdui-appbar-fixed {
 /* header-wrapper */
 
 #header-wrapper {
-    margin-bottom: 32px;
-    padding: 0 30px;
-    min-height: 150px;
-    background-size: cover;
-    background-position: center;
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: -300px;
+    position: relative;
+    z-index: -1;
 }
 
-#header-wrapper h1 {
-    text-shadow: 0 1px 8px #000000ad;
+#header-wrapper.hide {
+    display: none;
+}
+
+#header-wrapper .bg,
+#header-wrapper .bg2 {
+    transform: scale(1.05);
+    min-height: 400px;
+    background-size: cover;
+    background-position: center;
+    object-fit: cover;
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .4) 10%, transparent 90%);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .4) 10%, transparent 90%);
+    animation-duration: .4s;
+    animation-timing-function: linear;
+    width: 100%;
+}
+
+#header-wrapper .bg.blur,
+#header-wrapper .bg2.blur {
+    filter: blur(5px);
+}
+
+#header-wrapper .bg2 {
+    position: absolute;
+    animation-direction: reverse;
+}
+
+#header-wrapper .bg2:not(.changeing) {
+    opacity: 0;
+}
+
+#header-wrapper .bg.changeing {
+    animation-name: fade;
+}
+
+#header-wrapper .bg2.changeing {
+    animation-name: fade;
+}
+
+@keyframes fade {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+#header-wrapper>.title {
+    font-weight: bold;
+    padding-left: 48px;
+    margin-top: -300px;
+    margin-bottom: 300px;
+    z-index: 3;
+    width: 100%;
+    position: relative;
+    max-width: calc(100% - 50px * 2);
+}
+
+#header-wrapper .title .title {
+    font-size: 3.5em;
+}
+
+#header-wrapper .title .subtitle {
+    font-size: 1.5em;
 }
 
 #header-wrapper+.mdui-tab {
@@ -573,10 +648,6 @@ header.mdui-appbar.mdui-appbar-fixed {
 [data-lrc] p.mdui-text-color-theme-accent:not(:empty)+p {
     opacity: .85;
     transform: scale(.98);
-}
-
-[data-lrc] p.loading {
-    opacity: 0;
 }
 
 [data-lrc] p.loading.mdui-text-color-theme-accent::after {

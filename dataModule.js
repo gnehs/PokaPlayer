@@ -1,5 +1,36 @@
 const fs = require('fs')
+const config = require('./config.json'); // 設定檔
 const router = require('express').Router()
+const FileStore = require('session-file-store')(require('express-session')); // session
+const session = require('express-session')({
+    store: new FileStore(),
+    secret: config.PokaPlayer.sessionSecret,
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        expires: new Date(Date.now() + 60 * 60 * 1000 * 24 * 7)
+    }
+});
+const rp = require('request-promise');
+
+const options = url => ({
+    method: 'GET',
+    uri: url,
+    headers: {
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Accept-Language": "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Cache-Control": "max-age=0",
+        "DNT": 1,
+        "Host": "music.126.net",
+        "Upgrade-Insecure-Requests": 1,
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36"
+    },
+    rejectUnauthorized: false,
+    followAllRedirects: true
+})
+
+router.use(session);
 
 let moduleList = {};
 fs.readdir(__dirname + "/dataModule", (err, files) => {
@@ -23,13 +54,16 @@ function pokaDecode(str) {
     return Buffer.from(str, 'base64').toString('utf-8')
 }
 
-// 先在這裡蹦蹦蹦再轉交給其他好朋友
-router.use((req, res, next) => {
-    next();
-});
 // 首頁
 router.get('/', (req, res) => {
     res.send('PokaPlayer API');
+});
+// 先在這裡蹦蹦蹦再轉交給其他好朋友
+router.use((req, res, next) => {
+    if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
+        res.status(403).send('Permission Denied Desu')
+    else
+        next();
 });
 
 /*
@@ -74,7 +108,42 @@ playlist {
     source:'',
     id: ''
 }
+lyrics {
+    name:''
+    artist:''
+    source:''
+    id:'',
+    lyric:''
+}
 */
+//-----------------------------> 首頁
+// 取得想推薦的東西(?
+router.get('/home/', async(req, res) => {
+    //http://localhost:3000/pokaapi/home
+    let resData = { folders: [], songs: [], albums: [], songs: [], artists: [], composers: [], playlists: [] }
+    for (var i in Object.keys(moduleList)) {
+        let x = moduleList[Object.keys(moduleList)[i]]
+        let y = require(x.js)
+        if (x.active.indexOf('getHome') > -1) {
+            let result = await y.getHome() || null
+            if (result) {
+                if (result.folders)
+                    for (i = 0; i < result.folders.length; i++) resData.folders.push(result.folders[i])
+                if (result.songs)
+                    for (i = 0; i < result.songs.length; i++) resData.songs.push(result.songs[i])
+                if (result.albums)
+                    for (i = 0; i < result.albums.length; i++) resData.albums.push(result.albums[i])
+                if (result.artists)
+                    for (i = 0; i < result.artists.length; i++) resData.artists.push(result.artists[i])
+                if (result.composers)
+                    for (i = 0; i < result.composers.length; i++) resData.composers.push(result.composers[i])
+                if (result.playlists)
+                    for (i = 0; i < result.playlists.length; i++) resData.playlists.push(result.playlists[i])
+            }
+        }
+    }
+    return res.json(resData)
+});
 //-----------------------------> 資料夾
 // 取得資料夾清單(根目錄)
 router.get('/folders/', async(req, res) => {
@@ -261,7 +330,7 @@ router.get('/song/', async(req, res) => {
     let song = await _module.getSong(req, req.query.songRes, req.query.songId)
     if (typeof song == 'string')
         return res.redirect(song)
-    else
+    else if (moduleName == 'DSM')
         return song.on('response', function(response) {
             //針對 Audio 寫入 Header 避免 Chrome 時間軸不能跳
             res.writeHead(206, {
@@ -271,6 +340,7 @@ router.get('/song/', async(req, res) => {
                 "Content-Type": response.headers['content-type'] ? response.headers['content-type'] : ''
             })
         }).pipe(res)
+    else return song.pipe(res)
 });
 //-----------------------------> 封面
 // 取得封面
@@ -285,10 +355,53 @@ router.get('/cover/', async(req, res) => {
     //http://localhost:3000/pokaapi/cover/?moduleName=DSM&data={%22type%22:%22album%22,%22info%22:{%22album_name%22:%22%E6%AE%BF%E5%A0%82%E2%85%A2%22,%22artist_name%22:%22%E7%BA%AF%E7%99%BD,%20Digger%20feat.%20%E4%B9%90%E6%AD%A3%E7%BB%AB,%20%E6%B4%9B%E5%A4%A9%E4%BE%9D%22,%22album_artist_name%22:%22Various%20Artists%22}}
     // -> {"type":"album","info":{"album_name":"殿堂Ⅲ","artist_name":"纯白, Digger feat. 乐正绫, 洛天依","album_artist_name":"Various Artists"}}
     let cover = await _module.getCover(req.query.data)
-    if (typeof cover == 'string')
-        return res.redirect(cover)
-    else
-        return cover.pipe(res)
+    return cover.pipe(res)
+});
+//-----------------------------> 歌詞
+// 搜尋歌詞
+router.get('/searchLyrics/', async(req, res) => {
+    //http://localhost:3000/pokaapi/searchLyrics/?keyword=a
+    let resData = { lyrics: [] }
+    for (var i in Object.keys(moduleList)) {
+        let x = moduleList[Object.keys(moduleList)[i]]
+        let y = require(x.js)
+        if (x.active.indexOf('searchLyrics') > -1) {
+            let result = await y.searchLyrics(req.query.keyword) || null
+            if (result && result.lyrics)
+                for (i = 0; i < result.lyrics.length; i++) resData.lyrics.push(result.lyrics[i])
+        }
+    }
+    return res.json(resData)
+});
+router.get('/lyric/', async(req, res) => {
+    //http://localhost:3000/pokaapi/lyric/?moduleName=DSM&id=music_1801
+    let moduleName = req.query.moduleName
+    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+    // 沒這東西
+    if (!_module || moduleList[moduleName].active.indexOf('getLyric') == -1) return res.status(501).send("The required module is currently unavailable :(")
+    return res.json({
+        lyrics: [{
+            source: req.query.moduleName,
+            id: req.query.id,
+            lyric: await _module.getLyric(req.query.id)
+        }]
+    })
+});
+//-----------------------------> 隨機
+// 隨機歌曲
+router.get('/randomSongs/', async(req, res) => {
+    //http://localhost:3000/pokaapi/randomSongs/
+    let resData = { songs: [] }
+    for (var i in Object.keys(moduleList)) {
+        let x = moduleList[Object.keys(moduleList)[i]]
+        let y = require(x.js)
+        if (x.active.indexOf('getRandomSongs') > -1) {
+            let result = await y.getRandomSongs(req.query.keyword) || null
+            if (result && result.songs)
+                for (i = 0; i < result.songs.length; i++) resData.songs.push(result.songs[i])
+        }
+    }
+    return res.json(resData)
 });
 // 取得歌曲
 /*router.get('/song/:moduleName/:data', (req, res) => {
@@ -307,6 +420,7 @@ router.get('/cover/', async(req, res) => {
     })
     res.json(songs);
 });*/
+
 router.use((req, res, next) => {
     res
         .status(404)

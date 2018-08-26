@@ -1,7 +1,8 @@
 const config = require('../config.json'), // 很會設定ㄉ朋友
     schedule = require('node-schedule'), // 很會計時ㄉ朋友
     request = require('request').defaults({ jar: require('request').jar() }), //很會請求ㄉ朋友
-    dsmURL = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}`
+    dsmURL = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}`,
+    lyricRegex = /\[([0-9.:]*)\]/i
 
 function parseSongs(songs) {
     let r = []
@@ -46,7 +47,7 @@ function parseAlbums(albums) {
         }))
         r.push({
             name: album.name,
-            artist: album.artist,
+            artist: album.display_artist,
             year: album.year,
             cover: cover,
             source: 'DSM',
@@ -74,7 +75,7 @@ function parseArtists(artists) {
         r.push({
             name: artists[i].name,
             source: 'DSM',
-            cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(JSON.stringify({"type":"artist","info":artists[i].name}))}`,
+            cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(JSON.stringify({"type":"artist","info":artists[i].name||'未知'}))}`,
             id: artists[i].name
         })
     }
@@ -87,9 +88,24 @@ function parseComposers(composers) {
         r.push({
             name: composers[i].name,
             source: 'DSM',
-            cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(JSON.stringify({"type":"composer","info":composers[i].name}))}`,
+            cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(JSON.stringify({"type":"composer","info":composers[i].name||'未知'}))}`,
             id: composers[i].name
         })
+    }
+    return r
+}
+
+function parseLyrics(lyrics) {
+    let r = []
+    for (i = 0; i < lyrics.length; i++) {
+        if (lyrics[i].additional.full_lyrics.match(lyricRegex))
+            r.push({
+                name: lyrics[i].title,
+                artist: lyrics[i].artist,
+                source: 'DSM',
+                id: lyrics[i].id,
+                lyric: lyrics[i].additional.full_lyrics
+            })
     }
     return r
 }
@@ -132,13 +148,88 @@ async function getAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 1)
     });
 }
 
+async function getHome() {
+    let result = await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "list", [{ key: "limit", "value": -1 }, { key: "offset", "value": 0 }])
+    let r = {
+        artists: [],
+        composers: [],
+        folders: [],
+        playlists: [],
+        albums: [],
+    }
+    for (i = 0; i < result.data.items.length; i++) {　
+        let pin = result.data.items[i]
+        let type = pin.type
+        switch (type) {
+            case "artist":
+                //演出者
+                r.artists.push({
+                    name: pin.name,
+                    source: 'DSM',
+                    cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(JSON.stringify({"type":"artist","info":pin.name||'未知'}))}`,
+                    id: pin.name
+                })
+                break;
+            case "composer":
+                //作曲者
+                r.composers.push({
+                    name: pin.name,
+                    source: 'DSM',
+                    cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(JSON.stringify({"type":"composer","info":pin.name||'未知'}))}`,
+                    id: pin.name
+                })
+                break;
+            case "folder":
+                //資料夾
+                r.folders.push({
+                    name: pin.name,
+                    source: 'DSM',
+                    id: pin.criteria.folder,
+                    cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(JSON.stringify({"type":"folder","info":pin.criteria.folder}))}`,
+                })
+                break;
+            case "playlist":
+                //播放清單
+                r.playlists.push({
+                    name: pin.name,
+                    source: 'DSM',
+                    id: pin.criteria.playlist
+                })
+                break;
+            case "album":
+                //專輯
+                let coverInfo = {
+                    "album_name": pin.criteria.album || '',
+                    "artist_name": pin.criteria.artist || '',
+                    "album_artist_name": album_artist = pin.criteria.album_artist || ''
+                }
+                let cover = `/pokaapi/cover/?moduleName=DSM&data=` + encodeURIComponent(JSON.stringify({
+                    "type": "album",
+                    "info": coverInfo
+                }))
+                r.albums.push({
+                    name: pin.name,
+                    artist: pin.criteria.artist || pin.criteria.album_artist || '',
+                    year: 0,
+                    cover: cover,
+                    source: 'DSM',
+                    id: JSON.stringify(coverInfo)
+                })
+                break;
+        }
+    }
+    return r
+}
 async function getSong(req, songRes, songId) {
     let url = dsmURL
     switch (songRes) {
-        case "wav":
+        case "high":
             url += `/webapi/AudioStation/stream.cgi/0.wav?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=wav&id=`
             break;
-        case "mp3":
+        case "low":
+            url += `/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=mp3&id=`
+            break;
+        case "medium":
             url += `/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=mp3&id=`
             break;
         case "original":
@@ -255,7 +346,8 @@ async function getFolderFiles(id) {
             folders.push({
                 name: item.title,
                 source: 'DSM',
-                id: item.id
+                id: item.id,
+                cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(JSON.stringify({"type":"folder","info":item.id}))}`,
             })
     }
     return {
@@ -345,35 +437,57 @@ async function getPlaylistSongs(id) {
         }]
     }
 }
-async function getRandomPlaylistSongs(id) {
-    return [{ name: 'song form testa', link: 'blah' }];
+async function getRandomSongs(id) {
+    let result = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "list", [
+        { key: "additional", "value": "song_tag,song_audio,song_rating" },
+        { key: "library", "value": "shared" },
+        { key: "limit", "value": 100 },
+        { key: "sort_by", "value": "random" }
+    ], 1)
+    return { songs: parseSongs(result.data.songs) }
 }
 
-async function getLrc(id) {
-    return [{ name: 'song form testa', link: 'blah' }];
+async function getLyric(id) {
+    let
+        result = (await getAPI("AudioStation/lyrics.cgi", "SYNO.AudioStation.Lyrics", "getlyrics", [{ key: "id", "value": id }], 2)).data.lyrics
+    if (result.match(lyricRegex))
+        return result
+    else
+        return false
 }
 
-async function searchLrc(keyword) {
-    return [{ name: 'song form testa', link: 'blah' }];
+async function searchLyrics(keyword) {
+    let PARAMS_JSON = [
+        { key: "additional", "value": "full_lyrics" },
+        { key: "limit", "value": 30 },
+        { key: "title", "value": keyword },
+        { key: "artist", "value": '' }
+    ]
+    result = (await getAPI("AudioStation/lyrics_search.cgi", "SYNO.AudioStation.LyricsSearch", "searchlyrics", PARAMS_JSON, 2)).data
+    if (result)
+        return { lyrics: parseLyrics(result.lyrics) }
+    else
+        return false
 }
 
 module.exports = {
     name: 'DSM',
-    onLoaded, //done 
-    getSong, //done 
-    getCover, //done 
-    search, //done 
-    getAlbums, //done 
-    getAlbumSongs, //done
-    getFolders, //done 
-    getFolderFiles, //done 
-    getArtists, //done 
-    getArtistAlbums, //done
-    getComposers, //done 
-    getComposerAlbums, //done
-    getPlaylists, //done 
-    getPlaylistSongs, //done 
-    getRandomPlaylistSongs,
-    getLrc,
-    searchLrc
+    onLoaded,
+    getHome,
+    getSong,
+    getCover,
+    search,
+    getAlbums,
+    getAlbumSongs,
+    getFolders,
+    getFolderFiles,
+    getArtists,
+    getArtistAlbums,
+    getComposers,
+    getComposerAlbums,
+    getPlaylists,
+    getPlaylistSongs,
+    getRandomSongs,
+    getLyric,
+    //searchLyrics //太慢
 };
