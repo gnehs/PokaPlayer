@@ -1,7 +1,8 @@
 // 初始化播放器
 const ap = new APlayer({
     container: document.getElementById('aplayer'),
-    fixed: true
+    fixed: true,
+    preload: 'metadata'
 });
 // 初始化歌詞解析
 const lrc = new Lyrics(`[00:00.000]`);
@@ -78,9 +79,11 @@ ap.on("play", async() => {
     }
     updateMediaSession()
 })
-ap.on("loadedmetadata", async() => {
+ap.on("listswitch", async() => {
     lrc.load(`[00:00.000]歌詞讀取中`)
     $("div[data-lrc=\"inner\"]").html(`<p class="loading">歌詞讀取中</p>`)
+})
+ap.on("loadedmetadata", async() => {
     let nowPlaying = ap.list.audios[ap.list.index],
         name = nowPlaying.name,
         id = nowPlaying.id,
@@ -465,7 +468,6 @@ async function showNow() {
         let focus = ap.list.index == i ? 'mdui-list-item-active' : '',
             title = ap.list.audios[i].name,
             artist = ap.list.audios[i].artist,
-            albumArtist = ap.list.audios[i].albumArtist,
             album = ap.list.audios[i].album,
             img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${ap.list.audios[i].cover}"/></div>`
         html += `<li class="mdui-list-item mdui-ripple song ${focus}" >
@@ -486,8 +488,8 @@ async function showNow() {
         name = nowPlaying ? nowPlaying.name : "PokaPlayer",
         artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點擊播放鍵開始隨機播放",
         album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>",
-        img = (nowPlaying && window.localStorage["imgRes"] != "true") ? nowPlaying.cover : getBackground()
-    currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00",
+        img = (nowPlaying && window.localStorage["imgRes"] != "true") ? nowPlaying.cover : getBackground(),
+        currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00",
         duration = ap.audio.currentTime ? secondToTime(ap.audio.duration) : "0:00",
         timer = currentTime + '/' + duration,
         info = `
@@ -600,13 +602,16 @@ async function showNow() {
         }
     })
     ap.on("timeupdate", () => {
-        currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00"
-        duration = ap.audio.currentTime ? secondToTime(ap.audio.duration) : "0:00"
-        let cent = ap.audio.currentTime / ap.audio.duration * 100
+        let currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00",
+            duration = ap.audio.currentTime ? secondToTime(ap.audio.duration) : "0:00",
+            audioBuffered = ap.audio.buffered.end(ap.audio.buffered.length - 1) / ap.audio.duration * 100,
+            cent = ap.audio.currentTime / ap.audio.duration * 100
+        console.log(audioBuffered)
         $('[data-player]>.info>.player-bar>.timer').text(currentTime + '/' + duration);
         // 更新 timer
         $("[data-player]>.info>.player-bar input[type=range]").val(cent);
         mdui.updateSliders();
+        $("[data-player]>.info>.player-bar input[type=range]+*+.mdui-slider-fill").before(`<div class="mdui-slider-fill" style="width:${audioBuffered}%;" data-audio-buffered></div>`);
         // 歌詞亮亮
         if ($(window).width() > 850 && $(window).height() > 750) {
             let nowLrc = lrc.select(ap.audio.currentTime)
