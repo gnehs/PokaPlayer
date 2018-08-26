@@ -606,7 +606,6 @@ async function showNow() {
             duration = ap.audio.currentTime ? secondToTime(ap.audio.duration) : "0:00",
             audioBuffered = ap.audio.buffered.end(ap.audio.buffered.length - 1) / ap.audio.duration * 100,
             cent = ap.audio.currentTime / ap.audio.duration * 100
-        console.log(audioBuffered)
         $('[data-player]>.info>.player-bar>.timer').text(currentTime + '/' + duration);
         // 更新 timer
         $("[data-player]>.info>.player-bar input[type=range]").val(cent);
