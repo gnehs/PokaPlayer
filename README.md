@@ -2,7 +2,7 @@
 
 # PokaPlayer
 
-PokaPlayer 是 Synology Audio Ststion 的新朋友！
+PokaPlayer 是 Synology Audio Station 的新朋友！
 功能正在慢慢補齊 ❤️
 
 ## 截圖
