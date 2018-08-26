@@ -6,22 +6,22 @@ const metingUrl = require(__dirname + '/../config.json').Meting.url,
     lyricRegex = /\[([0-9.:]*)\]/i
 
 const normalOptions = url => ({
-    method: 'GET',
-    uri: url,
-    headers: {
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-        "Accept-Encoding": "gzip, deflate",
-        "Accept-Language": "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7",
-        "Connection": "keep-alive",
-        "Cache-Control": "max-age=0",
-        "DNT": 1,
-        "Upgrade-Insecure-Requests": 1,
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36"
-    },
-    json: true, // Automatically parses the JSON string in the response
-    followAllRedirects: true
-})
-//https://cdn.rawgit.com/rexx0520/LyriConv-js/f8316b3/modules/migrate.js
+        method: 'GET',
+        uri: url,
+        headers: {
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+            "Accept-Encoding": "gzip, deflate",
+            "Accept-Language": "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7",
+            "Connection": "keep-alive",
+            "Cache-Control": "max-age=0",
+            "DNT": 1,
+            "Upgrade-Insecure-Requests": 1,
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36"
+        },
+        json: true, // Automatically parses the JSON string in the response
+        followAllRedirects: true
+    })
+    //https://cdn.rawgit.com/rexx0520/LyriConv-js/f8316b3/modules/migrate.js
 function migrate(org, t, offset = 10 ** -3) {
     const isDigit = x => !isNaN(Number(x))
 
@@ -271,13 +271,13 @@ async function parseLyrics(lyrics) {
         source: 'netease' } */
     return (await Promise.all(lyrics.map(async cur => {
         if ((await getLyric(cur.lyric_id)))
-            return (await acc).concat([{
+            return {
                 name: cur.name,
                 artist: cur.artist[0],
                 source: 'Netease',
                 id: cur.lyric_id,
                 lyric: await getLyric(cur.lyric_id)
-            }])
+            }
         return null
     }))).filter(x => x)
 }
@@ -318,7 +318,7 @@ async function getLyric(id) {
     if (result.tlyric) {
         try {
             result = migrate(result.lyric, result.tlyric)
-        } catch (e){
+        } catch (e) {
             result = result.lyric
         }
     } else
