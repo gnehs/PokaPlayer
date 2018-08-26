@@ -273,21 +273,29 @@ async function showSettingsAbout() {
     let checkUpdate = await axios.get(`https://api.github.com/repos/gnehs/PokaPlayer/releases`);
     let update = getInfo.data.version != checkUpdate.data[0].tag_name ? `更新到 ${checkUpdate.data[0].tag_name}` : debug.data == false ? `您的 PokaPlayer 已是最新版本` : `與開發分支同步`
     $("[data-upgrade] .mdui-list-item-text").text(update)
-    if (getInfo.data.version != checkUpdate.data[0].tag_name || debug.data)
+    if (getInfo.data.version != checkUpdate.data[0].tag_name || debug.data){
         $("[data-upgrade]").attr('data-upgrade', true)
+        pokaHeader('設定', `可更新至 ${checkUpdate.data[0].tag_name}`)
+    }
     if (debug.data)
         $("[data-version] .mdui-list-item-text").text(`${window.localStorage["PokaPlayerVersion"]}(${debug.data})`)
     //更新
     $("[data-upgrade=\"true\"]").click(() => {
         mdui.dialog({
-            title: '您確定要更新嗎',
-            content: '注意：若您未開啟 Docker 的自動重啟功能，您必須手動開啟 PokaPlayer',
+            title:`${checkUpdate.data[0].tag_name} 更新日誌`,
+            content: `<div class="mdui-typo">
+                            <blockquote>
+                                ${new showdown.Converter().makeHtml(checkUpdate.data[0].body)}
+                            </blockquote>
+                        <hr>
+                        </div>
+                        注意：若您未開啟 Docker 的自動重啟功能，您必須手動開啟 PokaPlayer`,
             history: false,
             buttons: [{
-                    text: '算ㄌ'
+                    text: '取消'
                 },
                 {
-                    text: '對啦',
+                    text: '更新',
                     onClick: async inst => {
                         mdui.snackbar('正在更新...', { position: getSnackbarPosition() });
                         let update = await axios.get('/upgrade/')
