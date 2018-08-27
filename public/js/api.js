@@ -8,13 +8,14 @@ function getBackground() {
 
 /*===== Pin =====*/
 async function isPinned(source, type, id, name) {
-    let result = (await axios.get(`/pokaapi/isPinned/?moduleName=${source}&type=${type}&id=${id}&name=${name}`)).data
-    console.log(result)
-    return (result)
+    let result = (await axios.get(`/pokaapi/isPinned/?moduleName=${source}&type=${type}&id=${id}&name=${name}`))
+    if (result.status == 501)
+        return 'disabled'
+    else
+        return result.data
 }
 async function addPin(source, type, id, name) {
     let result = (await axios.get(`/pokaapi/addPin/?moduleName=${source}&type=${type}&id=${id}&name=${name}`)).data
-    console.log(result)
     if (result != true)
         mdui.snackbar({
             message: `釘選失敗`,
@@ -25,7 +26,6 @@ async function addPin(source, type, id, name) {
 }
 async function unPin(source, type, id, name) {
     let result = (await axios.get(`/pokaapi/unPin/?moduleName=${source}&type=${type}&id=${id}&name=${name}`)).data
-    console.log(result)
     if (result != true)
         mdui.snackbar({
             message: `取消釘選失敗`,

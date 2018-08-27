@@ -334,14 +334,15 @@ async function showAlbumSongs(albumSource, albumID) {
         // 釘選（？
     let isAlbumPinned = await isPinned(albumSource, 'album', albumID, name),
         actions = '';
-    if (isAlbumPinned)
-        actions += `
+    if (isAlbumPinned != 'disabled')
+        if (isAlbumPinned)
+            actions += `
         <button class="mdui-btn mdui-btn-icon mdui-ripple" 
                 title="從首頁釘選移除此專輯" data-pin="false">
             <i class="mdui-icon material-icons">turned_in</i>
         </button>`
-    else
-        actions += `
+        else
+            actions += `
        <button class="mdui-btn mdui-btn-icon mdui-ripple" 
                title="加入此專輯到首頁釘選" data-pin="true">
            <i class="mdui-icon material-icons">turned_in_not</i>
