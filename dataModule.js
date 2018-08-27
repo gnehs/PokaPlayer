@@ -38,17 +38,16 @@ fs.readdir(__dirname + "/dataModule", (err, files) => {
     files.forEach(file => {
         let uri = __dirname + "/dataModule/" + file,
             _module = require(uri)
-        if (uri.indexOf('dev') == -1 || config.PokaPlayer.debug) {
-            let moduleData = {
-                "name": _module.name,
-                "active": Object.keys(_module),
-                "js": uri
-            }
-            if (moduleData.active.indexOf('onLoaded') > -1) { // 如果模組想要初始化
-                _module.onLoaded()
-            }
-            moduleList[moduleData.name] = moduleData;
+        let moduleData = {
+            "name": _module.name,
+            "active": Object.keys(_module),
+            "js": uri
         }
+        if (moduleData.active.indexOf('onLoaded') > -1) { // 如果模組想要初始化
+            _module.onLoaded()
+        }
+        moduleList[moduleData.name] = moduleData;
+
     });
 })
 
