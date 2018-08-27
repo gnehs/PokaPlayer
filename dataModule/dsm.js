@@ -185,7 +185,7 @@ async function getHome() {
                     name: pin.name,
                     source: 'DSM',
                     id: pin.criteria.folder,
-                    cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(JSON.stringify({"type":"folder","info":pin.criteria.folder}))}`,
+                    cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(JSON.stringify({"type":"folder","info":pin.criteria.folder}))}`
                 })
                 break;
             case "playlist":
@@ -219,6 +219,54 @@ async function getHome() {
         }
     }
     return r
+}
+async function addPin(type, id, name) {
+    let PARAMS_JSON = [{
+        key: "items",
+        value: `[{"type":"${type}","criteria":${id},"name":"${name}"}]`
+    }]
+    result = (await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "pin", PARAMS_JSON))
+    if (result.success)
+        return result.success
+    else
+        return result.error
+}
+async function isPinned(type, id, name) {
+    /*let PARAMS_JSON = [{
+        key: "items",
+        "value": JSON.stringify([{
+            "type": type,
+            "criteria": id
+        }])
+    }]*/
+    result = (await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "list", [{ key: "limit", "value": -1 }, { key: "offset", "value": 0 }])).data
+    for (i = 0; i < result.items.length; i++) {
+        let pin = result.items[i]
+        console.log(pin)
+        if (pin.type == type)
+            if (pin.name == name)
+                return pin.id
+    }
+    return false
+}
+async function unPin(type, id, name) {
+    /*let PARAMS_JSON = [{
+        key: "items",
+        "value": JSON.stringify([{
+            "type": type,
+            "criteria": id
+        }])
+    }]*/
+    let PARAMS_JSON = [{
+        key: "items",
+        value: `["${id}"]`
+    }]
+    result = (await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "unpin", PARAMS_JSON))
+    console.log(result)
+    if (result.success)
+        return result.success
+    else
+        return result.error
 }
 async function getSong(req, songRes, songId) {
     let url = dsmURL
@@ -474,6 +522,9 @@ module.exports = {
     name: 'DSM',
     onLoaded,
     getHome,
+    addPin,
+    unPin,
+    isPinned,
     getSong,
     getCover,
     search,

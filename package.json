@@ -4,7 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "test": "nodemon index.js --ignore '.git/*' --watch index.js --watch dataModule.js --watch module/*.js",
+        "test": "nodemon index.js --ignore '.git/*' --watch index.js --watch dataModule.js --watch ./module/*.js",
         "start": "npm install --production && node index.js"
     },
     "repository": {
