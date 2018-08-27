@@ -67,15 +67,6 @@ app.use(express.static('public'))
 server.listen(3000, async() => {
     console.log("[PokaPlayer]  URL: http://localhost:3000")
     console.log("[PokaPlayer] Time: " + moment().format("YYYY/MM/DD HH:mm"))
-
-    var a = await login(config.DSM)
-    if (!a.success) {
-        console.error("登入失敗，請檢查您的設定檔是否正確")
-        process.exit()
-    } else {
-        //var b = await syno.random100(config.DSM)
-        //console.log(b)
-    }
 })
 
 // 隨機圖圖
@@ -197,10 +188,7 @@ app.get('/ping', (req, res) => {
 
 // 登入
 app.get('/login/', (req, res) => {
-    if (config.PokaPlayer.passwordSwitch && req.session.pass != config.PokaPlayer.password)
-        res.redirect("/")
-    else
-        res.render('login')
+    res.render('login')
 });
 app.post('/login/', (req, res) => {
     req.session.pass = req.body['userPASS']
