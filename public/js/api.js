@@ -16,8 +16,14 @@ async function getLrc(artist, title, id = false, source) {
             return result.data.lyrics[0].lyric
     }
     result = await axios.get(`/pokaapi/searchLyrics/?keyword=${encodeURIComponent(title+' '+artist)}`)
-    if (result.data.lyrics[0] && result.data.lyrics[0].name.toLowerCase() == title.toLowerCase())
-        return result.data.lyrics[0].lyric
+
+    if (result.data.lyrics[0]) {
+        let lrcTitle = result.data.lyrics[0].name.toLowerCase().replace(/\.|\*|\~|\&|。|，|\ |\-|\!|！|\(|\)/g, '')
+        let songTitle = title.toLowerCase().replace(/\.|\*|\~|\&|。|，|\ |\-|\!|！|\(|\)/g, '')
+        console.log(lrcTitle, songTitle)
+        if (lrcTitle == songTitle)
+            return result.data.lyrics[0].lyric
+    }
 
     return false
 }

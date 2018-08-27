@@ -604,7 +604,7 @@ async function showNow() {
     ap.on("timeupdate", () => {
         let currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00",
             duration = ap.audio.currentTime ? secondToTime(ap.audio.duration) : "0:00",
-            audioBuffered = ap.audio.buffered.end(ap.audio.buffered.length - 1) / ap.audio.duration * 100,
+            audioBuffered = ap.audio.currentTime > 1 ? ap.audio.buffered.end(ap.audio.buffered.length - 1) / ap.audio.duration * 100 : 0,
             cent = ap.audio.currentTime / ap.audio.duration * 100
         $('[data-player]>.info>.player-bar>.timer').text(currentTime + '/' + duration);
         // 更新 timer
