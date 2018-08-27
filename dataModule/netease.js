@@ -65,7 +65,7 @@ function migrate(org, t, offset = 10 ** -3) {
     const strip = (x, precision = 12) => +parseFloat(x.toPrecision(precision)) // 數字精確化
 
 
-    const tagToTime = tag => isDigit(tag[0]) ? tag.split(':').reverse().reduce((acc, cur, index) => plus(acc, Number(cur) * (60 ** index)), 0) : tag
+    const tagToTime = tag => isDigit(tag[0]) ? tag.split(':').reverse().reduce((acc, x, index) => plus(acc, Number(x) * (60 ** index)), 0) : tag
     const parse = (x, isTranslated = false) => {
         let pLyricLines = x
             .split("\n").filter(x => x != '')
@@ -198,8 +198,8 @@ function getSongs(song) {
     if (typeof(song) == 'object') {
         if (Array.isArray(song)) {
             // 傳入的資料是 list
-            return song.reduce((acc, cur) => {
-                acc[cur] = getSong(cur);
+            return song.reduce((acc, x) => {
+                acc[x] = getSong(x);
                 return acc
             }, {})
         } else {
@@ -231,8 +231,8 @@ function getCovers(id) {
         if (Array.isArray(id)) {
             // 傳入的資料是 list
 
-            return id.reduce((acc, cur) => {
-                acc[cur] = getCover(cur);
+            return id.reduce((acc, x) => {
+                acc[x] = getCover(x);
                 return acc
             }, {})
 
@@ -383,8 +383,8 @@ async function getArtistSongs(id) {
 function getSongsUrl(song) {
     if (Array.isArray(song)) {
         // 傳入的資料是 list
-        return song.reduce((acc, cur) => {
-            acc[cur] = `${metingUrl}/?server=netease&type=url&id=${cur}`
+        return song.reduce((acc, x) => {
+            acc[x] = `${metingUrl}/?server=netease&type=url&id=${x}`
             return acc
         }, {})
     } else {
