@@ -95,7 +95,7 @@ app.get('/og/og.png', (req, res) => {
 // 首頁
 app.get('/', (req, res) => {
     // 沒登入的快去啦
-    if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
+    if (config.PokaPlayer.passwordSwitch && req.session.pass != config.PokaPlayer.password)
         res.redirect("/login/")
     else
         res.render('index') //有登入給首頁吼吼
@@ -138,7 +138,7 @@ io.on('connection', socket => {
 });
 // 更新
 app.get('/upgrade', (req, res) => {
-    if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
+    if (config.PokaPlayer.passwordSwitch && req.session.pass != config.PokaPlayer.password)
         res.status(403).send('Permission Denied Desu')
     else {
         if (!config.PokaPlayer.instantUpgradeProcess) {
@@ -160,7 +160,7 @@ app.get('/upgrade', (req, res) => {
 
 // get info
 app.get('/info', (req, res) => {
-    if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
+    if (config.PokaPlayer.passwordSwitch && req.session.pass != config.PokaPlayer.password)
         res.status(403).send('Permission Denied Desu')
     else {
         res.json(package)
@@ -168,7 +168,7 @@ app.get('/info', (req, res) => {
 })
 
 app.get('/debug', async(req, res) => {
-    if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
+    if (config.PokaPlayer.passwordSwitch && req.session.pass != config.PokaPlayer.password)
         res.status(403).send('Permission Denied Desu')
     else
         res.send(config.PokaPlayer.debug ? (await git.raw(['rev-parse', '--short', 'HEAD'])).slice(0, -1) : 'false')
@@ -176,14 +176,14 @@ app.get('/debug', async(req, res) => {
 })
 
 app.get('/meting', (req, res) => {
-    if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
+    if (config.PokaPlayer.passwordSwitch && req.session.pass != config.PokaPlayer.password)
         res.status(403).send('Permission Denied Desu')
     else
         res.json(config.Meting)
 })
 
 app.post('/restart', (req, res) => {
-    if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
+    if (config.PokaPlayer.passwordSwitch && req.session.pass != config.PokaPlayer.password)
         res.status(403).send('Permission Denied Desu')
     else
         res.send('k')
@@ -196,7 +196,7 @@ app.get('/ping', (req, res) => {
 
 // get song
 app.get('/song/:res/:id', async(req, res) => {
-    if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
+    if (config.PokaPlayer.passwordSwitch && req.session.pass != config.PokaPlayer.password)
         res.status(403).send('Permission Denied Desu')
     else {
         var url = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}/`
@@ -218,7 +218,7 @@ app.get('/song/:res/:id', async(req, res) => {
 
 // get cover
 app.get('/cover/:type/:info', async(req, res) => {
-    if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
+    if (config.PokaPlayer.passwordSwitch && req.session.pass != config.PokaPlayer.password)
         res.send('請登入')
     else {
         var url = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}/webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getcover&view=default`
@@ -287,7 +287,7 @@ app.get('/api/:apireq', async(req, res) => {
             "PARAMS":"&AAA=AAA&BBB=CCC"
         }
         */
-    if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
+    if (config.PokaPlayer.passwordSwitch && req.session.pass != config.PokaPlayer.password)
         res.status(403).send('Permission Denied Desu')
     else if (apireq.API_NAME.match(/SYNO.AudioStation/)) {
         var getRes = await api(config.DSM, apireq.CGI_PATH, apireq.API_NAME, apireq.METHOD, apireq.VERSION, apireq.PARAMS)
@@ -298,14 +298,14 @@ app.get('/api/:apireq', async(req, res) => {
 
 // 登入
 app.get('/login/', (req, res) => {
-    if (req.session.pass == config.PokaPlayer.password && !config.PokaPlayer.passwordSwitch)
+    if (config.PokaPlayer.passwordSwitch && req.session.pass != config.PokaPlayer.password)
         res.redirect("/")
     else
         res.render('login')
 });
 app.post('/login/', (req, res) => {
     req.session.pass = req.body['userPASS']
-    if (req.body['userPASS'] != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
+    if (config.PokaPlayer.passwordSwitch && req.body['userPASS'] != config.PokaPlayer.password)
         res.send('fail')
     else
         res.send('success')
