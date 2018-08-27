@@ -1,4 +1,5 @@
 const fs = require('fs')
+const path = require('path');
 const config = require('./config.json'); // 設定檔
 const router = require('express').Router()
 const FileStore = require('session-file-store')(require('express-session')); // session
@@ -36,18 +37,19 @@ let moduleList = {};
 fs.readdir(__dirname + "/dataModule", (err, files) => {
     if (err) return console.error(err)
     files.forEach(file => {
-        let uri = __dirname + "/dataModule/" + file,
-            _module = require(uri)
-        let moduleData = {
-            "name": _module.name,
-            "active": Object.keys(_module),
-            "js": uri
+        if (path.extname(file) == '.js') {
+            let uri = __dirname + "/dataModule/" + file,
+                _module = require(uri)
+            let moduleData = {
+                "name": _module.name,
+                "active": Object.keys(_module),
+                "js": uri
+            }
+            if (moduleData.active.indexOf('onLoaded') > -1) { // 如果模組想要初始化
+                _module.onLoaded()
+            }
+            moduleList[moduleData.name] = moduleData;
         }
-        if (moduleData.active.indexOf('onLoaded') > -1) { // 如果模組想要初始化
-            _module.onLoaded()
-        }
-        moduleList[moduleData.name] = moduleData;
-
     });
 })
 
