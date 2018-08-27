@@ -1,0 +1,14 @@
+[
+    {
+        "id": 35811967,
+        "name": false, // get name from source
+        "source": "Netease",
+        "pinned": 0 // not pinned
+    },
+    {
+        "id": 438268280,
+        "name": "超燃日語歌曲",
+        "source": "Netease",
+        "pinned": 3 // the 3rd pinned playlist
+    }
+]

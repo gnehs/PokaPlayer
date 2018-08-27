@@ -1,0 +1,95 @@
+const rp = require('request-promise');
+const request = require('request').defaults({ jar: require('request').jar() });
+const server = "http://localhost:4000/";
+const options = (url, qs={}) => +{
+    uri: url,
+    qs,
+    json: true // Automatically parses the JSON string in the response
+};
+
+const normalOptions = url => ({
+    method: 'GET',
+    uri: url,
+    headers: {
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept-Language": "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Connection": "keep-alive",
+        "Cache-Control": "max-age=0",
+        "DNT": 1,
+        "Upgrade-Insecure-Requests": 1,
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36"
+    },
+    json: true, // Automatically parses the JSON string in the response
+    followAllRedirects: true
+})
+
+async function parseSongs(songs, br=999000) {
+    let urls = await getSongsUrl(songs, br)
+    return songs.map((song, index) => {
+        return {
+            name: song.name,
+            artist: song.ar.map(x => x.name),
+            album: song.al.name,
+            cover: song.al.picUrl.replace('http', 'https'),
+            url: urls[index].url,
+            bitrate: song.h.br,
+            codec: "mp3",
+            lrc: song.lyric_id,
+            source: "Netease2",
+            id: song.id,
+        }
+    })
+}
+
+async function getSong(id, br=999000) {
+    let isArray = Array.isArray(id);
+    id = isArray ? id : [id];
+    let result =  (await getSongsUrl(id, br)).map(x => request(normalOptions(x.url)));
+    return isArray ? result : result[0];
+}
+
+async function getSongs(songs, br=999000) {
+    let isArray = Array.isArray(songs);
+    songs = isArray ? songs : [songs];
+    let result = await parseSongs(songs.map(x => (await rp(options(`${server}song/detail?ids=${x}`))).songs[0]), br);
+    return isArray ? result : result[0];
+}
+
+async function getSongsUrl(songs, br=999000) {
+    let isArray = Array.isArray(songs);
+    songs = isArray ? songs : [songs];
+    let result = (await rp(options(`${server}music/url?br=${br}&id=${songs.join()}`))).data
+    return isArray ? result : result[0];
+}
+
+async function getCover(id) {
+    return (await getCovers([id]))[0]
+}
+
+async function getCovers(ids) {
+    return (await getSongs(ids)).map(x => request(normalOptions(x.cover)))
+}
+
+
+module.exports = {
+    name: 'Netease',
+    getSong, //done
+    getSongs, //done
+    getSongsUrl,
+    getCover, //done
+    getCovers, //done
+    search,
+    getAlbumSongs,
+    // getFolders,
+    // getFolderFiles,
+    // getArtists,
+    getArtistSongs,
+    // getArtistAlbums,
+    // getComposers,
+    // getComposerAlbums,
+    // getPlaylists,
+    getPlaylistSongs,
+    getLyric,
+    searchLyrics
+};

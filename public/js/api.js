@@ -6,7 +6,35 @@ function getBackground() {
         return "/og/og.png"
 }
 
-
+/*===== Pin =====*/
+async function isPinned(source, type, id, name) {
+    let result = (await axios.get(`/pokaapi/isPinned/?moduleName=${source}&type=${type}&id=${id}&name=${name}`))
+    if (result.status == 501)
+        return 'disabled'
+    else
+        return result.data
+}
+async function addPin(source, type, id, name) {
+    let result = (await axios.get(`/pokaapi/addPin/?moduleName=${source}&type=${type}&id=${id}&name=${name}`)).data
+    if (result != true)
+        mdui.snackbar({
+            message: `釘選失敗`,
+            timeout: 400,
+            position: getSnackbarPosition()
+        });
+    return result
+}
+async function unPin(source, type, id, name) {
+    let result = (await axios.get(`/pokaapi/unPin/?moduleName=${source}&type=${type}&id=${id}&name=${name}`)).data
+    if (result != true)
+        mdui.snackbar({
+            message: `取消釘選失敗`,
+            timeout: 400,
+            position: getSnackbarPosition()
+        });
+    return result
+}
+/*===== 歌詞 =====*/
 //- 取得歌詞
 async function getLrc(artist, title, id = false, source) {
     let result;
@@ -16,8 +44,14 @@ async function getLrc(artist, title, id = false, source) {
             return result.data.lyrics[0].lyric
     }
     result = await axios.get(`/pokaapi/searchLyrics/?keyword=${encodeURIComponent(title+' '+artist)}`)
-    if (result.data.lyrics[0] && result.data.lyrics[0].name.toLowerCase() == title.toLowerCase())
-        return result.data.lyrics[0].lyric
+
+    if (result.data.lyrics[0]) {
+        let lrcTitle = result.data.lyrics[0].name.toLowerCase().replace(/\.|\*|\~|\&|。|，|\ |\-|\!|！|\(|\)/g, '')
+        let songTitle = title.toLowerCase().replace(/\.|\*|\~|\&|。|，|\ |\-|\!|！|\(|\)/g, '')
+        console.log(lrcTitle, songTitle)
+        if (lrcTitle == songTitle)
+            return result.data.lyrics[0].lyric
+    }
 
     return false
 }

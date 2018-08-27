@@ -326,17 +326,54 @@ async function showAlbumSongs(albumSource, albumID) {
         </div>
     </div>
     <div class="mdui-divider" style="margin: 10px 0"></div>`
-    let actions = `
+
+
+    // 展示讀取中
+    $("#content").html(albumInfo + template.getSpinner())
+    mdui.mutation()
+        // 釘選（？
+    let isAlbumPinned = await isPinned(albumSource, 'album', albumID, name),
+        actions = '';
+    if (isAlbumPinned != 'disabled')
+        if (isAlbumPinned)
+            actions += `
+        <button class="mdui-btn mdui-btn-icon mdui-ripple" 
+                title="從首頁釘選移除此專輯" data-pin="false">
+            <i class="mdui-icon material-icons">turned_in</i>
+        </button>`
+        else
+            actions += `
+       <button class="mdui-btn mdui-btn-icon mdui-ripple" 
+               title="加入此專輯到首頁釘選" data-pin="true">
+           <i class="mdui-icon material-icons">turned_in_not</i>
+       </button>`
+    actions += `
     <button class="mdui-btn mdui-btn-icon mdui-ripple" 
             onclick="addSong(songList)" 
             title="將此頁面歌曲全部加入到現正播放">
         <i class="mdui-icon material-icons">playlist_add</i>
     </button>`
 
-    // 展示讀取中
-    $("#content").html(albumInfo + template.getSpinner())
-    mdui.mutation()
-
+    function bindPin() {
+        $("[data-pin=\"true\"]").click(async function() {
+            let pinResult = await addPin(albumSource, 'album', albumID, name)
+            if (pinResult == true) {
+                $(this).attr("data-pin", false)
+                $(this).attr("title", "從首頁釘選移除此專輯")
+                $(this).children("i").text('turned_in')
+                bindPin()
+            }
+        })
+        $("[data-pin=\"false\"]").click(async function() {
+            let pinResult = await unPin(albumSource, 'album', albumID, name)
+            if (pinResult == true) {
+                $(this).attr("data-pin", true)
+                $(this).attr("title", "加入此專輯到首頁釘選")
+                $(this).children("i").text('turned_in_not')
+                bindPin()
+            }
+        })
+    }
     //抓資料
     let result = await axios.get(`/pokaapi/albumSongs/?moduleName=${encodeURIComponent(albumSource)}&data=${encodeURIComponent(albumID)}`)
     html = template.parseSongs(result.data.songs)
@@ -344,6 +381,7 @@ async function showAlbumSongs(albumSource, albumID) {
         $("#content").html(albumInfo + html)
         $("#content .album-info .time").html(`${result.data.songs.length} 首歌曲`)
         $("#content .album-info .actions").html(actions)
+        bindPin()
     }
 }
 // 資料夾
@@ -604,7 +642,7 @@ async function showNow() {
     ap.on("timeupdate", () => {
         let currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00",
             duration = ap.audio.currentTime ? secondToTime(ap.audio.duration) : "0:00",
-            audioBuffered = ap.audio.buffered.end(ap.audio.buffered.length - 1) / ap.audio.duration * 100,
+            audioBuffered = ap.audio.currentTime > 1 ? ap.audio.buffered.end(ap.audio.buffered.length - 1) / ap.audio.duration * 100 : 0,
             cent = ap.audio.currentTime / ap.audio.duration * 100
         $('[data-player]>.info>.player-bar>.timer').text(currentTime + '/' + duration);
         // 更新 timer

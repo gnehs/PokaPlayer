@@ -1,4 +1,5 @@
 const fs = require('fs')
+const path = require('path');
 const config = require('./config.json'); // 設定檔
 const router = require('express').Router()
 const FileStore = require('session-file-store')(require('express-session')); // session
@@ -36,17 +37,19 @@ let moduleList = {};
 fs.readdir(__dirname + "/dataModule", (err, files) => {
     if (err) return console.error(err)
     files.forEach(file => {
-        let uri = __dirname + "/dataModule/" + file,
-            _module = require(uri)
-        let moduleData = {
-            "name": _module.name,
-            "active": Object.keys(_module),
-            "js": uri
+        if (path.extname(file) == '.js') {
+            let uri = __dirname + "/dataModule/" + file,
+                _module = require(uri)
+            let moduleData = {
+                "name": _module.name,
+                "active": Object.keys(_module),
+                "js": uri
+            }
+            if (moduleData.active.indexOf('onLoaded') > -1) { // 如果模組想要初始化
+                _module.onLoaded()
+            }
+            moduleList[moduleData.name] = moduleData;
         }
-        if (moduleData.active.indexOf('onLoaded') > -1) { // 如果模組想要初始化
-            _module.onLoaded()
-        }
-        moduleList[moduleData.name] = moduleData;
     });
 })
 
@@ -144,6 +147,37 @@ router.get('/home/', async(req, res) => {
     }
     return res.json(resData)
 });
+router.get('/addPin/', async(req, res) => {
+    //http://localhost:3000/pokaapi/addPin/?moduleName=DSM&type=album&id={%22album%22:%22%E4%B8%96%E7%95%8C%E3%81%AE%E6%9E%9C%E3%81%A6%E3%81%AB%E5%90%9B%E3%81%8C%E3%81%84%E3%81%A6%E3%82%82%22,%22album_artist%22:%22%E5%96%9C%E5%A4%9A%E4%BF%AE%E5%B9%B3%22}&name=%E4%B8%96%E7%95%8C%E3%81%AE%E6%9E%9C%E3%81%A6%E3%81%AB%E5%90%9B%E3%81%8C%E3%81%84%E3%81%A6%E3%82%82
+    //[{"type":"album","criteria":{"album":"世界の果てに君がいても","album_artist":"喜多修平"},"name":"世界の果てに君がいても"}]
+    let moduleName = req.query.moduleName
+    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+    // 沒這東西
+    if (!_module || moduleList[moduleName].active.indexOf('addPin') == -1) return res.status(501).send("The required module is currently unavailable :(")
+
+    res.json(await _module.addPin(req.query.type, req.query.id, req.query.name))
+});
+router.get('/unPin/', async(req, res) => {
+    //http://localhost:3000/pokaapi/unPin/?moduleName=DSM&type=album&id={%22album%22:%22%E4%B8%96%E7%95%8C%E3%81%AE%E6%9E%9C%E3%81%A6%E3%81%AB%E5%90%9B%E3%81%8C%E3%81%84%E3%81%A6%E3%82%82%22,%22album_artist%22:%22%E5%96%9C%E5%A4%9A%E4%BF%AE%E5%B9%B3%22}&name=%E4%B8%96%E7%95%8C%E3%81%AE%E6%9E%9C%E3%81%A6%E3%81%AB%E5%90%9B%E3%81%8C%E3%81%84%E3%81%A6%E3%82%82
+    //[{"type":"album","criteria":{"album":"世界の果てに君がいても","album_artist":"喜多修平"},"name":"世界の果てに君がいても"}]
+    let moduleName = req.query.moduleName
+    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+    // 沒這東西
+    if (!_module || moduleList[moduleName].active.indexOf('unPin') == -1) return res.status(501).send("The required module is currently unavailable :(")
+
+    res.json(await _module.unPin(req.query.type, req.query.id, req.query.name))
+});
+router.get('/isPinned/', async(req, res) => {
+    //http://localhost:3000/pokaapi/isPinned/?moduleName=DSM&type=album&id={%22album%22:%22%E4%B8%96%E7%95%8C%E3%81%AE%E6%9E%9C%E3%81%A6%E3%81%AB%E5%90%9B%E3%81%8C%E3%81%84%E3%81%A6%E3%82%82%22,%22album_artist%22:%22%E5%96%9C%E5%A4%9A%E4%BF%AE%E5%B9%B3%22}&name=%E4%B8%96%E7%95%8C%E3%81%AE%E6%9E%9C%E3%81%A6%E3%81%AB%E5%90%9B%E3%81%8C%E3%81%84%E3%81%A6%E3%82%82
+    //[{"type":"album","criteria":{"album":"世界の果てに君がいても","album_artist":"喜多修平"},"name":"世界の果てに君がいても"}]
+    let moduleName = req.query.moduleName
+    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+    // 沒這東西
+    if (!_module || moduleList[moduleName].active.indexOf('isPinned') == -1) return res.status(501).send("The required module is currently unavailable :(")
+
+    res.json(await _module.isPinned(req.query.type, req.query.id, req.query.name))
+});
+
 //-----------------------------> 資料夾
 // 取得資料夾清單(根目錄)
 router.get('/folders/', async(req, res) => {

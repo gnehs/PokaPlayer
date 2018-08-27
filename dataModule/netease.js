@@ -194,14 +194,27 @@ async function getSong(req, songRes, songId) {
     return request(options)
 }
 
-function getSongs(song) {
+async function getSongs(song) {
     if (typeof(song) == 'object') {
         if (Array.isArray(song)) {
             // 傳入的資料是 list
-            return song.reduce((acc, cur) => {
-                acc[cur] = getSong(cur);
-                return acc
-            }, {})
+            let options = {
+                method: 'GET',
+                uri: metingUrl,
+                qs: {
+                    'server': 'netease',
+                    'type': 'multi',
+                    'multiResultIsDict': 0
+                },
+                body:{
+                    song
+                },
+                headers: {
+                    'User-Agent': userAgent
+                },
+                json: true, // Automatically parses the JSON string in the response,
+            };
+            return parseSongs((await rp(options)).song)
         } else {
             // 傳入的資料是 object
         }
@@ -226,21 +239,33 @@ async function getCover(id) {
     return request(options)
 }
 
-function getCovers(id) {
-    if (typeof(song) == 'object') {
-        if (Array.isArray(id)) {
+async function getCovers(pic) {
+    if (typeof(pic) == 'object') {
+        if (Array.isArray(pic)) {
             // 傳入的資料是 list
-
-            return id.reduce((acc, cur) => {
-                acc[cur] = getCover(cur);
-                return acc
-            }, {})
-
+            let options = {
+                method: 'GET',
+                uri: metingUrl,
+                qs: {
+                    'server': 'netease',
+                    'type': 'multi',
+                    'multiResultIsDict': 0
+                },
+                body:{
+                    pic
+                },
+                headers: {
+                    'User-Agent': userAgent
+                },
+                json: true, // Automatically parses the JSON string in the response,
+            };
+            return ((await rp(options)).pic).map(x => request(normalOptions(x)))
         } else {
             // 傳入的資料是 object
         }
     }
 }
+
 
 async function search(keyword) {
     let options = {
@@ -341,7 +366,7 @@ async function getAlbumSongs(id) {
         json: true, // Automatically parses the JSON string in the response,
     };
 
-    return (await rp(options))
+    return parseSongs(await rp(options))
 }
 
 async function getPlaylistSongs(id) {
@@ -359,7 +384,7 @@ async function getPlaylistSongs(id) {
         json: true, // Automatically parses the JSON string in the response,
     };
 
-    return (await rp(options))
+    return parseSongs((await rp(options)))
 }
 
 async function getArtistSongs(id) {
@@ -377,7 +402,7 @@ async function getArtistSongs(id) {
         json: true, // Automatically parses the JSON string in the response,
     };
 
-    return (await rp(options))
+    return parseSongs(await rp(options))
 }
 
 function getSongsUrl(song) {
@@ -395,21 +420,21 @@ function getSongsUrl(song) {
 module.exports = {
     name: 'Netease',
     getSong, //done
-    getSongs,
+    getSongs, //done
     getSongsUrl,
     getCover, //done
-    getCovers,
+    getCovers, //done
     search, //done
-    getAlbumSongs,
+    getAlbumSongs, //done
     // getFolders,
     // getFolderFiles,
     // getArtists,
-    getArtistSongs,
+    getArtistSongs, //done
     // getArtistAlbums,
     // getComposers,
     // getComposerAlbums,
     // getPlaylists,
-    getPlaylistSongs,
+    getPlaylistSongs,//done
     getLyric, //done
     searchLyrics //done
 };
