@@ -6,7 +6,35 @@ function getBackground() {
         return "/og/og.png"
 }
 
-
+/*===== Pin =====*/
+async function isPinned(source, type, id, name) {
+    let result = (await axios.get(`/pokaapi/isPinned/?moduleName=${source}&type=${type}&id=${id}&name=${name}`)).data
+    console.log(result)
+    return (result)
+}
+async function addPin(source, type, id, name) {
+    let result = (await axios.get(`/pokaapi/addPin/?moduleName=${source}&type=${type}&id=${id}&name=${name}`)).data
+    console.log(result)
+    if (result != true)
+        mdui.snackbar({
+            message: `釘選失敗`,
+            timeout: 400,
+            position: getSnackbarPosition()
+        });
+    return result
+}
+async function unPin(source, type, id, name) {
+    let result = (await axios.get(`/pokaapi/unPin/?moduleName=${source}&type=${type}&id=${id}&name=${name}`)).data
+    console.log(result)
+    if (result != true)
+        mdui.snackbar({
+            message: `取消釘選失敗`,
+            timeout: 400,
+            position: getSnackbarPosition()
+        });
+    return result
+}
+/*===== 歌詞 =====*/
 //- 取得歌詞
 async function getLrc(artist, title, id = false, source) {
     let result;

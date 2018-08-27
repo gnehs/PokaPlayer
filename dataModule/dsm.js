@@ -221,10 +221,22 @@ async function getHome() {
     return r
 }
 async function addPin(type, id, name) {
-    let PARAMS_JSON = [{
-        key: "items",
-        value: `[{"type":"${type}","criteria":${id},"name":"${name}"}]`
-    }]
+    let PARAMS_JSON;
+    if (type == 'album') {
+        let albumData = JSON.parse(id)
+        let criteria = '{'
+        criteria += albumData.album_name ? `"album":"${albumData.album_name}",` : ''
+        criteria += albumData.album_artist_name ? `"album_artist":"${albumData.album_artist_name||albumData.artist_name}"` : ''
+        criteria += '}'
+        PARAMS_JSON = [{
+            key: "items",
+            value: `[{"type":"${type}","criteria":${criteria},"name":"${name}"}]`
+        }]
+    } else
+        PARAMS_JSON = [{
+            key: "items",
+            value: `[{"type":"${type}","criteria":{${type}:${id}},"name":"${name}"}]`
+        }]
     result = (await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "pin", PARAMS_JSON))
     if (result.success)
         return result.success
@@ -232,17 +244,9 @@ async function addPin(type, id, name) {
         return result.error
 }
 async function isPinned(type, id, name) {
-    /*let PARAMS_JSON = [{
-        key: "items",
-        "value": JSON.stringify([{
-            "type": type,
-            "criteria": id
-        }])
-    }]*/
-    result = (await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "list", [{ key: "limit", "value": -1 }, { key: "offset", "value": 0 }])).data
+    let result = (await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "list", [{ key: "limit", "value": -1 }, { key: "offset", "value": 0 }])).data
     for (i = 0; i < result.items.length; i++) {
         let pin = result.items[i]
-        console.log(pin)
         if (pin.type == type)
             if (pin.name == name)
                 return pin.id
@@ -250,19 +254,11 @@ async function isPinned(type, id, name) {
     return false
 }
 async function unPin(type, id, name) {
-    /*let PARAMS_JSON = [{
-        key: "items",
-        "value": JSON.stringify([{
-            "type": type,
-            "criteria": id
-        }])
-    }]*/
     let PARAMS_JSON = [{
-        key: "items",
-        value: `["${id}"]`
-    }]
-    result = (await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "unpin", PARAMS_JSON))
-    console.log(result)
+            key: "items",
+            value: `["${await isPinned(type, id, name) }"]`
+        }],
+        result = (await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "unpin", PARAMS_JSON))
     if (result.success)
         return result.success
     else
