@@ -391,6 +391,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     width: 64px;
     height: 64px;
     margin-top: 3px;
+    margin-right: 3px;
     object-fit: cover;
 }
 
@@ -410,14 +411,26 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 #player .song-info .name {
     font-size: 15px;
+    font-weight: 700;
 }
 
 #player .song-info .artist {
     font-size: 14px;
 }
 
+#player .right {
+    margin-left: auto;
+}
+
+#player .timer {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: .04em;
+    opacity: .87;
+}
+
 #player .ctrl {
-    position: absolute;
+    display: inline-block;
     width: 144px;
     right: 0;
     top: 0;
@@ -430,7 +443,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 @media screen and (min-width: 768px) {
     #player {
-        width: 400px;
+        width: 512px;
     }
     #player .song-info .name,
     #player .song-info .artist {
@@ -445,6 +458,12 @@ header.mdui-appbar.mdui-appbar-fixed {
     #player .song-info .name,
     #player .song-info .artist {
         width: calc(100vw - 64px - 144px - 6px);
+    }
+    #player .timer {
+        display: inline;
+        font-size: 12px;
+        letter-spacing: .04em;
+        opacity: .87;
     }
 }
 
