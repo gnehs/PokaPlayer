@@ -21,6 +21,10 @@ body::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, .2);
 }
 
+*::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, .3) !important;
+}
+
 body.mdui-theme-layout-dark::-webkit-scrollbar {
     width: 5px;
     height: 5px;
