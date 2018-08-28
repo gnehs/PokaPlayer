@@ -410,18 +410,19 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 #player .right {
-    margin-left: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
 }
 
-#player .timer {
-    display: inline-block;
+#player .right .timer {
     font-size: 12px;
     letter-spacing: .04em;
     opacity: .87;
+    padding: 0 2px;
 }
 
-#player .ctrl {
-    display: inline-block;
+#player .right .ctrl {
     width: 144px;
     right: 0;
     top: 0;
@@ -443,10 +444,15 @@ header.mdui-appbar.mdui-appbar-fixed {
         border-radius: 0;
     }
     #player .timer {
-        display: inline;
         font-size: 12px;
         letter-spacing: .04em;
         opacity: .87;
+    }
+}
+
+@media screen and (max-width: 512px) {
+    #player .timer {
+        display: none
     }
 }
 
