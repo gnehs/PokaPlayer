@@ -77,6 +77,8 @@ header.mdui-appbar.mdui-appbar-fixed {
 .mdui-list-item {
     border-radius: 10px;
     margin-top: 1px;
+    -webkit-transition: background-color .15s cubic-bezier(.4,0,.2,1);
+    transition: background-color .15s cubic-bezier(.4,0,.2,1);
 }
 
 
