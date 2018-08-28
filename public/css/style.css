@@ -76,6 +76,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 .mdui-list-item {
     border-radius: 10px;
+    margin-top: 1px;
 }
 
 
