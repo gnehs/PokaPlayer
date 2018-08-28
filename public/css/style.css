@@ -387,6 +387,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 #player .song-info {
     padding: 8px 0 8px 6px;
+    flex: 1;
 }
 
 #player .song-info .name,
@@ -435,19 +436,11 @@ header.mdui-appbar.mdui-appbar-fixed {
     #player {
         width: 512px;
     }
-    #player .song-info .name,
-    #player .song-info .artist {
-        width: calc(400px - 64px - 144px - 6px);
-    }
 }
 
 @media screen and (max-width: 767px) {
     #player {
         border-radius: 0;
-    }
-    #player .song-info .name,
-    #player .song-info .artist {
-        width: calc(100vw - 64px - 144px - 6px);
     }
     #player .timer {
         display: inline;
