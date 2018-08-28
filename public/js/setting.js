@@ -37,7 +37,6 @@ async function showSettings() {
     
     pokaHeader('設定', "PokaPlayer "+window.localStorage["PokaPlayerVersion"])
     let settingItems = `<ul class="mdui-list">
-        ${settingsItem("軟體更新","正在檢查更新...","system_update","","data-upgrade")}
         ${settingsItem("主題","設定主題色、主色及強調色","color_lens","settings/theme")}
         ${settingsItem("音質",window.localStorage["musicRes"],"music_note","","data-music-res")}
         ${settingsItem("圖片流量節省",window.localStorage["imgRes"]=="true"? "已開啟" : "已關閉","image","","data-imgRes",
@@ -54,13 +53,13 @@ async function showSettings() {
         mdui.dialog({
             title: '音質設定',
             content: `<ul class="mdui-list">
-            ${settingsItem("Low","128K 低音質，與 YouTube 相近的較差品質，在網路速度慢的情況下請選擇此選項","","",
+            ${settingsItem("Low","低音質，128K，跟 YouTube 差不多的爛音質，在網路夭壽慢的情況下請選擇此選項","","",
                             `onclick="window.localStorage['musicRes']='Low'" mdui-dialog-close`)}
-            ${settingsItem("Medium","中等音質，相比 YouTube 好上一點，可在 3G 網路下順暢串流","","",
+            ${settingsItem("Medium","中等音質，音質只比 YouTube 好那麼一點點，可在 3G 網路下流暢的串流","","",
                             `onclick="window.localStorage['musicRes']='Medium'" mdui-dialog-close`)}
-            ${settingsItem("High","高音質，音質略差為原始音質，在 4G 網路下能順暢串流","","",
+            ${settingsItem("High","高音質，音質較原始音質略差，可在 4G 網路下流暢的串流","","",
                             `onclick="window.localStorage['musicRes']='High'" mdui-dialog-close`)}
-            ${settingsItem("Original","原始音質，在網路狀況許可下，建議選擇此選項聆聽最高品質音樂","","",
+            ${settingsItem("Original","原始音質，在網路狀況許可下，建議選擇此選項聆聽高音質音樂","","",
                             `onclick="window.localStorage['musicRes']='Original'" mdui-dialog-close`)}
             </ul>`,
             history: false,
@@ -74,7 +73,7 @@ async function showSettings() {
     $("[data-imgRes]").click(function() {
         $("[data-imgRes] input").prop('checked', !$("[data-imgRes] input").prop('checked'))
         window.localStorage["imgRes"] = $("[data-imgRes] input").prop('checked');
-        $("[data-imgRes] .mdui-list-item-text").text($("[data-imgRes] input").prop('checked') ? "所有圖片將替換為您指定的隨機圖片" : "已關閉");
+        $("[data-imgRes] .mdui-list-item-text").text($("[data-imgRes] input").prop('checked') ? "將會把所有圖片替換為您指定的隨機圖片" : "已關閉");
     });
 }
 async function showSettingsTheme() {
@@ -179,7 +178,7 @@ async function showSettingsPic() {
             name: 'Bing 每日圖片',
             src: 'https://area.sinaapp.com/bingImg/'
         }, {
-            name: 'Bing 每日隨機圖片 (uploadbeta.com)',
+            name: 'Bing 隨機每日圖片(uploadbeta.com)',
             src: 'https://uploadbeta.com/api/pictures/random/?key=BingEverydayWallpaperPicture'
         }, {
             name: 'LoremFlickr',
@@ -197,16 +196,16 @@ async function showSettingsPic() {
             name: 'Unsplash Source',
             src: 'https://source.unsplash.com/random'
         },  {
-            name: '隨機二次元圖片 API (清風醬)',
+            name: '隨機二次元圖片 API(清風醬)',
             src: 'https://api.3ewl.cc/acg/img.php'
         }, {
-            name: '隨機二次元背景 (api.yuntuchuang.com)',
+            name: '隨機二次元背景(api.yuntuchuang.com)',
             src: 'https://api.yuntuchuang.com/api/acg.php'
         },  {
-            name: '隨機遊戲背景 (api.yuntuchuang.com)',
+            name: '隨機遊戲背景(api.yuntuchuang.com)',
             src: 'https://api.yuntuchuang.com/api/youxi.php'
         },  {
-            name: '隨機簡約背景 (api.yuntuchuang.com)',
+            name: '隨機簡約背景(api.yuntuchuang.com)',
             src: 'https://api.yuntuchuang.com/api/jianyue.php'
         }]
         mdui.dialog({
@@ -243,12 +242,13 @@ async function showSettingsAbout() {
     pokaHeader('設定', '關於')
     let settingItems = `<ul class="mdui-list">
         ${settingsItem("返回","","arrow_back","settings")}
+        ${settingsItem("更新","正在檢查更新...","system_update","","data-upgrade")}
         ${settingsItem("開發者","載入中...","supervisor_account","","data-dev")}
-        ${settingsItem("GitHub","前往 PokaPlayer 的 GitHub 頁面","language","",`onclick="window.open('https://github.com/gnehs/PokaPlayer')"`)}
-        ${settingsItem("問題回報","若有任何錯誤或是建議歡迎填寫，並協助我們變得更好","feedback","",`onclick="window.open('https://github.com/gnehs/PokaPlayer/issues/new/choose')"`)}
+        ${settingsItem("GitHub","前往 PokaPlayer 的 GitHub","language","",`onclick="window.open('https://github.com/gnehs/PokaPlayer')"`)}
+        ${settingsItem("錯誤回報","若有任何錯誤或是建議歡迎填寫，並協助我們變得更好","feedback","",`onclick="window.open('https://github.com/gnehs/PokaPlayer/issues/new/choose')"`)}
         ${settingsItem("PokaPlayer 版本",window.localStorage["PokaPlayerVersion"],"info","","data-version")}
+        ${settingsItem("嘗試重新登入","","account_circle","",`onclick="location.href='/login'"`)}
         ${settingsItem("清除 Service Worker 快取","","delete_forever","","data-clean")}
-        ${settingsItem("重新登入","","account_circle","",`onclick="location.href='/login'"`)}
         ${settingsItem("重新啟動","","refresh","","data-restart")}
     </ul>`
     $("#content").html(settingItems)
