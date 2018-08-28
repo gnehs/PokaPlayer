@@ -95,14 +95,6 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 
-/* 設定頁面 */
-
-#PP_bg .mdui-btn {
-    margin-right: 5px;
-    margin-top: 7px;
-}
-
-
 /* header-wrapper */
 
 #header-wrapper {
@@ -160,13 +152,10 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 #header-wrapper>.title {
     font-weight: bold;
-    padding-left: 48px;
     margin-top: -300px;
     margin-bottom: 300px;
     z-index: 3;
-    width: 100%;
     position: relative;
-    max-width: calc(100% - 50px * 2);
 }
 
 #header-wrapper .title .title {
