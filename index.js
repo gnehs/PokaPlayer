@@ -36,7 +36,9 @@ git
         branch = branch.slice(0, -1) // 結果會多一個換行符
         if (branch != (config.PokaPlayer.debug ? 'dev' : 'master')) {
             netease2Git
-                .stash()
+                .raw(['config', '--global', 'user.email', '"you@example.com"'])
+                .then(() => netease2Git.raw(['config', '--global', 'user.name', '"Pokaplayer"']))
+                .then(() => netease2Git.stash())
                 .then(() => netease2Git.pull())
                 .then(() => netease2Git.stash(['pop']))
                 .then(() => git.fetch(["--all"]))
@@ -113,10 +115,11 @@ io.on('connection', socket => {
         if (socket.handshake.session.pass == config.PokaPlayer.password) {
             socket.emit('init')
             netease2Git
-                .stash()
+                .raw(['config', '--global', 'user.email', '"you@example.com"'])
+                .then(() => netease2Git.raw(['config', '--global', 'user.name', '"Pokaplayer"']))
+                .then(() => netease2Git.stash())
                 .then(() => netease2Git.pull())
                 .then(() => netease2Git.stash(['pop']))
-                .then(() => socket.emit('git', 'api'))
                 .then(() => git.fetch(["--all"]))
                 .then(() => socket.emit('git', 'fetch'))
                 .then(() => git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? 'dev' : 'master')]))
@@ -138,17 +141,20 @@ app.get('/upgrade', (req, res) => {
         res.status(403).send('Permission Denied Desu')
     else {
         if (!config.PokaPlayer.instantUpgradeProcess) {
-            git
-                .clone('https://github.com/Binaryify/NeteaseCloudMusicApi.git', './NeteaseCloudMusicApi')
+            netease2Git
+                .raw(['config', '--global', 'user.email', '"you@example.com"'])
+                .then(() => netease2Git.raw(['config', '--global', 'user.name', '"Pokaplayer"']))
+                .then(() => netease2Git.stash())
+                .then(() => netease2Git.pull())
+                .then(() => netease2Git.stash(['pop']))
                 .then(() => git.fetch(["--all"]))
                 .then(() => git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? 'dev' : 'master')]))
                 .then(() => git.checkout(config.PokaPlayer.debug ? 'dev' : 'master'))
-                .then(() => res.send('upgrade'))
                 .then(() => process.exit())
                 .catch(err => {
                     console.error('failed: ', err)
-                    res.send("error");
-                });
+                    socket.emit('err', err.toString())
+                })
         } else {
             res.send('socket')
         }
