@@ -57,7 +57,7 @@ $(() => {
                 new mdui.Drawer("#drawer").close();
             }
         })
-    $('#player>*:not(.ctrl)').click(() => router.navigate('now'));
+    $('#player>*:not(.right)').click(() => router.navigate('now'));
     // 初始化 MediaSession
     updateMediaSession()
 });
@@ -122,10 +122,14 @@ function setLrc(lrcResult) {
 ap.on("timeupdate", () => {
     let name = ap.list.audios[ap.list.index].name || "",
         artist = ap.list.audios[ap.list.index].artist || "",
-        img = window.localStorage["imgRes"] != "true" ? ap.list.audios[ap.list.index].cover : getBackground() //一定會有圖片
+        img = window.localStorage["imgRes"] != "true" ? ap.list.audios[ap.list.index].cover : getBackground(), //一定會有圖片
+        currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00",
+        duration = ap.audio.currentTime ? secondToTime(ap.audio.duration) : "0:00",
+        timer = currentTime + '/' + duration
     $('#player button.play[onclick="ap.toggle()"] i').text("pause")
     $('#player .song-info .name').text(name)
     $('#player .song-info .artist').text(artist)
+    $('#player .right .timer').text(timer)
     $('#player img').attr('src', img)
     updateMediaSession()
 })

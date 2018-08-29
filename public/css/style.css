@@ -21,6 +21,10 @@ body::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, .2);
 }
 
+*::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, .3) !important;
+}
+
 body.mdui-theme-layout-dark::-webkit-scrollbar {
     width: 5px;
     height: 5px;
@@ -72,6 +76,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 .mdui-list-item {
     border-radius: 10px;
+    margin-top: 1px;
 }
 
 
@@ -376,11 +381,13 @@ header.mdui-appbar.mdui-appbar-fixed {
     width: 64px;
     height: 64px;
     margin-top: 3px;
+    margin-right: 3px;
     object-fit: cover;
 }
 
 #player .song-info {
     padding: 8px 0 8px 6px;
+    flex: 1;
 }
 
 #player .song-info .name,
@@ -395,14 +402,27 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 #player .song-info .name {
     font-size: 15px;
+    font-weight: 700;
 }
 
 #player .song-info .artist {
     font-size: 14px;
 }
 
-#player .ctrl {
-    position: absolute;
+#player .right {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+#player .right .timer {
+    font-size: 12px;
+    letter-spacing: .04em;
+    opacity: .87;
+    padding: 0 2px;
+}
+
+#player .right .ctrl {
     width: 144px;
     right: 0;
     top: 0;
@@ -415,11 +435,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 @media screen and (min-width: 768px) {
     #player {
-        width: 400px;
-    }
-    #player .song-info .name,
-    #player .song-info .artist {
-        width: calc(400px - 64px - 144px - 6px);
+        width: 512px;
     }
 }
 
@@ -427,9 +443,16 @@ header.mdui-appbar.mdui-appbar-fixed {
     #player {
         border-radius: 0;
     }
-    #player .song-info .name,
-    #player .song-info .artist {
-        width: calc(100vw - 64px - 144px - 6px);
+    #player .timer {
+        font-size: 12px;
+        letter-spacing: .04em;
+        opacity: .87;
+    }
+}
+
+@media screen and (max-width: 512px) {
+    #player .timer {
+        display: none
     }
 }
 
