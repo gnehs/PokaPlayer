@@ -4,6 +4,7 @@ const package = require('./package.json'); // 設定檔
 const schedule = require('node-schedule'); // 很會計時ㄉ朋友
 const base64 = require('base-64');
 const git = require('simple-git/promise')(__dirname);
+const netease2Git = require('simple-git/promise')("/NeteaseCloudMusicApi")
 
 //express
 const express = require('express');
@@ -34,15 +35,17 @@ git
     .then(branch => {
         branch = branch.slice(0, -1) // 結果會多一個換行符
         if (branch != (config.PokaPlayer.debug ? 'dev' : 'master')) {
-            git
-                .fetch(["--all"])
+            netease2Git
+                .stash()
+                .then(() => netease2Git.pull())
+                .then(() => netease2Git.stash(['pop']))
+                .then(() => git.fetch(["--all"]))
                 .then(() => git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? 'dev' : 'master')]))
                 .then(() => git.checkout(config.PokaPlayer.debug ? 'dev' : 'master'))
-                .then(process.exit)
+                .then(() => process.exit())
                 .catch(err => {
-                    console.error('[Git] failed: ', err)
+                    console.error('failed: ', err)
                     socket.emit('err', err.toString())
-                    process.exit()
                 })
         }
     })
@@ -109,8 +112,10 @@ io.on('connection', socket => {
     socket.on('update', (userdata) => {
         if (socket.handshake.session.pass == config.PokaPlayer.password) {
             socket.emit('init')
-            git
-                .clone('https://github.com/Binaryify/NeteaseCloudMusicApi.git', './NeteaseCloudMusicApi')
+            netease2Git
+                .stash()
+                .then(() => netease2Git.pull())
+                .then(() => netease2Git.stash(['pop']))
                 .then(() => socket.emit('git', 'api'))
                 .then(() => git.fetch(["--all"]))
                 .then(() => socket.emit('git', 'fetch'))
