@@ -61,6 +61,13 @@ $(() => {
     // 初始化 MediaSession
     updateMediaSession()
 });
+
+$('#axios').on('load', function() {
+    axios = axios.create({
+        withCredentials: true
+    })
+})
+
 // 宣告全域變數
 songList = [];
 const socket = io();

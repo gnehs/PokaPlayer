@@ -110,7 +110,9 @@ io.on('connection', socket => {
         if (socket.handshake.session.pass == config.PokaPlayer.password) {
             socket.emit('init')
             git
-                .fetch(["--all"])
+                .clone('https://github.com/Binaryify/NeteaseCloudMusicApi.git', './NeteaseCloudMusicApi')
+                .then(() => socket.emit('git', 'api'))
+                .then(() => git.fetch(["--all"]))
                 .then(() => socket.emit('git', 'fetch'))
                 .then(() => git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? 'dev' : 'master')]))
                 .then(() => git.checkout(config.PokaPlayer.debug ? 'dev' : 'master'))
@@ -132,7 +134,8 @@ app.get('/upgrade', (req, res) => {
     else {
         if (!config.PokaPlayer.instantUpgradeProcess) {
             git
-                .fetch(["--all"])
+                .clone('https://github.com/Binaryify/NeteaseCloudMusicApi.git', './NeteaseCloudMusicApi')
+                .then(() => git.fetch(["--all"]))
                 .then(() => git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? 'dev' : 'master')]))
                 .then(() => git.checkout(config.PokaPlayer.debug ? 'dev' : 'master'))
                 .then(() => res.send('upgrade'))

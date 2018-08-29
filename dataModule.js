@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path');
 const config = require('./config.json'); // 設定檔
+const playlist = require('./playlist.json'); // 歌單
 const router = require('express').Router()
 const FileStore = require('session-file-store')(require('express-session')); // session
 const session = require('express-session')({
@@ -128,7 +129,7 @@ router.get('/home/', async(req, res) => {
         let x = moduleList[Object.keys(moduleList)[i]]
         let y = require(x.js)
         if (x.active.indexOf('getHome') > -1) {
-            let result = await y.getHome() || null
+            let result = await y.getHome(playlist) || null
             if (result) {
                 if (result.folders)
                     for (i = 0; i < result.folders.length; i++) resData.folders.push(result.folders[i])
@@ -277,7 +278,7 @@ router.get('/playlists/', async(req, res) => {
         let x = moduleList[Object.keys(moduleList)[i]]
         let y = require(x.js)
         if (x.active.indexOf('getPlaylists') > -1) {
-            let list = await y.getPlaylists() || null
+            let list = await y.getPlaylists(playlist) || null
             if (list) {
                 for (i = 0; i < list.playlists.length; i++) r.playlists.push(list.playlists[i])
             }
