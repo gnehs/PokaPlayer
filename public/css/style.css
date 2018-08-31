@@ -53,7 +53,7 @@ header.mdui-appbar,
     font-family: 'Product Sans', Roboto, Noto, Helvetica, Arial, sans-serif;
 }
 
-.mdui-list-item-avatar {
+div.mdui-list-item-avatar {
     background-color: #FFF;
 }
 
