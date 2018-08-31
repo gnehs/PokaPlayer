@@ -110,26 +110,31 @@ function parseLyrics(lyrics) {
     return r
 }
 async function onLoaded() {
-    login();
     schedule.scheduleJob("'* */12 * * *'", async function() {
         console.log("[DataModules][DSM] 正在重新登入...")
         login();
     });
+    return await login();
 }
 async function login() {
-    let url = `${dsmURL}/webapi/auth.cgi?api=SYNO.API.Auth&method=Login&version=1&account=${config.DSM.account}&passwd=${config.DSM.password}&session=AudioStation&format=cookie`
     console.log("[DataModules][DSM] 正在登入...")
-    request(url, async function(error, res, body) {
-        if (!error && res.statusCode == 200) {
-            if (JSON.parse(body).success) {
-                console.log("[DataModules][DSM] 登入成功！")
-            } else {
-                console.error("[DataModules][DSM] 登入失敗，請檢查您的設定檔是否正確")
-            }
-        } else {
-            console.error("[DataModules][DSM] 登入時遇到錯誤：", error)
-        }
-    });
+    if (!config.DSM.account && !config.DSM.password) {
+        console.error("[DataModules][DSM] 登入失敗，未設定帳號密碼")
+        return false
+    }
+    let result = await getAPI("auth.cgi", "SYNO.API.Auth", "Login", [
+        { key: "account", "value": config.DSM.account },
+        { key: "passwd", "value": config.DSM.password },
+        { key: "session", "value": "AudioStation" },
+        { key: "format", "value": "cookie" }
+    ])
+    if (result.success) {
+        console.log("[DataModules][DSM] 登入成功！")
+        return true
+    } else {
+        console.error("[DataModules][DSM] 登入失敗，請檢查您的設定檔是否正確")
+        return false
+    }
 }
 //- API 請求
 async function getAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 1) {

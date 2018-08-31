@@ -37,7 +37,7 @@ router.use(session);
 let moduleList = {};
 fs.readdir(__dirname + "/dataModule", (err, files) => {
     if (err) return console.error(err)
-    files.forEach(file => {
+    files.forEach(async file => {
         if (path.extname(file) == '.js') {
             let uri = __dirname + "/dataModule/" + file,
                 _module = require(uri)
@@ -46,10 +46,9 @@ fs.readdir(__dirname + "/dataModule", (err, files) => {
                 "active": Object.keys(_module),
                 "js": uri
             }
-            if (moduleData.active.indexOf('onLoaded') > -1) { // 如果模組想要初始化
-                _module.onLoaded()
-            }
-            moduleList[moduleData.name] = moduleData;
+            let enabled = moduleData.active.indexOf('onLoaded') > -1 ? await _module.onLoaded() : true
+            if (enabled)
+                moduleList[moduleData.name] = moduleData;
         }
     });
 })

@@ -179,7 +179,12 @@ async function onLoaded() {
                 console.log("[DataModules][Netease2] 正在重新登入...")
                 await login();
             });
+            return true
+        } else {
+            return false
         }
+    } else {
+        return false
     }
 }
 
