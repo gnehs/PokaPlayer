@@ -371,7 +371,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 #player.hide {
-    transform: translateY(64px);
+    transform: translateY(67px);
     box-shadow: none
 }
 
