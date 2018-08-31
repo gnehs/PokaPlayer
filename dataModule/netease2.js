@@ -171,19 +171,22 @@ async function login() {
 }
 
 async function onLoaded() {
+    console.log("[DataModules][Netease2] 正在登入...")
     if (config && config.login && (config.login.phone || config.login.email) && config.login.password) {
-        console.log("[DataModules][Netease2] 正在登入...")
         let result = await login()
         if (await result.code == 200) {
             schedule.scheduleJob("'* */12 * * *'", async function() {
                 console.log("[DataModules][Netease2] 正在重新登入...")
                 await login();
             });
+            console.log("[DataModules][Netease2] 登入成功")
             return true
         } else {
+            console.log("[DataModules][Netease2] 登入失敗")
             return false
         }
     } else {
+        console.log("[DataModules][Netease2] 登入失敗，尚未設定帳號密碼")
         return false
     }
 }
