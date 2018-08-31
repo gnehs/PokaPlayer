@@ -37,7 +37,7 @@ router.use(session);
 let moduleList = {};
 fs.readdir(__dirname + "/dataModule", (err, files) => {
     if (err) return console.error(err)
-    files.forEach(file => {
+    files.forEach(async file => {
         if (path.extname(file) == '.js') {
             let uri = __dirname + "/dataModule/" + file,
                 _module = require(uri)
@@ -46,10 +46,9 @@ fs.readdir(__dirname + "/dataModule", (err, files) => {
                 "active": Object.keys(_module),
                 "js": uri
             }
-            if (moduleData.active.indexOf('onLoaded') > -1) { // 如果模組想要初始化
-                _module.onLoaded()
-            }
-            moduleList[moduleData.name] = moduleData;
+            let enabled = moduleData.active.indexOf('onLoaded') > -1 ? await _module.onLoaded() : true
+            if (enabled)
+                moduleList[moduleData.name] = moduleData;
         }
     });
 })
@@ -69,57 +68,6 @@ router.use((req, res, next) => {
     else
         next();
 });
-
-/*
-song {
-    name:'',
-    artist:'',
-    album:'',
-    cover:'',
-    url:'',
-    bitrate: 320000,
-    lrc:'',
-    source:'',
-    id:'',
-}
-album {
-    name:'',
-    artist:'',
-    year:'',
-    cover:'',
-    source:'',
-    id:''
-}
-artist {
-    name:'',
-    source:'',
-    cover:'',
-    id:''
-}
-composer {
-    name:'',
-    source:'',
-    cover:'',
-    id:''
-}
-folder {
-    name:'',
-    source:'',
-    id:''
-}
-playlist {
-    name: '',
-    source:'',
-    id: ''
-}
-lyrics {
-    name:''
-    artist:''
-    source:''
-    id:'',
-    lyric:''
-}
-*/
 //-----------------------------> 首頁
 // 取得想推薦的東西(?
 router.get('/home/', async(req, res) => {

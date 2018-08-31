@@ -40,7 +40,7 @@
             "songs": false,
             "playlist": false
         },
-        "login":{
+        "login": {
             "phone": null,
             "email": null,
             "password": null

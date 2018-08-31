@@ -52,7 +52,7 @@ const template = {
 
             let img = window.localStorage["imgRes"] == "true" ? '' :
                 `<div class="mdui-list-item-avatar" ${clickAction}>
-                    <img src="${song.cover}"/>
+                    <img src="${song.cover||getBackground()}"/>
                 </div>`
 
             html += `
@@ -81,7 +81,7 @@ const template = {
             let album = albums[i]
             let name = album.name
             let artist = album.artist
-            let img = window.localStorage["imgRes"] == "true" ? window.localStorage["randomImg"] : album.cover.replace(/'/g, "\\'")
+            let img = window.localStorage["imgRes"] == "true" ? window.localStorage["randomImg"] : album.cover.replace(/'/g, "\\'") || getBackground()
             r += `
                <div class="mdui-card mdui-ripple mdui-hoverable album" 
                    href="album/${album.source}/${encodeURIComponent(album.id)}"  
@@ -106,7 +106,7 @@ const template = {
         for (i = 0; i < artists.length; i++) {
             let artist = artists[i]
             let name = artist.name ? artist.name : "未知"
-            let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${artist.cover}"/></div>`
+            let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${artist.cover||getBackground()}"/></div>`
             html += `
             <li class="mdui-list-item mdui-ripple" href="artist/${encodeURIComponent(artist.source)}/${encodeURIComponent(name)}" data-navigo>
                 ${img}
@@ -123,7 +123,7 @@ const template = {
         for (i = 0; i < composers.length; i++) {
             let composer = composers[i]
             let name = composer.name ? composer.name : "未知"
-            let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${composer.cover}"/></div>`
+            let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${composer.cover||getBackground()}"/></div>`
             html += `
             <li class="mdui-list-item mdui-ripple" href="composer/${encodeURIComponent(composer.source)}/${encodeURIComponent(name)}" data-navigo>
                 ${img}

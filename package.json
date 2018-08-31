@@ -4,7 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "test": "nodemon index.js --watch index.js --watch dataModule.js --watch '/dataModule/*.js'",
+        "dev": "nodemon index.js --watch index.js --watch dataModule.js --watch '/dataModule/*.js'",
         "start": "npm install --production && node index.js"
     },
     "repository": {
