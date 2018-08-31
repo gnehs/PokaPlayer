@@ -53,6 +53,10 @@ header.mdui-appbar,
     font-family: 'Product Sans', Roboto, Noto, Helvetica, Arial, sans-serif;
 }
 
+.mdui-list-item-avatar {
+    background-color: #FFF;
+}
+
 header.mdui-appbar.mdui-appbar-fixed {
     z-index: 5001;
 }
@@ -387,6 +391,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     margin-top: 4px;
     margin-right: 3px;
     object-fit: cover;
+    background-color: #FFF;
 }
 
 #player .song-info {
@@ -501,6 +506,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     height: auto;
     width: auto;
     object-fit: cover;
+    background-color: #FFF;
 }
 
 .mdui-slider input[type="range"] {
