@@ -179,7 +179,6 @@ async function onLoaded() {
                 console.log("[DataModules][Netease2] 正在重新登入...")
                 await login();
             });
-            console.log("[DataModules][Netease2] 登入成功")
             return true
         } else {
             console.log("[DataModules][Netease2] 登入失敗")

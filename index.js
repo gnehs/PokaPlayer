@@ -55,7 +55,7 @@ git
 app.set('views', __dirname + '/views');
 app.set('view engine', 'pug')
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(helmet.hidePoweredBy({ setTo: 'PHP/7.1.20' }));
+app.use(helmet());
 app.use(session);
 io.use(sharedsession(session, {
     autoSave: true
@@ -69,7 +69,7 @@ moment.tz.setDefault("Asia/Taipei");
 app.use(express.static('public'))
 
 // 啟動囉
-server.listen(3000, async() => {
+server.listen(3000, () => {
     console.log("[PokaPlayer]  URL: http://localhost:3000")
     console.log("[PokaPlayer] Time: " + moment().format("YYYY/MM/DD HH:mm"))
 })

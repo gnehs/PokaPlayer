@@ -68,57 +68,6 @@ router.use((req, res, next) => {
     else
         next();
 });
-
-/*
-song {
-    name:'',
-    artist:'',
-    album:'',
-    cover:'',
-    url:'',
-    bitrate: 320000,
-    lrc:'',
-    source:'',
-    id:'',
-}
-album {
-    name:'',
-    artist:'',
-    year:'',
-    cover:'',
-    source:'',
-    id:''
-}
-artist {
-    name:'',
-    source:'',
-    cover:'',
-    id:''
-}
-composer {
-    name:'',
-    source:'',
-    cover:'',
-    id:''
-}
-folder {
-    name:'',
-    source:'',
-    id:''
-}
-playlist {
-    name: '',
-    source:'',
-    id: ''
-}
-lyrics {
-    name:''
-    artist:''
-    source:''
-    id:'',
-    lyric:''
-}
-*/
 //-----------------------------> 首頁
 // 取得想推薦的東西(?
 router.get('/home/', async(req, res) => {
