@@ -122,15 +122,28 @@ function setLrc(lrcResult) {
 ap.on("timeupdate", () => {
     let name = ap.list.audios[ap.list.index].name || "",
         artist = ap.list.audios[ap.list.index].artist || "",
-        img = window.localStorage["imgRes"] != "true" ? ap.list.audios[ap.list.index].cover : getBackground(), //一定會有圖片
+        img = window.localStorage["imgRes"] != "true" && ap.list.audios[ap.list.index].cover ? ap.list.audios[ap.list.index].cover : getBackground(), //一定會有圖片
         currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00",
         duration = ap.audio.currentTime ? secondToTime(ap.audio.duration) : "0:00",
-        timer = currentTime + '/' + duration
+        timer = currentTime + '/' + duration,
+        audioBuffered = ap.audio.currentTime > 1 ? ap.audio.buffered.end(ap.audio.buffered.length - 1) / ap.audio.duration * 100 : 0,
+        cent = ap.audio.currentTime / ap.audio.duration * 100,
+        timelineColor = $('.mdui-color-theme-accent').css("background-color"),
+        timelineBufferedColor = $('body').hasClass("mdui-theme-layout-dark") ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.25)'
     $('#player button.play[onclick="ap.toggle()"] i').text("pause")
     $('#player .song-info .name').text(name)
     $('#player .song-info .artist').text(artist)
     $('#player .right .timer').text(timer)
     $('#player img').attr('src', img)
+    $('#player').attr('style', `background-image: 
+    linear-gradient(to right, 
+        ${timelineColor} 0%,
+        ${timelineColor} ${cent}%, 
+        ${timelineBufferedColor} ${cent+0.01}%,
+        ${timelineBufferedColor} ${audioBuffered>0?audioBuffered:cent+0.01}%, 
+        transparent ${audioBuffered>0?audioBuffered+0.01:cent+0.01}%, 
+        transparent 100%
+    );`)
     updateMediaSession()
 })
 ap.on("pause", () => {

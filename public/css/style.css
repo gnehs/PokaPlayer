@@ -343,7 +343,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 #player {
     width: 100vw;
-    height: 64px;
+    height: 67px;
     position: fixed;
     bottom: 0;
     right: 0;
@@ -357,9 +357,13 @@ header.mdui-appbar.mdui-appbar-fixed {
     border-radius: 10px 10px 0 0;
     overflow: hidden;
     box-shadow: 0 0 10px #0000004d;
+    background-position: left bottom;
+    background-repeat: no-repeat;
+    background-size: 100% 3px;
     transform: translateY(0);
     transition: transform .3s ease, width .3s ease, border-radius .3s ease, box-shadow .3s ease;
     margin: 0 auto;
+    padding-bottom: 3px;
 }
 
 .mdui-theme-layout-dark #player {
@@ -380,7 +384,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 #player img {
     width: 64px;
     height: 64px;
-    margin-top: 3px;
+    margin-top: 4px;
     margin-right: 3px;
     object-fit: cover;
 }
