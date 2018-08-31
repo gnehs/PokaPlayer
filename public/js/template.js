@@ -52,7 +52,7 @@ const template = {
 
             let img = window.localStorage["imgRes"] == "true" ? '' :
                 `<div class="mdui-list-item-avatar" ${clickAction}>
-                    <img src="${song.cover}"/>
+                    <img src="${song.cover||getBackground()}"/>
                 </div>`
 
             html += `

@@ -521,7 +521,7 @@ async function showNow() {
             title = ap.list.audios[i].name,
             artist = ap.list.audios[i].artist,
             album = ap.list.audios[i].album,
-            img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${ap.list.audios[i].cover}"/></div>`
+            img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${ap.list.audios[i].cover||getBackground()}"/></div>`
         html += `<li class="mdui-list-item mdui-ripple song ${focus}" >
             ${img}
             <div class="mdui-list-item-content songinfo" data-now-play-id="${i}">
@@ -540,7 +540,7 @@ async function showNow() {
         name = nowPlaying ? nowPlaying.name : "PokaPlayer",
         artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點擊播放鍵開始隨機播放",
         album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>",
-        img = (nowPlaying && window.localStorage["imgRes"] != "true") ? nowPlaying.cover : getBackground(),
+        img = (nowPlaying && window.localStorage["imgRes"] != "true" && nowPlaying.cover) ? nowPlaying.cover : getBackground(),
         currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00",
         duration = ap.audio.currentTime ? secondToTime(ap.audio.duration) : "0:00",
         timer = currentTime + '/' + duration,
@@ -631,7 +631,7 @@ async function showNow() {
         let name = nowPlaying ? nowPlaying.name : "PokaPlayer"
         let artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點擊播放鍵開始隨機播放"
         let album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>"
-        let img = (nowPlaying && window.localStorage["imgRes"] != "true") ? nowPlaying.cover : getBackground(); //一定會有圖片
+        let img = (nowPlaying && window.localStorage["imgRes"] != "true" && nowPlaying.cover) ? nowPlaying.cover : getBackground(); //一定會有圖片
         $('[data-player]>.mdui-card').attr('style', `background-image:url('${img.replace(/'/g, "\\'")}');`)
         $('[data-player]>.info .title').text(name)
         $('[data-player]>.info .artist').html(artist + album)
