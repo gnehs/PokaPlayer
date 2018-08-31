@@ -4,7 +4,7 @@ const request = require('request').defaults({ jar });
 const schedule = require('node-schedule') // 很會計時ㄉ朋友
 const config = require(__dirname + '/../config.json').Netease2 // 設定
 const server = 'http://localhost:4000/';
-const options = (url, qs={}) => ({
+const options = (url, qs = {}) => ({
     uri: url,
     qs,
     json: true // Automatically parses the JSON string in the response
@@ -18,21 +18,22 @@ const normalOptions = url => {
         return m10s[Math.floor(Math.random() * m10s.length)];
     }
     return {
-    method: 'GET',
-    uri: url.replace('m10.music.126.net', `${m10()}/m10.music.126.net`),
-    headers: {
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-        "Accept-Encoding": "gzip, deflate",
-        "Accept-Language": "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7",
-        "Connection": "keep-alive",
-        "Cache-Control": "max-age=0",
-        "DNT": 1,
-        "Upgrade-Insecure-Requests": 1,
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
-    },
-    json: true, // Automatically parses the JSON string in the response
-    followAllRedirects: true
-}}
+        method: 'GET',
+        uri: url.replace('m10.music.126.net', `${m10()}/m10.music.126.net`),
+        headers: {
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+            "Accept-Encoding": "gzip, deflate",
+            "Accept-Language": "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7",
+            "Connection": "keep-alive",
+            "Cache-Control": "max-age=0",
+            "DNT": 1,
+            "Upgrade-Insecure-Requests": 1,
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
+        },
+        json: true, // Automatically parses the JSON string in the response
+        followAllRedirects: true
+    }
+}
 
 function migrate(org, t, offset = 10 ** -3) {
     const isDigit = x => !isNaN(Number(x))
@@ -161,17 +162,16 @@ function migrate(org, t, offset = 10 ** -3) {
     return result
 }
 
-async function login(){
+async function login() {
     let result
-    if (config.login.phone) {result = await rp(options(`${server}login/cellphone?phone=${config.login.phone}&password=${config.login.password}`))}
-    else {result = await rp(options(`${server}login?email=${config.login.email}&password=${config.login.password}`))}
+    if (config.login.phone) { result = await rp(options(`${server}login/cellphone?phone=${config.login.phone}&password=${config.login.password}`)) } else { result = await rp(options(`${server}login?email=${config.login.email}&password=${config.login.password}`)) }
     isLoggedin = result.code == 200
     console.log(`[DataModules][Netease2] ${result.profile.nickname} 登入${isLoggedin ? '成功' : '失敗'}`)
     return result
 }
 
 async function onLoaded() {
-    if ((config.login.phone || config.login.email) && config.login.password) {
+    if (config && config.login && (config.login.phone || config.login.email) && config.login.password) {
         console.log("[DataModules][Netease2] 正在登入...")
         let result = await login()
         if (await result.code == 200) {
@@ -183,15 +183,15 @@ async function onLoaded() {
     }
 }
 
-async function parseSongs(songs, br=999000) {
-    return await Promise.all((await songs).map(async (song, index) => {
+async function parseSongs(songs, br = 999000) {
+    return await Promise.all((await songs).map(async(song, index) => {
         song = await song;
         return {
             name: song.name,
             artist: song.ar.map(x => x.name).join(', '),
             album: song.al.name,
             cover: song.al.picUrl ? song.al.picUrl.replace('http', 'https') : song.al.picUrl,
-            url: `/pokaapi/song/?moduleName=Netease2&songId=${song.id}`, 
+            url: `/pokaapi/song/?moduleName=Netease2&songId=${song.id}`,
             codec: "mp3",
             // lrc: song.id,
             source: "Netease2",
@@ -208,14 +208,14 @@ async function getSong(req, songRes, id) {
     return isArray ? result : result[0];
 }
 
-async function getSongs(songs, br=999000) {
+async function getSongs(songs, br = 999000) {
     let isArray = Array.isArray(songs);
     songs = isArray ? songs : [songs];
     let result = await parseSongs(await Promise.all(songs.map(async x => (await rp(options(`${server}song/detail?ids=${x}&timestamp=${Math.floor(Date.now() / 1000)}`))).songs[0])), br);
     return isArray ? result : result[0];
 }
 
-async function getSongsUrl(songs, br=999000) {
+async function getSongsUrl(songs, br = 999000) {
     let isArray = Array.isArray(songs);
     songs = isArray ? songs : [songs];
     let result = (await rp(options(`${server}music/url?br=${br}&id=${songs.join()}`)))
@@ -230,14 +230,14 @@ async function getCovers(ids) {
     return await Promise.all((await getSongs(ids)).map(async x => request(normalOptions((await x).cover))))
 }
 
-async function search(keywords, limit=30, type='song') {
-    async function parseSearchResults(results, type='song') {
+async function search(keywords, limit = 30, type = 'song') {
+    async function parseSearchResults(results, type = 'song') {
         switch (type) {
             case 'song':
                 return await getSongs(results.map(x => x.id))
         }
     }
-    
+
     let typeNum = {
         song: 1,
         album: 10,
@@ -263,7 +263,7 @@ async function getArtistSongs(id) {
     return { songs: await parseSongs(info.hotSongs) }
 }
 
-async function getArtistAlbums(id, limit=50, offset=0) {
+async function getArtistAlbums(id, limit = 50, offset = 0) {
     let info = await rp(options(`${server}artist/album?id=${id}&limit=${limit}&offset=${offset}`))
     let result = info.hotAlbums.map(x => ({
         name: x.name,
@@ -298,7 +298,7 @@ async function getPlaylists(playlists) {
     playlists.forEach(async x => {
         if (x.source != 'Netease2') return
         else {
-            switch (x.type){
+            switch (x.type) {
                 case 'playlist':
                     if (x.name) r.push(x)
                     else {
@@ -318,8 +318,7 @@ async function getPlaylists(playlists) {
                             if (x.code == 200) {
                                 let k = (await getUserPlaylists(x.id))
                                 r = r.concat(k)
-                            }
-                            else console.error('[DataModules][Netease2] 未登入，無法獲取用戶歌單。')
+                            } else console.error('[DataModules][Netease2] 未登入，無法獲取用戶歌單。')
                         })
                     } else if (!isLoggedin) {
                         console.error('[DataModules][Netease2] 未登入，無法獲取用戶歌單。')
@@ -403,10 +402,10 @@ async function getPlaylists(playlists) {
             console.error('[DataModules][Netease2] 未登入，無法獲取每日推薦歌單。')
         } else r.concat(await addToStack())
     }
-    return {playlists: r}
+    return { playlists: r }
 }
 
-async function getPlaylistSongs(id, br=999000) {
+async function getPlaylistSongs(id, br = 999000) {
     if (id == 'dailyRecommendSongs') {
         let result = await rp(options(`${server}recommend/songs`))
         if (result.code == 200) {
@@ -473,8 +472,7 @@ async function getLyric(id) {
             } catch (e) {
                 lyric = result.lrc.lyric
             }
-        }
-        else if (result.lrc && result.lrc.lyric) lyric = result.lrc.lyric
+        } else if (result.lrc && result.lrc.lyric) lyric = result.lrc.lyric
         else lyric = null
         return lyric
     } else {
@@ -492,7 +490,7 @@ async function searchLyrics(keyword) {
         id: x.id,
         lyric: await getLyric(x.id)
     })))).filter(x => x.lyric && x.lyric != '[0:0] 純音樂')
-    return {lyrics: result}
+    return { lyrics: result }
 }
 
 async function debug() {
@@ -503,7 +501,7 @@ async function debug() {
     function getStatusCode(rq, type) {
         rq.on('response', res => {
             rq.abort()
-            console.log(type+':', res.statusCode, '\n\n')
+            console.log(type + ':', res.statusCode, '\n\n')
         })
     }
 
@@ -513,7 +511,7 @@ async function debug() {
     if (module.exports.hasOwnProperty('getSongs')) console.log('getSongs:', await Promise.all(await getSongs(songIds)), '\n\n')
     if (module.exports.hasOwnProperty('getSongsUrl')) console.log('getSongsUrl:', await getSongsUrl(songIds[0]), '\n\n')
     if (module.exports.hasOwnProperty('getCover')) getStatusCode((await getCover(songIds[0])), 'getCover')
-    if (module.exports.hasOwnProperty('getCovers'))await Promise.all((await getCovers(songIds)).map(async (x, index) => getStatusCode((await x), 'getCovers')))
+    if (module.exports.hasOwnProperty('getCovers')) await Promise.all((await getCovers(songIds)).map(async(x, index) => getStatusCode((await x), 'getCovers')))
     if (module.exports.hasOwnProperty('search')) console.log('search:', await Promise.all(await search(keyword, 2)))
 }
 
