@@ -258,8 +258,8 @@ async function parseSongs(songs, br = 999000) {
             song = await song;
             return {
                 name: song.name,
-                artist: song.ar.map(x => x.name).join(', '),
-                album: song.al.name,
+                artist: song.ar.map(x => x.name || '').join(', '),
+                album: song.al.name || '',
                 cover: song.al.picUrl ? song.al.picUrl.replace('http', 'https') : song.al.picUrl,
                 url: `/pokaapi/song/?moduleName=Netease2&songId=${song.id}`,
                 codec: 'mp3',
@@ -417,7 +417,11 @@ async function getPlaylists(playlists) {
         })))
     }
 
-    let r = []
+    let r = [{
+        name: '網易雲音樂雲盤',
+        source: 'Netease2',
+        id: 'yunPan',
+    }]
     let catList = await getCatList();
     
     playlists.map(x => {
@@ -527,6 +531,21 @@ async function getPlaylistSongs(id, br = 999000) {
             };
         } else {
             console.error(`[DataModules][Netease2] 無法獲取每日推薦歌單。(${result.code})`);
+            return null;
+        }
+    } else if (id == 'yunPan'){
+        let result = await rp(options(`${server}user/cloud?limit=2147483646`));
+        if (result.code == 200) {
+            return {
+                songs: await parseSongs(result.data.map(x => x.simpleSong)),
+                playlists: [{
+                    name: '網易雲音樂雲盤',
+                    source: 'Netease2',
+                    id: 'yunPan',
+                }, ]
+            }
+        } else {
+            console.error(`[DataModules][Netease2] 無法獲取網易雲音樂雲盤。(${result.code})`);
             return null;
         }
     } else {
