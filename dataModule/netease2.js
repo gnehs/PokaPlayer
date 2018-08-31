@@ -14,6 +14,38 @@ const options = (url, qs = {}) => ({
 const concat = (x,y) => x.concat(y)
 const flatMap = (f,xs) => xs.map(f).reduce(concat, [])
 
+function randomWord(randomFlag, min, max){
+    var str = "",
+        range = min,
+        arr = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+ 
+    // 随机产生
+    if(randomFlag){
+        range = Math.round(Math.random() * (max-min)) + min;
+    }
+    for(var i=0; i<range; i++){
+        pos = Math.round(Math.random() * (arr.length-1));
+        str += arr[pos];
+    }
+    return str;
+}
+
+
+function idPlusName(id, name) {
+    const a2b = x => Buffer.from(x).toString('base64')
+    return `${randomWord(false, 5)}${a2b(name)}BJmemv4fx${a2b(id.toString())}`
+}
+
+function decomposeIdName(idName) {
+    const b2a = x => Buffer.from(x, 'base64').toString('utf8')
+    const decode = x => /(?:.{5})(.+)BJmemv4fx(.+)/.exec(x)
+    let [_, name, id] = decode(idName)
+    return [Number(b2a(id)), b2a(name)];
+}
+
+function isIdName(id) {
+    return /(?:.{5})(.+)BJmemv4fx(.+)/.test(id)
+}
 
 var isLoggedin;
 
@@ -388,12 +420,15 @@ async function getPlaylists(playlists) {
     let r = []
     let catList = await getCatList();
     
-    playlists.forEach(x => {
+    playlists.map(x => {
         if (x.source != 'Netease2') return
         else {
             switch (x.type) {
                 case 'playlist':
-                    if (x.name) r.push(x);
+                    if (x.name) {
+                        x.id = isIdName(x.id) ? x.id : idPlusName(x.id, x.name)
+                        r.push(x)
+                    }
                     else {
                         playlistStack.push(rp(options(`${server}playlist/detail?id=${x.id}`)))
                     }
@@ -467,6 +502,8 @@ async function getPlaylists(playlists) {
 }
 
 async function getPlaylistSongs(id, br = 999000) {
+    var name;
+    if (isIdName(id)) [id, name] = decomposeIdName(id)
     if (id == 'dailyRecommendSongs') {
         let result = await rp(options(`${server}recommend/songs`));
         if (result.code == 200) {
@@ -498,9 +535,9 @@ async function getPlaylistSongs(id, br = 999000) {
             return {
                 songs: await parseSongs(result.playlist.tracks),
                 playlists: [{
-                    name: result.playlist.name,
+                    name: name ? name : result.playlist.name,
                     source: 'Netease2',
-                    id,
+                    id: id,
                 }, ],
             };
         } else {
