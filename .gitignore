@@ -64,3 +64,4 @@ typings/
 config.json
 sessions/*
 playlist.json
+package-lock.json
