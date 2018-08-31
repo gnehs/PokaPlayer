@@ -10,6 +10,11 @@ const options = (url, qs={}) => ({
     json: true // Automatically parses the JSON string in the response
 });
 
+// flatMap
+const concat = (x,y) => x.concat(y)
+const flatMap = (f,xs) => xs.map(f).reduce(concat, [])
+
+
 var isLoggedin;
 
 const normalOptions = url => {
@@ -285,86 +290,102 @@ async function getCatList() {
 
 async function getPlaylists(playlists) {
     // cat 可以從 getCatList() 抓
+    let userList = []
+    async function resolveUserList(userList){
+        if (userList.length === 0) return userList
+        return [].concat(...(await Promise.all(userList)))
+    }
+    
     async function getUserPlaylists(id) {
         let result = await rp(options(`${server}user/playlist?uid=${id}`))
         return result.playlist.map(x => ({
             name: x.name,
             source: "Netease2",
-            id: x.id
+            id: x.id,
+            from: 'getUserPlaylists'
         }))
     }
 
+    let playlistStack = []
+    async function resolvePlaylistStack(playlistStack) {
+        if (playlistStack.length === 0) return playlistStack
+        return (await Promise.all(playlistStack)).map(x => ({
+            name: x.playlist.name,
+            source: "Netease2",
+            id: x.playlist.id,
+            from: 'playlistStack'
+        }))
+    }
+
+    let topPlaylistStack = []
+    async function resolveTopPlaylistStack(topPlaylistStack){
+        if (topPlaylistStack.length === 0) return topPlaylistStack
+        let playlists = flatMap(x => x, (await Promise.all(topPlaylistStack)).map(x => x.playlists)).map(x => ({
+            name: x.name,
+            source: "Netease2",
+            id: x.id,
+            from: 'topPlaylistStack'
+        }))
+        return [].concat(...playlists)
+    }
+
+    let dailyRecommendStack = []
+    async function resolvedailyRecommendStack(dailyRecommendStack){
+        if (dailyRecommendStack.length === 0) return dailyRecommendStack
+        return [].concat(...flatMap(x => x, (await Promise.all(dailyRecommendStack)).map(x => x.recommend)).map(x => ({
+            name: x.name,
+            id: x.id,
+            source: "Netease2",
+            from: 'dailyRecommendStack'
+        })))
+    }
+
     let r = []
-    playlists.forEach(async x => {
+    let catList = await getCatList();
+    
+    playlists.forEach(x => {
         if (x.source != 'Netease2') return
         else {
             switch (x.type){
                 case 'playlist':
                     if (x.name) r.push(x)
                     else {
-                        let result = await rp(options(`${server}playlist/detail?id=${x.id}`))
-                        if (result.code == 200) {
-                            r.push({
-                                name: result.playlist.name,
-                                source: "Netease2",
-                                id: x.id
-                            })
-                        } else console.error(`[DataModules][Netease2] 獲取 ${x.id} 歌單時出錯 (${result.code})`)
+                        playlistStack.push(rp(options(`${server}playlist/detail?id=${x.id}`)))
                     }
                     break;
                 case 'user':
                     if (isLoggedin === undefined) {
-                        login.then(async x => {
+                        login.then(x => {
                             if (x.code == 200) {
-                                let k = (await getUserPlaylists(x.id))
-                                r = r.concat(k)
+                                userList.push(getUserPlaylists(x.id))
                             }
                             else console.error('[DataModules][Netease2] 未登入，無法獲取用戶歌單。')
                         })
                     } else if (!isLoggedin) {
                         console.error('[DataModules][Netease2] 未登入，無法獲取用戶歌單。')
                     } else {
-                        let k = (await getUserPlaylists(x.id));
-                        r = r.concat(k);
+                        userList.push(getUserPlaylists(x.id))
                     }
                     break;
             }
         }
     })
     if (config.topPlaylist.enabled) {
-        getCatList().then(async x => {
-            if (!config.topPlaylist.catgory in x) {
-                console.error(`[DataModules][Netease2] topPlaylist 的分類出錯，已預設為 ACG`);
-                config.topPlaylist.catgory = 'ACG'
-            }
-            let c = config.topPlaylist
-            let result = await rp(options(`${server}top/playlist?limit=${c.limit}&order=${c.order in ['hot', 'new'] ? c.order : 'hot'}&cat=${c.catgory}`))
-            if (result.code == 200) {
-                r = r.concat(result.playlists.map(k => ({
-                    name: k.name,
-                    source: "Netease2",
-                    id: k.id
-                })))
-            } else console.error(`[DataModules][Netease2] 獲取 topPlaylist 出錯。(${result.code})`);
-        })
+        if (!config.topPlaylist.category in catList) {
+            console.error(`[DataModules][Netease2] topPlaylist 的分類出錯，已預設為 ACG`);
+            config.topPlaylist.category = 'ACG'
+        }
+        let c = config.topPlaylist
+        topPlaylistStack.push(rp(options(`${server}top/playlist?limit=${c.limit}&order=${c.order in ['hot', 'new'] ? c.order : 'hot'}&cat=${c.category}`)))
     }
 
     if (config.hqPlaylist.enabled) {
-        getCatList().then(async x => {
-            if (!config.hqPlaylist.catgory in x) {
-                console.error(`[DataModules][Netease2] topPlaylist 的分類出錯，已預設為 ACG`);
-                config.hqPlaylist.catgory = 'ACG'
-            }
-            let c = config.hqPlaylist
-            let result = await rp(options(`${server}top/playlist/highquality?limit=${c.limit}&cat=${c.catgory}`))
-            if (result.code == 200) {
-                r = r.concat(result.playlists.map(k => ({
-                    name: k.name,
-                    source: "Netease2",
-                    id: k.id
-                })))
-            } else console.error(`[DataModules][Netease2] 獲取 topPlaylist 出錯。(${result.code})`);
-        })
+        if (!config.hqPlaylist.category in catList) {
+            console.error(`[DataModules][Netease2] topPlaylist 的分類出錯，已預設為 ACG`);
+            config.hqPlaylist.category = 'ACG'
+        }
+        let c = config.hqPlaylist
+        topPlaylistStack.push(rp(options(`${server}top/playlist/highquality?limit=${c.limit}&cat=${c.category}`)))
     }
 
     if (config.dailyRecommend.songs) {
@@ -386,24 +407,17 @@ async function getPlaylists(playlists) {
     }
 
     if (config.dailyRecommend.playlist) {
-        const addToStack = async() => {
-            let result = await rp(options(`${server}recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`))
-            return result.recommend.map(x => ({
-                name: x.name,
-                id: x.id,
-                source: "Netease2"
-            }))
-        }
         if (isLoggedin === undefined) {
             login.then(async x => {
-                if (x.code == 200) r.concat(await addToStack())
+                if (x.code == 200) dailyRecommendStack.push(rp(options(`${server}recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`)))
                 else console.error('[DataModules][Netease2] 未登入，無法獲取每日推薦歌單。')
             })
         } else if (!isLoggedin) {
             console.error('[DataModules][Netease2] 未登入，無法獲取每日推薦歌單。')
-        } else r.concat(await addToStack())
+        } else dailyRecommendStack.push(rp(options(`${server}recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`)))
     }
-    return {playlists: r}
+    let result = r.concat(...(await resolveUserList(userList)), ...(await resolvePlaylistStack(playlistStack)), ...(await resolveTopPlaylistStack(topPlaylistStack)), ...(await resolvedailyRecommendStack(dailyRecommendStack)))
+    return {playlists: result}
 }
 
 async function getPlaylistSongs(id, br=999000) {

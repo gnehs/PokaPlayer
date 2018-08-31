@@ -27,13 +27,13 @@
     "Netease2": {
         "topPlaylist": {
             "enabled": false,
-            "catgory": "ACG",
+            "category": "ACG",
             "limit": 5,
             "order": "hot" // hot or new
         },
         "hqPlaylist": {
             "enabled": false,
-            "catgory": "ACG",
+            "category": "ACG",
             "limit": 5
         },
         "dailyRecommend": {
