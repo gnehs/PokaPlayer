@@ -3,7 +3,7 @@ const rp = require('request-promise').defaults({ jar });
 const request = require('request').defaults({ jar });
 const schedule = require('node-schedule'); // 很會計時ㄉ朋友
 const config = require(__dirname + '/../config.json').Netease2; // 設定
-const server = 'http://localhost:4000/';
+const server = config.server || 'http://localhost:4000/';
 const options = (url, qs = {}) => ({
     uri: url,
     qs,
@@ -11,20 +11,20 @@ const options = (url, qs = {}) => ({
 });
 
 // flatMap
-const concat = (x,y) => x.concat(y)
-const flatMap = (f,xs) => xs.map(f).reduce(concat, [])
+const concat = (x, y) => x.concat(y)
+const flatMap = (f, xs) => xs.map(f).reduce(concat, [])
 
-function randomWord(randomFlag, min, max){
+function randomWord(randomFlag, min, max) {
     var str = "",
         range = min,
         arr = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
- 
+
     // 随机产生
-    if(randomFlag){
-        range = Math.round(Math.random() * (max-min)) + min;
+    if (randomFlag) {
+        range = Math.round(Math.random() * (max - min)) + min;
     }
-    for(var i=0; i<range; i++){
-        pos = Math.round(Math.random() * (arr.length-1));
+    for (var i = 0; i < range; i++) {
+        pos = Math.round(Math.random() * (arr.length - 1));
         str += arr[pos];
     }
     return str;
@@ -368,11 +368,11 @@ async function getCatList() {
 async function getPlaylists(playlists) {
     // cat 可以從 getCatList() 抓
     let userList = []
-    async function resolveUserList(userList){
+    async function resolveUserList(userList) {
         if (userList.length === 0) return userList
         return [].concat(...(await Promise.all(userList)))
     }
-    
+
     async function getUserPlaylists(id) {
         let result = await rp(options(`${server}user/playlist?uid=${id}`));
         return result.playlist.map(x => ({
@@ -395,7 +395,7 @@ async function getPlaylists(playlists) {
     }
 
     let topPlaylistStack = []
-    async function resolveTopPlaylistStack(topPlaylistStack){
+    async function resolveTopPlaylistStack(topPlaylistStack) {
         if (topPlaylistStack.length === 0) return topPlaylistStack
         let playlists = flatMap(x => x, (await Promise.all(topPlaylistStack)).map(x => x.playlists)).map(x => ({
             name: x.name,
@@ -407,7 +407,7 @@ async function getPlaylists(playlists) {
     }
 
     let dailyRecommendStack = []
-    async function resolvedailyRecommendStack(dailyRecommendStack){
+    async function resolvedailyRecommendStack(dailyRecommendStack) {
         if (dailyRecommendStack.length === 0) return dailyRecommendStack
         return [].concat(...flatMap(x => x, (await Promise.all(dailyRecommendStack)).map(x => x.recommend)).map(x => ({
             name: x.name,
@@ -423,7 +423,7 @@ async function getPlaylists(playlists) {
         id: 'yunPan',
     }]
     let catList = await getCatList();
-    
+
     playlists.map(x => {
         if (x.source != 'Netease2') return
         else {
@@ -432,8 +432,7 @@ async function getPlaylists(playlists) {
                     if (x.name) {
                         x.id = isIdName(x.id) ? x.id : idPlusName(x.id, x.name)
                         r.push(x)
-                    }
-                    else {
+                    } else {
                         playlistStack.push(rp(options(`${server}playlist/detail?id=${x.id}`)))
                     }
                     break;
@@ -442,8 +441,7 @@ async function getPlaylists(playlists) {
                         login.then(x => {
                             if (x.code == 200) {
                                 userList.push(getUserPlaylists(x.id))
-                            }
-                            else console.error('[DataModules][Netease2] 未登入，無法獲取用戶歌單。')
+                            } else console.error('[DataModules][Netease2] 未登入，無法獲取用戶歌單。')
                         })
                     } else if (!isLoggedin) {
                         console.error('[DataModules][Netease2] 未登入，無法獲取用戶歌單。');
@@ -502,12 +500,12 @@ async function getPlaylists(playlists) {
         } else dailyRecommendStack.push(rp(options(`${server}recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`)))
     }
     let result = r.concat(...(await resolveUserList(userList)), ...(await resolvePlaylistStack(playlistStack)), ...(await resolveTopPlaylistStack(topPlaylistStack)), ...(await resolvedailyRecommendStack(dailyRecommendStack)))
-    return {playlists: result}
+    return { playlists: result }
 }
 
 async function getPlaylistSongs(id, br = 999000) {
     var name;
-    if (isIdName(id)) [id, name] = decomposeIdName(id)
+    if (isIdName(id))[id, name] = decomposeIdName(id)
     if (id == 'dailyRecommendSongs') {
         let result = await rp(options(`${server}recommend/songs`));
         if (result.code == 200) {
@@ -533,7 +531,7 @@ async function getPlaylistSongs(id, br = 999000) {
             console.error(`[DataModules][Netease2] 無法獲取每日推薦歌單。(${result.code})`);
             return null;
         }
-    } else if (id == 'yunPan'){
+    } else if (id == 'yunPan') {
         let result = await rp(options(`${server}user/cloud?limit=2147483646`));
         if (result.code == 200) {
             return {
