@@ -18,7 +18,7 @@ ENV NODE_ENV=production
 
 EXPOSE 3000
 
-RUN echo 'forever /app/forever.json' >> /start.sh
+RUN echo 'forever start /app/forever.json' >> /start.sh
 CMD ["sh", "/start.sh"]
 
 ENV PORT 4000
