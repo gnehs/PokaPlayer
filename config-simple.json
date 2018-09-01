@@ -25,6 +25,7 @@
         "dbType": "fs"
     },
     "Netease2": {
+        "server": "YOUR_NeteaseCloudMusicApi_SERVER",
         "topPlaylist": {
             "enabled": false,
             "category": "ACG",
