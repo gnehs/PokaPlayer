@@ -23,5 +23,27 @@
         "jwtExpirePeriod": 600,
         "userFilesDir": "./users",
         "dbType": "fs"
+    },
+    "Netease2": {
+        "topPlaylist": {
+            "enabled": false,
+            "category": "ACG",
+            "limit": 5,
+            "order": "hot" // hot or new
+        },
+        "hqPlaylist": {
+            "enabled": false,
+            "category": "ACG",
+            "limit": 5
+        },
+        "dailyRecommend": {
+            "songs": false,
+            "playlist": false
+        },
+        "login": {
+            "phone": null,
+            "email": null,
+            "password": null
+        }
     }
 }

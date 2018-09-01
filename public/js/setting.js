@@ -316,7 +316,8 @@ async function showSettingsAbout() {
                             }))
                             socket.on('git', data => mdui.snackbar({
                                 fetch: '初始化完成',
-                                reset: '更新檔下載完成'
+                                reset: '更新檔下載完成',
+                                api: 'API 更新完成'
                             }[data], {
                                 timeout: 3000,
                                 position: getSnackbarPosition()

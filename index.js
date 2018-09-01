@@ -4,6 +4,7 @@ const package = require('./package.json'); // 設定檔
 const schedule = require('node-schedule'); // 很會計時ㄉ朋友
 const base64 = require('base-64');
 const git = require('simple-git/promise')(__dirname);
+const netease2Git = require('simple-git/promise')("/NeteaseCloudMusicApi")
 
 //express
 const express = require('express');
@@ -34,15 +35,19 @@ git
     .then(branch => {
         branch = branch.slice(0, -1) // 結果會多一個換行符
         if (branch != (config.PokaPlayer.debug ? 'dev' : 'master')) {
-            git
-                .fetch(["--all"])
+            netease2Git
+                .raw(['config', '--global', 'user.email', '"you@example.com"'])
+                .then(() => netease2Git.raw(['config', '--global', 'user.name', '"Pokaplayer"']))
+                .then(() => netease2Git.stash())
+                .then(() => netease2Git.pull())
+                .then(() => netease2Git.stash(['pop']))
+                .then(() => git.fetch(["--all"]))
                 .then(() => git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? 'dev' : 'master')]))
                 .then(() => git.checkout(config.PokaPlayer.debug ? 'dev' : 'master'))
-                .then(process.exit)
+                .then(() => process.exit())
                 .catch(err => {
-                    console.error('[Git] failed: ', err)
+                    console.error('failed: ', err)
                     socket.emit('err', err.toString())
-                    process.exit()
                 })
         }
     })
@@ -50,7 +55,7 @@ git
 app.set('views', __dirname + '/views');
 app.set('view engine', 'pug')
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(helmet.hidePoweredBy({ setTo: 'PHP/7.1.20' }));
+app.use(helmet());
 app.use(session);
 io.use(sharedsession(session, {
     autoSave: true
@@ -64,7 +69,7 @@ moment.tz.setDefault("Asia/Taipei");
 app.use(express.static('public'))
 
 // 啟動囉
-server.listen(3000, async() => {
+server.listen(3000, () => {
     console.log("[PokaPlayer]  URL: http://localhost:3000")
     console.log("[PokaPlayer] Time: " + moment().format("YYYY/MM/DD HH:mm"))
 })
@@ -109,8 +114,13 @@ io.on('connection', socket => {
     socket.on('update', (userdata) => {
         if (socket.handshake.session.pass == config.PokaPlayer.password) {
             socket.emit('init')
-            git
-                .fetch(["--all"])
+            netease2Git
+                .raw(['config', '--global', 'user.email', '"you@example.com"'])
+                .then(() => netease2Git.raw(['config', '--global', 'user.name', '"Pokaplayer"']))
+                .then(() => netease2Git.stash())
+                .then(() => netease2Git.pull())
+                .then(() => netease2Git.stash(['pop']))
+                .then(() => git.fetch(["--all"]))
                 .then(() => socket.emit('git', 'fetch'))
                 .then(() => git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? 'dev' : 'master')]))
                 .then(() => git.checkout(config.PokaPlayer.debug ? 'dev' : 'master'))
@@ -131,16 +141,20 @@ app.get('/upgrade', (req, res) => {
         res.status(403).send('Permission Denied Desu')
     else {
         if (!config.PokaPlayer.instantUpgradeProcess) {
-            git
-                .fetch(["--all"])
+            netease2Git
+                .raw(['config', '--global', 'user.email', '"you@example.com"'])
+                .then(() => netease2Git.raw(['config', '--global', 'user.name', '"Pokaplayer"']))
+                .then(() => netease2Git.stash())
+                .then(() => netease2Git.pull())
+                .then(() => netease2Git.stash(['pop']))
+                .then(() => git.fetch(["--all"]))
                 .then(() => git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? 'dev' : 'master')]))
                 .then(() => git.checkout(config.PokaPlayer.debug ? 'dev' : 'master'))
-                .then(() => res.send('upgrade'))
                 .then(() => process.exit())
                 .catch(err => {
                     console.error('failed: ', err)
-                    res.send("error");
-                });
+                    socket.emit('err', err.toString())
+                })
         } else {
             res.send('socket')
         }
