@@ -4,7 +4,6 @@ const package = require('./package.json'); // 設定檔
 const schedule = require('node-schedule'); // 很會計時ㄉ朋友
 const base64 = require('base-64');
 const git = require('simple-git/promise')(__dirname);
-const netease2Git = require('simple-git/promise')("/NeteaseCloudMusicApi")
 
 //express
 const express = require('express');
@@ -35,12 +34,8 @@ git
     .then(branch => {
         branch = branch.slice(0, -1) // 結果會多一個換行符
         if (branch != (config.PokaPlayer.debug ? 'dev' : 'master')) {
-            netease2Git
+            git
                 .raw(['config', '--global', 'user.email', '"you@example.com"'])
-                .then(() => netease2Git.raw(['config', '--global', 'user.name', '"Pokaplayer"']))
-                .then(() => netease2Git.stash())
-                .then(() => netease2Git.pull())
-                .then(() => netease2Git.stash(['pop']))
                 .then(() => git.fetch(["--all"]))
                 .then(() => git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? 'dev' : 'master')]))
                 .then(() => git.checkout(config.PokaPlayer.debug ? 'dev' : 'master'))
@@ -114,12 +109,8 @@ io.on('connection', socket => {
     socket.on('update', (userdata) => {
         if (socket.handshake.session.pass == config.PokaPlayer.password) {
             socket.emit('init')
-            netease2Git
+            git
                 .raw(['config', '--global', 'user.email', '"you@example.com"'])
-                .then(() => netease2Git.raw(['config', '--global', 'user.name', '"Pokaplayer"']))
-                .then(() => netease2Git.stash())
-                .then(() => netease2Git.pull())
-                .then(() => netease2Git.stash(['pop']))
                 .then(() => git.fetch(["--all"]))
                 .then(() => socket.emit('git', 'fetch'))
                 .then(() => git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? 'dev' : 'master')]))
@@ -141,12 +132,8 @@ app.get('/upgrade', (req, res) => {
         res.status(403).send('Permission Denied Desu')
     else {
         if (!config.PokaPlayer.instantUpgradeProcess) {
-            netease2Git
+            git
                 .raw(['config', '--global', 'user.email', '"you@example.com"'])
-                .then(() => netease2Git.raw(['config', '--global', 'user.name', '"Pokaplayer"']))
-                .then(() => netease2Git.stash())
-                .then(() => netease2Git.pull())
-                .then(() => netease2Git.stash(['pop']))
                 .then(() => git.fetch(["--all"]))
                 .then(() => git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? 'dev' : 'master')]))
                 .then(() => git.checkout(config.PokaPlayer.debug ? 'dev' : 'master'))
