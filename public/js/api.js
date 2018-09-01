@@ -45,10 +45,11 @@ async function unPin(source, type, id, name) {
 /*===== 歌詞 =====*/
 //- 取得歌詞
 async function getLrc(artist, title, id = false, source) {
+    let lyricRegex = /\[([0-9.:]*)\]/i
     let result;
     if (id) {
         result = await axios.get(`/pokaapi/lyric/?moduleName=${encodeURIComponent(source)}&id=${encodeURIComponent(id)}`)
-        if (result.data.lyrics[0].lyric)
+        if (result.data.lyrics[0].lyric.match(lyricRegex))
             return result.data.lyrics[0].lyric
     }
     result = await axios.get(`/pokaapi/searchLyrics/?keyword=${encodeURIComponent(title+' '+artist)}`)
@@ -56,10 +57,9 @@ async function getLrc(artist, title, id = false, source) {
     if (result.data.lyrics[0]) {
         let lrcTitle = result.data.lyrics[0].name.toLowerCase().replace(/\.|\*|\~|\&|。|，|\ |\-|\!|！|\(|\)/g, '')
         let songTitle = title.toLowerCase().replace(/\.|\*|\~|\&|。|，|\ |\-|\!|！|\(|\)/g, '')
-        if (lrcTitle == songTitle)
+        if (lrcTitle == songTitle && result.data.lyrics[0].lyric.match(lyricRegex))
             return result.data.lyrics[0].lyric
     }
-
     return false
 }
 async function searchLrc(keyword) {
