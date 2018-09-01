@@ -18,7 +18,7 @@ ENV NODE_ENV=production
 
 EXPOSE 3000
 
-RUN echo "cd /app" > /start.sh
-RUN echo 'PORT=4000 forever start /NeteaseCloudMusicApi/app.js -w /NeteaseCloudMusicApi/package.json -w /NeteaseCloudMusicApi/util/util.js ' >> /start.sh
-RUN echo 'forever -c "npm start" ./' >> /start.sh
+RUN echo 'forever /app/forever.json' >> /start.sh
 CMD ["sh", "/start.sh"]
+
+ENV PORT 4000

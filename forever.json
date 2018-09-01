@@ -1,0 +1,16 @@
+[{
+        "uid": "PokaPlayer",
+        "append": true,
+        "watch": true,
+        "script": "index.js",
+        "sourceDir": "/app"
+    },
+    {
+        "uid": "NeteaseCloudMusicApi",
+        "append": true,
+        "watch": true,
+        "script": "app.js PORT=4000",
+        "sourceDir": "/NeteaseCloudMusicApi",
+        "args": ["--port", "4000"]
+    }
+]
