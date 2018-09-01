@@ -17,7 +17,6 @@ RUN npm install forever -g
 ENV NODE_ENV=production
 
 EXPOSE 3000
-EXPOSE 4000
 
 RUN echo "cd /app" > /start.sh
 RUN echo 'PORT=4000 forever start /NeteaseCloudMusicApi/app.js -w /NeteaseCloudMusicApi/package.json -w /NeteaseCloudMusicApi/util/util.js ' >> /start.sh
