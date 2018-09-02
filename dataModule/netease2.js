@@ -311,7 +311,7 @@ async function getCovers(ids) {
 }
 
 async function search(keywords, limit = 30, type = 'song') {
-    async function parseSearchResults(results, type = 'song') {
+    async function parseSearchResults(results=[], type = 'song') {
         switch (type) {
             case 'song':
                 return await getSongs(results.map(x => x.id));
