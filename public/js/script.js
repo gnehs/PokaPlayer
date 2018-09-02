@@ -246,8 +246,10 @@ async function showHome() {
 
     let result = await axios.get(`/pokaapi/home`)
 
-    $("#content").html(template.parseHome(result.data))
-    router.updatePageLinks()
+    if ($("#content").attr('data-page') == 'home') {
+        $("#content").html(template.parseHome(result.data))
+        router.updatePageLinks()
+    }
 }
 //- 搜尋
 async function showSearch(keyword) {
