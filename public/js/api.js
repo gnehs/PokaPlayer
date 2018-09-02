@@ -49,7 +49,7 @@ async function getLrc(artist, title, id = false, source) {
     let result;
     if (id) {
         result = await axios.get(`/pokaapi/lyric/?moduleName=${encodeURIComponent(source)}&id=${encodeURIComponent(id)}`)
-        if (result.data.lyrics[0].lyric.match(lyricRegex))
+        if (result.data.lyrics[0].lyric && result.data.lyrics[0].lyric.match(lyricRegex))
             return result.data.lyrics[0].lyric
     }
     result = await axios.get(`/pokaapi/searchLyrics/?keyword=${encodeURIComponent(title+' '+artist)}`)
