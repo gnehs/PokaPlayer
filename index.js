@@ -162,7 +162,6 @@ app.get('/debug', async(req, res) => {
         res.status(403).send('Permission Denied Desu')
     else
         res.send(config.PokaPlayer.debug ? (await git.raw(['rev-parse', '--short', 'HEAD'])).slice(0, -1) : 'false')
-
 })
 
 app.get('/meting', (req, res) => {
@@ -184,9 +183,6 @@ app.get('/ping', (req, res) => {
     res.send("PONG")
 })
 
-
-
-
 // 登入
 app.get('/login/', (req, res) => {
     res.render('login')
@@ -203,14 +199,8 @@ app.get('/logout/', (req, res) => {
     req.session.destroy()
     res.redirect("/")
 });
-var updateCookie = schedule.scheduleJob("'* */12 * * *'", async function() {
-    //請求登入 Cookie
-    //console.log("正在自動更新令牌")
-    var a = await syno.login(config.DSM)
-});
-
 app.use((req, res, next) => {
     res.status(404).redirect("/")
 });
 // 報錯處理
-process.on('uncaughtException', (err) => console.log(err));
+process.on('uncaughtException', err => { if (config.PokaPlayer.debug) console.log(err) });
