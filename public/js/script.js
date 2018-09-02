@@ -434,7 +434,7 @@ async function showArtist(moduleName, artist) {
             pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="加入該演出者到首頁釘選" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
         let albumHTML = template.parseAlbums(result.data.albums)
         if ($("#content").attr('data-item') == `artist${artist}`) {
-            $("#content").html(pinButton + albumHTML)
+            $("#content").html(albumHTML + pinButton)
             $("[data-pinned]").click(async function() {
                 let pinStatus = $(this).attr('data-pinned')
                 if (pinStatus == "true") {
@@ -479,7 +479,7 @@ async function showComposer(moduleName, composer) {
             pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="加入該作曲者到首頁釘選" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
         let albumHTML = template.parseAlbums(result.data.albums)
         if ($("#content").attr('data-item') == `composer${composer}`) {
-            $("#content").html(pinButton + albumHTML)
+            $("#content").html(albumHTML + pinButton)
             $("[data-pinned]").click(async function() {
                 let pinStatus = $(this).attr('data-pinned')
                 if (pinStatus == "true") {
