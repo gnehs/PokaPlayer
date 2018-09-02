@@ -9,10 +9,7 @@ function getBackground() {
 /*===== Pin =====*/
 async function isPinned(source, type, id, name) {
     let result = (await axios.get(`/pokaapi/isPinned/?moduleName=${source}&type=${type}&id=${id}&name=${name}`))
-    if (result.status == 501)
-        return 'disabled'
-    else
-        return result.data
+    return result.data
 }
 async function addPin(source, type, id, name) {
     let result = (await axios.get(`/pokaapi/addPin/?moduleName=${source}&type=${type}&id=${id}&name=${name}`)).data
@@ -49,7 +46,7 @@ async function getLrc(artist, title, id = false, source) {
     let result;
     if (id) {
         result = await axios.get(`/pokaapi/lyric/?moduleName=${encodeURIComponent(source)}&id=${encodeURIComponent(id)}`)
-        if (result.data.lyrics[0].lyric.match(lyricRegex))
+        if (result.data.lyrics[0].lyric && result.data.lyrics[0].lyric.match(lyricRegex))
             return result.data.lyrics[0].lyric
     }
     result = await axios.get(`/pokaapi/searchLyrics/?keyword=${encodeURIComponent(title+' '+artist)}`)

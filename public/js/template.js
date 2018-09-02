@@ -150,4 +150,24 @@ const template = {
         html += '</ul>'
         return html
     },
+    infoHeader: (cover, name, artist) => {
+        return `
+        <div class="info-header">
+            <div class="cover mdui-shadow-1" 
+                 style="background-image:url('${cover.replace(/'/g, "\\'")}')"></div>
+            <div class="info">
+                <div class="album-name mdui-text-truncate mdui-text-color-theme-text" 
+                     title="${name}">${name}</div>
+                <div class="artist-name mdui-text-truncate mdui-text-color-theme-secondary" 
+                     title="${artist}">${artist}</div>
+                <div class="grow"></div>
+                <div class="footer">
+                    <div class="time mdui-text-color-theme-disabled mdui-text-truncate"></div>
+                    <div class="actions">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mdui-divider" style="margin: 10px 0"></div>`
+    }
 }

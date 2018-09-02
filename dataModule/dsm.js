@@ -240,7 +240,7 @@ async function addPin(type, id, name) {
     } else
         PARAMS_JSON = [{
             key: "items",
-            value: `[{"type":"${type}","criteria":{${type}:${id}},"name":"${name}"}]`
+            value: `[{"type":"${type}","criteria":{"${type}":"${id}"},"name":"${name}"}]`
         }]
     result = (await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "pin", PARAMS_JSON))
     if (result.success)
