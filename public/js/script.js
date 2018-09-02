@@ -35,6 +35,7 @@ router
 router
     .hooks({
         before: (done, params) => {
+            $('#content').removeAttr('data-item')
             $("#player").removeClass('hide')
             done()
         },
@@ -336,7 +337,8 @@ async function showAlbumSongs(albumSource, albumID) {
 
     pokaHeader('', '', cover)
         //如果從首頁按進去頁籤沒切換
-    $("#content").attr('data-page', 'album')
+    $("#content").attr('data-page', `album`)
+    $("#content").attr('data-item', `album${albumID}`)
     let albumInfo = template.infoHeader(cover, name, artist)
 
 
@@ -371,7 +373,7 @@ async function showAlbumSongs(albumSource, albumID) {
     //抓資料
     let result = await axios.get(`/pokaapi/albumSongs/?moduleName=${encodeURIComponent(albumSource)}&data=${encodeURIComponent(albumID)}`)
     html = template.parseSongs(result.data.songs)
-    if ($("#content").attr('data-page') == 'album') {
+    if ($("#content").attr('data-page') == `album` && $("#content").attr('data-item') == `album${albumID}`) {
         $("#content").html(albumInfo + html)
         $("#content .info-header .time").html(`${result.data.songs.length} 首歌曲`)
         $("#content .info-header .actions").html(actions)
@@ -422,15 +424,16 @@ async function showArtist(moduleName, artist) {
     $("#content").html(template.getSpinner())
     mdui.mutation()
     if (artist) {
+        $("#content").attr('data-item', `artist${artist}`)
         let result = await axios.get(`/pokaapi/artistAlbums/?moduleName=${encodeURIComponent(moduleName)}&id=${artist=='未知'?'':encodeURIComponent(artist)}`),
             isArtistPinned = await isPinned(moduleName, 'artist', artist, artist)
         let pinButton = ``
-        if (isArtistPinned)
-            pinButton = `<button class="mdui-fab mdui-fab-fixed mdui-ripple" title="從首頁釘選移除此專輯" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
+        if (isArtistPinned && isArtistPinned != 'disabled')
+            pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="從首頁釘選移除該演出者" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
         else if (isArtistPinned != 'disabled')
-            pinButton = `<button class="mdui-fab mdui-fab-fixed mdui-ripple" title="加入此專輯到首頁釘選" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
+            pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="加入該演出者到首頁釘選" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
         let albumHTML = template.parseAlbums(result.data.albums)
-        if ($("#content").attr('data-page') == 'artist') {
+        if ($("#content").attr('data-item') == `artist${artist}`) {
             $("#content").html(pinButton + albumHTML)
             $("[data-pinned]").click(async function() {
                 let pinStatus = $(this).attr('data-pinned')
@@ -466,15 +469,16 @@ async function showComposer(moduleName, composer) {
     $("#content").html(template.getSpinner())
     mdui.mutation()
     if (composer) {
+        $("#content").attr('data-item', `composer${composer}`)
         let result = await axios.get(`/pokaapi/composerAlbums/?moduleName=${encodeURIComponent(moduleName)}&id=${composer=='未知'?'':encodeURIComponent(composer)}`),
             isComposerPinned = await isPinned(moduleName, 'composer', composer, composer)
         let pinButton = ``
-        if (isComposerPinned)
-            pinButton = `<button class="mdui-fab mdui-fab-fixed mdui-ripple" title="從首頁釘選移除此專輯" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
+        if (isComposerPinned && isComposerPinned != 'disabled')
+            pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="從首頁釘選移除該作曲者" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
         else if (isComposerPinned != 'disabled')
-            pinButton = `<button class="mdui-fab mdui-fab-fixed mdui-ripple" title="加入此專輯到首頁釘選" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
+            pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="加入該作曲者到首頁釘選" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
         let albumHTML = template.parseAlbums(result.data.albums)
-        if ($("#content").attr('data-page') == 'composer') {
+        if ($("#content").attr('data-item') == `composer${composer}`) {
             $("#content").html(pinButton + albumHTML)
             $("[data-pinned]").click(async function() {
                 let pinStatus = $(this).attr('data-pinned')
@@ -522,7 +526,8 @@ async function showPlaylist() {
 //- 播放清單歌曲
 async function showPlaylistSongs(moduleName, playlistId) {
     //如果從首頁按進去
-    $("#content").attr('data-page', 'playlist')
+    $("#content").attr('data-page', `playlist`)
+    $("#content").attr('data-item', `playlist${playlistId}`)
 
     // 展示讀取中
     pokaHeader("讀取中...", "播放清單")
@@ -534,8 +539,34 @@ async function showPlaylistSongs(moduleName, playlistId) {
     let name = result.playlists[0].name
     let songs = template.parseSongs(result.songs)
     pokaHeader(name, "播放清單")
-    if ($("#content").attr('data-page') == 'playlist')
-        $("#content").html(songs)
+
+    let isPlaylistPinned = await isPinned(moduleName, 'playlist', playlistId, result.playlists[0].name)
+    let pinButton = ``
+    if (isPlaylistPinned && isPlaylistPinned != 'disabled')
+        pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="從首頁釘選移除此播放清單" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
+    else if (isPlaylistPinned != 'disabled')
+        pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="加入此播放清單到首頁釘選" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
+
+    if ($("#content").attr('data-item') == `playlist${playlistId}`) {
+        $("#content").html(songs + pinButton)
+        $("[data-pinned]").click(async function() {
+            let pinStatus = $(this).attr('data-pinned')
+            if (pinStatus == "true") {
+                if (await unPin(moduleName, 'playlist', playlistId, result.playlists[0].name) == true) {
+                    $(this).attr("data-pinned", false)
+                    $(this).attr("title", "加入此播放清單到首頁釘選")
+                    $(this).children("i").text('turned_in_not')
+                }
+            } else {
+                if (await addPin(moduleName, 'playlist', playlistId, result.playlists[0].name) == true) {
+                    $(this).attr("data-pinned", true)
+                    $(this).attr("title", "從首頁釘選移除此播放清單")
+                    $(this).children("i").text('turned_in')
+                }
+            }
+        })
+
+    }
 }
 //- 隨機播放
 async function showRandom() {

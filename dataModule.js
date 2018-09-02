@@ -102,7 +102,7 @@ router.get('/addPin/', async(req, res) => {
     let moduleName = req.query.moduleName
     let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
     // 沒這東西
-    if (!_module || moduleList[moduleName].active.indexOf('addPin') == -1) return res.status(501).send("The required module is currently unavailable :(")
+    if (!_module || moduleList[moduleName].active.indexOf('addPin') == -1) return res.send('disabled')
 
     res.json(await _module.addPin(req.query.type, req.query.id, req.query.name))
 });
@@ -112,7 +112,7 @@ router.get('/unPin/', async(req, res) => {
     let moduleName = req.query.moduleName
     let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
     // 沒這東西
-    if (!_module || moduleList[moduleName].active.indexOf('unPin') == -1) return res.status(501).send("The required module is currently unavailable :(")
+    if (!_module || moduleList[moduleName].active.indexOf('unPin') == -1) return res.send('disabled')
 
     res.json(await _module.unPin(req.query.type, req.query.id, req.query.name))
 });
@@ -122,7 +122,7 @@ router.get('/isPinned/', async(req, res) => {
     let moduleName = req.query.moduleName
     let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
     // 沒這東西
-    if (!_module || moduleList[moduleName].active.indexOf('isPinned') == -1) return res.status(501).send("The required module is currently unavailable :(")
+    if (!_module || moduleList[moduleName].active.indexOf('isPinned') == -1) return res.send('disabled')
 
     res.json(await _module.isPinned(req.query.type, req.query.id, req.query.name))
 });
