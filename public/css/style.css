@@ -75,6 +75,12 @@ header.mdui-appbar.mdui-appbar-fixed {
     padding-right: 0;
 }
 
+@media screen and (max-width: 767px) {
+    .mdui-fab {
+        margin-bottom: 64px;
+    }
+}
+
 
 /* 列表 */
 

@@ -422,10 +422,33 @@ async function showArtist(moduleName, artist) {
     $("#content").html(template.getSpinner())
     mdui.mutation()
     if (artist) {
-        let result = await axios.get(`/pokaapi/artistAlbums/?moduleName=${encodeURIComponent(moduleName)}&id=${artist=='未知'?'':encodeURIComponent(artist)}`)
+        let result = await axios.get(`/pokaapi/artistAlbums/?moduleName=${encodeURIComponent(moduleName)}&id=${artist=='未知'?'':encodeURIComponent(artist)}`),
+            isArtistPinned = await isPinned(moduleName, 'artist', artist, artist)
+        let pinButton = ``
+        if (isArtistPinned)
+            pinButton = `<button class="mdui-fab mdui-fab-fixed mdui-ripple" title="從首頁釘選移除此專輯" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
+        else if (isArtistPinned != 'disabled')
+            pinButton = `<button class="mdui-fab mdui-fab-fixed mdui-ripple" title="加入此專輯到首頁釘選" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
         let albumHTML = template.parseAlbums(result.data.albums)
-        if ($("#content").attr('data-page') == 'artist')
-            $("#content").html(albumHTML)
+        if ($("#content").attr('data-page') == 'artist') {
+            $("#content").html(pinButton + albumHTML)
+            $("[data-pinned]").click(async function() {
+                let pinStatus = $(this).attr('data-pinned')
+                if (pinStatus == "true") {
+                    if (await unPin(moduleName, 'artist', artist, artist) == true) {
+                        $(this).attr("data-pinned", false)
+                        $(this).attr("title", "加入該演出者到首頁釘選")
+                        $(this).children("i").text('turned_in_not')
+                    }
+                } else {
+                    if (await addPin(moduleName, 'artist', artist, artist) == true) {
+                        $(this).attr("data-pinned", true)
+                        $(this).attr("title", "從首頁釘選移除該演出者")
+                        $(this).children("i").text('turned_in')
+                    }
+                }
+            })
+        }
     } else {
         let result = await axios.get(`/pokaapi/artists`),
             artistsHTML = template.parseArtists(result.data.artists)
@@ -443,10 +466,33 @@ async function showComposer(moduleName, composer) {
     $("#content").html(template.getSpinner())
     mdui.mutation()
     if (composer) {
-        let result = await axios.get(`/pokaapi/composerAlbums/?moduleName=${encodeURIComponent(moduleName)}&id=${composer=='未知'?'':encodeURIComponent(composer)}`)
+        let result = await axios.get(`/pokaapi/composerAlbums/?moduleName=${encodeURIComponent(moduleName)}&id=${composer=='未知'?'':encodeURIComponent(composer)}`),
+            isComposerPinned = await isPinned(moduleName, 'composer', composer, composer)
+        let pinButton = ``
+        if (isComposerPinned)
+            pinButton = `<button class="mdui-fab mdui-fab-fixed mdui-ripple" title="從首頁釘選移除此專輯" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
+        else if (isComposerPinned != 'disabled')
+            pinButton = `<button class="mdui-fab mdui-fab-fixed mdui-ripple" title="加入此專輯到首頁釘選" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
         let albumHTML = template.parseAlbums(result.data.albums)
-        if ($("#content").attr('data-page') == 'composer')
-            $("#content").html(albumHTML)
+        if ($("#content").attr('data-page') == 'composer') {
+            $("#content").html(pinButton + albumHTML)
+            $("[data-pinned]").click(async function() {
+                let pinStatus = $(this).attr('data-pinned')
+                if (pinStatus == "true") {
+                    if (await unPin(moduleName, 'composer', composer, composer) == true) {
+                        $(this).attr("data-pinned", false)
+                        $(this).attr("title", "加入該作曲者到首頁釘選")
+                        $(this).children("i").text('turned_in_not')
+                    }
+                } else {
+                    if (await addPin(moduleName, 'composer', composer, composer) == true) {
+                        $(this).attr("data-pinned", true)
+                        $(this).attr("title", "從首頁釘選移除該作曲者")
+                        $(this).children("i").text('turned_in')
+                    }
+                }
+            })
+        }
     } else {
         //請求資料囉
         let result = await axios.get(`/pokaapi/composers`),
