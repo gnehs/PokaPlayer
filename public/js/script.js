@@ -337,24 +337,7 @@ async function showAlbumSongs(albumSource, albumID) {
     pokaHeader('', '', cover)
         //如果從首頁按進去頁籤沒切換
     $("#content").attr('data-page', 'album')
-    let albumInfo = `
-    <div class="album-info">
-        <div class="cover mdui-shadow-1" 
-             style="background-image:url('${cover.replace(/'/g, "\\'")}')"></div>
-        <div class="info">
-            <div class="album-name mdui-text-truncate mdui-text-color-theme-text" 
-                 title="${name}">${name}</div>
-            <div class="artist-name mdui-text-truncate mdui-text-color-theme-secondary" 
-                 title="${artist}">${artist}</div>
-            <div class="grow"></div>
-            <div class="footer">
-                <div class="time mdui-text-color-theme-disabled mdui-text-truncate"></div>
-                <div class="actions">
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="mdui-divider" style="margin: 10px 0"></div>`
+    let albumInfo = template.infoHeader(cover, name, artist)
 
 
     // 展示讀取中
@@ -367,13 +350,13 @@ async function showAlbumSongs(albumSource, albumID) {
         if (isAlbumPinned)
             actions += `
         <button class="mdui-btn mdui-btn-icon mdui-ripple" 
-                title="從首頁釘選移除此專輯" data-pin="false">
+                title="從首頁釘選移除此專輯" data-pinned="true">
             <i class="mdui-icon material-icons">turned_in</i>
         </button>`
         else
             actions += `
        <button class="mdui-btn mdui-btn-icon mdui-ripple" 
-               title="加入此專輯到首頁釘選" data-pin="true">
+               title="加入此專輯到首頁釘選" data-pinned="false">
            <i class="mdui-icon material-icons">turned_in_not</i>
        </button>`
     actions += `
@@ -383,34 +366,32 @@ async function showAlbumSongs(albumSource, albumID) {
         <i class="mdui-icon material-icons">playlist_add</i>
     </button>`
 
-    function bindPin() {
-        $("[data-pin=\"true\"]").click(async function() {
-            let pinResult = await addPin(albumSource, 'album', albumID, name)
-            if (pinResult == true) {
-                $(this).attr("data-pin", false)
-                $(this).attr("title", "從首頁釘選移除此專輯")
-                $(this).children("i").text('turned_in')
-                bindPin()
-            }
-        })
-        $("[data-pin=\"false\"]").click(async function() {
-            let pinResult = await unPin(albumSource, 'album', albumID, name)
-            if (pinResult == true) {
-                $(this).attr("data-pin", true)
-                $(this).attr("title", "加入此專輯到首頁釘選")
-                $(this).children("i").text('turned_in_not')
-                bindPin()
-            }
-        })
-    }
+
+
     //抓資料
     let result = await axios.get(`/pokaapi/albumSongs/?moduleName=${encodeURIComponent(albumSource)}&data=${encodeURIComponent(albumID)}`)
     html = template.parseSongs(result.data.songs)
     if ($("#content").attr('data-page') == 'album') {
         $("#content").html(albumInfo + html)
-        $("#content .album-info .time").html(`${result.data.songs.length} 首歌曲`)
-        $("#content .album-info .actions").html(actions)
-        bindPin()
+        $("#content .info-header .time").html(`${result.data.songs.length} 首歌曲`)
+        $("#content .info-header .actions").html(actions)
+
+        $("[data-pinned]").click(async function() {
+            let pinStatus = $(this).attr('data-pinned')
+            if (pinStatus == "true") {
+                if (await unPin(albumSource, 'album', albumID, name) == true) {
+                    $(this).attr("data-pinned", false)
+                    $(this).attr("title", "加入此專輯到首頁釘選")
+                    $(this).children("i").text('turned_in_not')
+                }
+            } else {
+                if (await addPin(albumSource, 'album', albumID, name) == true) {
+                    $(this).attr("data-pinned", true)
+                    $(this).attr("title", "從首頁釘選移除此專輯")
+                    $(this).children("i").text('turned_in')
+                }
+            }
+        })
     }
 }
 // 資料夾
