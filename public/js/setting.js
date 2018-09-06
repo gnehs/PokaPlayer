@@ -11,11 +11,14 @@ $(async() => {
         navigator.serviceWorker
             .register('/sw.js', { scope: '/' })
             .then(reg => {
-                if (version != window.localStorage["PokaPlayerVersion"]) {
-                    reg.update()
-                }
+                if (version != window.localStorage["PokaPlayerVersion"]) reg.update()
             })
             .catch(err => console.log('Error!', err));
+    }
+    // 更新版本號
+    if (version != window.localStorage["PokaPlayerVersion"]) {
+        if ($("#content").attr("data-page") == "settings" || $("#content").attr("data-page") == "home")
+            $("#header-wrapper .title .subtitle").text(`PokaPlayer ${version}`)
     }
     window.localStorage["PokaPlayerVersion"] = version;
 });
