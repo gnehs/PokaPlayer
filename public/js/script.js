@@ -40,8 +40,10 @@ router
             done()
         },
         after: params => {
-            $('#drawer a').removeClass('mdui-list-item-active')
-            $(`#drawer a[href="${$('#content').attr('data-page')}"]`).addClass('mdui-list-item-active')
+            $('#drawer a')
+                .removeClass('mdui-color-theme mdui-list-item-active')
+            $(`#drawer a[href="${$('#content').attr('data-page')}"]`)
+                .addClass('mdui-color-theme mdui-list-item-active')
         }
     })
 
@@ -51,7 +53,7 @@ $(() => {
     tryRelogin()
 
     $(`#drawer a[href="${$('#content').attr('data-page')}"]`)
-        .addClass('mdui-list-item-active')
+        .addClass('mdui-list-item-active mdui-color-theme')
     $(`#drawer a`)
         .click(function() {
             if ($(window).width() < 1024) {
