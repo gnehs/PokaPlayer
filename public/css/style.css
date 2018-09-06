@@ -213,6 +213,26 @@ header.mdui-appbar.mdui-appbar-fixed {
     background-size: cover;
 }
 
+.album:nth-child(5n+1) {
+    background-color: rgb(210, 105, 30);
+}
+
+.album:nth-child(5n+2) {
+    background-color: rgb(30, 210, 30);
+}
+
+.album:nth-child(5n+3) {
+    background-color: rgb(29, 179, 233);
+}
+
+.album:nth-child(5n+4) {
+    background-color: rgb(255, 179, 179);
+}
+
+.album:nth-child(5n+5) {
+    background-color: rgb(62, 47, 146);
+}
+
 .album .mdui-card-media {
     position: unset;
 }
