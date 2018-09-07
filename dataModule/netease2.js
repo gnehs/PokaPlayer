@@ -291,7 +291,7 @@ async function getSongs(songs, br = 999000) {
         await Promise.all(
             songs.map(
                 async x =>
-                (await rp(options(`${server}song/detail?ids=${x}&timestamp=${Math.floor(Date.now() / 1000)}`)))
+                (await rp(options(`${server}song/detail?ids=${x}`)))
                 .songs[0]
             )
         ),
@@ -370,6 +370,40 @@ async function getCatList() {
     return result;
 }
 
+async function resolveTopPlaylistStack(topPlaylistStack) {
+    if (topPlaylistStack.length === 0) return topPlaylistStack
+    let playlists = flatMap(x => x, (await Promise.all(topPlaylistStack)).map(x => x.playlists)).map(x => ({
+        name: x.name,
+        source: "Netease2",
+        id: x.id,
+        image: x.coverImgUrl,
+        from: 'topPlaylistStack'
+    }))
+    return [].concat(...playlists)
+}
+
+async function resolvePlaylistStack(playlistStack) {
+    if (playlistStack.length === 0) return playlistStack
+    return (await Promise.all(playlistStack)).map(x => ({
+        name: x.playlist.name,
+        source: "Netease2",
+        id: x.playlist.id,
+        image: x.playlist.coverImgUrl,
+        from: 'playlistStack'
+    }))
+}
+
+async function resolvedailyRecommendStack(dailyRecommendStack) {
+    if (dailyRecommendStack.length === 0) return dailyRecommendStack
+    return [].concat(...flatMap(x => x, (await Promise.all(dailyRecommendStack)).map(x => x.recommend)).map(x => ({
+        name: x.name,
+        id: x.id,
+        image: x.coverImgUrl,
+        source: "Netease2",
+        from: 'dailyRecommendStack'
+    })))
+}
+
 async function getPlaylists(playlists) {
     // cat 可以從 getCatList() 抓
     let userList = []
@@ -384,43 +418,14 @@ async function getPlaylists(playlists) {
             name: x.name,
             source: "Netease2",
             id: x.id,
+            image: x.coverImgUrl,
             from: 'getUserPlaylists'
         }))
     }
 
     let playlistStack = []
-    async function resolvePlaylistStack(playlistStack) {
-        if (playlistStack.length === 0) return playlistStack
-        return (await Promise.all(playlistStack)).map(x => ({
-            name: x.playlist.name,
-            source: "Netease2",
-            id: x.playlist.id,
-            from: 'playlistStack'
-        }))
-    }
-
     let topPlaylistStack = []
-    async function resolveTopPlaylistStack(topPlaylistStack) {
-        if (topPlaylistStack.length === 0) return topPlaylistStack
-        let playlists = flatMap(x => x, (await Promise.all(topPlaylistStack)).map(x => x.playlists)).map(x => ({
-            name: x.name,
-            source: "Netease2",
-            id: x.id,
-            from: 'topPlaylistStack'
-        }))
-        return [].concat(...playlists)
-    }
-
     let dailyRecommendStack = []
-    async function resolvedailyRecommendStack(dailyRecommendStack) {
-        if (dailyRecommendStack.length === 0) return dailyRecommendStack
-        return [].concat(...flatMap(x => x, (await Promise.all(dailyRecommendStack)).map(x => x.recommend)).map(x => ({
-            name: x.name,
-            id: x.id,
-            source: "Netease2",
-            from: 'dailyRecommendStack'
-        })))
-    }
 
     let r = [{
         name: '網易雲音樂雲盤',
@@ -560,6 +565,7 @@ async function getPlaylistSongs(id, br = 999000) {
                     name: name ? name : result.playlist.name,
                     source: 'Netease2',
                     id: id,
+                    image: result.playlist.coverImgUrl
                 }, ],
             };
         } else {
@@ -647,27 +653,7 @@ async function isPinned(type, id, name) {
 async function getHome() {
     let r = []
     let topPlaylistStack = []
-    async function resolveTopPlaylistStack(topPlaylistStack) {
-        if (topPlaylistStack.length === 0) return topPlaylistStack
-        let playlists = flatMap(x => x, (await Promise.all(topPlaylistStack)).map(x => x.playlists)).map(x => ({
-            name: x.name,
-            source: "Netease2",
-            id: x.id,
-            from: 'topPlaylistStack'
-        }))
-        return [].concat(...playlists)
-    }
-
     let dailyRecommendStack = []
-    async function resolvedailyRecommendStack(dailyRecommendStack) {
-        if (dailyRecommendStack.length === 0) return dailyRecommendStack
-        return [].concat(...flatMap(x => x, (await Promise.all(dailyRecommendStack)).map(x => x.recommend)).map(x => ({
-            name: x.name,
-            id: x.id,
-            source: "Netease2",
-            from: 'dailyRecommendStack'
-        })))
-    }
 
     let pinData = {
         songs: [],
