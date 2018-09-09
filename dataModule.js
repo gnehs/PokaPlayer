@@ -313,7 +313,7 @@ router.get('/song/', async(req, res) => {
     let song = await _module.getSong(req, req.query.songRes, req.query.songId)
     if (typeof song == 'string')
         return res.redirect(song)
-    else if (moduleName == 'DSM')
+    else
         return song.on('response', function(response) {
             //針對 Audio 寫入 Header 避免 Chrome 時間軸不能跳
             res.writeHead(206, {
@@ -323,7 +323,6 @@ router.get('/song/', async(req, res) => {
                 "Content-Type": response.headers['content-type'] ? response.headers['content-type'] : ''
             })
         }).pipe(res)
-    else return song.pipe(res)
 });
 //-----------------------------> 封面
 // 取得封面

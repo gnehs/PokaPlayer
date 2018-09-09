@@ -55,7 +55,7 @@ function isIdName(id) {
 
 var isLoggedin;
 
-const normalOptions = url => {
+const normalOptions = (url, req = {}) => {
     function m10() {
         let m10s = ['112.90.246.49', '61.221.181.167', '61.221.181.178', '157.185.185.65'];
         return m10s[Math.floor(Math.random() * m10s.length)];
@@ -72,6 +72,8 @@ const normalOptions = url => {
             DNT: 1,
             'Upgrade-Insecure-Requests': 1,
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
+            'Range': req.headers && req.headers.range ? req.headers.range : '',
+            'Accept': req.headers && req.headers.accept ? req.headers.accept : '',
         },
         json: true, // Automatically parses the JSON string in the response
         followAllRedirects: true,
@@ -284,7 +286,7 @@ async function getSong(req, songRes, id) {
     let br = { low: 128000, medium: 192000, high: 320000, original: 320000 }[songRes];
     let isArray = Array.isArray(id);
     id = isArray ? id : [id];
-    let result = (await getSongsUrl(id, br)).map(x => request(normalOptions(x.url)));
+    let result = (await getSongsUrl(id, br)).map(x => request(normalOptions(x.url, req)));
     return isArray ? result : result[0];
 }
 
