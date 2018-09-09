@@ -12,9 +12,9 @@ const options = (url, qs = {}) => ({
     json: true, // Automatically parses the JSON string in the response
 });
 try {
-    fs.readFile(pin, 'utf8')
+    fs.readFileJSON(pin, 'utf8')
 } catch (e) {
-    fs.writeJson(pin, [])
+    fs.writeFile(pin, "[]")
 }
 // flatMap
 const concat = (x, y) => x.concat(y)
