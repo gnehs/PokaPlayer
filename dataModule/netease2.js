@@ -1,15 +1,21 @@
 var jar = require('request').jar();
 const rp = require('request-promise').defaults({ jar });
 const request = require('request').defaults({ jar });
+const fs = require('fs-extra');
 const schedule = require('node-schedule'); // 很會計時ㄉ朋友
 const config = require(__dirname + '/../config.json').Netease2; // 設定
 const server = config.server || 'http://localhost:4000/';
+const pin = __dirname + '/netease2Pin.json';
 const options = (url, qs = {}) => ({
     uri: url,
     qs,
     json: true, // Automatically parses the JSON string in the response
 });
-
+try {
+    fs.readFileJSON(pin, 'utf8')
+} catch (e) {
+    fs.writeFile(pin, "[]")
+}
 // flatMap
 const concat = (x, y) => x.concat(y)
 const flatMap = (f, xs) => xs.map(f).reduce(concat, [])
@@ -49,7 +55,7 @@ function isIdName(id) {
 
 var isLoggedin;
 
-const normalOptions = url => {
+const normalOptions = (url, req = {}) => {
     function m10() {
         let m10s = ['112.90.246.49', '61.221.181.167', '61.221.181.178', '157.185.185.65'];
         return m10s[Math.floor(Math.random() * m10s.length)];
@@ -66,6 +72,8 @@ const normalOptions = url => {
             DNT: 1,
             'Upgrade-Insecure-Requests': 1,
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
+            'Range': req.headers && req.headers.range ? req.headers.range : '',
+            'Accept': req.headers && req.headers.accept ? req.headers.accept : '',
         },
         json: true, // Automatically parses the JSON string in the response
         followAllRedirects: true,
@@ -234,22 +242,25 @@ async function login() {
 
 async function onLoaded() {
     console.log('[DataModules][Netease2] 正在登入...');
-    if (config && config.login && (config.login.phone || config.login.email) && config.login.password) {
-        let result = await login();
-        if ((await result.code) == 200) {
-            schedule.scheduleJob("'* */12 * * *'", async function() {
-                console.log('[DataModules][Netease2] 正在重新登入...');
-                await login();
-            });
-            return true;
-        } else {
-            console.log('[DataModules][Netease2] 登入失敗');
-            return false;
-        }
-    } else {
-        console.log('[DataModules][Netease2] 登入失敗，尚未設定帳號密碼');
-        return false;
-    }
+    return await (fs.ensureFile(pin)
+        .then(async() => {
+            if (config && config.login && (config.login.phone || config.login.email) && config.login.password) {
+                let result = await login();
+                if ((await result.code) == 200) {
+                    schedule.scheduleJob("'* */12 * * *'", async function() {
+                        console.log('[DataModules][Netease2] 正在重新登入...');
+                        await login();
+                    });
+                    return true;
+                } else {
+                    console.log('[DataModules][Netease2] 登入失敗');
+                    return false;
+                }
+            } else {
+                console.log('[DataModules][Netease2] 登入失敗，尚未設定帳號密碼');
+                return false;
+            }
+        }))
 }
 
 async function parseSongs(songs, br = 999000) {
@@ -275,7 +286,7 @@ async function getSong(req, songRes, id) {
     let br = { low: 128000, medium: 192000, high: 320000, original: 320000 }[songRes];
     let isArray = Array.isArray(id);
     id = isArray ? id : [id];
-    let result = (await getSongsUrl(id, br)).map(x => request(normalOptions(x.url)));
+    let result = (await getSongsUrl(id, br)).map(x => request(normalOptions(x.url, req)));
     return isArray ? result : result[0];
 }
 
@@ -286,7 +297,7 @@ async function getSongs(songs, br = 999000) {
         await Promise.all(
             songs.map(
                 async x =>
-                (await rp(options(`${server}song/detail?ids=${x}&timestamp=${Math.floor(Date.now() / 1000)}`)))
+                (await rp(options(`${server}song/detail?ids=${x}`)))
                 .songs[0]
             )
         ),
@@ -311,7 +322,7 @@ async function getCovers(ids) {
 }
 
 async function search(keywords, limit = 30, type = 'song') {
-    async function parseSearchResults(results=[], type = 'song') {
+    async function parseSearchResults(results = [], type = 'song') {
         switch (type) {
             case 'song':
                 return await getSongs(results.map(x => x.id));
@@ -365,6 +376,40 @@ async function getCatList() {
     return result;
 }
 
+async function resolveTopPlaylistStack(topPlaylistStack) {
+    if (topPlaylistStack.length === 0) return topPlaylistStack
+    let playlists = flatMap(x => x, (await Promise.all(topPlaylistStack)).map(x => x.playlists)).map(x => ({
+        name: x.name,
+        source: "Netease2",
+        id: x.id,
+        image: x.coverImgUrl,
+        from: 'topPlaylistStack'
+    }))
+    return [].concat(...playlists)
+}
+
+async function resolvePlaylistStack(playlistStack) {
+    if (playlistStack.length === 0) return playlistStack
+    return (await Promise.all(playlistStack)).map(x => ({
+        name: x.playlist.name,
+        source: "Netease2",
+        id: x.playlist.id,
+        image: x.playlist.coverImgUrl,
+        from: 'playlistStack'
+    }))
+}
+
+async function resolvedailyRecommendStack(dailyRecommendStack) {
+    if (dailyRecommendStack.length === 0) return dailyRecommendStack
+    return [].concat(...flatMap(x => x, (await Promise.all(dailyRecommendStack)).map(x => x.recommend)).map(x => ({
+        name: x.name,
+        id: x.id,
+        image: x.coverImgUrl,
+        source: "Netease2",
+        from: 'dailyRecommendStack'
+    })))
+}
+
 async function getPlaylists(playlists) {
     // cat 可以從 getCatList() 抓
     let userList = []
@@ -379,43 +424,14 @@ async function getPlaylists(playlists) {
             name: x.name,
             source: "Netease2",
             id: x.id,
+            image: x.coverImgUrl,
             from: 'getUserPlaylists'
         }))
     }
 
     let playlistStack = []
-    async function resolvePlaylistStack(playlistStack) {
-        if (playlistStack.length === 0) return playlistStack
-        return (await Promise.all(playlistStack)).map(x => ({
-            name: x.playlist.name,
-            source: "Netease2",
-            id: x.playlist.id,
-            from: 'playlistStack'
-        }))
-    }
-
     let topPlaylistStack = []
-    async function resolveTopPlaylistStack(topPlaylistStack) {
-        if (topPlaylistStack.length === 0) return topPlaylistStack
-        let playlists = flatMap(x => x, (await Promise.all(topPlaylistStack)).map(x => x.playlists)).map(x => ({
-            name: x.name,
-            source: "Netease2",
-            id: x.id,
-            from: 'topPlaylistStack'
-        }))
-        return [].concat(...playlists)
-    }
-
     let dailyRecommendStack = []
-    async function resolvedailyRecommendStack(dailyRecommendStack) {
-        if (dailyRecommendStack.length === 0) return dailyRecommendStack
-        return [].concat(...flatMap(x => x, (await Promise.all(dailyRecommendStack)).map(x => x.recommend)).map(x => ({
-            name: x.name,
-            id: x.id,
-            source: "Netease2",
-            from: 'dailyRecommendStack'
-        })))
-    }
 
     let r = [{
         name: '網易雲音樂雲盤',
@@ -555,6 +571,7 @@ async function getPlaylistSongs(id, br = 999000) {
                     name: name ? name : result.playlist.name,
                     source: 'Netease2',
                     id: id,
+                    image: result.playlist.coverImgUrl
                 }, ],
             };
         } else {
@@ -610,29 +627,121 @@ async function searchLyrics(keyword) {
     return { lyrics: result };
 }
 
-async function debug() {
-    function isSong(song) {
-        return [name, artist, album, cover, url, bitrate, codec, lrc, source, id].every(x => song.hasOwnProperty(x));
+async function addPin(type, id, name) {
+    let data = await fs.readJson(pin);
+
+    data = data.concat({
+        type,
+        id,
+        name,
+        source: "Netease2"
+    })
+    try {
+        return await (fs.writeJson(pin, data)
+            .then(() => true)
+        )
+    } catch (e) {
+        return e
+    }
+}
+
+async function unPin(type, id, name) {
+    let data = (await fs.readJson(pin)).filter(x => !((x.id == id) && (x.type == type)));
+    try {
+        return await (fs.writeJson(pin, data)
+            .then(() => true)
+        )
+    } catch (e) {
+        return e
+    }
+}
+
+async function isPinned(type, id, name) {
+    let data = (await fs.readJson(pin))
+
+    return data.some(x => ((x.type == type) && (x.id == id))) || false
+}
+
+async function getHome() {
+    let r = []
+    let topPlaylistStack = []
+    let dailyRecommendStack = []
+
+    let pinData = {
+        songs: [],
+        albums: [],
+        artists: [],
+        composers: [],
+        playlists: []
     }
 
-    function getStatusCode(rq, type) {
-        rq.on('response', res => {
-            rq.abort();
-            console.log(type + ':', res.statusCode, '\n\n');
-        });
+    let catList = await getCatList();
+
+    try {
+        (await fs.readJson(pin)).forEach(x => {
+            pinData[x.type + 's'].push(x)
+        })
+    } catch (e) {
+        console.error(e)
     }
 
-    const songIds = [34986002, 1297743786];
-    const keyword = 'Cheers';
-    if (module.exports.hasOwnProperty('getSong')) getStatusCode(await getSong(songIds[0]), 'getSong');
-    if (module.exports.hasOwnProperty('getSongs'))
-        console.log('getSongs:', await Promise.all(await getSongs(songIds)), '\n\n');
-    if (module.exports.hasOwnProperty('getSongsUrl'))
-        console.log('getSongsUrl:', await getSongsUrl(songIds[0]), '\n\n');
-    if (module.exports.hasOwnProperty('getCover')) getStatusCode(await getCover(songIds[0]), 'getCover');
-    if (module.exports.hasOwnProperty('getCovers'))
-        await Promise.all((await getCovers(songIds)).map(async(x, index) => getStatusCode(await x, 'getCovers')));
-    if (module.exports.hasOwnProperty('search')) console.log('search:', await Promise.all(await search(keyword, 2)));
+    /*
+        if (config.topPlaylist.enabled) {
+            if (!config.topPlaylist.category in catList) {
+                console.error(`[DataModules][Netease2] topPlaylist 的分類出錯，已預設為 ACG`);
+                config.topPlaylist.category = 'ACG'
+            }
+            let c = config.topPlaylist
+            topPlaylistStack.push(rp(options(`${server}top/playlist?limit=${c.limit}&order=${c.order in ['hot', 'new'] ? c.order : 'hot'}&cat=${c.category}`)))
+        }
+
+        if (config.hqPlaylist.enabled) {
+            if (!config.hqPlaylist.category in catList) {
+                console.error(`[DataModules][Netease2] topPlaylist 的分類出錯，已預設為 ACG`);
+                config.hqPlaylist.category = 'ACG'
+            }
+            let c = config.hqPlaylist
+            topPlaylistStack.push(rp(options(`${server}top/playlist/highquality?limit=${c.limit}&cat=${c.category}`)))
+        }
+
+        if (config.dailyRecommend.songs) {
+            if (isLoggedin === undefined) {
+                login.then(x => {
+                    r.push({
+                        name: '每日推薦歌曲',
+                        source: 'Netease2',
+                        id: 'dailyRecommendSongs',
+                    });
+                });
+            } else if (!isLoggedin) {
+                console.error('[DataModules][Netease2] 未登入，無法獲取每日推薦歌曲。');
+            } else
+                r.push({
+                    name: '每日推薦歌曲',
+                    source: 'Netease2',
+                    id: 'dailyRecommendSongs',
+                });
+        }
+
+        if (config.dailyRecommend.playlist) {
+            if (isLoggedin === undefined) {
+                login.then(async x => {
+                    if (x.code == 200) dailyRecommendStack.push(rp(options(`${server}recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`)))
+                    else console.error('[DataModules][Netease2] 未登入，無法獲取每日推薦歌單。')
+                })
+            } else if (!isLoggedin) {
+                console.error('[DataModules][Netease2] 未登入，無法獲取每日推薦歌單。')
+            } else dailyRecommendStack.push(rp(options(`${server}recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`)))
+        }
+    */
+
+    return {
+        playlists: r.concat(...(await resolveTopPlaylistStack(topPlaylistStack)), ...(await resolvedailyRecommendStack(dailyRecommendStack)), ...(pinData.playlists)),
+        songs: pinData.songs,
+        albums: pinData.albums,
+        artists: pinData.artists,
+        composers: pinData.composers
+    }
 }
 
 module.exports = {
@@ -657,6 +766,10 @@ module.exports = {
     getCatList,
     getLyric,
     searchLyrics,
+    addPin,
+    unPin,
+    isPinned,
+    getHome
 };
 
 // debug().then(() => {})

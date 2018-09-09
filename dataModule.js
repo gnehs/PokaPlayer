@@ -13,24 +13,6 @@ const session = require('express-session')({
         expires: new Date(Date.now() + 60 * 60 * 1000 * 24 * 7)
     }
 });
-const rp = require('request-promise');
-
-const options = url => ({
-    method: 'GET',
-    uri: url,
-    headers: {
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Accept-Language": "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7",
-        "Cache-Control": "max-age=0",
-        "DNT": 1,
-        "Host": "music.126.net",
-        "Upgrade-Insecure-Requests": 1,
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36"
-    },
-    rejectUnauthorized: false,
-    followAllRedirects: true
-})
 
 router.use(session);
 
@@ -52,10 +34,6 @@ fs.readdir(__dirname + "/dataModule", (err, files) => {
         }
     });
 })
-
-function pokaDecode(str) {
-    return Buffer.from(str, 'base64').toString('utf-8')
-}
 
 // 首頁
 router.get('/', (req, res) => {
@@ -147,7 +125,7 @@ router.get('/folders/', async(req, res) => {
 });
 // 透過取得資料夾內檔案清單
 router.get('/folderFiles/', async(req, res) => {
-    //http://localhost:3000/pokaapi/folderFiles/?moduleName=DSM&id=dir_194
+    //http://localhost:3000/pokaapi/folderFiles/?moduleName=DSM&id=dir_636
     let moduleName = req.query.moduleName
     let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
     // 沒這東西
@@ -313,7 +291,7 @@ router.get('/song/', async(req, res) => {
     let song = await _module.getSong(req, req.query.songRes, req.query.songId)
     if (typeof song == 'string')
         return res.redirect(song)
-    else if (moduleName == 'DSM')
+    else
         return song.on('response', function(response) {
             //針對 Audio 寫入 Header 避免 Chrome 時間軸不能跳
             res.writeHead(206, {
@@ -323,7 +301,6 @@ router.get('/song/', async(req, res) => {
                 "Content-Type": response.headers['content-type'] ? response.headers['content-type'] : ''
             })
         }).pipe(res)
-    else return song.pipe(res)
 });
 //-----------------------------> 封面
 // 取得封面

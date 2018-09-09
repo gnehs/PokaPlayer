@@ -497,9 +497,9 @@ async function getRandomSongs(id) {
 }
 
 async function getLyric(id) {
-    let
-        result = (await getAPI("AudioStation/lyrics.cgi", "SYNO.AudioStation.Lyrics", "getlyrics", [{ key: "id", "value": id }], 2)).data.lyrics
-    if (result.match(lyricRegex))
+    let result = (await getAPI("AudioStation/lyrics.cgi", "SYNO.AudioStation.Lyrics", "getlyrics", [{ key: "id", "value": id }], 2)).data
+    result = result && result.lyrics ? result.lyrics : false
+    if (result && result.match(lyricRegex))
         return result
     else
         return false
