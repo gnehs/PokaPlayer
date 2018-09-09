@@ -316,7 +316,7 @@ async function getCovers(ids) {
 }
 
 async function search(keywords, limit = 30, type = 'song') {
-    async function parseSearchResults(results=[], type = 'song') {
+    async function parseSearchResults(results = [], type = 'song') {
         switch (type) {
             case 'song':
                 return await getSongs(results.map(x => x.id));
@@ -623,31 +623,37 @@ async function searchLyrics(keyword) {
 
 async function addPin(type, id, name) {
     let data = await fs.readJson(pin);
+
     data = data.concat({
         type,
         id,
         name,
         source: "Netease2"
     })
-    try {return await (fs.writeJson(pin, data)
-        .then(() => true)
-    )} catch (e) {
+    try {
+        return await (fs.writeJson(pin, data)
+            .then(() => true)
+        )
+    } catch (e) {
         return e
     }
 }
 
 async function unPin(type, id, name) {
     let data = (await fs.readJson(pin)).filter(x => !((x.id == id) && (x.type == type)));
-    try {return await (fs.writeJson(pin, data)
-        .then(() => true)
-    )} catch(e) {
+    try {
+        return await (fs.writeJson(pin, data)
+            .then(() => true)
+        )
+    } catch (e) {
         return e
     }
 }
 
 async function isPinned(type, id, name) {
     let data = (await fs.readJson(pin))
-    return data.some(x => ((x.type == type) && (x.id == id)))
+
+    return data.some(x => ((x.type == type) && (x.id == id))) || false
 }
 
 async function getHome() {
@@ -660,7 +666,7 @@ async function getHome() {
         albums: [],
         artists: [],
         composers: [],
-        playlists:[]
+        playlists: []
     }
 
     let catList = await getCatList();
@@ -672,7 +678,7 @@ async function getHome() {
     } catch (e) {
         console.error(e)
     }
-    
+
 
     if (config.topPlaylist.enabled) {
         if (!config.topPlaylist.category in catList) {
@@ -723,11 +729,13 @@ async function getHome() {
     }
 
 
-    return { playlists: r.concat(...(await resolveTopPlaylistStack(topPlaylistStack)), ...(await resolvedailyRecommendStack(dailyRecommendStack)), ...(pinData.playlists)),
-             songs: pinData.songs,
-             albums: pinData.albums,
-             artists: pinData.artists,
-             composers: pinData.composers}
+    return {
+        playlists: r.concat(...(await resolveTopPlaylistStack(topPlaylistStack)), ...(await resolvedailyRecommendStack(dailyRecommendStack)), ...(pinData.playlists)),
+        songs: pinData.songs,
+        albums: pinData.albums,
+        artists: pinData.artists,
+        composers: pinData.composers
+    }
 }
 
 module.exports = {

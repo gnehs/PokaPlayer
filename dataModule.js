@@ -147,7 +147,7 @@ router.get('/folders/', async(req, res) => {
 });
 // 透過取得資料夾內檔案清單
 router.get('/folderFiles/', async(req, res) => {
-    //http://localhost:3000/pokaapi/folderFiles/?moduleName=DSM&id=dir_194
+    //http://localhost:3000/pokaapi/folderFiles/?moduleName=DSM&id=dir_636
     let moduleName = req.query.moduleName
     let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
     // 沒這東西
