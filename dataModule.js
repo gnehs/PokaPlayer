@@ -13,7 +13,6 @@ const session = require('express-session')({
         expires: new Date(Date.now() + 60 * 60 * 1000 * 24 * 7)
     }
 });
-const rp = require('request-promise');
 
 const options = url => ({
     method: 'GET',

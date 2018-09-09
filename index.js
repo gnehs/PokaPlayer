@@ -26,9 +26,16 @@ const server = require('http').createServer(app),
 
 // 資料模組
 app.use('/pokaapi', require('./dataModule.js'));
-
+//
+app.set('views', __dirname + '/views');
+app.set('view engine', 'pug')
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(helmet());
+app.use(session);
+io.use(sharedsession(session, {
+    autoSave: true
+}));
 // 檢查 branch
-
 git
     .raw(['symbolic-ref', '--short', 'HEAD'])
     .then(branch => {
@@ -47,14 +54,6 @@ git
         }
     })
 
-app.set('views', __dirname + '/views');
-app.set('view engine', 'pug')
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(helmet());
-app.use(session);
-io.use(sharedsession(session, {
-    autoSave: true
-}));
 // 時間處理
 const moment = require('moment-timezone');
 moment.locale('zh-tw');
@@ -66,7 +65,7 @@ app.use(express.static('public'))
 // 啟動囉
 server.listen(3000, () => {
     console.log("[PokaPlayer]  URL: http://localhost:3000")
-    console.log("[PokaPlayer] Time: " + moment().format("YYYY/MM/DD HH:mm"))
+    console.log("[PokaPlayer] Time: " + moment().format("YYYY/MM/DD HH:mm:ss"))
 })
 
 // 隨機圖圖
@@ -184,16 +183,17 @@ app.get('/ping', (req, res) => {
 })
 
 // 登入
-app.get('/login/', (req, res) => {
-    res.render('login')
-});
-app.post('/login/', (req, res) => {
-    req.session.pass = req.body['userPASS']
-    if (config.PokaPlayer.passwordSwitch && req.body['userPASS'] != config.PokaPlayer.password)
-        res.send('fail')
-    else
-        res.send('success')
-});
+app
+    .get('/login/', (req, res) => {
+        res.render('login')
+    })
+    .post('/login/', (req, res) => {
+        req.session.pass = req.body['userPASS']
+        if (config.PokaPlayer.passwordSwitch && req.body['userPASS'] != config.PokaPlayer.password)
+            res.send('fail')
+        else
+            res.send('success')
+    });
 // 登出
 app.get('/logout/', (req, res) => {
     req.session.destroy()
