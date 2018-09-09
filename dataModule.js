@@ -14,23 +14,6 @@ const session = require('express-session')({
     }
 });
 
-const options = url => ({
-    method: 'GET',
-    uri: url,
-    headers: {
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Accept-Language": "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7",
-        "Cache-Control": "max-age=0",
-        "DNT": 1,
-        "Host": "music.126.net",
-        "Upgrade-Insecure-Requests": 1,
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36"
-    },
-    rejectUnauthorized: false,
-    followAllRedirects: true
-})
-
 router.use(session);
 
 let moduleList = {};
@@ -51,10 +34,6 @@ fs.readdir(__dirname + "/dataModule", (err, files) => {
         }
     });
 })
-
-function pokaDecode(str) {
-    return Buffer.from(str, 'base64').toString('utf-8')
-}
 
 // 首頁
 router.get('/', (req, res) => {

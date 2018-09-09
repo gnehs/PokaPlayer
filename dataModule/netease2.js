@@ -685,55 +685,55 @@ async function getHome() {
         console.error(e)
     }
 
-
-    if (config.topPlaylist.enabled) {
-        if (!config.topPlaylist.category in catList) {
-            console.error(`[DataModules][Netease2] topPlaylist 的分類出錯，已預設為 ACG`);
-            config.topPlaylist.category = 'ACG'
+    /*
+        if (config.topPlaylist.enabled) {
+            if (!config.topPlaylist.category in catList) {
+                console.error(`[DataModules][Netease2] topPlaylist 的分類出錯，已預設為 ACG`);
+                config.topPlaylist.category = 'ACG'
+            }
+            let c = config.topPlaylist
+            topPlaylistStack.push(rp(options(`${server}top/playlist?limit=${c.limit}&order=${c.order in ['hot', 'new'] ? c.order : 'hot'}&cat=${c.category}`)))
         }
-        let c = config.topPlaylist
-        topPlaylistStack.push(rp(options(`${server}top/playlist?limit=${c.limit}&order=${c.order in ['hot', 'new'] ? c.order : 'hot'}&cat=${c.category}`)))
-    }
 
-    if (config.hqPlaylist.enabled) {
-        if (!config.hqPlaylist.category in catList) {
-            console.error(`[DataModules][Netease2] topPlaylist 的分類出錯，已預設為 ACG`);
-            config.hqPlaylist.category = 'ACG'
+        if (config.hqPlaylist.enabled) {
+            if (!config.hqPlaylist.category in catList) {
+                console.error(`[DataModules][Netease2] topPlaylist 的分類出錯，已預設為 ACG`);
+                config.hqPlaylist.category = 'ACG'
+            }
+            let c = config.hqPlaylist
+            topPlaylistStack.push(rp(options(`${server}top/playlist/highquality?limit=${c.limit}&cat=${c.category}`)))
         }
-        let c = config.hqPlaylist
-        topPlaylistStack.push(rp(options(`${server}top/playlist/highquality?limit=${c.limit}&cat=${c.category}`)))
-    }
 
-    if (config.dailyRecommend.songs) {
-        if (isLoggedin === undefined) {
-            login.then(x => {
+        if (config.dailyRecommend.songs) {
+            if (isLoggedin === undefined) {
+                login.then(x => {
+                    r.push({
+                        name: '每日推薦歌曲',
+                        source: 'Netease2',
+                        id: 'dailyRecommendSongs',
+                    });
+                });
+            } else if (!isLoggedin) {
+                console.error('[DataModules][Netease2] 未登入，無法獲取每日推薦歌曲。');
+            } else
                 r.push({
                     name: '每日推薦歌曲',
                     source: 'Netease2',
                     id: 'dailyRecommendSongs',
                 });
-            });
-        } else if (!isLoggedin) {
-            console.error('[DataModules][Netease2] 未登入，無法獲取每日推薦歌曲。');
-        } else
-            r.push({
-                name: '每日推薦歌曲',
-                source: 'Netease2',
-                id: 'dailyRecommendSongs',
-            });
-    }
+        }
 
-    if (config.dailyRecommend.playlist) {
-        if (isLoggedin === undefined) {
-            login.then(async x => {
-                if (x.code == 200) dailyRecommendStack.push(rp(options(`${server}recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`)))
-                else console.error('[DataModules][Netease2] 未登入，無法獲取每日推薦歌單。')
-            })
-        } else if (!isLoggedin) {
-            console.error('[DataModules][Netease2] 未登入，無法獲取每日推薦歌單。')
-        } else dailyRecommendStack.push(rp(options(`${server}recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`)))
-    }
-
+        if (config.dailyRecommend.playlist) {
+            if (isLoggedin === undefined) {
+                login.then(async x => {
+                    if (x.code == 200) dailyRecommendStack.push(rp(options(`${server}recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`)))
+                    else console.error('[DataModules][Netease2] 未登入，無法獲取每日推薦歌單。')
+                })
+            } else if (!isLoggedin) {
+                console.error('[DataModules][Netease2] 未登入，無法獲取每日推薦歌單。')
+            } else dailyRecommendStack.push(rp(options(`${server}recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`)))
+        }
+    */
 
     return {
         playlists: r.concat(...(await resolveTopPlaylistStack(topPlaylistStack)), ...(await resolvedailyRecommendStack(dailyRecommendStack)), ...(pinData.playlists)),
