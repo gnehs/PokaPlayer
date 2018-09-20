@@ -55,7 +55,7 @@ $(() => {
     $(`#drawer a[href="${$('#content').attr('data-page')}"]`)
         .addClass('mdui-list-item-active mdui-color-theme')
     $(`#drawer a`)
-        .click(function () {
+        .click(function() {
             if ($(window).width() < 1024) {
                 new mdui.Drawer("#drawer").close();
             }
@@ -65,7 +65,7 @@ $(() => {
     updateMediaSession()
 });
 
-$('#axios').on('load', function () {
+$('#axios').on('load', function() {
     axios = axios.create({
         withCredentials: true
     })
@@ -77,7 +77,11 @@ const socket = io();
 socket.on("hello", () => {
     socket.emit('login')
 });
-ap.on("play", async () => {
+ap.on("listswitch", async() => {
+    lrc.load(`[00:00.000]歌詞讀取中`)
+    $("div[data-lrc=\"inner\"]").html(`<p class="loading">歌詞讀取中</p>`)
+})
+ap.on("play", async() => {
     //沒歌就隨機播放
     if (ap.list.audios.length == 0) playRandom().then(() => {
         router.navigate('now');
@@ -86,17 +90,14 @@ ap.on("play", async () => {
     let nowPlaying = ap.list.audios[ap.list.index],
         name, artist
     if (nowPlaying) {
+        updateBottomPlayer()
         name = nowPlaying.name
         artist = nowPlaying.artist
         $(document).attr("title", `${name} - ${artist}`);
     }
     updateMediaSession()
 })
-ap.on("listswitch", async () => {
-    lrc.load(`[00:00.000]歌詞讀取中`)
-    $("div[data-lrc=\"inner\"]").html(`<p class="loading">歌詞讀取中</p>`)
-})
-ap.on("loadedmetadata", async () => {
+ap.on("loadedmetadata", async() => {
     let nowPlaying = ap.list.audios[ap.list.index],
         name = nowPlaying.name,
         id = nowPlaying.id,
@@ -106,6 +107,7 @@ ap.on("loadedmetadata", async () => {
 
     let lrcResult = await getLrc(artist, name, id, source)
     setLrc(lrcResult)
+    updateBottomPlayer()
 })
 
 function setLrc(lrcResult) {
@@ -123,21 +125,15 @@ function setLrc(lrcResult) {
     }
 }
 ap.on("timeupdate", () => {
-    let name = ap.list.audios[ap.list.index].name || "",
-        artist = ap.list.audios[ap.list.index].artist || "",
-        img = window.localStorage["imgRes"] != "true" && ap.list.audios[ap.list.index].cover ? ap.list.audios[ap.list.index].cover : getBackground(), //一定會有圖片
-        currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00",
+    $('#player button.play[onclick="ap.toggle()"] i').text("pause")
+    let currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00",
         duration = ap.audio.currentTime ? secondToTime(ap.audio.duration) : "0:00",
         timer = currentTime + '/' + duration,
         audioBuffered = ap.audio.currentTime > 1 ? ap.audio.buffered.end(ap.audio.buffered.length - 1) / ap.audio.duration * 100 : 0,
         cent = ap.audio.currentTime / ap.audio.duration * 100,
         timelineColor = $('.mdui-color-theme-accent').css("background-color"),
         timelineBufferedColor = $('body').hasClass("mdui-theme-layout-dark") ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.25)'
-    $('#player button.play[onclick="ap.toggle()"] i').text("pause")
-    $('#player .song-info .name').text(name)
-    $('#player .song-info .artist').text(artist)
     $('#player .right .timer').text(timer)
-    $('#player img').attr('src', img)
     $('#player').attr('style', `background-image: 
     linear-gradient(to right, 
         ${timelineColor} 0%,
@@ -153,6 +149,19 @@ ap.on("pause", () => {
     $('#player button.play[onclick="ap.toggle()"] i').text("play_arrow")
     $(document).attr("title", `Pokaplayer`);
 })
+
+function updateBottomPlayer() {
+    let nowPlaying = ap.list.audios[ap.list.index],
+        name, artist, img
+    if (nowPlaying) {
+        name = nowPlaying.name
+        artist = nowPlaying.artist
+        img = window.localStorage["imgRes"] != "true" && ap.list.audios[ap.list.index].cover ? ap.list.audios[ap.list.index].cover : getBackground()
+        $('#player .song-info .name').text(name)
+        $('#player .song-info .artist').text(artist)
+        $('#player img').attr('src', img)
+    }
+}
 
 function updateMediaSession() {
     if ('mediaSession' in navigator) {
@@ -234,7 +243,7 @@ function pokaHeader(title, subtitle = '', image = false, hide = false, blur = tr
         $("#header-wrapper .bg2").attr('style', $("#header-wrapper .bg").attr('style'))
         $("#header-wrapper .bg").attr('style', style)
         $("#header-wrapper .bg,#header-wrapper .bg2").addClass('changeing')
-        setTimeout(function () {
+        setTimeout(function() {
             $("#header-wrapper .bg,#header-wrapper .bg2").removeClass('changeing')
         }, 400)
     }
@@ -242,7 +251,7 @@ function pokaHeader(title, subtitle = '', image = false, hide = false, blur = tr
 // 首頁
 async function showHome() {
     $('#content').attr('data-page', 'home')
-    // 展示讀取中
+        // 展示讀取中
     pokaHeader("歡迎使用", `PokaPlayer ${window.localStorage["PokaPlayerVersion"] || ''}`)
     $("#content").html(template.getSpinner())
     mdui.mutation()
@@ -310,7 +319,7 @@ async function showSearch(keyword) {
     mdui.mutation()
     router.updatePageLinks()
 
-    $('#search').change(async function () {
+    $('#search').change(async function() {
         $('#search+.mdui-textfield-error+.mdui-textfield-helper').text('搜尋中...')
         router.navigate('search/' + $(this).val())
     });
@@ -339,8 +348,7 @@ async function showAlbumSongs(albumSource, albumID) {
         artist = albumData.album_artist_name
         cover = `/pokaapi/cover/?moduleName=${encodeURIComponent(albumSource)}&data=${encodeURIComponent(JSON.stringify({ type: "album", info: albumData }))}`
         result = await axios.get(`/pokaapi/albumSongs/?moduleName=${encodeURIComponent(albumSource)}&data=${encodeURIComponent(albumID)}`)
-    }
-    else {
+    } else {
         let albumData = (await axios.get(`/pokaapi/album?moduleName=${encodeURIComponent(albumSource)}&id=${encodeURIComponent(albumID)}`)).data
         name = albumData.name
         artist = albumData.artist
@@ -353,7 +361,7 @@ async function showAlbumSongs(albumSource, albumID) {
     }
 
     pokaHeader('', '', cover)
-    //如果從首頁按進去頁籤沒切換
+        //如果從首頁按進去頁籤沒切換
     $("#content").attr('data-page', `album`)
     $("#content").attr('data-item', `album${albumID}`)
     let albumInfo = template.infoHeader(cover, name, artist)
@@ -362,7 +370,7 @@ async function showAlbumSongs(albumSource, albumID) {
     // 展示讀取中
     $("#content").html(albumInfo + template.getSpinner())
     mdui.mutation()
-    // 釘選（？
+        // 釘選（？
     let isAlbumPinned = await isPinned(albumSource, 'album', albumID, name),
         actions = '';
     if (isAlbumPinned != 'disabled')
@@ -394,7 +402,7 @@ async function showAlbumSongs(albumSource, albumID) {
         $("#content .info-header .time").html(`${result.data.songs.length} 首歌曲`)
         $("#content .info-header .actions").html(actions)
 
-        $("[data-pinned]").click(async function () {
+        $("[data-pinned]").click(async function() {
             let pinStatus = $(this).attr('data-pinned')
             if (pinStatus == "true") {
                 if (await unPin(albumSource, 'album', albumID, name) == true) {
@@ -415,7 +423,7 @@ async function showAlbumSongs(albumSource, albumID) {
 // 資料夾
 async function showFolder(moduleName, folderId) {
     $("#content").attr('data-page', 'folder')
-    // 展示讀取中
+        // 展示讀取中
     pokaHeader("資料夾", "檢視資料夾的項目")
     $("#content").html(template.getSpinner())
     mdui.mutation()
@@ -435,9 +443,9 @@ async function showFolder(moduleName, folderId) {
 }
 async function showArtist(moduleName, artist) {
     let data = moduleName != 'DSM' ? (await axios.get(`/pokaapi/artist/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(artist)}`)).data : undefined;
-    let cover = moduleName == 'DSM'
-        ? `/pokaapi/cover/?moduleName=${encodeURIComponent(moduleName)}&data=${encodeURIComponent(JSON.stringify({ "type": "artist", "info": artist }))}`
-        : data.cover
+    let cover = moduleName == 'DSM' ?
+        `/pokaapi/cover/?moduleName=${encodeURIComponent(moduleName)}&data=${encodeURIComponent(JSON.stringify({ "type": "artist", "info": artist }))}` :
+        data.cover
     pokaHeader(artist ? moduleName == 'DSM' ? artist : data.name : "演出者", artist ? "演出者" : "列出所有演出者", artist ? cover : false)
     $("#content").attr('data-page', 'artist')
     $("#content").html(template.getSpinner())
@@ -454,7 +462,7 @@ async function showArtist(moduleName, artist) {
         let albumHTML = template.parseAlbums(result.data.albums)
         if ($("#content").attr('data-item') == `artist${artist}`) {
             $("#content").html(albumHTML + pinButton)
-            $("[data-pinned]").click(async function () {
+            $("[data-pinned]").click(async function() {
                 let pinStatus = $(this).attr('data-pinned')
                 if (pinStatus == "true") {
                     if (await unPin(moduleName, 'artist', artist, moduleName == 'DSM' ? artist : data.name) == true) {
@@ -499,7 +507,7 @@ async function showComposer(moduleName, composer) {
         let albumHTML = template.parseAlbums(result.data.albums)
         if ($("#content").attr('data-item') == `composer${composer}`) {
             $("#content").html(albumHTML + pinButton)
-            $("[data-pinned]").click(async function () {
+            $("[data-pinned]").click(async function() {
                 let pinStatus = $(this).attr('data-pinned')
                 if (pinStatus == "true") {
                     if (await unPin(moduleName, 'composer', composer, composer) == true) {
@@ -568,7 +576,7 @@ async function showPlaylistSongs(moduleName, playlistId) {
 
     if ($("#content").attr('data-item') == `playlist${playlistId}`) {
         $("#content").html(songs + pinButton)
-        $("[data-pinned]").click(async function () {
+        $("[data-pinned]").click(async function() {
             let pinStatus = $(this).attr('data-pinned')
             if (pinStatus == "true") {
                 if (await unPin(moduleName, 'playlist', playlistId, result.playlists[0].name) == true) {
@@ -668,11 +676,11 @@ async function showNow() {
     // random＆loop
     $("[data-player]>.info>.ctrl>.random").html($('.aplayer-icon.aplayer-icon-order').html())
     $("[data-player]>.info>.ctrl>.loop").html($('.aplayer-icon.aplayer-icon-loop').html())
-    $("[data-player]>.info>.ctrl>.random").click(function () {
+    $("[data-player]>.info>.ctrl>.random").click(function() {
         $('#aplayer .aplayer-icon.aplayer-icon-order').click()
         $(this).html($('.aplayer-icon.aplayer-icon-order').html())
     })
-    $("[data-player]>.info>.ctrl>.loop").click(function () {
+    $("[data-player]>.info>.ctrl>.loop").click(function() {
         $('#aplayer .aplayer-icon.aplayer-icon-loop').click()
         $(this).html($('.aplayer-icon.aplayer-icon-loop').html())
     });
@@ -709,7 +717,7 @@ async function showNow() {
     ap.on("pause", () => {
         $('[data-player] button.play[onclick="ap.toggle()"] i').text("play_arrow")
     })
-    ap.on("play", async () => {
+    ap.on("play", async() => {
         //卷軸轉轉
         if ($(window).width() > 850 && $(window).height() > 560) {
             $('.mdui-list.songs').animate({ scrollTop: 72 * ap.list.index - 100 }, 250);
@@ -768,7 +776,7 @@ async function showNow() {
             }
         }
     });
-    $('[data-player] .info>div[data-lrc]').dblclick(function () {
+    $('[data-player] .info>div[data-lrc]').dblclick(function() {
         showLrcChoose()
     })
     $("[data-player]>.info>.player-bar input[type=range]").on("input", () => {
@@ -776,14 +784,14 @@ async function showNow() {
         ap.seek(time);
     })
 
-    $(".songs [data-now-play-id].songinfo").click(function () {
+    $(".songs [data-now-play-id].songinfo").click(function() {
         $(".songs>li.song").removeClass('mdui-list-item-active')
         $(this).parent().eq(0).addClass('mdui-list-item-active')
         let song = $(this).attr('data-now-play-id')
         ap.list.switch(song)
         ap.play()
     })
-    $(".songs [data-now-play-id].close").click(function () {
+    $(".songs [data-now-play-id].close").click(function() {
         let song = $(this).attr('data-now-play-id')
         if (song == ap.list.index) ap.skipForward()
         ap.list.remove(song)
@@ -826,7 +834,7 @@ function showLrc() {
             $('#content>div[data-lrc]').animate({ scrollTop: top }, 250);
         }
     });
-    $('#content>div[data-lrc]').dblclick(function () {
+    $('#content>div[data-lrc]').dblclick(function() {
         showLrcChoose()
     })
 }
@@ -972,7 +980,7 @@ async function showLrcChoose() {
             $("[lrc-choose]").html(list(searchResult, keyword))
             mdui.mutation();
         }
-        $("[data-lrc-id]").click(async function () {
+        $("[data-lrc-id]").click(async function() {
             let lrcid = $(this).attr('data-lrc-id')
             var text = $(this).children().children('.mdui-list-item-text').text()
             $(this).children().children('.mdui-list-item-text').text('歌詞載入中...')
@@ -984,7 +992,7 @@ async function showLrcChoose() {
             $(this).children().children('.mdui-list-item-text').text(text)
             $('[data-lrc-done]').click()
         })
-        $("input#searchLrc").change(function () {
+        $("input#searchLrc").change(function() {
             $("input#searchLrc + * + .mdui-textfield-helper").text('搜尋中...')
             search($(this).val())
         })
