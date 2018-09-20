@@ -48,7 +48,7 @@ router.use((req, res, next) => {
 });
 //-----------------------------> 首頁
 // 取得想推薦的東西(?
-router.get('/home/', async(req, res) => {
+router.get('/home/', async (req, res) => {
     //http://localhost:3000/pokaapi/home
     let resData = { folders: [], songs: [], albums: [], songs: [], artists: [], composers: [], playlists: [] }
     for (var i in Object.keys(moduleList)) {
@@ -74,7 +74,7 @@ router.get('/home/', async(req, res) => {
     }
     return res.json(resData)
 });
-router.get('/addPin/', async(req, res) => {
+router.get('/addPin/', async (req, res) => {
     //http://localhost:3000/pokaapi/addPin/?moduleName=DSM&type=album&id={%22album%22:%22%E4%B8%96%E7%95%8C%E3%81%AE%E6%9E%9C%E3%81%A6%E3%81%AB%E5%90%9B%E3%81%8C%E3%81%84%E3%81%A6%E3%82%82%22,%22album_artist%22:%22%E5%96%9C%E5%A4%9A%E4%BF%AE%E5%B9%B3%22}&name=%E4%B8%96%E7%95%8C%E3%81%AE%E6%9E%9C%E3%81%A6%E3%81%AB%E5%90%9B%E3%81%8C%E3%81%84%E3%81%A6%E3%82%82
     //[{"type":"album","criteria":{"album":"世界の果てに君がいても","album_artist":"喜多修平"},"name":"世界の果てに君がいても"}]
     let moduleName = req.query.moduleName
@@ -84,7 +84,7 @@ router.get('/addPin/', async(req, res) => {
 
     res.json(await _module.addPin(req.query.type, req.query.id, req.query.name))
 });
-router.get('/unPin/', async(req, res) => {
+router.get('/unPin/', async (req, res) => {
     //http://localhost:3000/pokaapi/unPin/?moduleName=DSM&type=album&id={%22album%22:%22%E4%B8%96%E7%95%8C%E3%81%AE%E6%9E%9C%E3%81%A6%E3%81%AB%E5%90%9B%E3%81%8C%E3%81%84%E3%81%A6%E3%82%82%22,%22album_artist%22:%22%E5%96%9C%E5%A4%9A%E4%BF%AE%E5%B9%B3%22}&name=%E4%B8%96%E7%95%8C%E3%81%AE%E6%9E%9C%E3%81%A6%E3%81%AB%E5%90%9B%E3%81%8C%E3%81%84%E3%81%A6%E3%82%82
     //[{"type":"album","criteria":{"album":"世界の果てに君がいても","album_artist":"喜多修平"},"name":"世界の果てに君がいても"}]
     let moduleName = req.query.moduleName
@@ -94,7 +94,7 @@ router.get('/unPin/', async(req, res) => {
 
     res.json(await _module.unPin(req.query.type, req.query.id, req.query.name))
 });
-router.get('/isPinned/', async(req, res) => {
+router.get('/isPinned/', async (req, res) => {
     //http://localhost:3000/pokaapi/isPinned/?moduleName=DSM&type=album&id={%22album%22:%22%E4%B8%96%E7%95%8C%E3%81%AE%E6%9E%9C%E3%81%A6%E3%81%AB%E5%90%9B%E3%81%8C%E3%81%84%E3%81%A6%E3%82%82%22,%22album_artist%22:%22%E5%96%9C%E5%A4%9A%E4%BF%AE%E5%B9%B3%22}&name=%E4%B8%96%E7%95%8C%E3%81%AE%E6%9E%9C%E3%81%A6%E3%81%AB%E5%90%9B%E3%81%8C%E3%81%84%E3%81%A6%E3%82%82
     //[{"type":"album","criteria":{"album":"世界の果てに君がいても","album_artist":"喜多修平"},"name":"世界の果てに君がいても"}]
     let moduleName = req.query.moduleName
@@ -107,7 +107,7 @@ router.get('/isPinned/', async(req, res) => {
 
 //-----------------------------> 資料夾
 // 取得資料夾清單(根目錄)
-router.get('/folders/', async(req, res) => {
+router.get('/folders/', async (req, res) => {
     //http://localhost:3000/pokaapi/folders
     let folders = { folders: [], songs: [] }
     for (var i in Object.keys(moduleList)) {
@@ -124,7 +124,7 @@ router.get('/folders/', async(req, res) => {
     res.json(folders);
 });
 // 透過取得資料夾內檔案清單
-router.get('/folderFiles/', async(req, res) => {
+router.get('/folderFiles/', async (req, res) => {
     //http://localhost:3000/pokaapi/folderFiles/?moduleName=DSM&id=dir_636
     let moduleName = req.query.moduleName
     let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
@@ -140,7 +140,7 @@ router.get('/folderFiles/', async(req, res) => {
 
 //-----------------------------> 搜尋
 // 搜尋
-router.get('/search/', async(req, res) => {
+router.get('/search/', async (req, res) => {
     //http://localhost:3000/pokaapi/search/?keyword=a
     let resData = { folders: [], songs: [], albums: [], songs: [], artists: [], composers: [], playlists: [] }
     for (var i in Object.keys(moduleList)) {
@@ -168,7 +168,7 @@ router.get('/search/', async(req, res) => {
 });
 //-----------------------------> 專輯
 // 取得專輯清單
-router.get('/albums/', async(req, res) => {
+router.get('/albums/', async (req, res) => {
     //http://localhost:3000/pokaapi/albums
     let albums = { albums: [] }
     for (var i in Object.keys(moduleList)) {
@@ -184,20 +184,32 @@ router.get('/albums/', async(req, res) => {
     res.json(albums);
 });
 // 取得專輯歌曲
-router.get('/albumSongs/', async(req, res) => {
+router.get('/albumSongs/', async (req, res) => {
     let moduleName = req.query.moduleName
     let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
     // 沒這東西
-    if (!_module || moduleList[moduleName].active.indexOf('getAlbums') == -1) return res.status(501).send("The required module is currently unavailable :(")
+    if (!_module || moduleList[moduleName].active.indexOf('getAlbumSongs') == -1) return res.status(501).send("The required module is currently unavailable :(")
 
     //http://localhost:3000/pokaapi/albumSongs/?moduleName=DSM&data={%22album_name%22:%22%E2%8A%BF%22,%22artist_name%22:%22Perfume%22,%22album_artist_name%22:%22Perfume%22}
     // -> {"album_name":"⊿","artist_name":"Perfume","album_artist_name":"Perfume"}
     let albumSongs = await _module.getAlbumSongs(req.query.data)
     return res.json(albumSongs)
 });
+// 取得專輯資料
+router.get('/album/', async (req, res) => {
+    let moduleName = req.query.moduleName
+    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+    // 沒這東西
+    if (!_module || moduleList[moduleName].active.indexOf('getAlbum') == -1) return res.status(501).send("The required module is currently unavailable :(")
+
+    //http://localhost:3000/pokaapi/album/?moduleName=Netease2&id=34841226
+    // -> Album + Songs
+    let album = await _module.getAlbum(req.query.id)
+    return res.json(album)
+});
 //-----------------------------> 播放清單
 // 取得播放清單的清單
-router.get('/playlists/', async(req, res) => {
+router.get('/playlists/', async (req, res) => {
     //http://localhost:3000/pokaapi/playlists
     let r = { playlists: [] }
     for (var i in Object.keys(moduleList)) {
@@ -213,7 +225,7 @@ router.get('/playlists/', async(req, res) => {
     res.json(r);
 });
 // 取得播放清單的歌曲
-router.get('/playlistSongs/', async(req, res) => {
+router.get('/playlistSongs/', async (req, res) => {
     //http://localhost:3000/pokaapi/playlistSongs/?moduleName=DSM&id=playlist_shared_normal/15
     let moduleName = req.query.moduleName
     let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
@@ -224,8 +236,19 @@ router.get('/playlistSongs/', async(req, res) => {
 });
 
 //-----------------------------> 演出者
+// 取得演出者資料
+router.get('/artist/', async (req, res) => {
+    //http://localhost:3000/pokaapi/artist/?moduleName=Netease2&id=19859
+    let moduleName = req.query.moduleName
+    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+    // 沒這東西
+    if (!_module || moduleList[moduleName].active.indexOf('getArtist') == -1) return res.status(501).send("The required module is currently unavailable :(")
+    let r = await _module.getArtist(req.query.id)
+    return res.json(r)
+});
+
 // 取得演出者清單
-router.get('/artists/', async(req, res) => {
+router.get('/artists/', async (req, res) => {
     //http://localhost:3000/pokaapi/artists
     let r = { artists: [] }
     for (var i in Object.keys(moduleList)) {
@@ -241,7 +264,7 @@ router.get('/artists/', async(req, res) => {
     res.json(r);
 });
 // 取得演出者的專輯
-router.get('/artistAlbums/', async(req, res) => {
+router.get('/artistAlbums/', async (req, res) => {
     //http://localhost:3000/pokaapi/artistAlbums/?moduleName=DSM&id=ひいらぎ
     let moduleName = req.query.moduleName
     let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
@@ -252,7 +275,7 @@ router.get('/artistAlbums/', async(req, res) => {
 });
 //-----------------------------> 作曲者
 // 取得作曲者清單
-router.get('/composers/', async(req, res) => {
+router.get('/composers/', async (req, res) => {
     //http://localhost:3000/pokaapi/composers
     let r = { composers: [] }
     for (var i in Object.keys(moduleList)) {
@@ -269,7 +292,7 @@ router.get('/composers/', async(req, res) => {
 });
 
 // 取得作曲者的專輯
-router.get('/composerAlbums/', async(req, res) => {
+router.get('/composerAlbums/', async (req, res) => {
     //http://localhost:3000/pokaapi/composerAlbums/?moduleName=DSM&id=飛内将大
     let moduleName = req.query.moduleName
     let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
@@ -280,7 +303,7 @@ router.get('/composerAlbums/', async(req, res) => {
 });
 //-----------------------------> 歌曲
 // 取得歌曲串流
-router.get('/song/', async(req, res) => {
+router.get('/song/', async (req, res) => {
     // http://localhost:3000/pokaapi/song/?moduleName=DSM&songRes=original&songId=music_758 //這首 Chrome 會出錯
     // http://localhost:3000/pokaapi/song/?moduleName=DSM&songRes=original&songId=music_941
     // -> getSong(req, "original", "music_758")
@@ -292,7 +315,7 @@ router.get('/song/', async(req, res) => {
     if (typeof song == 'string')
         return res.redirect(song)
     else
-        return song.on('response', function(response) {
+        return song.on('response', function (response) {
             //針對 Audio 寫入 Header 避免 Chrome 時間軸不能跳
             res.writeHead(206, {
                 "Accept-Ranges": response.headers['accept-ranges'] ? response.headers['accept-ranges'] : '',
@@ -304,7 +327,7 @@ router.get('/song/', async(req, res) => {
 });
 //-----------------------------> 封面
 // 取得封面
-router.get('/cover/', async(req, res) => {
+router.get('/cover/', async (req, res) => {
     let moduleName = req.query.moduleName
     let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
     // 沒這東西
@@ -317,9 +340,21 @@ router.get('/cover/', async(req, res) => {
     let cover = await _module.getCover(req.query.data)
     return cover.pipe(res)
 });
+
+router.get('/req/', async (req, res) => {
+    let moduleName = req.query.moduleName
+    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+    // 沒這東西
+    if (!_module || moduleList[moduleName].active.indexOf('req') == -1) return res.status(501).send("The required module is currently unavailable :(")
+
+    //http://localhost:3000/pokaapi/req/?moduleName=Netease2&data=http%3A%2F%2Fp3.music.126.net%2FJB1yLZyVMPsbbSlSkfJdRw%3D%3D%2F6630055116648156.jpg
+    // -> Image
+    let cover = await _module.req(req.query.data)
+    return cover.pipe(res)
+});
 //-----------------------------> 歌詞
 // 搜尋歌詞
-router.get('/searchLyrics/', async(req, res) => {
+router.get('/searchLyrics/', async (req, res) => {
     //http://localhost:3000/pokaapi/searchLyrics/?keyword=a
     let resData = { lyrics: [] }
     for (var i in Object.keys(moduleList)) {
@@ -333,7 +368,7 @@ router.get('/searchLyrics/', async(req, res) => {
     }
     return res.json(resData)
 });
-router.get('/lyric/', async(req, res) => {
+router.get('/lyric/', async (req, res) => {
     //http://localhost:3000/pokaapi/lyric/?moduleName=DSM&id=music_1801
     let moduleName = req.query.moduleName
     let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
@@ -349,7 +384,7 @@ router.get('/lyric/', async(req, res) => {
 });
 //-----------------------------> 隨機
 // 隨機歌曲
-router.get('/randomSongs/', async(req, res) => {
+router.get('/randomSongs/', async (req, res) => {
     //http://localhost:3000/pokaapi/randomSongs/
     let resData = { songs: [] }
     for (var i in Object.keys(moduleList)) {

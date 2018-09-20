@@ -35,7 +35,7 @@ const template = {
             html += `<li class="mdui-list-item mdui-ripple" href="folder/${folder.source}/${folder.id}" data-navigo>
                         <i class="mdui-list-item-avatar mdui-icon material-icons">folder</i>
                         <div class="mdui-list-item-content">${folder.name}</div>
-                    </li>`　
+                    </li>`
         }
         html += `</ul>`
         return html
@@ -52,7 +52,7 @@ const template = {
 
             let img = window.localStorage["imgRes"] == "true" ? '' :
                 `<div class="mdui-list-item-avatar" ${clickAction}>
-                    <img src="${song.cover||getBackground()}"/>
+                    <img src="${song.cover || getBackground()}"/>
                 </div>`
 
             html += `
@@ -60,7 +60,7 @@ const template = {
                 ${img}
                 <div class="mdui-list-item-content" 
                      ${clickAction}
-                     title="${title}${artist?'&#10;'+artist:''}">
+                     title="${title}${artist ? '&#10;' + artist : ''}">
                     <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
                     <div class="mdui-list-item-text mdui-list-item-one-line">${artist}</div>
                 </div>
@@ -69,7 +69,7 @@ const template = {
                         title="加入這首歌曲到現正播放">
                     <i class="mdui-icon material-icons">add</i>
                 </button>
-            </li></div>`　
+            </li></div>`
         }
         html += '</div></div>'
         return html
@@ -77,7 +77,7 @@ const template = {
     },
     parseAlbums: albums => {
         let r = '<div class="albums">'
-        for (i = 0; i < albums.length; i++) {　
+        for (i = 0; i < albums.length; i++) {
             let album = albums[i]
             let name = album.name
             let artist = album.artist
@@ -106,14 +106,14 @@ const template = {
         for (i = 0; i < artists.length; i++) {
             let artist = artists[i]
             let name = artist.name ? artist.name : "未知"
-            let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${artist.cover||getBackground()}"/></div>`
+            let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${artist.cover || getBackground()}"/></div>`
             html += `
-            <li class="mdui-list-item mdui-ripple" href="artist/${encodeURIComponent(artist.source)}/${encodeURIComponent(name)}" data-navigo>
+            <li class="mdui-list-item mdui-ripple" href="artist/${encodeURIComponent(artist.source)}/${encodeURIComponent(artist.source == 'DSM' ? name : artist.id)}" data-navigo>
                 ${img}
                 <div class="mdui-list-item-content">
                    ${name}
                 </div>
-            </li>`　
+            </li>`
         }
         html += '</ul>'
         return html
@@ -123,14 +123,14 @@ const template = {
         for (i = 0; i < composers.length; i++) {
             let composer = composers[i]
             let name = composer.name ? composer.name : "未知"
-            let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${composer.cover||getBackground()}"/></div>`
+            let img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${composer.cover || getBackground()}"/></div>`
             html += `
             <li class="mdui-list-item mdui-ripple" href="composer/${encodeURIComponent(composer.source)}/${encodeURIComponent(name)}" data-navigo>
                 ${img}
                 <div class="mdui-list-item-content">
                    ${name}
                 </div>
-            </li>`　
+            </li>`
         }
         html += '</ul>'
         return html
@@ -145,7 +145,7 @@ const template = {
                 <div class="mdui-list-item-content">
                    ${playlist.name}
                 </div>
-            </li>`　
+            </li>`
         }
         html += '</ul>'
         return html

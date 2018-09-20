@@ -30,7 +30,7 @@ app.use('/pokaapi', require('./dataModule.js'));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'pug')
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(helmet());
+app.use(helmet.hidePoweredBy({ setTo: 'PHP/5.2.1' }));
 app.use(session);
 io.use(sharedsession(session, {
     autoSave: true
