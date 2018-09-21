@@ -275,7 +275,7 @@ function secondToTime(second) {
 }
 
 // 播放模式
-var playMode = 1;
+var playMode;
 
 function changePlayMode(get) {
     let loop = Number(playMode || 1)
@@ -783,7 +783,7 @@ async function showNow() {
     // random＆loop
     $("[data-player]>.info>.ctrl>.random")
         .html(function() {
-            return `<i class="mdui-icon material-icons">${changePlayMode(true)||repeat}</i>`
+            return `<i class="mdui-icon material-icons">${changePlayMode(true)||'repeat'}</i>`
         })
         .click(function() {
             $(this).html(`<i class="mdui-icon material-icons">${changePlayMode()}</i>`)
