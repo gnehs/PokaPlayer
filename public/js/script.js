@@ -6,6 +6,7 @@ const ap = new APlayer({
 });
 // 初始化歌詞解析
 const lrc = new Lyrics(`[00:00.000]`);
+
 // 路由
 const router = new Navigo(null, true, '#!');
 router
@@ -105,16 +106,18 @@ $(() => {
     });
     keyboardJS.bind('r', function(e) {
         if (e.target.tagName.toUpperCase() == 'INPUT') return;
-        $('#aplayer .aplayer-icon.aplayer-icon-order').click()
-        let text = ap.options.order == "list" ?
+        let icon = changePlayMode()
+        let text = icon == "shuffle" ? `<i class="mdui-icon material-icons">shuffle</i>已切換至隨機播放` :
+            icon == "repeat" ?
             `<i class="mdui-icon material-icons">repeat</i>已切換至順序播放` :
-            `<i class="mdui-icon material-icons">shuffle</i>已切換至隨機播放`
+            `<i class="mdui-icon material-icons">repeat_one</i>已切換至單曲循環`
+
         $("[data-player]>.info>.ctrl>.random").html(text)
 
         if ($(".mdui-snackbar").length > 0)
             $(".mdui-snackbar .mdui-snackbar-text").html(text)
         else
-            mdui.snackbar({ message: text, timeout: 500, position: getSnackbarPosition() });
+            mdui.snackbar({ message: text, timeout: 400, position: getSnackbarPosition() });
         $(".mdui-snackbar .mdui-snackbar-text i").attr('style', 'font-size: 14px;width: 25.2px;transform: scale(1.8)')
     });
 });
@@ -269,6 +272,56 @@ function secondToTime(second) {
     let SS = Math.floor(second % 60)
     SS = SS < 10 ? '0' + SS : SS
     return MM + ":" + SS
+}
+
+// 播放模式
+var playMode = 1;
+
+function changePlayMode(get) {
+    let loop = Number(playMode || 1)
+    let icon;
+    if (get) {
+        let modes = [`repeat_one`, `repeat`, `shuffle`]
+        return modes[loop]
+    }
+    switch (loop) {
+        case 1:
+            // 循環播放整個清單
+            for (i = 0; i < 3; i++)
+                if (ap.options.loop != "all")
+                    $('#aplayer .aplayer-icon.aplayer-icon-loop').click()
+            for (i = 0; i < 3; i++)
+                if (ap.options.order != "list")
+                    $('#aplayer .aplayer-icon.aplayer-icon-order').click()
+            icon = `repeat`
+            playMode = 2 //下一次換到 2
+            break;
+        case 2:
+            // 隨機
+            for (i = 0; i < 3; i++)
+                if (ap.options.loop != "all")
+                    $('#aplayer .aplayer-icon.aplayer-icon-loop').click()
+            for (i = 0; i < 3; i++)
+                if (ap.options.order != "random")
+                    $('#aplayer .aplayer-icon.aplayer-icon-order').click()
+            icon = `shuffle`
+            playMode = 3 //下一次換到 3
+            break;
+        case 3:
+            // 循環播放該曲目
+            $('#aplayer .aplayer-icon.aplayer-icon-order').click()
+            for (i = 0; i < 3; i++)
+                if (ap.options.loop != "one") {
+                    if (ap.list.audios.length == 1 && ap.options.loop == "none")
+                        $('#aplayer .aplayer-icon.aplayer-icon-loop').click()
+                    else if (ap.list.audios.length > 1)
+                        $('#aplayer .aplayer-icon.aplayer-icon-loop').click()
+                }
+            icon = `repeat_one`
+            playMode = 1 //下一次換到 1
+            break;
+    }
+    return icon
 }
 
 function pokaHeader(title, subtitle = '', image = false, hide = false, blur = true) {
@@ -709,11 +762,11 @@ async function showNow() {
                 <div data-lrc="inner"></div>
             </div>
             <div class="ctrl">
-                <button class="mdui-btn mdui-btn-icon mdui-ripple random"><i class="mdui-icon material-icons">skip_previous</i></button>
+                <button class="mdui-btn mdui-btn-icon mdui-ripple random"><i class="mdui-icon material-icons"></i></button>
                 <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="ap.skipBack()"><i class="mdui-icon material-icons">skip_previous</i></button>
                 <button class="mdui-btn mdui-btn-icon mdui-ripple mdui-color-theme-accent play" onclick="ap.toggle()"><i class="mdui-icon material-icons">play_arrow</i></button>
                 <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="ap.skipForward()"><i class="mdui-icon material-icons">skip_next</i></button>
-                <button class="mdui-btn mdui-btn-icon mdui-ripple loop"><i class="mdui-icon material-icons">skip_previous</i></button>
+                <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="router.navigate('lrc')"><i class="mdui-icon material-icons">subtitles</i></button>
             </div>
             <div class="player-bar">
                 <label class="mdui-slider">
@@ -728,16 +781,14 @@ async function showNow() {
     // 隱藏原本ㄉ播放器
     $("#player").addClass('hide');
     // random＆loop
-    $("[data-player]>.info>.ctrl>.random").html($('.aplayer-icon.aplayer-icon-order').html())
-    $("[data-player]>.info>.ctrl>.loop").html($('.aplayer-icon.aplayer-icon-loop').html())
-    $("[data-player]>.info>.ctrl>.random").click(function() {
-        $('#aplayer .aplayer-icon.aplayer-icon-order').click()
-        $(this).html($('.aplayer-icon.aplayer-icon-order').html())
-    })
-    $("[data-player]>.info>.ctrl>.loop").click(function() {
-        $('#aplayer .aplayer-icon.aplayer-icon-loop').click()
-        $(this).html($('.aplayer-icon.aplayer-icon-loop').html())
-    });
+    $("[data-player]>.info>.ctrl>.random")
+        .html(function() {
+            return `<i class="mdui-icon material-icons">${changePlayMode(true)||repeat}</i>`
+        })
+        .click(function() {
+            $(this).html(`<i class="mdui-icon material-icons">${changePlayMode()}</i>`)
+        })
+
     //初始化滑塊
     mdui.mutation();
     // 確認播放鈕狀態
