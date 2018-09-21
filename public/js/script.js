@@ -63,6 +63,57 @@ $(() => {
     $('#player>*:not(.right)').click(() => router.navigate('now'));
     // 初始化 MediaSession
     updateMediaSession()
+
+    // 綁定鍵盤控制
+    keyboardJS.bind('space', e => {
+        if (e.target.tagName.toUpperCase() == 'INPUT') return;
+        ap.toggle()
+    });
+    keyboardJS.bind('w', e => {
+        if (e.target.tagName.toUpperCase() == 'INPUT') return;
+        ap.volume(ap.volume() + 0.01, true)
+        let text = `音量：${Math.floor(ap.volume()*100)}%`
+        if ($(".mdui-snackbar").length > 0)
+            $(".mdui-snackbar .mdui-snackbar-text").text(text)
+        else
+            mdui.snackbar({ message: text, timeout: 2000, position: getSnackbarPosition() });
+    });
+    keyboardJS.bind('s', e => {
+        if (e.target.tagName.toUpperCase() == 'INPUT') return;
+        ap.volume(ap.volume() - 0.01, true)
+        let text = `音量：${Math.floor(ap.volume()*100)}%`
+        if ($(".mdui-snackbar").length > 0)
+            $(".mdui-snackbar .mdui-snackbar-text").text(text)
+        else
+            mdui.snackbar({ message: text, timeout: 2000, position: getSnackbarPosition() });
+    });
+    keyboardJS.bind('a', e => {
+        if (e.target.tagName.toUpperCase() == 'INPUT') return;
+        ap.skipBack()
+    });
+    keyboardJS.bind('d', e => {
+        if (e.target.tagName.toUpperCase() == 'INPUT') return;
+        ap.skipForward()
+    });
+    keyboardJS.bind('h', function(e) {
+        if (e.target.tagName.toUpperCase() == 'INPUT') return;
+        router.navigate('home')
+    });
+    keyboardJS.bind('n', function(e) {
+        if (e.target.tagName.toUpperCase() == 'INPUT') return;
+        router.navigate('now')
+    });
+    keyboardJS.bind('r', function(e) {
+        if (e.target.tagName.toUpperCase() == 'INPUT') return;
+        $('#aplayer .aplayer-icon.aplayer-icon-order').click()
+        $("[data-player]>.info>.ctrl>.random").html($('.aplayer-icon.aplayer-icon-order').html())
+
+        if ($(".mdui-snackbar").length > 0)
+            $(".mdui-snackbar .mdui-snackbar-text").html($('.aplayer-icon.aplayer-icon-order').html())
+        else
+            mdui.snackbar({ message: $('.aplayer-icon.aplayer-icon-order').html(), timeout: 500, position: getSnackbarPosition() });
+        $(".mdui-snackbar .mdui-snackbar-text svg").attr('style', 'width: 48px;height: 48px;filter: Invert(1);')
+    });
 });
 
 $('#axios').on('load', function() {
