@@ -106,13 +106,16 @@ $(() => {
     keyboardJS.bind('r', function(e) {
         if (e.target.tagName.toUpperCase() == 'INPUT') return;
         $('#aplayer .aplayer-icon.aplayer-icon-order').click()
-        $("[data-player]>.info>.ctrl>.random").html($('.aplayer-icon.aplayer-icon-order').html())
+        let text = ap.options.order == "list" ?
+            `<i class="mdui-icon material-icons">repeat</i>已切換至順序播放` :
+            `<i class="mdui-icon material-icons">shuffle</i>已切換至隨機播放`
+        $("[data-player]>.info>.ctrl>.random").html(text)
 
         if ($(".mdui-snackbar").length > 0)
-            $(".mdui-snackbar .mdui-snackbar-text").html($('.aplayer-icon.aplayer-icon-order').html())
+            $(".mdui-snackbar .mdui-snackbar-text").html(text)
         else
-            mdui.snackbar({ message: $('.aplayer-icon.aplayer-icon-order').html(), timeout: 500, position: getSnackbarPosition() });
-        $(".mdui-snackbar .mdui-snackbar-text svg").attr('style', 'width: 48px;height: 48px;filter: Invert(1);')
+            mdui.snackbar({ message: text, timeout: 500, position: getSnackbarPosition() });
+        $(".mdui-snackbar .mdui-snackbar-text i").attr('style', 'font-size: 14px;width: 25.2px;transform: scale(1.8)')
     });
 });
 
