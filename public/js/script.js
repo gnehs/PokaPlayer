@@ -834,7 +834,9 @@ async function showNow() {
         let time = $("[data-player]>.info>.player-bar input[type=range]").val() / 100 * ap.audio.duration
         ap.seek(time);
     })
-
+    $('[data-player]>.mdui-card').click(function() {
+        router.navigate('lrc')
+    })
     $(".songs [data-now-play-id].songinfo").click(function() {
         $(".songs>li.song").removeClass('mdui-list-item-active')
         $(this).parent().eq(0).addClass('mdui-list-item-active')
