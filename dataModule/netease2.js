@@ -497,7 +497,7 @@ async function parseAlbums(albums) {
 async function parseArtists(artists) {
   return (await artists).map(x => ({
     name: x.name,
-    cover: imageUrl(x.picUrl),
+    cover: imageUrl(x.picUrl || x.img1v1Url),
     source: "Netease2",
     id: x.id
   }));
