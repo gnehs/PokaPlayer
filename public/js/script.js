@@ -555,16 +555,16 @@ async function showFolder(moduleName, folderId) {
         router.updatePageLinks()
     }
 }
-async function showArtist(moduleName, artist) {
-    let data = moduleName != 'DSM' ? (await axios.get(`/pokaapi/artist/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(artist)}`)).data : undefined;
-    let cover = moduleName == 'DSM' ?
+async function showArtist(moduleName, artist = false) {
+    let cover = artist ? (moduleName == 'DSM' ?
         `/pokaapi/cover/?moduleName=${encodeURIComponent(moduleName)}&data=${encodeURIComponent(JSON.stringify({ "type": "artist", "info": artist }))}` :
-        data.cover
-    pokaHeader(artist ? moduleName == 'DSM' ? artist : data.name : "演出者", artist ? "演出者" : "列出所有演出者", artist ? cover : false)
+        data.cover) : false
+    pokaHeader(artist ? moduleName == 'DSM' ? artist : data.name : "演出者", artist ? "演出者" : "列出所有演出者", cover)
     $("#content").attr('data-page', 'artist')
     $("#content").html(template.getSpinner())
     mdui.mutation()
-    if (artist) {
+    if (artist && moduleName) {
+        let data = moduleName != 'DSM' ? (await axios.get(`/pokaapi/artist/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(artist)}`)).data : undefined;
         $("#content").attr('data-item', `artist${artist}`)
         let result = await axios.get(`/pokaapi/artistAlbums/?moduleName=${encodeURIComponent(moduleName)}&id=${artist == '未知' ? '' : encodeURIComponent(artist)}`),
             isArtistPinned = await isPinned(moduleName, 'artist', artist, artist)
