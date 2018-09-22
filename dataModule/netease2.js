@@ -384,7 +384,7 @@ function req(x) {
   function deReq(x) {
     const b2a = x => Buffer.from(x, "base64").toString("utf8");
     const decode = x => /(.{5})(.+)3C4C7CB3(.+)/.exec(x);
-    
+
     let [_, rand, link, checkSum] = decode(x);
     [_, rand, link, checkSum] = [_, rand, b2a(link), b2a(checkSum)];
     if (
@@ -418,7 +418,7 @@ async function parseSongs(songs, br = 999000) {
         name: song.name,
         artist: song.ar.map(x => x.name || "").join(", "),
         album: song.al.name || "",
-        cover: imageUrl(song.al.picUrl),
+        cover: song.al.picUrl ? imageUrl(song.al.picUrl) : false,
         url: `/pokaapi/song/?moduleName=Netease2&songId=${song.id}`,
         codec: "mp3",
         // lrc: song.id,
