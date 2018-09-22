@@ -289,7 +289,7 @@ function changePlayMode(get) {
             `repeat`,
             `shuffle`,
         ]
-        return modes[loop]
+        return modes[loop - 1]
     }
     switch (loop) {
         case 1:
