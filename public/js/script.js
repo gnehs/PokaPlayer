@@ -455,6 +455,10 @@ async function showAlbum() {
 }
 //- 展示專輯歌曲
 async function showAlbumSongs(albumSource, albumID) {
+    //如果從首頁按進去頁籤沒切換
+    $("#content").attr('data-page', `album`)
+    $("#content").attr('data-item', `album${albumID}`)
+
     let name, artist, cover, result;
     if (albumSource == 'DSM') {
         let albumData = JSON.parse(albumID)
@@ -475,11 +479,7 @@ async function showAlbumSongs(albumSource, albumID) {
     }
 
     pokaHeader('', '', cover)
-        //如果從首頁按進去頁籤沒切換
-    $("#content").attr('data-page', `album`)
-    $("#content").attr('data-item', `album${albumID}`)
     let albumInfo = template.infoHeader(cover, name, artist)
-
 
     // 展示讀取中
     $("#content").html(albumInfo + template.getSpinner())
