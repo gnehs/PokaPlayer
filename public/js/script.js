@@ -679,7 +679,7 @@ async function showPlaylistSongs(moduleName, playlistId) {
     let result = (await axios.get(`/pokaapi/playlistSongs/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(playlistId)}`)).data
     let name = result.playlists[0].name
     let songs = template.parseSongs(result.songs)
-    pokaHeader(name, "播放清單")
+    pokaHeader(name, "播放清單", result.playlists[0].image || false)
 
     let isPlaylistPinned = await isPinned(moduleName, 'playlist', playlistId, result.playlists[0].name)
     let pinButton = ``
