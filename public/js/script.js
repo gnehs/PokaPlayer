@@ -556,6 +556,7 @@ async function showFolder(moduleName, folderId) {
     }
 }
 async function showArtist(moduleName, artist = false) {
+    let data = moduleName != 'DSM' && artist ? (await axios.get(`/pokaapi/artist/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(artist)}`)).data : undefined;
     let cover = artist ? (moduleName == 'DSM' ?
         `/pokaapi/cover/?moduleName=${encodeURIComponent(moduleName)}&data=${encodeURIComponent(JSON.stringify({ "type": "artist", "info": artist }))}` :
         data.cover) : false
@@ -564,16 +565,15 @@ async function showArtist(moduleName, artist = false) {
     $("#content").html(template.getSpinner())
     mdui.mutation()
     if (artist && moduleName) {
-        let data = moduleName != 'DSM' ? (await axios.get(`/pokaapi/artist/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(artist)}`)).data : undefined;
         $("#content").attr('data-item', `artist${artist}`)
-        let result = await axios.get(`/pokaapi/artistAlbums/?moduleName=${encodeURIComponent(moduleName)}&id=${artist == '未知' ? '' : encodeURIComponent(artist)}`),
+        let result = (await axios.get(`/pokaapi/artistAlbums/?moduleName=${encodeURIComponent(moduleName)}&id=${artist == '未知' ? '' : encodeURIComponent(artist)}`)).data,
             isArtistPinned = await isPinned(moduleName, 'artist', artist, artist)
         let pinButton = ``
         if (isArtistPinned && isArtistPinned != 'disabled')
             pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="從首頁釘選移除該演出者" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
         else if (isArtistPinned != 'disabled')
             pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="加入該演出者到首頁釘選" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
-        let albumHTML = template.parseAlbums(result.data.albums)
+        let albumHTML = template.parseAlbums(result.albums)
         if ($("#content").attr('data-item') == `artist${artist}`) {
             $("#content").html(albumHTML + pinButton)
             $("[data-pinned]").click(async function() {
