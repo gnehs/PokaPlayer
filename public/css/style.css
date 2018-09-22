@@ -633,21 +633,6 @@ header.mdui-appbar.mdui-appbar-fixed {
     height: 48px;
 }
 
-[data-player]>.info>.ctrl>.random,
-[data-player]>.info>.ctrl>.loop {
-    font-size: 0;
-}
-
-[data-player]>.info>.ctrl>.mdui-btn svg {
-    height: 24px;
-    width: 24px;
-    font-size: 24px;
-}
-
-.mdui-theme-layout-dark [data-player]>.info>.ctrl>.mdui-btn svg {
-    filter: Invert(1);
-}
-
 @media screen and (min-width: 555px) {
     [data-player] {
         margin-top: 32px;
