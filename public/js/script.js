@@ -278,10 +278,17 @@ function secondToTime(second) {
 var playMode;
 
 function changePlayMode(get) {
-    let loop = Number(playMode || 1)
+    let loop = Number(playMode || 2)
     let icon;
+    if (!playMode && get) {
+        return `repeat`
+    }
     if (get) {
-        let modes = [`repeat_one`, `repeat`, `shuffle`]
+        let modes = [
+            `repeat_one`,
+            `repeat`,
+            `shuffle`,
+        ]
         return modes[loop]
     }
     switch (loop) {
@@ -783,7 +790,7 @@ async function showNow() {
     // random＆loop
     $("[data-player]>.info>.ctrl>.random")
         .html(function() {
-            return `<i class="mdui-icon material-icons">${changePlayMode(true)||'repeat'}</i>`
+            return `<i class="mdui-icon material-icons">${changePlayMode(true)}</i>`
         })
         .click(function() {
             $(this).html(`<i class="mdui-icon material-icons">${changePlayMode()}</i>`)
