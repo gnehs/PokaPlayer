@@ -24,9 +24,9 @@ const flatMap = (f, xs) => xs.map(f).reduce(concat, []);
 function randomWord(randomFlag, min, max) {
   let str = "";
 
-  var range = min;
+  let range = min;
 
-  var arr = [
+  let arr = [
     "0",
     "1",
     "2",
@@ -151,6 +151,9 @@ const normalOptions = (url, req = {}) => {
     followAllRedirects: true
   };
 };
+
+const imageUrl = x =>
+  `/pokaapi/req/?moduleName=Netease2&data=${encodeURIComponent(genReq(x))}`;
 
 function migrate(org, t, offset = 10 ** -3) {
   const isDigit = x => !isNaN(Number(x));
@@ -377,10 +380,35 @@ async function onLoaded() {
   });
 }
 
-function req(link) {
+function req(x) {
+  function deReq(x) {
+    const b2a = x => Buffer.from(x, "base64").toString("utf8");
+    const decode = x => /(.{5})(.+)3C4C7CB3(.+)/.exec(x);
+    const log = (x, y) => Math.log(y) / Math.log(x);
+
+    let [_, rand, link, checkSum] = decode(x);
+    [_, rand, link, checkSum] = [_, rand, b2a(link), b2a(checkSum)];
+    if (
+      !Number.isInteger(Math.log10(rand.charCodeAt(0) + checkSum.charCodeAt(0)))
+    ) {
+      return false;
+    }
+    return link;
+  }
+  let link = deReq(x);
+  if (!link) return false;
   const re = /^(http|https)\:\/\/p(\d+)\.music\.126\.net\/(?:.+)/;
   if (!re.test(link)) return false;
   else return request(normalOptions(link));
+}
+
+function genReq(link) {
+  const a2b = x => Buffer.from(x).toString("base64");
+  const rand = randomWord(false, 5);
+  const checkSum = N => 10 ** Number(N).toString().length - N;
+  return `${rand}${a2b(link)}3C4C7CB3${a2b(
+    String.fromCharCode(checkSum(rand.charCodeAt(0)))
+  )}`;
 }
 
 async function parseSongs(songs, br = 999000) {
@@ -391,9 +419,7 @@ async function parseSongs(songs, br = 999000) {
         name: song.name,
         artist: song.ar.map(x => x.name || "").join(", "),
         album: song.al.name || "",
-        cover: `/pokaapi/req/?moduleName=Netease2&data=${encodeURIComponent(
-          song.al.picUrl
-        )}`,
+        cover: imageUrl(song.al.picUrl),
         url: `/pokaapi/song/?moduleName=Netease2&songId=${song.id}`,
         codec: "mp3",
         // lrc: song.id,
@@ -463,9 +489,7 @@ async function parseAlbums(albums) {
     name: x.name,
     artist: x.artists.map(i => i.name).join(" ,"),
     year: new Date(x.publishTime).getFullYear(),
-    cover: `/pokaapi/req/?moduleName=Netease2&data=${encodeURIComponent(
-      x.picUrl
-    )}`,
+    cover: imageUrl(x.picUrl),
     source: "Netease2",
     id: x.id
   }));
@@ -474,9 +498,7 @@ async function parseAlbums(albums) {
 async function parseArtists(artists) {
   return (await artists).map(x => ({
     name: x.name,
-    cover: `/pokaapi/req/?moduleName=Netease2&data=${encodeURIComponent(
-      x.picUrl
-    )}`,
+    cover: imageUrl(x.picUrl),
     source: "Netease2",
     id: x.id
   }));
@@ -485,7 +507,7 @@ async function parseArtists(artists) {
 async function parsePlaylists(playlists) {
   return (await playlists).map(x => ({
     name: x.name,
-    image: x.coverImgUrl,
+    image: imageUrl(x.coverImgUrl),
     source: "Netease2",
     id: x.id
   }));
@@ -584,7 +606,7 @@ async function resolveTopPlaylistStack(topPlaylistStack) {
     name: x.name,
     source: "Netease2",
     id: x.id,
-    image: x.coverImgUrl,
+    image: imageUrl(x.coverImgUrl),
     from: "topPlaylistStack"
   }));
   return [].concat(...playlists);
@@ -596,7 +618,7 @@ async function resolvePlaylistStack(playlistStack) {
     name: x.playlist.name,
     source: "Netease2",
     id: x.playlist.id,
-    image: x.playlist.coverImgUrl,
+    image: imageUrl(x.playlist.coverImgUrl),
     from: "playlistStack"
   }));
 }
@@ -610,7 +632,7 @@ async function resolvedailyRecommendStack(dailyRecommendStack) {
     ).map(x => ({
       name: x.name,
       id: x.id,
-      image: x.coverImgUrl,
+      image: imageUrl(x.coverImgUrl || x.picUrl),
       source: "Netease2",
       from: "dailyRecommendStack"
     }))
@@ -631,7 +653,7 @@ async function getPlaylists(playlists) {
       name: x.name,
       source: "Netease2",
       id: x.id,
-      image: x.coverImgUrl,
+      image: imageUrl(x.coverImgUrl),
       from: "getUserPlaylists"
     }));
   }
@@ -839,7 +861,7 @@ async function getPlaylistSongs(id, br = 999000) {
             name: name ? name : result.playlist.name,
             source: "Netease2",
             id: id,
-            image: result.playlist.coverImgUrl
+            image: imageUrl(result.playlist.coverImgUrl)
           }
         ]
       };
