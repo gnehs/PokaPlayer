@@ -455,6 +455,10 @@ async function showAlbum() {
 }
 //- 展示專輯歌曲
 async function showAlbumSongs(albumSource, albumID) {
+    //如果從首頁按進去頁籤沒切換
+    $("#content").attr('data-page', `album`)
+    $("#content").attr('data-item', `album${albumID}`)
+
     let name, artist, cover, result;
     if (albumSource == 'DSM') {
         let albumData = JSON.parse(albumID)
@@ -475,11 +479,7 @@ async function showAlbumSongs(albumSource, albumID) {
     }
 
     pokaHeader('', '', cover)
-        //如果從首頁按進去頁籤沒切換
-    $("#content").attr('data-page', `album`)
-    $("#content").attr('data-item', `album${albumID}`)
     let albumInfo = template.infoHeader(cover, name, artist)
-
 
     // 展示讀取中
     $("#content").html(albumInfo + template.getSpinner())
@@ -555,25 +555,25 @@ async function showFolder(moduleName, folderId) {
         router.updatePageLinks()
     }
 }
-async function showArtist(moduleName, artist) {
-    let data = moduleName != 'DSM' ? (await axios.get(`/pokaapi/artist/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(artist)}`)).data : undefined;
-    let cover = moduleName == 'DSM' ?
+async function showArtist(moduleName, artist = false) {
+    let data = moduleName != 'DSM' && artist ? (await axios.get(`/pokaapi/artist/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(artist)}`)).data : undefined;
+    let cover = artist ? (moduleName == 'DSM' ?
         `/pokaapi/cover/?moduleName=${encodeURIComponent(moduleName)}&data=${encodeURIComponent(JSON.stringify({ "type": "artist", "info": artist }))}` :
-        data.cover
-    pokaHeader(artist ? moduleName == 'DSM' ? artist : data.name : "演出者", artist ? "演出者" : "列出所有演出者", artist ? cover : false)
+        data.cover) : false
+    pokaHeader(artist ? moduleName == 'DSM' ? artist : data.name : "演出者", artist ? "演出者" : "列出所有演出者", cover)
     $("#content").attr('data-page', 'artist')
     $("#content").html(template.getSpinner())
     mdui.mutation()
-    if (artist) {
+    if (artist && moduleName) {
         $("#content").attr('data-item', `artist${artist}`)
-        let result = await axios.get(`/pokaapi/artistAlbums/?moduleName=${encodeURIComponent(moduleName)}&id=${artist == '未知' ? '' : encodeURIComponent(artist)}`),
+        let result = (await axios.get(`/pokaapi/artistAlbums/?moduleName=${encodeURIComponent(moduleName)}&id=${artist == '未知' ? '' : encodeURIComponent(artist)}`)).data,
             isArtistPinned = await isPinned(moduleName, 'artist', artist, artist)
         let pinButton = ``
         if (isArtistPinned && isArtistPinned != 'disabled')
             pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="從首頁釘選移除該演出者" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
         else if (isArtistPinned != 'disabled')
             pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="加入該演出者到首頁釘選" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
-        let albumHTML = template.parseAlbums(result.data.albums)
+        let albumHTML = template.parseAlbums(result.albums)
         if ($("#content").attr('data-item') == `artist${artist}`) {
             $("#content").html(albumHTML + pinButton)
             $("[data-pinned]").click(async function() {
