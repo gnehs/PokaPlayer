@@ -63,3 +63,4 @@ typings/
 #PokaPlayer config
 config.json
 sessions/*
+playlist.json

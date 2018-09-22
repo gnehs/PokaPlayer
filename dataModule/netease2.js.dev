@@ -1,11 +1,11 @@
 const rp = require('request-promise');
 const request = require('request').defaults({ jar: require('request').jar() });
 const server = "http://localhost:4000/";
-const options = (url, qs={}) => +{
+const options = (url, qs={}) => ({
     uri: url,
     qs,
     json: true // Automatically parses the JSON string in the response
-};
+});
 
 const normalOptions = url => ({
     method: 'GET',
@@ -25,17 +25,18 @@ const normalOptions = url => ({
 })
 
 async function parseSongs(songs, br=999000) {
-    let urls = await getSongsUrl(songs, br)
-    return songs.map((song, index) => {
+    let urls = await getSongsUrl(songs.map(x => x.id), br)
+    return (await songs).map(async (song, index) => {
+        song = await song;
         return {
             name: song.name,
             artist: song.ar.map(x => x.name),
             album: song.al.name,
             cover: song.al.picUrl.replace('http', 'https'),
             url: urls[index].url,
-            bitrate: song.h.br,
+            bitrate: song.h ? song.h.br : (song.m ? song.m.br : song.l.br),
             codec: "mp3",
-            lrc: song.lyric_id,
+            // lrc: song.id,
             source: "Netease2",
             id: song.id,
         }
@@ -52,7 +53,7 @@ async function getSong(id, br=999000) {
 async function getSongs(songs, br=999000) {
     let isArray = Array.isArray(songs);
     songs = isArray ? songs : [songs];
-    let result = await parseSongs(songs.map(x => (await rp(options(`${server}song/detail?ids=${x}`))).songs[0]), br);
+    let result = await parseSongs(await Promise.all(songs.map(async x => (await rp(options(`${server}song/detail?ids=${x}&timestamp=${Math.floor(Date.now() / 1000)}`))).songs[0])), br);
     return isArray ? result : result[0];
 }
 
@@ -68,9 +69,45 @@ async function getCover(id) {
 }
 
 async function getCovers(ids) {
-    return (await getSongs(ids)).map(x => request(normalOptions(x.cover)))
+    return (await getSongs(ids)).map(async x => request(normalOptions((await x).cover)))
 }
 
+async function search(keywords, limit=30, type='song') {
+    async function parseSearchResults(results, type='song') {
+        switch (type) {
+            case 'song':
+                return await getSongs(results.map(x => x.id))
+        }
+    }
+    
+    typeNum = {
+        song: 1,
+        album: 10,
+        artist: 100,
+        playlist: 1000,
+        // user: 1002,
+        // mv: 1004,
+        // lyric: 1006,
+        // radio: 1009
+    }[type]
+    let result = (await rp(options(`${server}search?keywords=${keywords}&type=${typeNum}&limit=${limit}`))).result[type + 's']
+    return await parseSearchResults(result, type)
+}
+
+async function debug() {
+    function isSong(song) {
+        return [name, artist, album, cover, url, bitrate, codec, lrc, source, id].every(x => song.hasOwnProperty(x))
+    }
+
+    const songIds = [34986002, 1297743786]
+    const keyword = 'Cheers'
+    if (module.exports.hasOwnProperty('getSong')) (getSong(songIds[0])).then(x => {console.log('getSong:', x.uri.href, '\n\n');x.abort()})
+    if (module.exports.hasOwnProperty('getSongs')) console.log('getSongs:', await Promise.all(await getSongs(songIds)), '\n\n')
+    if (module.exports.hasOwnProperty('getSongsUrl')) console.log('getSongsUrl:', await getSongsUrl(songIds[0]), '\n\n')
+    if (module.exports.hasOwnProperty('getCover')) console.log('getCover:', (await getCover(songIds[0])).uri.href, '\n\n')
+    if (module.exports.hasOwnProperty('getCovers')) console.log('getCovers:', await Promise.all((await getCovers(songIds)).map(async x => (await x).uri.href)), '\n\n')
+    if (module.exports.hasOwnProperty('search')) console.log('search:', await Promise.all(await search(keyword, 2)))
+}
 
 module.exports = {
     name: 'Netease',
@@ -80,16 +117,19 @@ module.exports = {
     getCover, //done
     getCovers, //done
     search,
-    getAlbumSongs,
+    ///getAlbumSongs,
     // getFolders,
     // getFolderFiles,
     // getArtists,
-    getArtistSongs,
+    ///getArtistSongs,
     // getArtistAlbums,
     // getComposers,
     // getComposerAlbums,
     // getPlaylists,
-    getPlaylistSongs,
-    getLyric,
-    searchLyrics
+    ///getUserPlaylist,
+    ///getPlaylistSongs,
+    ///getLyric,
+    ///searchLyrics
 };
+
+debug().then(() => {})

@@ -49,11 +49,14 @@ $(() => {
     // 在進入網頁時嘗試登入
     tryRelogin()
 
-    $(`#drawer a[href="${$('#content').attr('data-page')}"]`).addClass('mdui-list-item-active')
-    if ($(window).width() < 1024) {
-        $('#drawer a').attr("mdui-drawer", "{target: '#drawer', swipe: true}")
-        mdui.mutation()
-    }
+    $(`#drawer a[href="${$('#content').attr('data-page')}"]`)
+        .addClass('mdui-list-item-active')
+    $(`#drawer a`)
+        .click(function() {
+            if ($(window).width() < 1024) {
+                new mdui.Drawer("#drawer").close();
+            }
+        })
     $('#player>*:not(.ctrl)').click(() => router.navigate('now'));
     // 初始化 MediaSession
     updateMediaSession()

@@ -21,7 +21,11 @@ async function addPin(source, type, id, name) {
             message: `釘選失敗`,
             timeout: 400,
             position: getSnackbarPosition()
-        });
+        })
+    else
+        caches.open('PokaPlayer').then(function(cache) {
+            cache.delete('/pokaapi/home')
+        })
     return result
 }
 async function unPin(source, type, id, name) {
@@ -31,7 +35,11 @@ async function unPin(source, type, id, name) {
             message: `取消釘選失敗`,
             timeout: 400,
             position: getSnackbarPosition()
-        });
+        })
+    else
+        caches.open('PokaPlayer').then(function(cache) {
+            cache.delete('/pokaapi/home')
+        })
     return result
 }
 /*===== 歌詞 =====*/
@@ -48,7 +56,6 @@ async function getLrc(artist, title, id = false, source) {
     if (result.data.lyrics[0]) {
         let lrcTitle = result.data.lyrics[0].name.toLowerCase().replace(/\.|\*|\~|\&|。|，|\ |\-|\!|！|\(|\)/g, '')
         let songTitle = title.toLowerCase().replace(/\.|\*|\~|\&|。|，|\ |\-|\!|！|\(|\)/g, '')
-        console.log(lrcTitle, songTitle)
         if (lrcTitle == songTitle)
             return result.data.lyrics[0].lyric
     }
