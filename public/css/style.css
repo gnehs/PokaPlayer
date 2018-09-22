@@ -195,87 +195,156 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 /* 專輯頁面檢視 */
 
-.albums {
+.poka.cards {
     display: flex;
     flex-wrap: wrap;
     margin: 0;
     margin: -0.875em -0.5em;
 }
 
-.album {
+.poka.cards .card {
     --album-size: calc(16.6% - 1em);
     height: 0;
     width: var(--album-size);
-    padding-bottom: var(--album-size);
     font-size: 10px;
     margin: .875em 0.5em;
     background-position: center;
     background-size: cover;
+    padding-bottom: var(--album-size);
 }
 
-.album:nth-child(5n+1) {
-    background-color: rgb(210, 105, 30);
+.poka.cards .card {
+    display: block;
+    height: auto;
+    padding-bottom: 0;
+    text-decoration: none;
 }
 
-.album:nth-child(5n+2) {
-    background-color: rgb(30, 210, 30);
+.poka.cards .card .image {
+    height: 0;
+    padding-bottom: 100%;
+    background-size: cover;
+    border-radius: .8em;
+    box-shadow: 0 10px 15px #0000002e;
+    transition: all .2s;
+    will-change: box-shadow, transform;
+    position: relative;
 }
 
-.album:nth-child(5n+3) {
-    background-color: rgb(29, 179, 233);
+.poka.cards .card .image i {
+    color: #FFF;
+    font-size: 6em;
+    margin: auto;
+    height: 1em;
+    display: block;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    position: absolute;
 }
 
-.album:nth-child(5n+4) {
-    background-color: rgb(255, 179, 179);
+.poka.cards .card:hover .image {
+    box-shadow: 0 10px 20px #00000080;
+    transform: translateY(-3px);
 }
 
-.album:nth-child(5n+5) {
-    background-color: rgb(62, 47, 146);
+.poka.cards .card .title {
+    font-size: 1.8em;
+    padding-top: 5px;
+    line-height: 1.5em;
+    font-weight: bold;
 }
 
-.album .mdui-card-media {
-    position: unset;
+.poka.cards .card .subtitle {
+    font-size: 1.2em;
+    padding-top: 0px;
+    line-height: 1.5em;
 }
 
-.album .mdui-card-primary-title {
-    font-size: 1.5em;
-    line-height: 1.6em;
+.poka.cards .card .image {
+    background-color: #F44336;
 }
 
-.album>.mdui-card-media>img {
-    object-fit: cover;
-    align-items: center;
-    justify-content: center;
-    max-width: 100%;
+.poka.cards .card:nth-child(14n+2) .image {
+    background-color: #E91E63;
+}
+
+.poka.cards .card:nth-child(14n+3) .image {
+    background-color: #9C27B0;
+}
+
+.poka.cards .card:nth-child(14n+4) .image {
+    background-color: #673AB7;
+}
+
+.poka.cards .card:nth-child(14n+5) .image {
+    background-color: #3F51B5;
+}
+
+.poka.cards .card:nth-child(14n+6) .image {
+    background-color: #2196F3;
+}
+
+.poka.cards .card:nth-child(14n+7) .image {
+    background-color: #00BCD4
+}
+
+.poka.cards .card:nth-child(14n+8) .image {
+    background-color: #009688
+}
+
+.poka.cards .card:nth-child(14n+9) .image {
+    background-color: #4CAF50
+}
+
+.poka.cards .card:nth-child(14n+10) .image {
+    background-color: #8BC34A
+}
+
+.poka.cards .card:nth-child(14n+11) .image {
+    background-color: #CDDC39
+}
+
+.poka.cards .card:nth-child(14n+12) .image {
+    background-color: #FF5722
+}
+
+.poka.cards .card:nth-child(14n+13) .image {
+    background-color: #795548
+}
+
+.poka.cards .card:nth-child(14n+14) .image {
+    background-color: #9E9E9E
 }
 
 @media (max-width: 575.98px) {
-    .album {
+    .poka.cards .card {
         --album-size: calc(50% - 1em);
         font-size: 9px;
     }
 }
 
 @media (min-width: 576px) and (max-width: 767.98px) {
-    .album {
+    .poka.cards .card {
         --album-size: calc(33.3% - 1em);
     }
 }
 
 @media (min-width: 768px) and (max-width: 991.98px) {
-    .album {
+    .poka.cards .card {
         --album-size: calc(25% - 1em);
     }
 }
 
 @media (min-width: 992px) and (max-width: 1199.98px) {
-    .album {
+    .poka.cards .card {
         --album-size: calc(20% - 1em);
     }
 }
 
 @media (min-width: 1200px) {
-    .album {
+    .poka.cards .card {
         --album-size: calc(16.6% - 1em);
     }
 }
@@ -304,6 +373,8 @@ header.mdui-appbar.mdui-appbar-fixed {
     flex-direction: column;
     background-size: cover;
     background-position: center;
+    border-radius: .8em;
+    box-shadow: 0 10px 15px #0000002e;
 }
 
 .info-header>.info {
