@@ -395,7 +395,12 @@ async function search(keywords, limit = 30) {
     let result = await Object.keys(typeNums).reduce(async (results, type) => {
         let types = type + 's';
         let typeNum = typeNums[type];
-        let result = (await rp(options(`${server}search?keywords=${keywords}&type=${typeNum}&limit=${limit}`))).result[types] || [];
+        let result;
+        try {
+            result = (await rp(options(`${server}search?keywords=${keywords}&type=${typeNum}&limit=${limit}`))).result[types]
+        } catch (e) {
+            result = []
+        }
         if (isPromise(results)) results = await results;
         results[types] = await parseSearchResults(result, type);
         return results
