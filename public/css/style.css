@@ -198,8 +198,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 .poka.cards {
     display: flex;
     flex-wrap: wrap;
-    margin: 0;
-    margin: -0.875em -0.5em;
+    margin: -0.875em -1.5em;
 }
 
 .poka.cards .card {
@@ -207,7 +206,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     height: 0;
     width: var(--album-size);
     font-size: 10px;
-    margin: .875em 0.5em;
+    margin: .875em 1.5em;
     background-position: center;
     background-size: cover;
     padding-bottom: var(--album-size);
@@ -225,10 +224,15 @@ header.mdui-appbar.mdui-appbar-fixed {
     padding-bottom: 100%;
     background-size: cover;
     border-radius: .8em;
-    box-shadow: 0 10px 15px #0000002e;
+    box-shadow: 0 5px 10px #0000002e;
     transition: all .2s;
     will-change: box-shadow, transform;
     position: relative;
+}
+
+.poka.cards .card:hover .image {
+    box-shadow: 0 10px 15px #00000080;
+    transform: translateY(-3px);
 }
 
 .poka.cards .card .image i {
@@ -242,11 +246,6 @@ header.mdui-appbar.mdui-appbar-fixed {
     bottom: 0;
     left: 0;
     position: absolute;
-}
-
-.poka.cards .card:hover .image {
-    box-shadow: 0 10px 20px #00000080;
-    transform: translateY(-3px);
 }
 
 .poka.cards .card .title {
