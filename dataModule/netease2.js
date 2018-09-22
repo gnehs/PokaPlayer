@@ -384,8 +384,7 @@ function req(x) {
   function deReq(x) {
     const b2a = x => Buffer.from(x, "base64").toString("utf8");
     const decode = x => /(.{5})(.+)3C4C7CB3(.+)/.exec(x);
-    const log = (x, y) => Math.log(y) / Math.log(x);
-
+    
     let [_, rand, link, checkSum] = decode(x);
     [_, rand, link, checkSum] = [_, rand, b2a(link), b2a(checkSum)];
     if (
@@ -507,7 +506,7 @@ async function parseArtists(artists) {
 async function parsePlaylists(playlists) {
   return (await playlists).map(x => ({
     name: x.name,
-    image: imageUrl(x.coverImgUrl),
+    image: imageUrl(x.coverImgUrl || x.picUrl),
     source: "Netease2",
     id: x.id
   }));
@@ -606,7 +605,7 @@ async function resolveTopPlaylistStack(topPlaylistStack) {
     name: x.name,
     source: "Netease2",
     id: x.id,
-    image: imageUrl(x.coverImgUrl),
+    image: imageUrl(x.coverImgUrl || x.picUrl),
     from: "topPlaylistStack"
   }));
   return [].concat(...playlists);
@@ -618,7 +617,7 @@ async function resolvePlaylistStack(playlistStack) {
     name: x.playlist.name,
     source: "Netease2",
     id: x.playlist.id,
-    image: imageUrl(x.playlist.coverImgUrl),
+    image: imageUrl(x.playlist.coverImgUrl || x.playlist.picUrl),
     from: "playlistStack"
   }));
 }
@@ -653,7 +652,7 @@ async function getPlaylists(playlists) {
       name: x.name,
       source: "Netease2",
       id: x.id,
-      image: imageUrl(x.coverImgUrl),
+      image: imageUrl(x.coverImgUrl || x.picUrl),
       from: "getUserPlaylists"
     }));
   }
@@ -861,7 +860,9 @@ async function getPlaylistSongs(id, br = 999000) {
             name: name ? name : result.playlist.name,
             source: "Netease2",
             id: id,
-            image: imageUrl(result.playlist.coverImgUrl)
+            image: imageUrl(
+              result.playlist.coverImgUrl || result.playlist.picUrl
+            )
           }
         ]
       };
