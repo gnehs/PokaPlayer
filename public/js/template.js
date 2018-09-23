@@ -1,73 +1,66 @@
 const template = {
-    getSpinner: () =>
-        `<div class="mdui-spinner mdui-spinner-colorful mdui-center" style="margin-top:80px"></div>`,
+    getSpinner: () => `<div class="mdui-spinner mdui-spinner-colorful mdui-center" style="margin-top:80px"></div>`,
     parseHome: data => {
         let r = ``;
         if (data.albums.length > 0) {
-            r += `<h1>專輯</h1>`;
-            r += template.parseAlbums(data.albums);
+            r += `<h1>專輯</h1>`
+            r += template.parseAlbums(data.albums)
         }
         if (data.artists.length > 0) {
-            r += `<h1>演出者</h1>`;
-            r += template.parseArtists(data.artists);
+            r += `<h1>演出者</h1>`
+            r += template.parseArtists(data.artists)
         }
         if (data.composers.length > 0) {
-            r += `<h1>作曲者</h1>`;
-            r += template.parseComposers(data.composers);
+            r += `<h1>作曲者</h1>`
+            r += template.parseComposers(data.composers)
         }
         if (data.playlists.length > 0) {
-            r += `<h1>播放清單</h1>`;
-            r += template.parsePlaylists(data.playlists);
+            r += `<h1>播放清單</h1>`
+            r += template.parsePlaylists(data.playlists)
         }
         if (data.folders.length > 0) {
-            r += `<h1>資料夾</h1>`;
-            r += template.parseFolder(data.folders);
+            r += `<h1>資料夾</h1>`
+            r += template.parseFolder(data.folders)
         }
         if (data.songs.length > 0) {
-            r += `<h1>歌曲</h1>`;
-            r += template.parseSongs(data.songs);
+            r += `<h1>歌曲</h1>`
+            r += template.parseSongs(data.songs)
         }
-        return r;
+        return r
     },
     parseFolder: folders => {
-        let html = `<ul class="mdui-list">`;
+        let html = `<ul class="mdui-list">`
         for (i = 0; i < folders.length; i++) {
-            let folder = folders[i];
-            html += `<li class="mdui-list-item mdui-ripple" href="folder/${
-                folder.source
-            }/${folder.id}" data-navigo>
+            let folder = folders[i]
+            html += `<li class="mdui-list-item mdui-ripple" href="folder/${folder.source}/${folder.id}" data-navigo>
                         <i class="mdui-list-item-avatar mdui-icon material-icons">folder</i>
                         <div class="mdui-list-item-content">${folder.name}</div>
-                    </li>`;
+                    </li>`
         }
-        html += `</ul>`;
-        return html;
+        html += `</ul>`
+        return html
     },
     parseSongs: songs => {
-        songList = songs;
-        let html = `<div class="songs"><div class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4">`;
+        songList = songs
+        let html = `<div class="songs"><div class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4">`
         for (i = 0; i < songs.length; i++) {
-            let song = songs[i];
-            let title = song.name;
-            let artist = song.artist;
-            let clickAction = `onclick="playSongs(songList,'${
-                song.id
-            }');router.navigate('now');" `;
-            let addAction = `onclick="addSong(songList,'${song.id}')"`;
+            let song = songs[i]
+            let title = song.name
+            let artist = song.artist
+            let clickAction = `onclick="playSongs(songList,'${song.id}');router.navigate('now');" `
+            let addAction = `onclick="addSong(songList,'${song.id}')"`
 
-            let img =
-                window.localStorage["imgRes"] == "true"
-                    ? ""
-                    : `<div class="mdui-list-item-avatar" ${clickAction}>
+            let img = window.localStorage["imgRes"] == "true" ? '' :
+                `<div class="mdui-list-item-avatar" ${clickAction}>
                     <img src="${song.cover || getBackground()}"/>
-                </div>`;
+                </div>`
 
             html += `
             <div class="mdui-col"><li class="mdui-list-item mdui-ripple">
                 ${img}
                 <div class="mdui-list-item-content" 
                      ${clickAction}
-                     title="${title}${artist ? "&#10;" + artist : ""}">
+                     title="${title}${artist ? '&#10;' + artist : ''}">
                     <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
                     <div class="mdui-list-item-text mdui-list-item-one-line">${artist}</div>
                 </div>
@@ -76,132 +69,92 @@ const template = {
                         title="加入這首歌曲到現正播放">
                     <i class="mdui-icon material-icons">add</i>
                 </button>
-            </li></div>`;
+            </li></div>`
         }
-        html += "</div></div>";
-        return html;
+        html += '</div></div>'
+        return html
+
     },
     parseAlbums: albums => {
-        let html = `<div class="poka cards">`;
+        let html = `<div class="poka cards">`
         for (i = 0; i < albums.length; i++) {
-            let album = albums[i];
-            let name = album.name;
-            let artist = album.artist;
-            let img =
-                window.localStorage["imgRes"] == "true"
-                    ? window.localStorage["randomImg"]
-                    : album.cover.replace(/'/g, "\\'") || getBackground();
+            let album = albums[i]
+            let name = album.name
+            let artist = album.artist
+            let img = window.localStorage["imgRes"] == "true" ? window.localStorage["randomImg"] : album.cover.replace(/'/g, "\\'") || getBackground()
             html += `
                <a class="card" 
-                  title="${name}${artist ? "&#10;" + artist : ""}"
+                  title="${name}${artist ? '&#10;' + artist : ''}"
                   href="album/${album.source}/${encodeURIComponent(album.id)}"  
                   data-navigo>
                    <div class="image mdui-ripple" style="background-image:url('${img}')"></div>
                    <div class="title mdui-text-color-theme-text mdui-text-truncate">${name}</div>
                    <div class="subtitle mdui-text-color-theme-text mdui-text-truncate">${artist}</div>
-               </a>`;
+               </a>`
         }
-        html += "</div>";
-        return html;
+        html += "</div>"
+        return html
     },
     parseArtists: artists => {
-        let html = `<div class="poka cards">`;
+        let html = `<div class="poka cards">`
         for (i = 0; i < artists.length; i++) {
-            let artist = artists[i];
-            let name = artist.name ? artist.name : "未知";
-            let img =
-                window.localStorage["imgRes"] == "true"
-                    ? getBackground()
-                    : artist.cover.replace("'", "\\'") || getBackground();
+            let artist = artists[i]
+            let name = artist.name ? artist.name : "未知"
+            let img = window.localStorage["imgRes"] == "true" ? getBackground() : artist.cover.replace("'", "\\'") || getBackground()
             html += `
             <a class="card" 
                title="${name}"
-               href="artist/${encodeURIComponent(
-                   artist.source
-               )}/${encodeURIComponent(
-                artist.source == "DSM" ? name : artist.id
-            )}" 
+               href="artist/${encodeURIComponent(artist.source)}/${encodeURIComponent(artist.source == 'DSM' ? name : artist.id)}" 
                data-navigo>
                 <div class="image mdui-ripple" style="background-image:url('${img}')"></div>
                 <div class="title mdui-text-color-theme-text mdui-text-truncate">${name}</div>
-            </a>`;
+            </a>`
         }
-        html += "</div>";
-        return html;
+        html += '</div>'
+        return html
     },
     parseComposers: composers => {
-        let html = `<div class="poka cards">`;
+        let html = `<div class="poka cards">`
         for (i = 0; i < composers.length; i++) {
-            let composer = composers[i];
-            let name = composer.name ? composer.name : "未知";
-            let img =
-                window.localStorage["imgRes"] == "true"
-                    ? getBackground()
-                    : composer.cover.replace("'", "\\'") || getBackground();
+            let composer = composers[i]
+            let name = composer.name ? composer.name : "未知"
+            let img = window.localStorage["imgRes"] == "true" ? getBackground() : composer.cover.replace("'", "\\'") || getBackground()
             html += `
             <a class="card" 
                title="${name}"
-               href="artist/${encodeURIComponent(
-                   composer.source
-               )}/${encodeURIComponent(
-                composer.source == "DSM" ? name : composer.id
-            )}" 
+               href="artist/${encodeURIComponent(composer.source)}/${encodeURIComponent(composer.source == 'DSM' ? name : composer.id)}" 
                data-navigo>
                 <div class="image mdui-ripple" style="background-image:url('${img}')"></div>
                 <div class="title mdui-text-color-theme-text mdui-text-truncate">${name}</div>
-            </a>`;
+            </a>`
         }
-        html += "</div>";
-        return html;
+        html += '</div>'
+        return html
     },
     parsePlaylists: playlists => {
-        let html = `<div class="poka cards">`;
+        let html = `<div class="poka cards">`
         for (i = 0; i < playlists.length; i++) {
-            let playlist = playlists[i];
-            let img =
-                playlist.image && window.localStorage["imgRes"] != "true"
-                    ? `style="background-image:url('${playlist.image}')"`
-                    : ``;
-            let icon =
-                playlist.image && window.localStorage["imgRes"] != "true"
-                    ? ``
-                    : `<i class="mdui-icon material-icons">playlist_play</i>`;
-            let href =
-                playlist.type == "folder"
-                    ? "javascript:void(0);"
-                    : `playlist/${encodeURIComponent(
-                          playlist.source
-                      )}/${encodeURIComponent(playlist.id)}`;
-
+            let playlist = playlists[i]
+            let img = playlist.image && window.localStorage["imgRes"] != "true" ? `style="background-image:url('${playlist.image}')"` : ``
+            let icon = playlist.image && window.localStorage["imgRes"] != "true" ? `` : `<i class="mdui-icon material-icons">playlist_play</i>`
+            let href = playlist.type == 'folder' ? `playlistFolder/${encodeURIComponent(playlist.id)}` : `playlist/${encodeURIComponent(playlist.source)}/${encodeURIComponent(playlist.id)}`
             html += `
             <a class="card" 
                title="${playlist.name}"
                href="${href}"
-               ${
-                   playlist.type == "folder"
-                       ? `onclick=\'showPlaylist(JSON.parse(this.dataset.playlist));\' data-playlist=\'${JSON.stringify(
-                             playlist
-                         )}\'`
-                       : ""
-               }
-               ${playlist.type == "folder" ? "" : "data-navigo"}>
+               data-navigo>
                 <div class="image mdui-ripple" ${img}>${icon}</div>
-                <div class="title mdui-text-color-theme-text mdui-text-truncate">${
-                    playlist.name
-                }</div>
-            </a>`;
+                <div class="title mdui-text-color-theme-text mdui-text-truncate">${playlist.name}</div>
+            </a>`
         }
-        html += "</div>";
-        return html;
+        html += '</div>'
+        return html
     },
     infoHeader: (cover, name, artist) => {
         return `
         <div class="info-header">
             <div class="cover mdui-shadow-1" 
-                 style="background-image:url('${cover.replace(
-                     /'/g,
-                     "\\'"
-                 )}')"></div>
+                 style="background-image:url('${cover.replace(/'/g, "\\'")}')"></div>
             <div class="info">
                 <div class="album-name mdui-text-truncate mdui-text-color-theme-text" 
                      title="${name}">${name}</div>
@@ -215,6 +168,6 @@ const template = {
                 </div>
             </div>
         </div>
-        <div class="mdui-divider" style="margin: 10px 0"></div>`;
+        <div class="mdui-divider" style="margin: 10px 0"></div>`
     }
-};
+}
