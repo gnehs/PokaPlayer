@@ -521,7 +521,7 @@ async function showSearch(keyword) {
 //- 列出專輯
 async function showAlbum() {
     // 展示讀取中
-    pokaHeader("專輯", "列出所有專輯");
+    pokaHeader("專輯", "");
     $("#content").attr("data-page", "album");
     $("#content").html(template.getSpinner());
     mdui.mutation();
@@ -641,7 +641,7 @@ async function showAlbumSongs(albumSource, albumID) {
 async function showFolder(moduleName, folderId) {
     $("#content").attr("data-page", "folder");
     // 展示讀取中
-    pokaHeader("資料夾", "檢視資料夾的項目");
+    pokaHeader("資料夾", moduleName);
     $("#content").html(template.getSpinner());
     mdui.mutation();
 
@@ -682,7 +682,7 @@ async function showArtist(moduleName, artist = false) {
         : false;
     pokaHeader(
         artist ? (moduleName == "DSM" ? artist : data.name) : "演出者",
-        artist ? "演出者" : "列出所有演出者",
+        moduleName,
         cover
     );
     $("#content").attr("data-page", "artist");
@@ -760,7 +760,7 @@ async function showComposer(moduleName, composer) {
     )}`;
     pokaHeader(
         composer ? composer : "作曲者",
-        composer ? "作曲者" : "列出所有作曲者",
+        moduleName,
         composer ? cover : false
     );
     $("#content").attr("data-page", "composer");
@@ -835,7 +835,11 @@ async function showComposer(moduleName, composer) {
 async function showPlaylist(data) {
     // 展示讀取中
     // 有 data 的話代表是資料夾
-    pokaHeader(data ? data.name : "播放清單", data ? data.id : "");
+    pokaHeader(
+        data ? data.name : "播放清單",
+        data ? data.source : "",
+        data && data.image ? data.image : false
+    );
     $("#content").html(template.getSpinner());
     $("#content").attr("data-page", "playlist");
     mdui.mutation();
@@ -873,7 +877,7 @@ async function showPlaylistSongs(moduleName, playlistId) {
     )).data;
     let name = result.playlists[0].name;
     let songs = template.parseSongs(result.songs);
-    pokaHeader(name, "播放清單", result.playlists[0].image || false);
+    pokaHeader(name, moduleName, result.playlists[0].image || false);
 
     let isPlaylistPinned = await isPinned(
         moduleName,
@@ -928,7 +932,7 @@ async function showPlaylistSongs(moduleName, playlistId) {
 //- 隨機播放
 async function showRandom() {
     // 展示讀取中
-    pokaHeader("隨機播放", "隨機取出曲目");
+    pokaHeader("隨機播放", "");
     $("#content").html(template.getSpinner());
     $("#content").attr("data-page", "random");
     mdui.mutation();
