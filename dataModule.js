@@ -282,6 +282,22 @@ router.get("/playlists/", async(req, res) => {
     }
     res.json(r);
 });
+// 取得播放清單資料夾
+router.get("/playlistFolder/", async(req, res) => {
+    //http://localhost:3000/pokaapi/playlistFolder/?moduleName=Netease2&id=hqPlaylist
+    let moduleName = req.query.moduleName;
+    let _module =
+        moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+    // 沒這東西
+    if (!_module ||
+        moduleList[moduleName].active.indexOf("getPlaylists") == -1
+    )
+        return res
+            .status(501)
+            .send("The required module is currently unavailable :(");
+    let r = await _module.getPlaylists(req.query.id);
+    return res.json(r);
+});
 // 取得播放清單的歌曲
 router.get("/playlistSongs/", async(req, res) => {
     //http://localhost:3000/pokaapi/playlistSongs/?moduleName=DSM&id=playlist_shared_normal/15

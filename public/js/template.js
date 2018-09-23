@@ -137,10 +137,11 @@ const template = {
             let playlist = playlists[i]
             let img = playlist.image && window.localStorage["imgRes"] != "true" ? `style="background-image:url('${playlist.image}')"` : ``
             let icon = playlist.image && window.localStorage["imgRes"] != "true" ? `` : `<i class="mdui-icon material-icons">playlist_play</i>`
+            let href = playlist.type == 'folder' ? `playlistFolder/${encodeURIComponent(playlist.id)}` : `playlist/${encodeURIComponent(playlist.source)}/${encodeURIComponent(playlist.id)}`
             html += `
             <a class="card" 
                title="${playlist.name}"
-               href="playlist/${encodeURIComponent(playlist.source)}/${encodeURIComponent(playlist.id)}"
+               href="${href}"
                data-navigo>
                 <div class="image mdui-ripple" ${img}>${icon}</div>
                 <div class="title mdui-text-color-theme-text mdui-text-truncate">${playlist.name}</div>

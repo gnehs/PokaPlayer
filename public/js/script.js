@@ -22,6 +22,7 @@ router
         'composer/:source/:composer': params => showComposer(params.source, params.composer),
         'composer': showComposer,
         'playlist/:source/:playlistID': params => showPlaylistSongs(params.source, params.playlistID),
+        'playlistFolder/:playlistID': params => showPlaylistFolder(params.playlistID),
         'playlist': showPlaylist,
         'random': showRandom,
         'now': showNow,
@@ -657,10 +658,35 @@ async function showPlaylist() {
     mdui.mutation()
     let result = await axios.get(`/pokaapi/playlists`)
     if ($("#content").attr('data-page') == 'playlist') {
-        if (result.data.playlists.length < 0) {
+        if (result.data.playlists.length < 0)
             $("#content").html(`<div class="mdui-valign" style="height:150px"><p class="mdui-center">沒有任何播放清單</p></div>`)
-        }
-        $("#content").html(template.parsePlaylists(result.data.playlists))
+        else
+            $("#content").html(template.parsePlaylists(result.data.playlists))
+        router.updatePageLinks()
+    }
+}
+//- 播放清單資料夾
+async function showPlaylistFolder(playlistId) {
+    // 展示讀取中
+    pokaHeader("讀取中...", '播放清單')
+    $("#content").html(template.getSpinner())
+    $('#content').attr('data-page', 'playlist')
+    $('#content').attr('data-item', `playlist${playlistId}`)
+    mdui.mutation()
+    let result = await axios.get(`/pokaapi/playlists`)
+    let playlists = (result.data.playlists.filter(x => x.id == playlistId)),
+        playlistName = playlists[0].name
+
+    playlists = playlists[0].playlists
+
+    console.log(playlists)
+
+    if ($("#content").attr('data-item') == `playlist${playlistId}`) {
+        pokaHeader(playlistName, '播放清單')
+        if (result.data.playlists.length < 0)
+            $("#content").html(`<div class="mdui-valign" style="height:150px"><p class="mdui-center">沒有任何播放清單</p></div>`)
+        else
+            $("#content").html(template.parsePlaylists(playlists))
         router.updatePageLinks()
     }
 }
