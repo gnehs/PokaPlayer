@@ -1,3 +1,8 @@
+const moduleShowName = {
+    DSM: "DSM",
+    Netease2: "網易雲音樂"
+};
+
 // 初始化播放器
 const ap = new APlayer({
     container: document.getElementById("aplayer"),
@@ -641,7 +646,7 @@ async function showAlbumSongs(albumSource, albumID) {
 async function showFolder(moduleName, folderId) {
     $("#content").attr("data-page", "folder");
     // 展示讀取中
-    pokaHeader("資料夾", moduleName);
+    pokaHeader("資料夾", moduleShowName[moduleName] || "");
     $("#content").html(template.getSpinner());
     mdui.mutation();
 
@@ -682,7 +687,7 @@ async function showArtist(moduleName, artist = false) {
         : false;
     pokaHeader(
         artist ? (moduleName == "DSM" ? artist : data.name) : "演出者",
-        moduleName,
+        moduleShowName[moduleName] || "",
         cover
     );
     $("#content").attr("data-page", "artist");
@@ -760,7 +765,7 @@ async function showComposer(moduleName, composer) {
     )}`;
     pokaHeader(
         composer ? composer : "作曲者",
-        moduleName,
+        moduleShowName[moduleName] || "",
         composer ? cover : false
     );
     $("#content").attr("data-page", "composer");
@@ -837,7 +842,7 @@ async function showPlaylist(data) {
     // 有 data 的話代表是資料夾
     pokaHeader(
         data ? data.name : "播放清單",
-        data ? data.source : "",
+        data ? moduleShowName[data.source] || "" : "",
         data && data.image ? data.image : false
     );
     $("#content").html(template.getSpinner());
@@ -877,7 +882,11 @@ async function showPlaylistSongs(moduleName, playlistId) {
     )).data;
     let name = result.playlists[0].name;
     let songs = template.parseSongs(result.songs);
-    pokaHeader(name, moduleName, result.playlists[0].image || false);
+    pokaHeader(
+        name,
+        moduleShowName[moduleName] || "",
+        result.playlists[0].image || false
+    );
 
     let isPlaylistPinned = await isPinned(
         moduleName,
