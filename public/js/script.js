@@ -112,7 +112,7 @@ $(() => {
             `<i class="mdui-icon material-icons">repeat</i>已切換至順序播放` :
             `<i class="mdui-icon material-icons">repeat_one</i>已切換至單曲循環`
 
-        $("[data-player]>.info>.ctrl>.random").html(text)
+        $("[data-player]>.info>.ctrl>.random").html(icon)
 
         if ($(".mdui-snackbar").length > 0)
             $(".mdui-snackbar .mdui-snackbar-text").html(text)
