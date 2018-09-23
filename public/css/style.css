@@ -206,7 +206,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     height: 0;
     width: var(--album-size);
     font-size: 10px;
-    margin: .875em 1.5em;
+    margin: .875em 1em;
     background-position: center;
     background-size: cover;
     padding-bottom: var(--album-size);
@@ -319,32 +319,32 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 @media (max-width: 575.98px) {
     .poka.cards .card {
-        --album-size: calc(50% - 1em);
+        --album-size: calc(50% - 2em);
         font-size: 9px;
     }
 }
 
 @media (min-width: 576px) and (max-width: 767.98px) {
     .poka.cards .card {
-        --album-size: calc(33.3% - 1em);
+        --album-size: calc(33.3% - 2em);
     }
 }
 
 @media (min-width: 768px) and (max-width: 991.98px) {
     .poka.cards .card {
-        --album-size: calc(25% - 1em);
+        --album-size: calc(25% - 2em);
     }
 }
 
 @media (min-width: 992px) and (max-width: 1199.98px) {
     .poka.cards .card {
-        --album-size: calc(20% - 1em);
+        --album-size: calc(20% - 2em);
     }
 }
 
 @media (min-width: 1200px) {
     .poka.cards .card {
-        --album-size: calc(16.6% - 1em);
+        --album-size: calc(16.6% - 2em);
     }
 }
 
