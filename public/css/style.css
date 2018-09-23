@@ -231,7 +231,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 .poka.cards .card:hover .image {
-    box-shadow: 0 10px 15px #00000080;
+    box-shadow: 0 10px 15px #0000004d;
     transform: translateY(-3px);
 }
 
@@ -599,6 +599,8 @@ header.mdui-appbar.mdui-appbar-fixed {
     background-size: cover;
     background-position: center;
     background-color: #0000;
+    border-radius: .8em;
+    box-shadow: 0 5px 10px #0000002e;
 }
 
 [data-player]>.mdui-card .mdui-card-media img {
