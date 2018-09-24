@@ -567,7 +567,7 @@ async function showArtist(moduleName, artist = false) {
     let data = moduleName != 'DSM' && artist ? (await axios.get(`/pokaapi/artist/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(artist)}`)).data : undefined;
     // 如果不是 DSM 的話去向模組取得該演出者的封面
     let cover = artist ? (moduleName == 'DSM' ?
-        `/pokaapi/cover/?moduleName=${encodeURIComponent(moduleName)}&data=${encodeURIComponent(JSON.stringify({ "type": "artist", "info": artist }))}` :
+        `/pokaapi/cover/?moduleName=${encodeURIComponent(moduleName)}&data=${encodeURIComponent(JSON.stringify({ "type": "artist", "info": artist == '未知' ? '' : artist }))}` :
         data.cover) : false
     pokaHeader(artist ? moduleName == 'DSM' ? artist : data.name : "演出者", artist ? moduleShowName[moduleName] : "列出所有演出者", cover)
     $("#content").attr('data-page', 'artist')
@@ -613,7 +613,7 @@ async function showArtist(moduleName, artist = false) {
 
 }
 async function showComposer(moduleName, composer) {
-    let cover = `/pokaapi/cover/?moduleName=${encodeURIComponent(moduleName)}&data=${encodeURIComponent(JSON.stringify({ "type": "composer", "info": composer }))}`
+    let cover = `/pokaapi/cover/?moduleName=${encodeURIComponent(moduleName)}&data=${encodeURIComponent(JSON.stringify({ "type": "composer", "info": composer == '未知' ? '' : composer }))}`
     $("#content").attr('data-page', 'composer')
     $("#content").html(template.getSpinner())
     mdui.mutation()
