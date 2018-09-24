@@ -58,15 +58,13 @@ $(() => {
     // 在進入網頁時嘗試登入
     tryRelogin()
 
-    $(`#drawer a[href="${$('#content').attr('data-page')}"]`)
-        .addClass('mdui-list-item-active mdui-color-theme')
-    $(`#drawer a`)
-        .click(function() {
-            if ($(window).width() < 1024) {
-                new mdui.Drawer("#drawer").close();
-            }
-        })
-    $('#player>*:not(.right)').click(() => router.navigate('now'));
+    $(`#drawer a[href="${$("#content").attr("data-page")}"]`).addClass("mdui-list-item-active mdui-color-theme");
+    $(`#drawer a`).click(function() {
+        if ($(window).width() < 1024) {
+            new mdui.Drawer("#drawer").close();
+        }
+    });
+    $("#player>*:not(.right)").click(() => router.navigate("now"));
     // 初始化 MediaSession
     updateMediaSession()
 
@@ -300,6 +298,8 @@ function changePlayMode(get) {
         case 1:
             // 循環播放整個清單
             for (i = 0; i < 3; i++)
+                if (ap.options.loop != "all") $("#aplayer .aplayer-icon.aplayer-icon-loop").click();
+            for (i = 0; i < 3; i++)
                 if (ap.options.loop != "all")
                     $('#aplayer .aplayer-icon.aplayer-icon-loop').click()
             for (i = 0; i < 3; i++)
@@ -310,6 +310,9 @@ function changePlayMode(get) {
             break;
         case 2:
             // 隨機
+            for (i = 0; i < 3; i++)
+                if (ap.options.loop != "all")
+                    $("#aplayer .aplayer-icon.aplayer-icon-loop").click();
             for (i = 0; i < 3; i++)
                 if (ap.options.loop != "all")
                     $('#aplayer .aplayer-icon.aplayer-icon-loop').click()
@@ -421,8 +424,8 @@ async function showSearch(keyword) {
     ]
     let noResult = `<div class="mdui-valign" style="height:150px"><p class="mdui-center">${noResultTexts[Math.floor(Math.random() * noResultTexts.length)]}</p></div>`
     if (keyword) {
-        let result = (await axios.get(`/pokaapi/search/?keyword=${keyword}`)).data
-        let searchResults = template.parseHome(result)
+        let result = (await axios.get(`/pokaapi/search/?keyword=${keyword}`)).data;
+        let searchResults = template.parseHome(result);
 
         //無搜尋結果
         if (!searchResults) searchResults = noResult
@@ -438,9 +441,9 @@ async function showSearch(keyword) {
     mdui.mutation()
     router.updatePageLinks()
 
-    $('#search').change(async function() {
-        $('#search+.mdui-textfield-error+.mdui-textfield-helper').text('搜尋中...')
-        router.navigate('search/' + $(this).val())
+    $("#search").change(async function() {
+        $("#search+.mdui-textfield-error+.mdui-textfield-helper").text("搜尋中...");
+        router.navigate("search/" + $(this).val());
     });
 }
 //- 列出專輯
