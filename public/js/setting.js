@@ -193,25 +193,29 @@ async function showSettingsPic() {
             description: 'PokaPlayer 內建的圖庫',
             src: '/og/og.png'
         }, {
-            name: 'Bing 每日圖片',
-            description: 'yingjoy.cn 提供',
-            src: 'https://api.yingjoy.cn/pic/?t=bing&w=1920'
-        }, {
             name: '隨機精美圖片',
             description: 'yingjoy.cn 提供',
             src: 'https://api.yingjoy.cn/pic/?t=random&w=1920'
+        }, {
+            name: 'LoremFlickr',
+            description: 'loremflickr.com 提供',
+            src: 'https://loremflickr.com/1920/1080'
+        }, {
+            name: 'Bing 每日圖片',
+            description: 'yingjoy.cn 提供',
+            src: 'https://api.yingjoy.cn/pic/?t=bing&w=1920'
         }, {
             name: 'Bing 每日圖片',
             description: 'area.sinaapp.com 提供',
             src: 'https://area.sinaapp.com/bingImg/'
         }, {
+            name: 'Bing 每日圖片',
+            description: '阿星 Plus 提供',
+            src: 'https://api.meowv.com/bing'
+        }, {
             name: 'Bing 隨機圖片',
             description: 'uploadbeta.com 提供',
             src: 'https://uploadbeta.com/api/pictures/random/?key=BingEverydayWallpaperPicture'
-        }, {
-            name: 'LoremFlickr',
-            description: 'loremflickr.com 提供',
-            src: 'https://loremflickr.com/1920/1080'
         }, {
             name: 'Picsum Photos',
             description: 'picsum.photos 提供',
