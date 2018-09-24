@@ -55,16 +55,49 @@ async function showSettings() {
     $("[data-music-res]").click(function() {
         mdui.dialog({
             title: '音質設定',
-            content: `<ul class="mdui-list">
-            ${settingsItem("Low","低音質，128K，跟 YouTube 差不多的爛音質，在網路夭壽慢的情況下請選擇此選項","","",
-                            `onclick="window.localStorage['musicRes']='Low'" mdui-dialog-close`)}
-            ${settingsItem("Medium","中等音質，音質只比 YouTube 好那麼一點點，可在 3G 網路下流暢的串流","","",
-                            `onclick="window.localStorage['musicRes']='Medium'" mdui-dialog-close`)}
-            ${settingsItem("High","高音質，音質較原始音質略差，可在 4G 網路下流暢的串流","","",
-                            `onclick="window.localStorage['musicRes']='High'" mdui-dialog-close`)}
-            ${settingsItem("Original","原始音質，在網路狀況許可下，建議選擇此選項聆聽高音質音樂","","",
-                            `onclick="window.localStorage['musicRes']='Original'" mdui-dialog-close`)}
-            </ul>`,
+            content: `</br>
+            <div class="poka four doubling cards">
+                <div class="card" 
+                    title="低音質"
+                    onclick="window.localStorage['musicRes']='Low'"
+                    mdui-dialog-close>
+                    <div class="image mdui-ripple"><i class="mdui-icon">Low</i></div>
+                    <div class="title mdui-text-color-theme-text">Low</div>
+                    <div class="subtitle mdui-text-color-theme-text">
+                        低音質，128K，跟 YouTube 差不多的爛音質，在網路夭壽慢的情況下請選擇此選項
+                    </div>
+               </div>
+                <div class="card" 
+                    title="中等音質"
+                    onclick="window.localStorage['musicRes']='Medium'"
+                    mdui-dialog-close>
+                    <div class="image mdui-ripple"><i class="mdui-icon">Med</i></div>
+                    <div class="title mdui-text-color-theme-text">Medium</div>
+                    <div class="subtitle mdui-text-color-theme-text">
+                        中等音質，音質只比 YouTube 好那麼一點點，可在 3G 網路下流暢的串流
+                    </div>
+               </div>
+                <div class="card" 
+                    title="高音質"
+                    onclick="window.localStorage['musicRes']='High'"
+                    mdui-dialog-close>
+                    <div class="image mdui-ripple"><i class="mdui-icon">High</i></div>
+                    <div class="title mdui-text-color-theme-text">High</div>
+                    <div class="subtitle mdui-text-color-theme-text">
+                        高音質，音質較原始音質略差，可在 4G 網路下流暢的串流
+                    </div>
+               </div>
+                <div class="card" 
+                    title="原始音質"
+                    onclick="window.localStorage['musicRes']='Original'"
+                    mdui-dialog-close>
+                    <div class="image mdui-ripple"><i class="mdui-icon">Ori</i></div>
+                    <div class="title mdui-text-color-theme-text">Original</div>
+                    <div class="subtitle mdui-text-color-theme-text">
+                        原始音質，在網路狀況許可下，建議選擇此選項聆聽高音質音樂
+                    </div>
+               </div>
+            </div>`,
             history: false,
             buttons: [{
                 text: '取消'

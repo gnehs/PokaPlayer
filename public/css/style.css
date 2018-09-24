@@ -322,11 +322,17 @@ header.mdui-appbar.mdui-appbar-fixed {
         --album-size: calc(50% - 2em);
         font-size: 9px;
     }
+    .poka.doubling.four.cards .card {
+        --album-size: calc(50% - 2em);
+    }
 }
 
 @media (min-width: 576px) and (max-width: 767.98px) {
     .poka.cards .card {
         --album-size: calc(33.3% - 2em);
+    }
+    .poka.cards .card .image i {
+        font-size: 5em;
     }
 }
 
@@ -350,6 +356,10 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 .poka.three.cards .card {
     --album-size: calc(33.3% - 2em);
+}
+
+.poka.four.cards .card {
+    --album-size: calc(25% - 2em);
 }
 
 #aplayer {
