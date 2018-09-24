@@ -1,6 +1,5 @@
 const template = {
-    getSpinner: () =>
-        `<div class="mdui-spinner mdui-spinner-colorful mdui-center" style="margin-top:80px"></div>`,
+    getSpinner: () => `<div class="mdui-spinner mdui-spinner-colorful mdui-center" style="margin-top:80px"></div>`,
     parseHome: data => {
         let r = ``;
         if (data.albums.length > 0) {
@@ -33,9 +32,7 @@ const template = {
         let html = `<ul class="mdui-list">`;
         for (i = 0; i < folders.length; i++) {
             let folder = folders[i];
-            html += `<li class="mdui-list-item mdui-ripple" href="folder/${
-                folder.source
-            }/${folder.id}" data-navigo>
+            html += `<li class="mdui-list-item mdui-ripple" href="folder/${folder.source}/${folder.id}" data-navigo>
                         <i class="mdui-list-item-avatar mdui-icon material-icons">folder</i>
                         <div class="mdui-list-item-content">${folder.name}</div>
                     </li>`;
@@ -50,9 +47,7 @@ const template = {
             let song = songs[i];
             let title = song.name;
             let artist = song.artist;
-            let clickAction = `onclick="playSongs(songList,'${
-                song.id
-            }');router.navigate('now');" `;
+            let clickAction = `onclick="playSongs(songList,'${song.id}');router.navigate('now');" `;
             let addAction = `onclick="addSong(songList,'${song.id}')"`;
 
             let img =
@@ -116,9 +111,7 @@ const template = {
             html += `
             <a class="card" 
                title="${name}"
-               href="artist/${encodeURIComponent(
-                   artist.source
-               )}/${encodeURIComponent(
+               href="artist/${encodeURIComponent(artist.source)}/${encodeURIComponent(
                 artist.source == "DSM" ? name : artist.id
             )}" 
                data-navigo>
@@ -141,9 +134,7 @@ const template = {
             html += `
             <a class="card" 
                title="${name}"
-               href="artist/${encodeURIComponent(
-                   composer.source
-               )}/${encodeURIComponent(
+               href="artist/${encodeURIComponent(composer.source)}/${encodeURIComponent(
                 composer.source == "DSM" ? name : composer.id
             )}" 
                data-navigo>
@@ -169,9 +160,7 @@ const template = {
             let href =
                 playlist.type == "folder"
                     ? "javascript:void(0);"
-                    : `playlist/${encodeURIComponent(
-                          playlist.source
-                      )}/${encodeURIComponent(playlist.id)}`;
+                    : `playlist/${encodeURIComponent(playlist.source)}/${encodeURIComponent(playlist.id)}`;
 
             html += `
             <a class="card" 
@@ -186,9 +175,7 @@ const template = {
                }
                ${playlist.type == "folder" ? "" : "data-navigo"}>
                 <div class="image mdui-ripple" ${img}>${icon}</div>
-                <div class="title mdui-text-color-theme-text mdui-text-truncate">${
-                    playlist.name
-                }</div>
+                <div class="title mdui-text-color-theme-text mdui-text-truncate">${playlist.name}</div>
             </a>`;
         }
         html += "</div>";
@@ -198,10 +185,7 @@ const template = {
         return `
         <div class="info-header">
             <div class="cover mdui-shadow-1" 
-                 style="background-image:url('${cover.replace(
-                     /'/g,
-                     "\\'"
-                 )}')"></div>
+                 style="background-image:url('${cover.replace(/'/g, "\\'")}')"></div>
             <div class="info">
                 <div class="album-name mdui-text-truncate mdui-text-color-theme-text" 
                      title="${name}">${name}</div>
