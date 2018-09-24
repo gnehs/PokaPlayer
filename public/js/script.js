@@ -12,7 +12,7 @@ const ap = new APlayer({
 const lrc = new Lyrics(`[00:00.000]`);
 
 // 路由
-const router = new Navigo(null, true, '#!');
+const router = new Navigo(null, true, '#/');
 router
     .on({
         'search/:keyword': params => showSearch(params.keyword),
@@ -443,7 +443,7 @@ async function showSearch(keyword) {
 
     $("#search").change(async function() {
         $("#search+.mdui-textfield-error+.mdui-textfield-helper").text("搜尋中...");
-        router.navigate("search/" + $(this).val());
+        router.navigate("search/" + encodeURIComponent($(this).val()));
     });
 }
 //- 列出專輯
