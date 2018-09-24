@@ -565,10 +565,11 @@ async function showFolder(moduleName, folderId) {
 }
 async function showArtist(moduleName, artist = false) {
     let data = moduleName != 'DSM' && artist ? (await axios.get(`/pokaapi/artist/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(artist)}`)).data : undefined;
+    // 如果不是 DSM 的話去向模組取得該演出者的封面
     let cover = artist ? (moduleName == 'DSM' ?
         `/pokaapi/cover/?moduleName=${encodeURIComponent(moduleName)}&data=${encodeURIComponent(JSON.stringify({ "type": "artist", "info": artist }))}` :
         data.cover) : false
-    pokaHeader(artist ? moduleName == 'DSM' ? artist : data.name : "演出者", artist ? "演出者" : "列出所有演出者", cover)
+    pokaHeader(artist ? moduleName == 'DSM' ? artist : data.name : "演出者", artist ? moduleShowName[moduleName] : "列出所有演出者", cover)
     $("#content").attr('data-page', 'artist')
     $("#content").html(template.getSpinner())
     mdui.mutation()
@@ -613,14 +614,16 @@ async function showArtist(moduleName, artist = false) {
 }
 async function showComposer(moduleName, composer) {
     let cover = `/pokaapi/cover/?moduleName=${encodeURIComponent(moduleName)}&data=${encodeURIComponent(JSON.stringify({ "type": "composer", "info": composer }))}`
-    pokaHeader(composer ? composer : "作曲者", composer ? "作曲者" : "列出所有作曲者", composer ? cover : false)
     $("#content").attr('data-page', 'composer')
     $("#content").html(template.getSpinner())
     mdui.mutation()
-    if (composer) {
+    if (composer && moduleName) {
+        pokaHeader(composer, '讀取中...', cover)
         $("#content").attr('data-item', `composer${composer}`)
         let result = await axios.get(`/pokaapi/composerAlbums/?moduleName=${encodeURIComponent(moduleName)}&id=${composer == '未知' ? '' : encodeURIComponent(composer)}`),
             isComposerPinned = await isPinned(moduleName, 'composer', composer, composer)
+
+        pokaHeader(composer, moduleShowName[moduleName], cover)
         let pinButton = ``
         if (isComposerPinned && isComposerPinned != 'disabled')
             pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="從首頁釘選移除該作曲者" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
@@ -647,7 +650,8 @@ async function showComposer(moduleName, composer) {
             })
         }
     } else {
-        //請求資料囉
+        pokaHeader("作曲者", "列出所有作曲者")
+            //請求資料囉
         let result = await axios.get(`/pokaapi/composers`),
             composersHTML = template.parseComposers(result.data.composers)
         if ($("#content").attr('data-page') == 'composer')
@@ -691,9 +695,10 @@ async function showPlaylistFolder(playlistId) {
             </p>
         </div>`)
     } else {
-        let playlistName = data[playlistId].name
-        let playlists = data[playlistId].playlists
-        pokaHeader(playlistName, '播放清單')
+        let playlist = data[playlistId]
+        let playlistName = playlist.name
+        let playlists = playlist.playlists
+        pokaHeader(playlistName, moduleShowName[playlist.source])
         $("#content").html(template.parsePlaylists(playlists))
     }
     router.updatePageLinks()
@@ -712,9 +717,21 @@ async function showPlaylistSongs(moduleName, playlistId) {
 
     //抓資料
     let result = (await axios.get(`/pokaapi/playlistSongs/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(playlistId)}`)).data
+    if (result == null) {
+        pokaHeader('錯誤', '哎呀！找不到這個播放清單')
+        $("#content").html(`
+        <div class="mdui-valign" style="height:150px">
+            <p class="mdui-center">
+            <a href="playlist" 
+               class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent" 
+               data-navigo>回播放清單總覽頁面
+            </a>
+            </p>
+        </div>`)
+    }
     let name = result.playlists[0].name
     let songs = template.parseSongs(result.songs)
-    pokaHeader(name, "播放清單", result.playlists[0].image || false)
+    pokaHeader(name, moduleShowName[result.playlists[0].source], result.playlists[0].image || false)
 
     let isPlaylistPinned = await isPinned(moduleName, 'playlist', playlistId, result.playlists[0].name)
     let pinButton = ``
