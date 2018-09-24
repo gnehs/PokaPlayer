@@ -333,7 +333,7 @@ async function showSettingsAbout() {
         mdui.dialog({
             title:`${checkUpdate[0].tag_name} 更新日誌`,
             content: `<div class="mdui-typo">
-                            <blockquote>
+                            <blockquote style="margin:0">
                                 ${new showdown.Converter().makeHtml(checkUpdate[0].body)}
                             </blockquote>
                         <hr>
