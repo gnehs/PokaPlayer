@@ -5,9 +5,9 @@ $(async() => {
     if (!window.localStorage["randomImg"]) window.localStorage["randomImg"] = "/og/og.png"
     if (!window.localStorage["randomImgName"]) window.localStorage["randomImgName"] = "預設圖庫"
     if (!window.localStorage["imgRes"]) window.localStorage["imgRes"] = "false"
-    let version = (await axios.get('/info/')).data.version
+    let version = (await request('/info/')).version
         //serviceWorker
-    if ('serviceWorker' in navigator && !(await axios.get('/debug/')).data) {
+    if ('serviceWorker' in navigator && !await request('/debug/')) {
         navigator.serviceWorker
             .register('/sw.js', { scope: '/' })
             .then(reg => {
@@ -316,25 +316,25 @@ async function showSettingsAbout() {
             ()=>caches.delete('PokaPlayer'),()=>{},{history: false})
     })
     // PokaPlayer 詳細資料
-    let getInfo = await axios.get('/info/');
-    $("[data-dev] .mdui-list-item-text").text(getInfo.data.author)
-    let debug = await axios.get('/debug/')
-    let checkUpdate = await axios.get(`https://api.github.com/repos/gnehs/PokaPlayer/releases`);
-    let update = getInfo.data.version != checkUpdate.data[0].tag_name ? `更新到 ${checkUpdate.data[0].tag_name}` : debug.data == false ? `您的 PokaPlayer 已是最新版本` : `與開發分支同步`
+    let getInfo = await request('/info/');
+    $("[data-dev] .mdui-list-item-text").text(getInfo.author)
+    let debug = await request('/debug/')
+    let checkUpdate = await request(`https://api.github.com/repos/gnehs/PokaPlayer/releases`);
+    let update = getInfo.version != checkUpdate[0].tag_name ? `更新到 ${checkUpdate[0].tag_name}` : debug.data == false ? `您的 PokaPlayer 已是最新版本` : `與開發分支同步`
     $("[data-upgrade] .mdui-list-item-text").text(update)
-    if (getInfo.data.version != checkUpdate.data[0].tag_name || debug.data){
+    if (getInfo.version != checkUpdate[0].tag_name || debug){
         $("[data-upgrade]").attr('data-upgrade', true)
-        pokaHeader('設定', `可更新至 ${checkUpdate.data[0].tag_name}`)
+        pokaHeader('設定', `可更新至 ${checkUpdate[0].tag_name}`)
     }
-    if (debug.data)
-        $("[data-version] .mdui-list-item-text").text(`${window.localStorage["PokaPlayerVersion"]}(${debug.data})`)
+    if (debug)
+        $("[data-version] .mdui-list-item-text").text(`${window.localStorage["PokaPlayerVersion"]}(${debug})`)
     //更新
     $("[data-upgrade=\"true\"]").click(() => {
         mdui.dialog({
-            title:`${checkUpdate.data[0].tag_name} 更新日誌`,
+            title:`${checkUpdate[0].tag_name} 更新日誌`,
             content: `<div class="mdui-typo">
                             <blockquote>
-                                ${new showdown.Converter().makeHtml(checkUpdate.data[0].body)}
+                                ${new showdown.Converter().makeHtml(checkUpdate[0].body)}
                             </blockquote>
                         <hr>
                         </div>
@@ -347,13 +347,13 @@ async function showSettingsAbout() {
                     text: '更新',
                     onClick: async inst => {
                         mdui.snackbar('正在更新...', { position: getSnackbarPosition() });
-                        let update = await axios.get('/upgrade/')
-                        if (update.data == "upgrade") {
+                        let update = await request('/upgrade/')
+                        if (update == "upgrade") {
                             mdui.snackbar('伺服器重新啟動', {
                                 buttonText: '重新連接',
                                 onButtonClick: () => window.location.reload(),
                             })
-                        } else if (update.data == "socket") {
+                        } else if (update == "socket") {
                             socket.emit('update')
                             socket.on('Permission Denied Desu', () => mdui.snackbar('Permission Denied', {
                                 timeout: 3000,
