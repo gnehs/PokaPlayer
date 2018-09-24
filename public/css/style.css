@@ -198,7 +198,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 .poka.cards {
     display: flex;
     flex-wrap: wrap;
-    margin: -0.875em -1.5em;
+    margin: -0.875em -1em;
 }
 
 .poka.cards .card {
