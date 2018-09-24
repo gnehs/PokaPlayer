@@ -738,12 +738,30 @@ async function showPlaylistSongs(moduleName, playlistId) {
     let isPlaylistPinned = await isPinned(moduleName, 'playlist', playlistId, result.playlists[0].name)
     let pinButton = ``
     if (isPlaylistPinned && isPlaylistPinned != 'disabled')
-        pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="從首頁釘選移除此播放清單" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
+        pinButton = `<button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-theme-accent" title="從首頁釘選移除此播放清單" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
     else if (isPlaylistPinned != 'disabled')
-        pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="加入此播放清單到首頁釘選" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
+        pinButton = `<button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-theme-accent" title="加入此播放清單到首頁釘選" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
+    let fab = `
+    <div class="mdui-fab-wrapper" mdui-fab="{trigger: 'hover'}">
+      <button class="mdui-fab mdui-ripple mdui-color-theme-accent">
+        <!-- 預設 icon -->
+        <i class="mdui-icon material-icons">arrow_drop_up</i>
+        <!-- 選單出現時的 icon -->
+        <i class="mdui-icon mdui-fab-opened material-icons">arrow_drop_down</i>
+      </button>
+      <div class="mdui-fab-dial">
+        ${pinButton}
+        <button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-theme-accent" 
+                title="加入此播放清單所有歌曲到現正播放" 
+                onclick="addSong(songList)">
+            <i class="mdui-icon material-icons">playlist_add</i>
+        </button>
+      </div>
+    </div>
+    `
 
     if ($("#content").attr('data-item') == `playlist${playlistId}`) {
-        $("#content").html(songs + pinButton)
+        $("#content").html(songs + fab)
         $("[data-pinned]").click(async function() {
             let pinStatus = $(this).attr('data-pinned')
             if (pinStatus == "true") {
@@ -770,9 +788,14 @@ async function showRandom() {
     $("#content").html(template.getSpinner())
     $('#content').attr('data-page', 'random')
     mdui.mutation()
-    result = await axios.get(`/pokaapi/randomSongs`)
+    let result = await axios.get(`/pokaapi/randomSongs`)
+    let fab = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" 
+                       title="加入此播放清單所有歌曲到現正播放" 
+                       onclick="addSong(songList)">
+                       <i class="mdui-icon material-icons">playlist_add</i>
+                </button>`
     if ($("#content").attr('data-page') == 'random')
-        $("#content").html(template.parseSongs(result.data.songs))
+        $("#content").html(template.parseSongs(result.data.songs) + fab)
 }
 async function playRandom() {
     router.navigate('now')
