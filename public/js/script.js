@@ -728,6 +728,8 @@ async function showPlaylistSongs(moduleName, playlistId) {
             </a>
             </p>
         </div>`)
+        router.updatePageLinks()
+        return
     }
     let name = result.playlists[0].name
     let songs = template.parseSongs(result.songs)
