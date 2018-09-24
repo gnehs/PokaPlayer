@@ -122,7 +122,7 @@ const template = {
             html += `
             <a class="card" 
                title="${name}"
-               href="artist/${encodeURIComponent(composer.source)}/${encodeURIComponent(composer.source == 'DSM' ? name : composer.id)}" 
+               href="composer/${encodeURIComponent(composer.source)}/${encodeURIComponent(composer.source == 'DSM' ? name : composer.id)}" 
                data-navigo>
                 <div class="image mdui-ripple" style="background-image:url('${img}')"></div>
                 <div class="title mdui-text-color-theme-text mdui-text-truncate">${name}</div>
@@ -132,20 +132,28 @@ const template = {
         return html
     },
     parsePlaylists: playlists => {
+        let temporalPlaylist = sessionStorage.temporalPlaylist ? JSON.parse(sessionStorage.temporalPlaylist) : {}
         let html = `<div class="poka cards">`
         for (i = 0; i < playlists.length; i++) {
             let playlist = playlists[i]
             let img = playlist.image && window.localStorage["imgRes"] != "true" ? `style="background-image:url('${playlist.image}')"` : ``
             let icon = playlist.image && window.localStorage["imgRes"] != "true" ? `` : `<i class="mdui-icon material-icons">playlist_play</i>`
+            let href = `playlist/${encodeURIComponent(playlist.source)}/${encodeURIComponent(playlist.id)}`
+            if (playlist.type == 'folder') {
+                let randomLink = Math.random().toString(36).substring(8)
+                href = `playlistFolder/${playlist.id}-${randomLink}`
+                temporalPlaylist[`${playlist.id}-${randomLink}`] = playlist
+            }
             html += `
             <a class="card" 
                title="${playlist.name}"
-               href="playlist/${encodeURIComponent(playlist.source)}/${encodeURIComponent(playlist.id)}"
+               href="${href}"
                data-navigo>
                 <div class="image mdui-ripple" ${img}>${icon}</div>
                 <div class="title mdui-text-color-theme-text mdui-text-truncate">${playlist.name}</div>
             </a>`
         }
+        sessionStorage.temporalPlaylist = JSON.stringify(temporalPlaylist)
         html += '</div>'
         return html
     },

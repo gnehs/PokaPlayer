@@ -5,7 +5,21 @@ function getBackground() {
     else
         return "/og/og.png"
 }
-
+async function request(url) {
+    let result;
+    try {
+        result = (await axios.get(url)).data
+    } catch (e) {
+        result = null
+        console.log(e)
+        mdui.snackbar({
+            message: `哎呀！請求出錯了，請再試一次看看：（`,
+            timeout: 400,
+            position: getSnackbarPosition()
+        });
+    }
+    return result
+}
 /*===== Pin =====*/
 async function isPinned(source, type, id, name) {
     let result = (await axios.post(`/pokaapi/isPinned/?moduleName=${source}&type=${type}&id=${id}&name=${name}`))

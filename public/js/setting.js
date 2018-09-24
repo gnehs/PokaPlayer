@@ -5,9 +5,9 @@ $(async() => {
     if (!window.localStorage["randomImg"]) window.localStorage["randomImg"] = "/og/og.png"
     if (!window.localStorage["randomImgName"]) window.localStorage["randomImgName"] = "預設圖庫"
     if (!window.localStorage["imgRes"]) window.localStorage["imgRes"] = "false"
-    let version = (await axios.get('/info/')).data.version
+    let version = (await request('/info/')).version
         //serviceWorker
-    if ('serviceWorker' in navigator && !(await axios.get('/debug/')).data) {
+    if ('serviceWorker' in navigator && !await request('/debug/')) {
         navigator.serviceWorker
             .register('/sw.js', { scope: '/' })
             .then(reg => {
@@ -55,16 +55,49 @@ async function showSettings() {
     $("[data-music-res]").click(function() {
         mdui.dialog({
             title: '音質設定',
-            content: `<ul class="mdui-list">
-            ${settingsItem("Low","低音質，128K，跟 YouTube 差不多的爛音質，在網路夭壽慢的情況下請選擇此選項","","",
-                            `onclick="window.localStorage['musicRes']='Low'" mdui-dialog-close`)}
-            ${settingsItem("Medium","中等音質，音質只比 YouTube 好那麼一點點，可在 3G 網路下流暢的串流","","",
-                            `onclick="window.localStorage['musicRes']='Medium'" mdui-dialog-close`)}
-            ${settingsItem("High","高音質，音質較原始音質略差，可在 4G 網路下流暢的串流","","",
-                            `onclick="window.localStorage['musicRes']='High'" mdui-dialog-close`)}
-            ${settingsItem("Original","原始音質，在網路狀況許可下，建議選擇此選項聆聽高音質音樂","","",
-                            `onclick="window.localStorage['musicRes']='Original'" mdui-dialog-close`)}
-            </ul>`,
+            content: `</br>
+            <div class="poka four doubling cards">
+                <div class="card" 
+                    title="低音質"
+                    onclick="window.localStorage['musicRes']='Low'"
+                    mdui-dialog-close>
+                    <div class="image mdui-ripple"><i class="mdui-icon">Low</i></div>
+                    <div class="title mdui-text-color-theme-text">Low</div>
+                    <div class="subtitle mdui-text-color-theme-text">
+                        低音質，128K，跟 YouTube 差不多的爛音質，在網路夭壽慢的情況下請選擇此選項
+                    </div>
+               </div>
+                <div class="card" 
+                    title="中等音質"
+                    onclick="window.localStorage['musicRes']='Medium'"
+                    mdui-dialog-close>
+                    <div class="image mdui-ripple"><i class="mdui-icon">Med</i></div>
+                    <div class="title mdui-text-color-theme-text">Medium</div>
+                    <div class="subtitle mdui-text-color-theme-text">
+                        中等音質，音質只比 YouTube 好那麼一點點，可在 3G 網路下流暢的串流
+                    </div>
+               </div>
+                <div class="card" 
+                    title="高音質"
+                    onclick="window.localStorage['musicRes']='High'"
+                    mdui-dialog-close>
+                    <div class="image mdui-ripple"><i class="mdui-icon">High</i></div>
+                    <div class="title mdui-text-color-theme-text">High</div>
+                    <div class="subtitle mdui-text-color-theme-text">
+                        高音質，音質較原始音質略差，可在 4G 網路下流暢的串流
+                    </div>
+               </div>
+                <div class="card" 
+                    title="原始音質"
+                    onclick="window.localStorage['musicRes']='Original'"
+                    mdui-dialog-close>
+                    <div class="image mdui-ripple"><i class="mdui-icon">Ori</i></div>
+                    <div class="title mdui-text-color-theme-text">Original</div>
+                    <div class="subtitle mdui-text-color-theme-text">
+                        原始音質，在網路狀況許可下，建議選擇此選項聆聽高音質音樂
+                    </div>
+               </div>
+            </div>`,
             history: false,
             buttons: [{
                 text: '取消'
@@ -167,48 +200,94 @@ async function showSettingsPic() {
     $("#content").html(settingItems)
     $('[data-pic-source]').click(function() {
         let imgsOption = imgs => {
-            let option = ''
+            /*let option = ''
             for (i = 0; i < imgs.length; i++) {
                 let img = imgs[i]
                 option += settingsItem(img.name,  '', '',  '', `data-img-src="${img.src}" mdui-dialog-close`)
             }
+            return option*/
+            let option =  `<div class="poka three cards">`
+            for (i = 0; i < imgs.length; i++) {
+                let img = imgs[i]
+                option += `
+                <a class="card" 
+                   title="${img.name}&#10;${img.description}"
+                   data-img-src="${img.src}" mdui-dialog-close>
+                    <div class="image mdui-ripple" style="background-image:url('${img.src}')"></div>
+                    <div class="title mdui-text-color-theme-text mdui-text-truncate">${img.name}</div>
+                    <div class="subtitle mdui-text-color-theme-text mdui-text-truncate">${img.description}</div>
+                </a>`
+            }
+            option += "</div>"
             return option
         }, 
          imgs = [{
             name: '預設圖庫',
+            description: 'PokaPlayer 內建的圖庫',
             src: '/og/og.png'
         }, {
-            name: 'Bing 每日圖片',
-            src: 'https://area.sinaapp.com/bingImg/'
-        }, {
-            name: 'Bing 隨機每日圖片(uploadbeta.com)',
-            src: 'https://uploadbeta.com/api/pictures/random/?key=BingEverydayWallpaperPicture'
+            name: '隨機精美圖片',
+            description: 'yingjoy.cn 提供',
+            src: 'https://api.yingjoy.cn/pic/?t=random&w=1920'
         }, {
             name: 'LoremFlickr',
+            description: 'loremflickr.com 提供',
             src: 'https://loremflickr.com/1920/1080'
         }, {
+            name: 'Bing 每日圖片',
+            description: 'yingjoy.cn 提供',
+            src: 'https://api.yingjoy.cn/pic/?t=bing&w=1920'
+        }, {
+            name: 'Bing 每日圖片',
+            description: 'area.sinaapp.com 提供',
+            src: 'https://area.sinaapp.com/bingImg/'
+        }, {
+            name: 'Bing 每日圖片',
+            description: '阿星 Plus 提供',
+            src: 'https://api.meowv.com/bing'
+        }, {
+            name: 'Bing 隨機圖片',
+            description: 'uploadbeta.com 提供',
+            src: 'https://uploadbeta.com/api/pictures/random/?key=BingEverydayWallpaperPicture'
+        }, {
             name: 'Picsum Photos',
+            description: 'picsum.photos 提供',
             src: 'https://picsum.photos/1920/1080/?random'
         }, {
             name: 'The Dog API',
+            description: 'GIF 格式，thedogapi.com 提供',
             src: 'https://api.thedogapi.com/v1/images/search?format=src&mime_types=image/gif'
         }, {
+            name: 'The Dog API',
+            description: 'PNG 格式，thedogapi.com 提供',
+            src: 'https://api.thedogapi.com/v1/images/search?format=src&mime_types=image/png'
+        }, {
             name: 'The Cat API',
+            description: 'GIF 格式，thecatapi.com 提供',
             src: 'https://thecatapi.com/api/images/get?format=src&type=gif'
+        }, {
+            name: 'The Cat API',
+            description: 'PNG 格式，thecatapi.com 提供',
+            src: 'https://thecatapi.com/api/images/get?format=src&type=png'
         },  {
             name: 'Unsplash Source',
+            description: 'source.unsplash.com 提供',
             src: 'https://source.unsplash.com/random'
         },  {
-            name: '隨機二次元圖片 API(清風醬)',
+            name: '隨機二次元圖片',
+            description: '清風博客提供',
             src: 'https://api.3ewl.cc/acg/img.php'
         }, {
-            name: '隨機二次元背景(api.yuntuchuang.com)',
+            name: '隨機二次元背景',
+            description: '雲圖床提供',
             src: 'https://api.yuntuchuang.com/api/acg.php'
         },  {
-            name: '隨機遊戲背景(api.yuntuchuang.com)',
+            name: '隨機遊戲背景',
+            description: '雲圖床提供',
             src: 'https://api.yuntuchuang.com/api/youxi.php'
         },  {
-            name: '隨機簡約背景(api.yuntuchuang.com)',
+            name: '隨機簡約背景',
+            description: '雲圖床提供',
             src: 'https://api.yuntuchuang.com/api/jianyue.php'
         }]
         mdui.dialog({
@@ -219,7 +298,7 @@ async function showSettingsPic() {
         });
         $('[data-img-src]').click(function(){
             let src = $(this).attr('data-img-src')
-            let name = $(this).children().text()
+            let name = $(this).children('.title').text()
             window.localStorage["randomImg"] = src
             window.localStorage["randomImgName"] = name
             pokaHeader('設定', '隨機圖片',src,false,false)
@@ -270,25 +349,25 @@ async function showSettingsAbout() {
             ()=>caches.delete('PokaPlayer'),()=>{},{history: false})
     })
     // PokaPlayer 詳細資料
-    let getInfo = await axios.get('/info/');
-    $("[data-dev] .mdui-list-item-text").text(getInfo.data.author)
-    let debug = await axios.get('/debug/')
-    let checkUpdate = await axios.get(`https://api.github.com/repos/gnehs/PokaPlayer/releases`);
-    let update = getInfo.data.version != checkUpdate.data[0].tag_name ? `更新到 ${checkUpdate.data[0].tag_name}` : debug.data == false ? `您的 PokaPlayer 已是最新版本` : `與開發分支同步`
+    let getInfo = await request('/info/');
+    $("[data-dev] .mdui-list-item-text").text(getInfo.author)
+    let debug = await request('/debug/')
+    let checkUpdate = await request(`https://api.github.com/repos/gnehs/PokaPlayer/releases`);
+    let update = getInfo.version != checkUpdate[0].tag_name ? `更新到 ${checkUpdate[0].tag_name}` : debug.data == false ? `您的 PokaPlayer 已是最新版本` : `與開發分支同步`
     $("[data-upgrade] .mdui-list-item-text").text(update)
-    if (getInfo.data.version != checkUpdate.data[0].tag_name || debug.data){
+    if (getInfo.version != checkUpdate[0].tag_name || debug){
         $("[data-upgrade]").attr('data-upgrade', true)
-        pokaHeader('設定', `可更新至 ${checkUpdate.data[0].tag_name}`)
+        pokaHeader('設定', `可更新至 ${checkUpdate[0].tag_name}`)
     }
-    if (debug.data)
-        $("[data-version] .mdui-list-item-text").text(`${window.localStorage["PokaPlayerVersion"]}(${debug.data})`)
+    if (debug)
+        $("[data-version] .mdui-list-item-text").text(`${window.localStorage["PokaPlayerVersion"]}(${debug})`)
     //更新
     $("[data-upgrade=\"true\"]").click(() => {
         mdui.dialog({
-            title:`${checkUpdate.data[0].tag_name} 更新日誌`,
+            title:`${checkUpdate[0].tag_name} 更新日誌`,
             content: `<div class="mdui-typo">
-                            <blockquote>
-                                ${new showdown.Converter().makeHtml(checkUpdate.data[0].body)}
+                            <blockquote style="margin:0">
+                                ${new showdown.Converter().makeHtml(checkUpdate[0].body)}
                             </blockquote>
                         <hr>
                         </div>
@@ -301,13 +380,13 @@ async function showSettingsAbout() {
                     text: '更新',
                     onClick: async inst => {
                         mdui.snackbar('正在更新...', { position: getSnackbarPosition() });
-                        let update = await axios.get('/upgrade/')
-                        if (update.data == "upgrade") {
+                        let update = await request('/upgrade/')
+                        if (update == "upgrade") {
                             mdui.snackbar('伺服器重新啟動', {
                                 buttonText: '重新連接',
                                 onButtonClick: () => window.location.reload(),
                             })
-                        } else if (update.data == "socket") {
+                        } else if (update == "socket") {
                             socket.emit('update')
                             socket.on('Permission Denied Desu', () => mdui.snackbar('Permission Denied', {
                                 timeout: 3000,

@@ -13,10 +13,6 @@
         "account": "YOUR_ACCOUNT",
         "password": "YOUR_PASSWORD"
     },
-    "Meting": {
-        "enabled": false,
-        "url": "METING_URL"
-    },
     "auth": {
         "jwtPassword": "test",
         "jwtIss": "PokaPlayer",

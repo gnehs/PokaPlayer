@@ -75,7 +75,7 @@ function parseArtists(artists) {
         r.push({
             name: artists[i].name,
             source: 'DSM',
-            cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(JSON.stringify({"type":"artist","info":artists[i].name||'未知'}))}`,
+            cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(JSON.stringify({"type":"artist","info":artists[i].name||''}))}`,
             id: artists[i].name
         })
     }
@@ -88,7 +88,7 @@ function parseComposers(composers) {
         r.push({
             name: composers[i].name,
             source: 'DSM',
-            cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(JSON.stringify({"type":"composer","info":composers[i].name||'未知'}))}`,
+            cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(JSON.stringify({"type":"composer","info":composers[i].name||''}))}`,
             id: composers[i].name
         })
     }
@@ -305,10 +305,10 @@ async function getCover(data) {
     let url = `${dsmURL}/webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getcover&view=default`
     switch (coverData.type) {
         case 'artist': //演出者
-            url += coverData.info ? `&artist_name=${encodeURIComponent(coverData.info)}` : ``
+            url += coverData.info ? `&artist_name=${encodeURIComponent(coverData.info)}` : `&artist_name=`
             break;
         case 'composer': //作曲者
-            url += coverData.info ? `&composer_name=${encodeURIComponent(coverData.info)}` : ``
+            url += coverData.info ? `&composer_name=${encodeURIComponent(coverData.info)}` : `&composer_name=`
             break;
         case 'genre': //類型
             url += coverData.info ? `&genre_name=${encodeURIComponent(coverData.info)}` : ``

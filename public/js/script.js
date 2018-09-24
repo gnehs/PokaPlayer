@@ -1,3 +1,7 @@
+const moduleShowName = {
+    DSM: "DSM",
+    Netease2: "網易雲音樂"
+};
 // 初始化播放器
 const ap = new APlayer({
     container: document.getElementById('aplayer'),
@@ -8,7 +12,7 @@ const ap = new APlayer({
 const lrc = new Lyrics(`[00:00.000]`);
 
 // 路由
-const router = new Navigo(null, true, '#!');
+const router = new Navigo(null, true, '#/');
 router
     .on({
         'search/:keyword': params => showSearch(params.keyword),
@@ -22,6 +26,7 @@ router
         'composer/:source/:composer': params => showComposer(params.source, params.composer),
         'composer': showComposer,
         'playlist/:source/:playlistID': params => showPlaylistSongs(params.source, params.playlistID),
+        'playlistFolder/:playlistID': params => showPlaylistFolder(params.playlistID),
         'playlist': showPlaylist,
         'random': showRandom,
         'now': showNow,
@@ -53,15 +58,13 @@ $(() => {
     // 在進入網頁時嘗試登入
     tryRelogin()
 
-    $(`#drawer a[href="${$('#content').attr('data-page')}"]`)
-        .addClass('mdui-list-item-active mdui-color-theme')
-    $(`#drawer a`)
-        .click(function() {
-            if ($(window).width() < 1024) {
-                new mdui.Drawer("#drawer").close();
-            }
-        })
-    $('#player>*:not(.right)').click(() => router.navigate('now'));
+    $(`#drawer a[href="${$("#content").attr("data-page")}"]`).addClass("mdui-list-item-active mdui-color-theme");
+    $(`#drawer a`).click(function() {
+        if ($(window).width() < 1024) {
+            new mdui.Drawer("#drawer").close();
+        }
+    });
+    $("#player>*:not(.right)").click(() => router.navigate("now"));
     // 初始化 MediaSession
     updateMediaSession()
 
@@ -112,7 +115,7 @@ $(() => {
             `<i class="mdui-icon material-icons">repeat</i>已切換至順序播放` :
             `<i class="mdui-icon material-icons">repeat_one</i>已切換至單曲循環`
 
-        $("[data-player]>.info>.ctrl>.random").html(text)
+        $("[data-player]>.info>.ctrl>.random i").text(icon)
 
         if ($(".mdui-snackbar").length > 0)
             $(".mdui-snackbar .mdui-snackbar-text").html(text)
@@ -121,12 +124,6 @@ $(() => {
         $(".mdui-snackbar .mdui-snackbar-text i").attr('style', 'font-size: 14px;width: 25.2px;transform: scale(1.8)')
     });
 });
-
-$('#axios').on('load', function() {
-    axios = axios.create({
-        withCredentials: true
-    })
-})
 
 // 宣告全域變數
 songList = [];
@@ -295,6 +292,8 @@ function changePlayMode(get) {
         case 1:
             // 循環播放整個清單
             for (i = 0; i < 3; i++)
+                if (ap.options.loop != "all") $("#aplayer .aplayer-icon.aplayer-icon-loop").click();
+            for (i = 0; i < 3; i++)
                 if (ap.options.loop != "all")
                     $('#aplayer .aplayer-icon.aplayer-icon-loop').click()
             for (i = 0; i < 3; i++)
@@ -305,6 +304,9 @@ function changePlayMode(get) {
             break;
         case 2:
             // 隨機
+            for (i = 0; i < 3; i++)
+                if (ap.options.loop != "all")
+                    $("#aplayer .aplayer-icon.aplayer-icon-loop").click();
             for (i = 0; i < 3; i++)
                 if (ap.options.loop != "all")
                     $('#aplayer .aplayer-icon.aplayer-icon-loop').click()
@@ -370,10 +372,10 @@ async function showHome() {
     $("#content").html(template.getSpinner())
     mdui.mutation()
 
-    let result = await axios.get(`/pokaapi/home`)
+    let result = await request(`/pokaapi/home`)
 
     if ($("#content").attr('data-page') == 'home') {
-        $("#content").html(template.parseHome(result.data))
+        $("#content").html(template.parseHome(result))
         router.updatePageLinks()
     }
 }
@@ -416,8 +418,8 @@ async function showSearch(keyword) {
     ]
     let noResult = `<div class="mdui-valign" style="height:150px"><p class="mdui-center">${noResultTexts[Math.floor(Math.random() * noResultTexts.length)]}</p></div>`
     if (keyword) {
-        let result = (await axios.get(`/pokaapi/search/?keyword=${keyword}`)).data
-        let searchResults = template.parseHome(result)
+        let result = await request(`/pokaapi/search/?keyword=${keyword}`);
+        let searchResults = template.parseHome(result);
 
         //無搜尋結果
         if (!searchResults) searchResults = noResult
@@ -433,9 +435,9 @@ async function showSearch(keyword) {
     mdui.mutation()
     router.updatePageLinks()
 
-    $('#search').change(async function() {
-        $('#search+.mdui-textfield-error+.mdui-textfield-helper').text('搜尋中...')
-        router.navigate('search/' + $(this).val())
+    $("#search").change(async function() {
+        $("#search+.mdui-textfield-error+.mdui-textfield-helper").text("搜尋中...");
+        router.navigate("search/" + encodeURIComponent($(this).val()));
     });
 }
 //- 列出專輯
@@ -445,8 +447,8 @@ async function showAlbum() {
     $('#content').attr('data-page', 'album')
     $("#content").html(template.getSpinner())
     mdui.mutation()
-    let result = await axios.get('/pokaapi/albums')
-    let html = template.parseAlbums(result.data.albums)
+    let result = await request('/pokaapi/albums')
+    let html = template.parseAlbums(result.albums)
     if ($("#content").attr('data-page') == 'album') {
         $("#content").html(html)
         mdui.mutation()
@@ -459,32 +461,31 @@ async function showAlbumSongs(albumSource, albumID) {
     $("#content").attr('data-page', `album`)
     $("#content").attr('data-item', `album${albumID}`)
 
+    // 展示讀取中
+    let albumInfo = template.infoHeader('', '', '')
+    pokaHeader('', '')
+    $("#content").html(albumInfo + template.getSpinner())
+    mdui.mutation()
+
     let name, artist, cover, result;
     if (albumSource == 'DSM') {
         let albumData = JSON.parse(albumID)
         name = albumData.album_name
         artist = albumData.album_artist_name
         cover = `/pokaapi/cover/?moduleName=${encodeURIComponent(albumSource)}&data=${encodeURIComponent(JSON.stringify({ type: "album", info: albumData }))}`
-        result = await axios.get(`/pokaapi/albumSongs/?moduleName=${encodeURIComponent(albumSource)}&data=${encodeURIComponent(albumID)}`)
+        result = await request(`/pokaapi/albumSongs/?moduleName=${encodeURIComponent(albumSource)}&data=${encodeURIComponent(albumID)}`)
     } else {
-        let albumData = (await axios.get(`/pokaapi/album?moduleName=${encodeURIComponent(albumSource)}&id=${encodeURIComponent(albumID)}`)).data
+        let albumData = (await request(`/pokaapi/album?moduleName=${encodeURIComponent(albumSource)}&id=${encodeURIComponent(albumID)}`))
         name = albumData.name
         artist = albumData.artist
         cover = albumData.cover
         result = {
-            data: {
-                songs: albumData.songs
-            }
+            songs: albumData.songs
         }
     }
 
-    pokaHeader('', '', cover)
-    let albumInfo = template.infoHeader(cover, name, artist)
 
-    // 展示讀取中
-    $("#content").html(albumInfo + template.getSpinner())
-    mdui.mutation()
-        // 釘選（？
+    // 釘選（？
     let isAlbumPinned = await isPinned(albumSource, 'album', albumID, name),
         actions = '';
     if (isAlbumPinned != 'disabled')
@@ -507,13 +508,13 @@ async function showAlbumSongs(albumSource, albumID) {
         <i class="mdui-icon material-icons">playlist_add</i>
     </button>`
 
-
-
     //抓資料
-    html = template.parseSongs(result.data.songs)
+    html = template.parseSongs(result.songs)
+    albumInfo = template.infoHeader(cover, name, artist)
     if ($("#content").attr('data-page') == `album` && $("#content").attr('data-item') == `album${albumID}`) {
         $("#content").html(albumInfo + html)
-        $("#content .info-header .time").html(`${result.data.songs.length} 首歌曲`)
+        pokaHeader('', '', cover)
+        $("#content .info-header .time").html(`${result.songs.length} 首歌曲`)
         $("#content .info-header .actions").html(actions)
 
         $("[data-pinned]").click(async function() {
@@ -548,25 +549,26 @@ async function showFolder(moduleName, folderId) {
     } else {
         url = `/pokaapi/folders`
     }
-    let result = await axios.get(url)
-    let folderHTML = template.parseFolder(result.data.folders) + template.parseSongs(result.data.songs)
+    let result = await request(url)
+    let folderHTML = template.parseFolder(result.folders) + template.parseSongs(result.songs)
     if ($("#content").attr('data-page') == 'folder') {
         $("#content").html(folderHTML)
         router.updatePageLinks()
     }
 }
 async function showArtist(moduleName, artist = false) {
-    let data = moduleName != 'DSM' && artist ? (await axios.get(`/pokaapi/artist/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(artist)}`)).data : undefined;
+    let data = moduleName != 'DSM' && artist ? request(`/pokaapi/artist/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(artist)}`) : undefined;
+    // 如果不是 DSM 的話去向模組取得該演出者的封面
     let cover = artist ? (moduleName == 'DSM' ?
-        `/pokaapi/cover/?moduleName=${encodeURIComponent(moduleName)}&data=${encodeURIComponent(JSON.stringify({ "type": "artist", "info": artist }))}` :
+        `/pokaapi/cover/?moduleName=${encodeURIComponent(moduleName)}&data=${encodeURIComponent(JSON.stringify({ "type": "artist", "info": artist == '未知' ? '' : artist }))}` :
         data.cover) : false
-    pokaHeader(artist ? moduleName == 'DSM' ? artist : data.name : "演出者", artist ? "演出者" : "列出所有演出者", cover)
+    pokaHeader(artist ? moduleName == 'DSM' ? artist : data.name : "演出者", artist ? moduleShowName[moduleName] : "列出所有演出者", cover)
     $("#content").attr('data-page', 'artist')
     $("#content").html(template.getSpinner())
     mdui.mutation()
     if (artist && moduleName) {
         $("#content").attr('data-item', `artist${artist}`)
-        let result = (await axios.get(`/pokaapi/artistAlbums/?moduleName=${encodeURIComponent(moduleName)}&id=${artist == '未知' ? '' : encodeURIComponent(artist)}`)).data,
+        let result = await request(`/pokaapi/artistAlbums/?moduleName=${encodeURIComponent(moduleName)}&id=${artist == '未知' ? '' : encodeURIComponent(artist)}`),
             isArtistPinned = await isPinned(moduleName, 'artist', artist, artist)
         let pinButton = ``
         if (isArtistPinned && isArtistPinned != 'disabled')
@@ -594,8 +596,8 @@ async function showArtist(moduleName, artist = false) {
             })
         }
     } else {
-        let result = await axios.get(`/pokaapi/artists`),
-            artistsHTML = template.parseArtists(result.data.artists)
+        let result = await request(`/pokaapi/artists`),
+            artistsHTML = template.parseArtists(result.artists)
         if ($("#content").attr('data-page') == 'artist')
             $("#content").html(artistsHTML)
     }
@@ -604,21 +606,23 @@ async function showArtist(moduleName, artist = false) {
 
 }
 async function showComposer(moduleName, composer) {
-    let cover = `/pokaapi/cover/?moduleName=${encodeURIComponent(moduleName)}&data=${encodeURIComponent(JSON.stringify({ "type": "composer", "info": composer }))}`
-    pokaHeader(composer ? composer : "作曲者", composer ? "作曲者" : "列出所有作曲者", composer ? cover : false)
+    let cover = `/pokaapi/cover/?moduleName=${encodeURIComponent(moduleName)}&data=${encodeURIComponent(JSON.stringify({ "type": "composer", "info": composer == '未知' ? '' : composer }))}`
     $("#content").attr('data-page', 'composer')
     $("#content").html(template.getSpinner())
     mdui.mutation()
-    if (composer) {
+    if (composer && moduleName) {
+        pokaHeader(composer, '讀取中...', cover)
         $("#content").attr('data-item', `composer${composer}`)
-        let result = await axios.get(`/pokaapi/composerAlbums/?moduleName=${encodeURIComponent(moduleName)}&id=${composer == '未知' ? '' : encodeURIComponent(composer)}`),
+        let result = await request(`/pokaapi/composerAlbums/?moduleName=${encodeURIComponent(moduleName)}&id=${composer == '未知' ? '' : encodeURIComponent(composer)}`),
             isComposerPinned = await isPinned(moduleName, 'composer', composer, composer)
+
+        pokaHeader(composer, moduleShowName[moduleName], cover)
         let pinButton = ``
         if (isComposerPinned && isComposerPinned != 'disabled')
             pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="從首頁釘選移除該作曲者" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
         else if (isComposerPinned != 'disabled')
             pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="加入該作曲者到首頁釘選" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
-        let albumHTML = template.parseAlbums(result.data.albums)
+        let albumHTML = template.parseAlbums(result.albums)
         if ($("#content").attr('data-item') == `composer${composer}`) {
             $("#content").html(albumHTML + pinButton)
             $("[data-pinned]").click(async function() {
@@ -639,9 +643,10 @@ async function showComposer(moduleName, composer) {
             })
         }
     } else {
-        //請求資料囉
-        let result = await axios.get(`/pokaapi/composers`),
-            composersHTML = template.parseComposers(result.data.composers)
+        pokaHeader("作曲者", "列出所有作曲者")
+            //請求資料囉
+        let result = await request(`/pokaapi/composers`),
+            composersHTML = template.parseComposers(result.composers)
         if ($("#content").attr('data-page') == 'composer')
             $("#content").html(composersHTML)
     }
@@ -655,14 +660,42 @@ async function showPlaylist() {
     $("#content").html(template.getSpinner())
     $('#content').attr('data-page', 'playlist')
     mdui.mutation()
-    let result = await axios.get(`/pokaapi/playlists`)
+    let result = await request(`/pokaapi/playlists`)
     if ($("#content").attr('data-page') == 'playlist') {
-        if (result.data.playlists.length < 0) {
+        if (result.playlists.length < 0)
             $("#content").html(`<div class="mdui-valign" style="height:150px"><p class="mdui-center">沒有任何播放清單</p></div>`)
-        }
-        $("#content").html(template.parsePlaylists(result.data.playlists))
+        else
+            $("#content").html(template.parsePlaylists(result.playlists))
         router.updatePageLinks()
     }
+}
+//- 播放清單資料夾
+async function showPlaylistFolder(playlistId) {
+    $('#content').attr('data-page', 'playlist')
+    $('#content').attr('data-item', `playlist${playlistId}`)
+    mdui.mutation()
+    let data = JSON.parse(sessionStorage.temporalPlaylist)
+
+    if (!data[playlistId]) {
+        pokaHeader('錯誤', '哎呀！找不到這個播放清單')
+        $("#content").html(`
+        <div class="mdui-valign" style="height:150px">
+            <p class="mdui-center">
+            <a href="playlist" 
+               class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent" 
+               data-navigo>回播放清單總覽頁面
+            </a>
+            </p>
+        </div>`)
+    } else {
+        let playlist = data[playlistId]
+        let playlistName = playlist.name
+        let playlists = playlist.playlists
+        pokaHeader(playlistName, moduleShowName[playlist.source])
+        $("#content").html(template.parsePlaylists(playlists))
+    }
+    router.updatePageLinks()
+
 }
 //- 播放清單歌曲
 async function showPlaylistSongs(moduleName, playlistId) {
@@ -676,20 +709,52 @@ async function showPlaylistSongs(moduleName, playlistId) {
     mdui.mutation()
 
     //抓資料
-    let result = (await axios.get(`/pokaapi/playlistSongs/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(playlistId)}`)).data
+    let result = await request(`/pokaapi/playlistSongs/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(playlistId)}`)
+    if (result == null) {
+        pokaHeader('錯誤', '哎呀！找不到這個播放清單')
+        $("#content").html(`
+        <div class="mdui-valign" style="height:150px">
+            <p class="mdui-center">
+            <a href="playlist" 
+               class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent" 
+               data-navigo>回播放清單總覽頁面
+            </a>
+            </p>
+        </div>`)
+        router.updatePageLinks()
+        return
+    }
     let name = result.playlists[0].name
     let songs = template.parseSongs(result.songs)
-    pokaHeader(name, "播放清單", result.playlists[0].image || false)
+    pokaHeader(name, moduleShowName[result.playlists[0].source], result.playlists[0].image || false)
 
     let isPlaylistPinned = await isPinned(moduleName, 'playlist', playlistId, result.playlists[0].name)
     let pinButton = ``
     if (isPlaylistPinned && isPlaylistPinned != 'disabled')
-        pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="從首頁釘選移除此播放清單" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
+        pinButton = `<button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-theme-accent" title="從首頁釘選移除此播放清單" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
     else if (isPlaylistPinned != 'disabled')
-        pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="加入此播放清單到首頁釘選" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
+        pinButton = `<button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-theme-accent" title="加入此播放清單到首頁釘選" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
+    let fab = `
+    <div class="mdui-fab-wrapper" mdui-fab="{trigger: 'hover'}">
+      <button class="mdui-fab mdui-ripple mdui-color-theme-accent">
+        <!-- 預設 icon -->
+        <i class="mdui-icon material-icons">arrow_drop_up</i>
+        <!-- 選單出現時的 icon -->
+        <i class="mdui-icon mdui-fab-opened material-icons">arrow_drop_down</i>
+      </button>
+      <div class="mdui-fab-dial">
+        ${pinButton}
+        <button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-theme-accent" 
+                title="加入此播放清單所有歌曲到現正播放" 
+                onclick="addSong(songList)">
+            <i class="mdui-icon material-icons">playlist_add</i>
+        </button>
+      </div>
+    </div>
+    `
 
     if ($("#content").attr('data-item') == `playlist${playlistId}`) {
-        $("#content").html(songs + pinButton)
+        $("#content").html(songs + fab)
         $("[data-pinned]").click(async function() {
             let pinStatus = $(this).attr('data-pinned')
             if (pinStatus == "true") {
@@ -716,14 +781,19 @@ async function showRandom() {
     $("#content").html(template.getSpinner())
     $('#content').attr('data-page', 'random')
     mdui.mutation()
-    result = await axios.get(`/pokaapi/randomSongs`)
+    let result = await request(`/pokaapi/randomSongs`)
+    let fab = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" 
+                       title="加入此播放清單所有歌曲到現正播放" 
+                       onclick="addSong(songList)">
+                       <i class="mdui-icon material-icons">playlist_add</i>
+                </button>`
     if ($("#content").attr('data-page') == 'random')
-        $("#content").html(template.parseSongs(result.data.songs))
+        $("#content").html(template.parseSongs(result.songs) + fab)
 }
 async function playRandom() {
     router.navigate('now')
-    let result = await axios.get(`/pokaapi/randomSongs`)
-    playSongs(result.data.songs, false, false)
+    let result = await request(`/pokaapi/randomSongs`)
+    playSongs(result.songs, false, false)
 }
 //- 現正播放
 async function showNow() {
