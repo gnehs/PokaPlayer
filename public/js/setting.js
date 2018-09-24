@@ -167,48 +167,90 @@ async function showSettingsPic() {
     $("#content").html(settingItems)
     $('[data-pic-source]').click(function() {
         let imgsOption = imgs => {
-            let option = ''
+            /*let option = ''
             for (i = 0; i < imgs.length; i++) {
                 let img = imgs[i]
                 option += settingsItem(img.name,  '', '',  '', `data-img-src="${img.src}" mdui-dialog-close`)
             }
+            return option*/
+            let option =  `<div class="poka three cards">`
+            for (i = 0; i < imgs.length; i++) {
+                let img = imgs[i]
+                option += `
+                <a class="card" 
+                   title="${img.name}&#10;${img.description}"
+                   data-img-src="${img.src}" mdui-dialog-close>
+                    <div class="image mdui-ripple" style="background-image:url('${img.src}')"></div>
+                    <div class="title mdui-text-color-theme-text mdui-text-truncate">${img.name}</div>
+                    <div class="subtitle mdui-text-color-theme-text mdui-text-truncate">${img.description}</div>
+                </a>`
+            }
+            option += "</div>"
             return option
         }, 
          imgs = [{
             name: '預設圖庫',
+            description: 'PokaPlayer 內建的圖庫',
             src: '/og/og.png'
         }, {
             name: 'Bing 每日圖片',
+            description: 'yingjoy.cn 提供',
+            src: 'https://api.yingjoy.cn/pic/?t=bing&w=1920'
+        }, {
+            name: '隨機精美圖片',
+            description: 'yingjoy.cn 提供',
+            src: 'https://api.yingjoy.cn/pic/?t=random&w=1920'
+        }, {
+            name: 'Bing 每日圖片',
+            description: 'area.sinaapp.com 提供',
             src: 'https://area.sinaapp.com/bingImg/'
         }, {
-            name: 'Bing 隨機每日圖片(uploadbeta.com)',
+            name: 'Bing 隨機圖片',
+            description: 'uploadbeta.com 提供',
             src: 'https://uploadbeta.com/api/pictures/random/?key=BingEverydayWallpaperPicture'
         }, {
             name: 'LoremFlickr',
+            description: 'loremflickr.com 提供',
             src: 'https://loremflickr.com/1920/1080'
         }, {
             name: 'Picsum Photos',
+            description: 'picsum.photos 提供',
             src: 'https://picsum.photos/1920/1080/?random'
         }, {
             name: 'The Dog API',
+            description: 'GIF 格式，thedogapi.com 提供',
             src: 'https://api.thedogapi.com/v1/images/search?format=src&mime_types=image/gif'
         }, {
+            name: 'The Dog API',
+            description: 'PNG 格式，thedogapi.com 提供',
+            src: 'https://api.thedogapi.com/v1/images/search?format=src&mime_types=image/png'
+        }, {
             name: 'The Cat API',
+            description: 'GIF 格式，thecatapi.com 提供',
             src: 'https://thecatapi.com/api/images/get?format=src&type=gif'
+        }, {
+            name: 'The Cat API',
+            description: 'PNG 格式，thecatapi.com 提供',
+            src: 'https://thecatapi.com/api/images/get?format=src&type=png'
         },  {
             name: 'Unsplash Source',
+            description: 'source.unsplash.com 提供',
             src: 'https://source.unsplash.com/random'
         },  {
-            name: '隨機二次元圖片 API(清風醬)',
+            name: '隨機二次元圖片',
+            description: '清風博客提供',
             src: 'https://api.3ewl.cc/acg/img.php'
         }, {
-            name: '隨機二次元背景(api.yuntuchuang.com)',
+            name: '隨機二次元背景',
+            description: '雲圖床提供',
             src: 'https://api.yuntuchuang.com/api/acg.php'
         },  {
-            name: '隨機遊戲背景(api.yuntuchuang.com)',
+            name: '隨機遊戲背景',
+            description: '雲圖床提供',
             src: 'https://api.yuntuchuang.com/api/youxi.php'
         },  {
-            name: '隨機簡約背景(api.yuntuchuang.com)',
+            name: '隨機簡約背景',
+            description: '雲圖床提供',
             src: 'https://api.yuntuchuang.com/api/jianyue.php'
         }]
         mdui.dialog({
@@ -219,7 +261,7 @@ async function showSettingsPic() {
         });
         $('[data-img-src]').click(function(){
             let src = $(this).attr('data-img-src')
-            let name = $(this).children().text()
+            let name = $(this).children('.title').text()
             window.localStorage["randomImg"] = src
             window.localStorage["randomImgName"] = name
             pokaHeader('設定', '隨機圖片',src,false,false)

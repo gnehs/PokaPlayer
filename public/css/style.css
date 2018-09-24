@@ -348,6 +348,10 @@ header.mdui-appbar.mdui-appbar-fixed {
     }
 }
 
+.poka.three.cards .card {
+    --album-size: calc(33.3% - 2em);
+}
+
 #aplayer {
     display: none;
 }
