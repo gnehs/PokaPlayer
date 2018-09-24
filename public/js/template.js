@@ -122,7 +122,7 @@ const template = {
             html += `
             <a class="card" 
                title="${name}"
-               href="artist/${encodeURIComponent(composer.source)}/${encodeURIComponent(composer.source == 'DSM' ? name : composer.id)}" 
+               href="composer/${encodeURIComponent(composer.source)}/${encodeURIComponent(composer.source == 'DSM' ? name : composer.id)}" 
                data-navigo>
                 <div class="image mdui-ripple" style="background-image:url('${img}')"></div>
                 <div class="title mdui-text-color-theme-text mdui-text-truncate">${name}</div>
