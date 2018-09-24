@@ -22,25 +22,32 @@
     },
     "Netease2": {
         "server": "YOUR_NeteaseCloudMusicApi_SERVER",
+        "isPremium": true,
         "topPlaylist": {
-            "enabled": false,
+            "enabled": true,
             "category": "ACG",
             "limit": 5,
-            "order": "hot" // hot or new
-        },
-        "hqPlaylist": {
-            "enabled": false,
-            "category": "ACG",
-            "limit": 5
-        },
-        "dailyRecommend": {
-            "songs": false,
-            "playlist": false
+            "order": "hot",
+            "image": "https://i.imgur.com/ZFaycMw.gif"
         },
         "login": {
             "phone": null,
             "email": null,
             "password": null
+        },
+        "dailyRecommendSongs": {
+            "enabled": true,
+            "image": "https://i.imgur.com/ZFaycMw.gif"
+        },
+        "dailyRecommendPlaylists": {
+            "enabled": true,
+            "image": "https://i.imgur.com/ZFaycMw.gif"
+        },
+        "hqPlaylist": {
+            "enabled": true,
+            "category": "ACG",
+            "limit": 5,
+            "image": "https://i.imgur.com/ZFaycMw.gif"
         }
     }
 }
