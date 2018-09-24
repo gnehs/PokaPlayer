@@ -132,12 +132,18 @@ const template = {
         return html
     },
     parsePlaylists: playlists => {
+        let temporalPlaylist = sessionStorage.temporalPlaylist ? JSON.parse(sessionStorage.temporalPlaylist) : {}
         let html = `<div class="poka cards">`
         for (i = 0; i < playlists.length; i++) {
             let playlist = playlists[i]
             let img = playlist.image && window.localStorage["imgRes"] != "true" ? `style="background-image:url('${playlist.image}')"` : ``
             let icon = playlist.image && window.localStorage["imgRes"] != "true" ? `` : `<i class="mdui-icon material-icons">playlist_play</i>`
-            let href = playlist.type == 'folder' ? `playlistFolder/${encodeURIComponent(playlist.id)}` : `playlist/${encodeURIComponent(playlist.source)}/${encodeURIComponent(playlist.id)}`
+            let href = `playlist/${encodeURIComponent(playlist.source)}/${encodeURIComponent(playlist.id)}`
+            if (playlist.type == 'folder') {
+                let randomLink = Math.random().toString(36).substring(8)
+                href = `playlistFolder/${playlist.id}-${randomLink}`
+                temporalPlaylist[`${playlist.id}-${randomLink}`] = playlist
+            }
             html += `
             <a class="card" 
                title="${playlist.name}"
@@ -147,6 +153,7 @@ const template = {
                 <div class="title mdui-text-color-theme-text mdui-text-truncate">${playlist.name}</div>
             </a>`
         }
+        sessionStorage.temporalPlaylist = JSON.stringify(temporalPlaylist)
         html += '</div>'
         return html
     },

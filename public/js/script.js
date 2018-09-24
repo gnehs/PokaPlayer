@@ -1,3 +1,7 @@
+const moduleShowName = {
+    DSM: "DSM",
+    Netease2: "網易雲音樂"
+};
 // 初始化播放器
 const ap = new APlayer({
     container: document.getElementById('aplayer'),
@@ -667,28 +671,30 @@ async function showPlaylist() {
 }
 //- 播放清單資料夾
 async function showPlaylistFolder(playlistId) {
-    // 展示讀取中
-    pokaHeader("讀取中...", '播放清單')
-    $("#content").html(template.getSpinner())
     $('#content').attr('data-page', 'playlist')
     $('#content').attr('data-item', `playlist${playlistId}`)
     mdui.mutation()
-    let result = await axios.get(`/pokaapi/playlists`)
-    let playlists = (result.data.playlists.filter(x => x.id == playlistId)),
-        playlistName = playlists[0].name
+    let data = JSON.parse(sessionStorage.temporalPlaylist)
 
-    playlists = playlists[0].playlists
-
-    console.log(playlists)
-
-    if ($("#content").attr('data-item') == `playlist${playlistId}`) {
+    if (!data[playlistId]) {
+        pokaHeader('錯誤', '哎呀！找不到這個播放清單')
+        $("#content").html(`
+        <div class="mdui-valign" style="height:150px">
+            <p class="mdui-center">
+            <a href="playlist" 
+               class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent" 
+               data-navigo>回播放清單總覽頁面
+            </a>
+            </p>
+        </div>`)
+    } else {
+        let playlistName = data[playlistId].name
+        let playlists = data[playlistId].playlists
         pokaHeader(playlistName, '播放清單')
-        if (result.data.playlists.length < 0)
-            $("#content").html(`<div class="mdui-valign" style="height:150px"><p class="mdui-center">沒有任何播放清單</p></div>`)
-        else
-            $("#content").html(template.parsePlaylists(playlists))
-        router.updatePageLinks()
+        $("#content").html(template.parsePlaylists(playlists))
     }
+    router.updatePageLinks()
+
 }
 //- 播放清單歌曲
 async function showPlaylistSongs(moduleName, playlistId) {
