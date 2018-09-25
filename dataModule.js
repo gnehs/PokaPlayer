@@ -335,8 +335,13 @@ router.post("/playlists/", async(req, res) => {
     // 沒這東西
     if (!_module || moduleList[moduleName].active.indexOf("getPlaylists") == -1)
         return res.status(501).send("The required module is currently unavailable :(");
-    let r = await _module.getPlaylists(req.body.playlists);
-    return res.json(r);
+    let r;
+    try {
+        r = await _module.getPlaylists(req.body.playlists);
+    } catch (e) {
+        console.log(`[DataModules][${moduleName}]發生了錯誤：（`, e)
+    }
+    return res.json(r || null);
 });
 
 // 取得播放清單的歌曲
@@ -346,14 +351,15 @@ router.get("/playlistSongs/", async(req, res) => {
     let _module =
         moduleName in moduleList ? require(moduleList[moduleName].js) : null;
     // 沒這東西
-    if (!_module ||
-        moduleList[moduleName].active.indexOf("getPlaylistSongs") == -1
-    )
-        return res
-            .status(501)
-            .send("The required module is currently unavailable :(");
-    let r = await _module.getPlaylistSongs(req.query.id);
-    return res.json(r);
+    if (!_module || moduleList[moduleName].active.indexOf("getPlaylistSongs") == -1)
+        return res.status(501).send("The required module is currently unavailable :(");
+    let r;
+    try {
+        r = await _module.getPlaylistSongs(req.query.id);
+    } catch (e) {
+        console.log(`[DataModules][${moduleName}]發生了錯誤：（`, e)
+    }
+    return res.json(r || null);
 });
 
 //-----------------------------> 演出者
@@ -366,8 +372,13 @@ router.get("/artist/", async(req, res) => {
     // 沒這東西
     if (!_module || moduleList[moduleName].active.indexOf("getArtist") == -1)
         return res.status(501).send("The required module is currently unavailable :(");
-    let r = await _module.getArtist(req.query.id);
-    return res.json(r);
+    let r;
+    try {
+        r = await _module.getArtist(req.query.id);
+    } catch (e) {
+        console.log(`[DataModules][${moduleName}]發生了錯誤：（`, e)
+    }
+    return res.json(r || null);
 });
 
 // 取得演出者清單
@@ -378,10 +389,14 @@ router.get("/artists/", async(req, res) => {
         let x = moduleList[Object.keys(moduleList)[i]];
         let y = require(x.js);
         if (x.active.indexOf("getArtists") > -1) {
-            let list = (await y.getArtists()) || null;
-            if (list) {
-                for (i = 0; i < list.artists.length; i++)
-                    r.artists.push(list.artists[i]);
+            try {
+                let list = (await y.getArtists()) || null;
+                if (list) {
+                    for (i = 0; i < list.artists.length; i++)
+                        r.artists.push(list.artists[i]);
+                }
+            } catch (e) {
+                console.log(`[DataModules][${x.name}]發生了錯誤：（`, e)
             }
         }
     }
@@ -397,10 +412,13 @@ router.get("/artistAlbums/", async(req, res) => {
     if (!_module ||
         moduleList[moduleName].active.indexOf("getArtistAlbums") == -1
     )
-        return res
-            .status(501)
-            .send("The required module is currently unavailable :(");
-    let r = await _module.getArtistAlbums(req.query.id);
+        return res.status(501).send("The required module is currently unavailable :(");
+    let r;
+    try {
+        r = await _module.getArtistAlbums(req.query.id);
+    } catch (e) {
+        console.log(`[DataModules][${moduleName}]發生了錯誤：（`, e)
+    }
     return res.json(r);
 });
 //-----------------------------> 作曲者
@@ -412,10 +430,14 @@ router.get("/composers/", async(req, res) => {
         let x = moduleList[Object.keys(moduleList)[i]];
         let y = require(x.js);
         if (x.active.indexOf("getComposers") > -1) {
-            let list = (await y.getComposers()) || null;
-            if (list) {
-                for (i = 0; i < list.composers.length; i++)
-                    r.composers.push(list.composers[i]);
+            try {
+                let list = (await y.getComposers()) || null;
+                if (list) {
+                    for (i = 0; i < list.composers.length; i++)
+                        r.composers.push(list.composers[i]);
+                }
+            } catch (e) {
+                console.log(`[DataModules][${x.name}]發生了錯誤：（`, e)
             }
         }
     }
@@ -429,14 +451,15 @@ router.get("/composerAlbums/", async(req, res) => {
     let _module =
         moduleName in moduleList ? require(moduleList[moduleName].js) : null;
     // 沒這東西
-    if (!_module ||
-        moduleList[moduleName].active.indexOf("getComposerAlbums") == -1
-    )
-        return res
-            .status(501)
-            .send("The required module is currently unavailable :(");
-    let r = await _module.getComposerAlbums(req.query.id);
-    return res.json(r);
+    if (!_module || moduleList[moduleName].active.indexOf("getComposerAlbums") == -1)
+        return res.status(501).send("The required module is currently unavailable :(");
+    let r;
+    try {
+        r = await _module.getComposerAlbums(req.query.id);
+    } catch (e) {
+        console.log(`[DataModules][${moduleName}]發生了錯誤：（`, e)
+    }
+    return res.json(r || { albums: [] });
 });
 //-----------------------------> 歌曲
 // 取得歌曲串流
@@ -479,9 +502,7 @@ router.get("/cover/", async(req, res) => {
         moduleName in moduleList ? require(moduleList[moduleName].js) : null;
     // 沒這東西
     if (!_module || moduleList[moduleName].active.indexOf("getCover") == -1)
-        return res
-            .status(501)
-            .send("The required module is currently unavailable :(");
+        return res.status(501).send("The required module is currently unavailable :(");
 
     //http://localhost:3000/pokaapi/cover/?moduleName=DSM&data={%22type%22:%22artist%22,%22info%22:%22%E3%82%8D%E3%82%93%22}
     // -> {"type":"artist","info":"ろん"}
@@ -497,9 +518,7 @@ router.get("/req/", async(req, res) => {
         moduleName in moduleList ? require(moduleList[moduleName].js) : null;
     // 沒這東西
     if (!_module || moduleList[moduleName].active.indexOf("req") == -1)
-        return res
-            .status(501)
-            .send("The required module is currently unavailable :(");
+        return res.status(501).send("The required module is currently unavailable :(");
 
     //http://localhost:3000/pokaapi/req/?moduleName=Netease2&data=http%3A%2F%2Fp3.music.126.net%2FJB1yLZyVMPsbbSlSkfJdRw%3D%3D%2F6630055116648156.jpg
     // -> Image
@@ -515,10 +534,14 @@ router.get("/searchLyrics/", async(req, res) => {
         let x = moduleList[Object.keys(moduleList)[i]];
         let y = require(x.js);
         if (x.active.indexOf("searchLyrics") > -1) {
-            let result = (await y.searchLyrics(req.query.keyword)) || null;
-            if (result && result.lyrics)
-                for (i = 0; i < result.lyrics.length; i++)
-                    resData.lyrics.push(result.lyrics[i]);
+            try {
+                let result = (await y.searchLyrics(req.query.keyword)) || null;
+                if (result && result.lyrics)
+                    for (i = 0; i < result.lyrics.length; i++)
+                        resData.lyrics.push(result.lyrics[i]);
+            } catch (e) {
+                console.log(`[DataModules][${x.name}]發生了錯誤：（`, e)
+            }
         }
     }
     return res.json(resData);
@@ -530,14 +553,18 @@ router.get("/lyric/", async(req, res) => {
         moduleName in moduleList ? require(moduleList[moduleName].js) : null;
     // 沒這東西
     if (!_module || moduleList[moduleName].active.indexOf("getLyric") == -1)
-        return res
-            .status(501)
-            .send("The required module is currently unavailable :(");
+        return res.status(501).send("The required module is currently unavailable :(");
+    let lyric = ``
+    try {
+        lyric = await _module.getLyric(req.query.id)
+    } catch (e) {
+        console.log(`[DataModules][${moduleName}]發生了錯誤：（`, e)
+    }
     return res.json({
         lyrics: [{
             source: req.query.moduleName,
             id: req.query.id,
-            lyric: await _module.getLyric(req.query.id)
+            lyric: lyric
         }]
     });
 });
@@ -550,31 +577,18 @@ router.get("/randomSongs/", async(req, res) => {
         let x = moduleList[Object.keys(moduleList)[i]];
         let y = require(x.js);
         if (x.active.indexOf("getRandomSongs") > -1) {
-            let result = (await y.getRandomSongs(req.query.keyword)) || null;
-            if (result && result.songs)
-                for (i = 0; i < result.songs.length; i++)
-                    resData.songs.push(result.songs[i]);
+            try {
+                let result = (await y.getRandomSongs(req.query.keyword)) || null;
+                if (result && result.songs)
+                    for (i = 0; i < result.songs.length; i++)
+                        resData.songs.push(result.songs[i]);
+            } catch (e) {
+                console.log(`[DataModules][${x.name}]發生了錯誤：（`, e)
+            }
         }
     }
     return res.json(resData);
 });
-// 取得歌曲
-/*router.get('/song/:moduleName/:data', (req, res) => {
-    let songs = {}
-    Object.keys(moduleList).forEach(async(x) => {
-        x = moduleList[x]
-        let y = require(x.js)
-        if ('getSong' in x.active) {
-            let songList = await y.getSongs() || null
-            console.log(songList)
-            if (songList) {
-                if (!songs[moduleName]) songs[moduleName] = songList
-                else songs[moduleName].concat(songList)
-            }
-        }
-    })
-    res.json(songs);
-});*/
 
 router.use((req, res, next) => {
     res.status(404).send("PokaPlayer API - 404");
