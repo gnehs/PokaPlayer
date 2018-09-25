@@ -130,16 +130,14 @@ const normalOptions = (url, req = {}) => {
         method: "GET",
         uri: url.replace("m10.music.126.net", `${m10()}/m10.music.126.net`),
         headers: {
-            Accept:
-                "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+            Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
             "Accept-Encoding": "gzip, deflate",
             "Accept-Language": "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7",
             Connection: "keep-alive",
             "Cache-Control": "max-age=0",
             DNT: 1,
             "Upgrade-Insecure-Requests": 1,
-            "User-Agent":
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
             Range: req.headers && req.headers.range ? req.headers.range : "",
             Accept: req.headers && req.headers.accept ? req.headers.accept : ""
         },
@@ -200,12 +198,12 @@ function migrate(org, t, offset = 10 ** -3) {
     const strip = (x, precision = 12) => +parseFloat(x.toPrecision(precision)); // 數字精確化
 
     const tagToTime = tag =>
-        isDigit(tag[0])
-            ? tag
-                  .split(":")
-                  .reverse()
-                  .reduce((acc, cur, index) => plus(acc, Number(cur) * 60 ** index), 0)
-            : tag;
+        isDigit(tag[0]) ?
+        tag
+        .split(":")
+        .reverse()
+        .reduce((acc, cur, index) => plus(acc, Number(cur) * 60 ** index), 0) :
+        tag;
     const parse = (x, isTranslated = false) => {
         let pLyricLines = x
             .split("\n")
@@ -276,7 +274,9 @@ function migrate(org, t, offset = 10 ** -3) {
                 i += 1;
             }
         } else {
-            parsedLyricPairs.push([parsedLyrics[i][0], [parsedLyrics[i][1], parsedLyrics[i][1]]]);
+            parsedLyricPairs.push([parsedLyrics[i][0],
+                [parsedLyrics[i][1], parsedLyrics[i][1]]
+            ]);
             i += 1;
         }
     }
@@ -328,7 +328,7 @@ async function login() {
 
 async function onLoaded() {
     console.log("[DataModules][Netease2] 正在登入...");
-    return await fs.ensureFile(pin).then(async () => {
+    return await fs.ensureFile(pin).then(async() => {
         if (
             config &&
             config.login &&
@@ -381,7 +381,7 @@ function genReq(link) {
 
 async function parseSongs(songs, br = 999000) {
     return await Promise.all(
-        (await songs).map(async (song, index) => {
+        (await songs).map(async(song, index) => {
             song = await song;
             return {
                 name: song.name,
@@ -494,13 +494,13 @@ async function search(keywords, limit = 30) {
         album: 10,
         artist: 100,
         playlist: 1000
-        // user: 1002,
-        // mv: 1004,
-        // lyric: 1006,
-        // radio: 1009
+            // user: 1002,
+            // mv: 1004,
+            // lyric: 1006,
+            // radio: 1009
     };
 
-    let result = await Object.keys(typeNums).reduce(async (results, type) => {
+    let result = await Object.keys(typeNums).reduce(async(results, type) => {
         let types = type + "s";
         let typeNum = typeNums[type];
         let result;
@@ -570,22 +570,19 @@ async function resolvePlaylistStack(playlistStack) {
     if (playlistStack.length === 0) return playlistStack;
     return (await Promise.all(playlistStack)).map(
         x =>
-            Array.isArray(x)
-                ? {
-                      name: x[1].name || x[0].playlist.name,
-                      source: "Netease2",
-                      id: x[0].playlist.id,
-                      image:
-                          x[1].image || imageUrl(x[0].playlist.coverImgUrl || x[0].playlist.picUrl),
-                      from: "playlistStack"
-                  }
-                : {
-                      name: x.playlist.name,
-                      source: "Netease2",
-                      id: x.playlist.id,
-                      image: imageUrl(x.playlist.coverImgUrl || x.playlist.picUrl),
-                      from: "playlistStack"
-                  }
+        Array.isArray(x) ? {
+            name: x[1].name || x[0].playlist.name,
+            source: "Netease2",
+            id: x[0].playlist.id,
+            image: x[1].image || imageUrl(x[0].playlist.coverImgUrl || x[0].playlist.picUrl),
+            from: "playlistStack"
+        } : {
+            name: x.playlist.name,
+            source: "Netease2",
+            id: x.playlist.id,
+            image: imageUrl(x.playlist.coverImgUrl || x.playlist.picUrl),
+            from: "playlistStack"
+        }
     );
 }
 
@@ -804,7 +801,7 @@ async function getPlaylists(playlists) {
 
 async function getPlaylistSongs(id, br = 999000) {
     let name;
-    if (isIdName(id)) [id, name] = decomposeIdName(id);
+    if (isIdName(id))[id, name] = decomposeIdName(id);
     if (id == "dailyRecommendSongs") {
         let result = await rp(options(`${server}recommend/songs`));
         if (result.code == 200) {
@@ -820,13 +817,11 @@ async function getPlaylistSongs(id, br = 999000) {
             }));
             return {
                 songs: r,
-                playlists: [
-                    {
-                        name: "每日推薦歌曲",
-                        source: "Netease2",
-                        id
-                    }
-                ]
+                playlists: [{
+                    name: "每日推薦歌曲",
+                    source: "Netease2",
+                    id
+                }]
             };
         } else {
             console.error(`[DataModules][Netease2] 無法獲取每日推薦歌單。(${result.code})`);
@@ -837,13 +832,11 @@ async function getPlaylistSongs(id, br = 999000) {
         if (result.code == 200) {
             return {
                 songs: await parseSongs(result.data.map(x => x.simpleSong)),
-                playlists: [
-                    {
-                        name: "網易雲音樂雲盤",
-                        source: "Netease2",
-                        id: "yunPan"
-                    }
-                ]
+                playlists: [{
+                    name: "網易雲音樂雲盤",
+                    source: "Netease2",
+                    id: "yunPan"
+                }]
             };
         } else {
             console.error(`[DataModules][Netease2] 無法獲取網易雲音樂雲盤。(${result.code})`);
@@ -854,14 +847,12 @@ async function getPlaylistSongs(id, br = 999000) {
         if (result.code == 200) {
             return {
                 songs: await parseSongs(result.playlist.tracks),
-                playlists: [
-                    {
-                        name: name ? name : result.playlist.name,
-                        source: "Netease2",
-                        id: id,
-                        image: imageUrl(result.playlist.coverImgUrl || result.playlist.picUrl)
-                    }
-                ]
+                playlists: [{
+                    name: name ? name : result.playlist.name,
+                    source: "Netease2",
+                    id: id,
+                    image: imageUrl(result.playlist.coverImgUrl || result.playlist.picUrl)
+                }]
             };
         } else {
             console.error(`[DataModules][Netease2] 無法獲取歌單 ${id}。(${result.code})`);
@@ -987,12 +978,12 @@ async function getHome() {
         topPlaylistStack.push(
             new Promise((resolve, reject) => {
                 rp(
-                    options(
-                        `${server}top/playlist?limit=${c.limit}&order=${
+                        options(
+                            `${server}top/playlist?limit=${c.limit}&order=${
                             c.order in ["hot", "new"] ? c.order : "hot"
                         }&cat=${c.category}`
+                        )
                     )
-                )
                     .then(data =>
                         resolve([data, { image: config.topPlaylist.image || defaultImage }])
                     )
@@ -1009,18 +1000,15 @@ async function getHome() {
         let c = config.hqPlaylist;
         topPlaylistStack.push(
             new Promise((resolve, reject) => {
-                rp(
-                    options(`${server}top/playlist/highquality?limit=${c.limit}&cat=${c.category}`)
-                        .then(data =>
-                            resolve([
-                                data,
-                                {
-                                    image: config.hqPlaylist.image || defaultImage
-                                }
-                            ])
-                        )
-                        .catch(e => reject(e))
-                );
+                rp(options(`${server}top/playlist/highquality?limit=${c.limit}&cat=${c.category}`)).then(data =>
+                        resolve([
+                            data,
+                            {
+                                image: config.hqPlaylist.image || defaultImage
+                            }
+                        ])
+                    )
+                    .catch(e => reject(e))
             })
         );
     }
