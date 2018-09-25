@@ -556,13 +556,15 @@ async function resolveTopPlaylistStack(topPlaylistStack) {
     let playlists = flatMap(
         x => x,
         (await Promise.all(topPlaylistStack)).map(x => x.playlists)
-    ).map(x => ({
-        name: x.name,
-        source: "Netease2",
-        id: x.id,
-        image: imageUrl(x.coverImgUrl || x.picUrl),
-        from: "topPlaylistStack"
-    }));
+    ).map(x => {
+        return x ? ({
+            name: x.name,
+            source: "Netease2",
+            id: x.id,
+            image: imageUrl(x.coverImgUrl || x.picUrl),
+            from: "topPlaylistStack"
+        }) : false
+    });
     return [].concat(...playlists);
 }
 
