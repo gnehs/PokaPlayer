@@ -555,16 +555,14 @@ async function resolveTopPlaylistStack(topPlaylistStack) {
     if (topPlaylistStack.length === 0) return topPlaylistStack;
     let playlists = flatMap(
         x => x,
-        (await Promise.all(topPlaylistStack)).map(x => x.playlists)
-    ).map(x => {
-        return x ? ({
-            name: x.name,
-            source: "Netease2",
-            id: x.id,
-            image: imageUrl(x.coverImgUrl || x.picUrl),
-            from: "topPlaylistStack"
-        }) : false
-    });
+        (await Promise.all(topPlaylistStack)).map(x => x[0] ? x[0].playlists : x.playlists)
+    ).map(x => x ? ({
+        name: x.name,
+        source: "Netease2",
+        id: x.id,
+        image: imageUrl(x.coverImgUrl || x.picUrl),
+        from: "topPlaylistStack"
+    }) : false);
     return [].concat(...playlists);
 }
 
@@ -1002,14 +1000,8 @@ async function getHome() {
         let c = config.hqPlaylist;
         topPlaylistStack.push(
             new Promise((resolve, reject) => {
-                rp(options(`${server}top/playlist/highquality?limit=${c.limit}&cat=${c.category}`)).then(data =>
-                        resolve([
-                            data,
-                            {
-                                image: config.hqPlaylist.image || defaultImage
-                            }
-                        ])
-                    )
+                rp(options(`${server}top/playlist/highquality?limit=${c.limit}&cat=${c.category}`))
+                    .then(data => resolve([data, { image: config.hqPlaylist.image || defaultImage }]))
                     .catch(e => reject(e))
             })
         );
