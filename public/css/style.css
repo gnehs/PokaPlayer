@@ -699,6 +699,10 @@ header.mdui-appbar.mdui-appbar-fixed {
         transform: translateY(calc(100vh - 200px * -1));
         transform-origin: bottom;
     }
+    .mdui-theme-layout-dark [data-player-container]>.mdui-list.songs {
+        background-color: #303030;
+        box-shadow: 0 5px 10px #000000e6;
+    }
     [data-player-container]>.mdui-list.songs.show {
         visibility: visible;
         transform: translateY(0);
