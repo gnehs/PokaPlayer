@@ -176,7 +176,7 @@ function isIdName(id) {
 
 var isLoggedin;
 
-const normalOptions = async(url, req = {}) => {
+const normalOptions = async (url, req = {}) => {
     async function m10() {
         return (await m10s)[Math.floor(Math.random() * (await m10s).length)];
     }
@@ -456,7 +456,9 @@ async function getSong(req, songRes, id) {
     let br = { low: 128000, medium: 192000, high: 320000, original: 320000 }[songRes];
     let isArray = Array.isArray(id);
     id = isArray ? id : [id];
-    let result = (await getSongsUrl(id, br)).map(x => request(await normalOptions(x.url, req)));
+    let result = await Promise.all(
+        (await getSongsUrl(id, br)).map(async x => request(await normalOptions(x.url, req)))
+    );
     return isArray ? result : result[0];
 }
 
@@ -651,14 +653,28 @@ async function resolvePlaylistStack(playlistStack) {
 async function resolvedailyRecommendStack(dailyRecommendStack) {
     if (dailyRecommendStack.length === 0) return dailyRecommendStack;
     return [].concat(
-        ...flatMap(x => x, (await Promise.all(dailyRecommendStack)).map(x => x.recommend)).map(
-            x => ({
-                name: x.name,
-                id: x.id,
-                image: imageUrl(x.coverImgUrl || x.picUrl),
-                source: "Netease2",
-                from: "dailyRecommendStack"
-            })
+        ...flatMap(
+            x => x,
+            (await Promise.all(dailyRecommendStack)).map(
+                x => (Array.isArray(x) ? [x[0], x[1].recommend] : x.recommend)
+            )
+        ).map(
+            x =>
+                Array.isArray(x)
+                    ? {
+                          name: x[1].name,
+                          id: x[1].id,
+                          image: x[0] || imageUrl(x.coverImgUrl || x.picUrl),
+                          source: "Netease2",
+                          from: "dailyRecommendStack"
+                      }
+                    : {
+                          name: x.name,
+                          id: x.id,
+                          image: imageUrl(x.coverImgUrl || x.picUrl),
+                          source: "Netease2",
+                          from: "dailyRecommendStack"
+                      }
         )
     );
 }
@@ -1077,13 +1093,14 @@ async function getHome() {
         );
     }
 
-    if (config.dailyRecommend.songs) {
+    if (config.dailyRecommendSongs.enabled) {
         if (isLoggedin === undefined) {
             login.then(x => {
                 r.push({
                     name: "每日推薦歌曲",
                     source: "Netease2",
-                    id: "dailyRecommendSongs"
+                    id: "dailyRecommendSongs",
+                    image: config.dailyRecommendSongs.image
                 });
             });
         } else if (!isLoggedin) {
@@ -1092,12 +1109,13 @@ async function getHome() {
             r.push({
                 name: "每日推薦歌曲",
                 source: "Netease2",
-                id: "dailyRecommendSongs"
+                id: "dailyRecommendSongs",
+                image: config.dailyRecommendSongs.image
             });
         }
     }
 
-    if (config.dailyRecommend.playlist) {
+    if (config.dailyRecommendPlaylists.enabled) {
         if (isLoggedin === undefined) {
             login.then(async x => {
                 if (x.code == 200)
