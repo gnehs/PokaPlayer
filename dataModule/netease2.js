@@ -176,13 +176,13 @@ function isIdName(id) {
 
 var isLoggedin;
 
-const normalOptions = (url, req = {}) => {
-    function m10() {
+const normalOptions = async(url, req = {}) => {
+    async function m10() {
         return (await m10s)[Math.floor(Math.random() * (await m10s).length)];
     }
     return {
         method: "GET",
-        uri: url.replace("m10.music.126.net", `${m10()}/m10.music.126.net`),
+        uri: url.replace("m10.music.126.net", `${await m10()}/m10.music.126.net`),
         headers: {
             Accept:
                 "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
@@ -407,7 +407,7 @@ async function onLoaded() {
     });
 }
 
-function req(x) {
+async function req(x) {
     function deReq(x) {
         const b2a = x => Buffer.from(x, "base64").toString("utf8");
         const decode = x => /(.{5})(.+)3C4C7CB3(.+)/.exec(x);
@@ -423,7 +423,7 @@ function req(x) {
     if (!link) return false;
     const re = /^(http|https)\:\/\/p(\d+)\.music\.126\.net\/(?:.+)/;
     if (!re.test(link)) return false;
-    else return request(normalOptions(link));
+    else return request(await normalOptions(link));
 }
 
 function genReq(link) {
@@ -456,7 +456,7 @@ async function getSong(req, songRes, id) {
     let br = { low: 128000, medium: 192000, high: 320000, original: 320000 }[songRes];
     let isArray = Array.isArray(id);
     id = isArray ? id : [id];
-    let result = (await getSongsUrl(id, br)).map(x => request(normalOptions(x.url, req)));
+    let result = (await getSongsUrl(id, br)).map(x => request(await normalOptions(x.url, req)));
     return isArray ? result : result[0];
 }
 
@@ -492,7 +492,7 @@ async function getCover(id) {
 
 async function getCovers(ids) {
     return await Promise.all(
-        (await getSongs(ids)).map(async x => request(normalOptions((await x).cover)))
+        (await getSongs(ids)).map(async x => request(await normalOptions((await x).cover)))
     );
 }
 
