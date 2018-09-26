@@ -348,19 +348,24 @@ async function showSettingsAbout() {
         mdui.confirm('確定要清除嗎', '清除 Service Worker 快取', 
             ()=>caches.delete('PokaPlayer'),()=>{},{history: false})
     })
+    
     // PokaPlayer 詳細資料
     let getInfo = await request('/info/');
     $("[data-dev] .mdui-list-item-text").text(getInfo.author)
     let debug = await request('/debug/')
     let checkUpdate = await request(`https://api.github.com/repos/gnehs/PokaPlayer/releases`);
-    let update = getInfo.version != checkUpdate[0].tag_name ? `更新到 ${checkUpdate[0].tag_name}` : debug.data == false ? `您的 PokaPlayer 已是最新版本` : `與開發分支同步`
-    $("[data-upgrade] .mdui-list-item-text").text(update)
-    if (getInfo.version != checkUpdate[0].tag_name || debug){
+    let update = getInfo.version != checkUpdate[0].tag_name ? `更新到 ${checkUpdate[0].tag_name}` : `您的 PokaPlayer 已是最新版本`
+    if (debug){ 
+        pokaHeader('設定', `開發模式`)
+        $("[data-upgrade]").attr('data-upgrade', true)
+        update = `與開發分支同步`
+        $("[data-version] .mdui-list-item-text").text(`${window.localStorage["PokaPlayerVersion"]}(${debug})`)
+    } else if (getInfo.version != checkUpdate[0].tag_name){
         $("[data-upgrade]").attr('data-upgrade', true)
         pokaHeader('設定', `可更新至 ${checkUpdate[0].tag_name}`)
-    }
-    if (debug)
-        $("[data-version] .mdui-list-item-text").text(`${window.localStorage["PokaPlayerVersion"]}(${debug})`)
+    } 
+    $("[data-upgrade] .mdui-list-item-text").text(update)
+    
     //更新
     $("[data-upgrade=\"true\"]").click(() => {
         mdui.dialog({
