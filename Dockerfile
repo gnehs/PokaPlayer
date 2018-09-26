@@ -9,8 +9,11 @@ RUN git clone https://github.com/gnehs/PokaPlayer.git .
 COPY . /app 
 # node_modules
 RUN npm install --production
+# 執行權限
+RUN chmod +x start.sh
 # 環境設定
 ENV NODE_ENV=production
 EXPOSE 3000
-CMD ["npm", "start"]
+# 啟動
+CMD ["sh", "start.sh"]
 
