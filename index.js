@@ -1,6 +1,6 @@
 const fs = require('fs'); //檔案系統
-const config = require('./config.json'); // 設定檔
-const package = require('./package.json'); // 設定檔
+const config = require(__dirname + '/config.json'); // 設定檔
+const package = require(__dirname + '/package.json'); // 設定檔
 const schedule = require('node-schedule'); // 很會計時ㄉ朋友
 const base64 = require('base-64');
 const git = require('simple-git/promise')(__dirname);
@@ -89,7 +89,7 @@ app.get('/', (req, res) => {
     if (config.PokaPlayer.passwordSwitch && req.session.pass != config.PokaPlayer.password)
         res.redirect("/login/")
     else
-        res.render('index') //有登入給首頁吼吼
+        res.render('index', { "version": package.version }) //有登入給首頁吼吼
 })
 
 function pp_decode(str) {
