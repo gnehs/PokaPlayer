@@ -6,6 +6,10 @@
         "instantUpgradeProcess": false,
         "debug": false
     },
+    "share": {
+        "secret": "abcd123",
+        "issuer": "PokaPlayer"
+    },
     "DSM": {
         "protocol": "https",
         "host": "192.168.x.x",
