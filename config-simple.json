@@ -11,6 +11,7 @@
         "issuer": "PokaPlayer"
     },
     "DSM": {
+        "enabled": true,
         "protocol": "https",
         "host": "192.168.x.x",
         "port": 5000,
@@ -25,6 +26,7 @@
         "dbType": "fs"
     },
     "Netease2": {
+        "enabled": true,
         "server": "YOUR_NeteaseCloudMusicApi_SERVER",
         "isPremium": true,
         "topPlaylist": {
