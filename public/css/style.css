@@ -649,6 +649,14 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 @media screen and (max-width: 554px) {
+    #content[data-page="now"] {
+        padding-top: 0;
+        padding-bottom: 0;
+        transition-duration: all .3s;
+    }
+    [data-player]>.info .ctrl .lrc {
+        display: none
+    }
     [data-player-container] {
         transition: all .25s ease;
     }
@@ -660,19 +668,17 @@ header.mdui-appbar.mdui-appbar-fixed {
         font-size: 1.25em;
         color: #838383;
     }
-    #content[data-page="now"] {
-        padding-top: 0;
-        padding-bottom: 0;
-        transition-duration: all .3s;
+    [data-player-container]>.mdui-list.songs.nosongs {
+        top: auto;
+        max-height: 40vh;
     }
-    .mdui-list.songs {
+    [data-player-container]>.mdui-list.songs {
         visibility: hidden;
         max-height: calc(100vh - 200px);
         overflow: hidden;
         transition-duration: .3s;
         background-color: white;
         position: fixed;
-        top: 200px;
         bottom: 0;
         left: 0;
         right: 0;
@@ -681,13 +687,13 @@ header.mdui-appbar.mdui-appbar-fixed {
         transform: translateY(calc(100vh - 200px * -1));
         transform-origin: bottom;
     }
-    .mdui-list.songs.show {
+    [data-player-container]>.mdui-list.songs.show {
         visibility: visible;
         transform: translateY(0);
         overflow: scroll;
         border-radius: 5px 5px 0 0;
     }
-    .mdui-list.songs.show+.mdui-overlay {
+    [data-player-container]>.mdui-list.songs.show+.mdui-overlay {
         visibility: visible;
         opacity: 1;
         z-index: 6000;
@@ -695,6 +701,9 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 @media screen and (min-width: 555px) {
+    [data-player]>.info .ctrl .playlist {
+        display: none
+    }
     [data-player] {
         margin-top: 32px;
         display: flex;

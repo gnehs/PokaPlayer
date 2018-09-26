@@ -842,7 +842,8 @@ async function showNow() {
                 <button class="mdui-btn mdui-btn-icon mdui-ripple random"><i class="mdui-icon material-icons"></i></button>
                 <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="ap.skipBack()"><i class="mdui-icon material-icons">skip_previous</i></button>
                 <button class="mdui-btn mdui-btn-icon mdui-ripple mdui-color-theme-accent play" onclick="ap.toggle()"><i class="mdui-icon material-icons">play_arrow</i></button>
-                <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="ap.skipForward()"><i class="mdui-icon material-icons">skip_next</i></button>
+                <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="ap.skipForward()"><i class="mdui-icon material-icons">skip_next</i></button> 
+                <button class="mdui-btn mdui-btn-icon mdui-ripple lrc" onclick="router.navigate('lrc')"><i class="mdui-icon material-icons">subtitles</i></button>
                 <a href="#/now/songlist" class="mdui-btn mdui-btn-icon mdui-ripple playlist"><i class="mdui-icon material-icons">playlist_play</i></a>
             </div>
             <div class="player-bar">
@@ -1001,7 +1002,19 @@ async function showNow() {
         let song = $(this).attr('data-now-play-id')
         if (song == ap.list.index) ap.skipForward()
         ap.list.remove(song)
-        showNow()
+        $(this).parent().eq(0).remove()
+
+        //重新賦予 play-id
+        let songinfo = $(".mdui-list.songs>.song>.songinfo")
+        let del = $(".mdui-list.songs>.song>.close")
+        console.log(songinfo)
+        for (i = 0; i < songinfo.length; i++) {
+            $(songinfo[i]).attr('data-now-play-id', i)
+            $(del[i]).attr('data-now-play-id', i)
+            console.log(i)
+        }
+
+
     })
 }
 //- 歌詞
