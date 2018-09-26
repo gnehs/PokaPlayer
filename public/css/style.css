@@ -607,7 +607,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 [data-player]>.mdui-card {
-    --main-size: 150px;
+    --main-size: calc(90vmin - 48px);
     width: var(--main-size);
     height: var(--main-size);
     background-size: cover;
@@ -648,7 +648,74 @@ header.mdui-appbar.mdui-appbar-fixed {
     height: 48px;
 }
 
+.songs .song {
+    transition: all .3s;
+    transform: scaleY(1);
+    transform-origin: top;
+}
+
+.songs .song.del {
+    transform: scaleY(0);
+    height: 0;
+    max-height: 0;
+    min-height: 0;
+}
+
+@media screen and (max-width: 554px) {
+    #content[data-page="now"] {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+    [data-player]>.info .ctrl .lrc {
+        display: none
+    }
+    [data-player-container] {
+        transition: all .25s ease;
+    }
+    [data-player-container]>.mdui-list.songs.nosongs:after {
+        content: "無歌曲可供播放";
+        text-align: center;
+        display: block;
+        line-height: 3em;
+        font-size: 1.25em;
+        color: #838383;
+    }
+    [data-player-container]>.mdui-list.songs.nosongs {
+        top: auto;
+        max-height: 40vh;
+    }
+    [data-player-container]>.mdui-list.songs {
+        visibility: hidden;
+        max-height: calc(100vh - 200px);
+        overflow: hidden;
+        transition-duration: .3s;
+        background-color: white;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100vw;
+        z-index: 6001;
+        transform: translateY(calc(100vh - 200px * -1));
+        transform-origin: bottom;
+    }
+    [data-player-container]>.mdui-list.songs.show {
+        visibility: visible;
+        transform: translateY(0);
+        overflow: scroll;
+        border-radius: 5px 5px 0 0;
+    }
+    [data-player-container]>.mdui-list.songs.show+.mdui-overlay {
+        visibility: visible;
+        opacity: 1;
+        z-index: 6000;
+    }
+}
+
 @media screen and (min-width: 555px) {
+    [data-player]>.info .ctrl .playlist {
+        display: none
+    }
     [data-player] {
         margin-top: 32px;
         display: flex;

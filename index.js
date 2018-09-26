@@ -9,7 +9,7 @@ const git = require('simple-git/promise')(__dirname);
 const express = require('express');
 const FileStore = require('session-file-store')(require('express-session')); // session
 const session = require('express-session')({
-    store: new FileStore(),
+    store: new FileStore({ "reapInterval": -1, "logFn": void(0) }),
     secret: config.PokaPlayer.sessionSecret,
     resave: false,
     saveUninitialized: true,
@@ -30,7 +30,7 @@ app.use('/pokaapi', require('./dataModule.js'));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'pug')
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(helmet.hidePoweredBy({ setTo: 'PHP/5.2.1' }));
+app.use(helmet());
 app.use(session);
 io.use(sharedsession(session, {
     autoSave: true
@@ -66,7 +66,9 @@ app.use(express.static('public'))
 // 啟動囉
 server.listen(3000, () => {
     console.log("[PokaPlayer]  URL: http://localhost:3000")
-    console.log("[PokaPlayer] Time: " + moment().format("YYYY/MM/DD HH:mm:ss"))
+    console.log(`[PokaPlayer] Time: ${moment().format("YYYY/MM/DD HH:mm:ss")}`)
+    if (config.PokaPlayer.debug)
+        console.log("[PokaPlayer] Debug 模式已開啟")
 })
 
 // 隨機圖圖

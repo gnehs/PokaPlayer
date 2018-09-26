@@ -5,6 +5,7 @@ function getBackground() {
     else
         return "/og/og.png"
 }
+//- 請求
 async function request(url) {
     let result;
     try {

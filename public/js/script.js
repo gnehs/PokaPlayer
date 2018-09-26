@@ -29,7 +29,7 @@ router
         'playlistFolder/:playlistID': params => showPlaylistFolder(params.playlistID),
         'playlist': showPlaylist,
         'random': showRandom,
-        'now': showNow,
+        'now*': showNow,
         'lrc': showLrc,
         'settings': showSettings,
         'settings/theme': showSettingsTheme,
@@ -799,7 +799,7 @@ async function playRandom() {
 async function showNow() {
     pokaHeader('', '', false, true)
     $('#content').attr('data-page', 'now')
-    let html = `<ul class="mdui-list songs">`
+    let html = `<ul class="mdui-list songs" id="/now/songlist">`
     for (i = 0; i < ap.list.audios.length; i++) {
         let focus = ap.list.index == i ? 'mdui-list-item-active' : '',
             title = ap.list.audios[i].name,
@@ -842,8 +842,9 @@ async function showNow() {
                 <button class="mdui-btn mdui-btn-icon mdui-ripple random"><i class="mdui-icon material-icons"></i></button>
                 <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="ap.skipBack()"><i class="mdui-icon material-icons">skip_previous</i></button>
                 <button class="mdui-btn mdui-btn-icon mdui-ripple mdui-color-theme-accent play" onclick="ap.toggle()"><i class="mdui-icon material-icons">play_arrow</i></button>
-                <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="ap.skipForward()"><i class="mdui-icon material-icons">skip_next</i></button>
-                <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="router.navigate('lrc')"><i class="mdui-icon material-icons">subtitles</i></button>
+                <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="ap.skipForward()"><i class="mdui-icon material-icons">skip_next</i></button> 
+                <button class="mdui-btn mdui-btn-icon mdui-ripple lrc" onclick="router.navigate('lrc')"><i class="mdui-icon material-icons">subtitles</i></button>
+                <a href="#/now/songlist" class="mdui-btn mdui-btn-icon mdui-ripple playlist"><i class="mdui-icon material-icons">playlist_play</i></a>
             </div>
             <div class="player-bar">
                 <label class="mdui-slider">
@@ -854,8 +855,9 @@ async function showNow() {
         </div>
     </div>`;
     // 輸出
-    $("#content").html(`<div data-player-container>${info + html}</div>`);
-    // 隱藏原本ㄉ播放器
+    $("#content").html(`<div data-player-container>${info + html}<a class="mdui-overlay"></a></div>`);
+    if (ap.list.audios.length == 0) $("[data-player-container]>.mdui-list.songs").addClass('nosongs')
+        // 隱藏原本ㄉ播放器
     $("#player").addClass('hide');
     // random＆loop
     $("[data-player]>.info>.ctrl>.random")
@@ -865,7 +867,26 @@ async function showNow() {
         .click(function() {
             $(this).html(`<i class="mdui-icon material-icons">${changePlayMode()}</i>`)
         })
-
+    $("[data-player]>.info>.ctrl>.playlist").click(function() {
+        router.pause();
+        window.location.hash = '#/now/songlist'
+        setTimeout(() => {
+            $('.mdui-list.songs').addClass('show')
+            $('.mdui-list.songs').scrollTop(72 * ap.list.index - 100)
+        }, 50)
+    })
+    $(`[data-player-container]>a.mdui-overlay`).click(function() {
+        $('.mdui-list.songs').removeClass('show')
+        router.resume();
+    })
+    window.addEventListener("hashchange", function(e) {
+        let r = /now\/songlist$/
+        if (!e.newURL.match(r)) {
+            console.log('resume')
+            $('.mdui-list.songs').removeClass('show')
+            router.resume();
+        }
+    }, false);
     //初始化滑塊
     mdui.mutation();
     // 確認播放鈕狀態
@@ -980,8 +1001,22 @@ async function showNow() {
     $(".songs [data-now-play-id].close").click(function() {
         let song = $(this).attr('data-now-play-id')
         if (song == ap.list.index) ap.skipForward()
-        ap.list.remove(song)
-        showNow()
+        $(this).parent().eq(0).addClass('del')
+        setTimeout(() => {
+            ap.list.remove(song)
+            $(this).parent().eq(0).remove()
+
+            //重新賦予 play-id
+            let songinfo = $(".mdui-list.songs>.song>.songinfo")
+            let del = $(".mdui-list.songs>.song>.close")
+            for (i = 0; i < songinfo.length; i++) {
+                $(songinfo[i]).attr('data-now-play-id', i)
+                $(del[i]).attr('data-now-play-id', i)
+            }
+        }, 301)
+
+
+
     })
 }
 //- 歌詞
