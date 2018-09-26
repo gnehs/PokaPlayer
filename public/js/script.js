@@ -1001,18 +1001,20 @@ async function showNow() {
     $(".songs [data-now-play-id].close").click(function() {
         let song = $(this).attr('data-now-play-id')
         if (song == ap.list.index) ap.skipForward()
-        ap.list.remove(song)
-        $(this).parent().eq(0).remove()
+        $(this).parent().eq(0).addClass('del')
+        setTimeout(() => {
+            ap.list.remove(song)
+            $(this).parent().eq(0).remove()
 
-        //重新賦予 play-id
-        let songinfo = $(".mdui-list.songs>.song>.songinfo")
-        let del = $(".mdui-list.songs>.song>.close")
-        console.log(songinfo)
-        for (i = 0; i < songinfo.length; i++) {
-            $(songinfo[i]).attr('data-now-play-id', i)
-            $(del[i]).attr('data-now-play-id', i)
-            console.log(i)
-        }
+            //重新賦予 play-id
+            let songinfo = $(".mdui-list.songs>.song>.songinfo")
+            let del = $(".mdui-list.songs>.song>.close")
+            for (i = 0; i < songinfo.length; i++) {
+                $(songinfo[i]).attr('data-now-play-id', i)
+                $(del[i]).attr('data-now-play-id', i)
+            }
+        }, 301)
+
 
 
     })

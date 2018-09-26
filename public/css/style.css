@@ -648,11 +648,23 @@ header.mdui-appbar.mdui-appbar-fixed {
     height: 48px;
 }
 
+.songs .song {
+    transition: all .3s;
+    transform: scaleY(1);
+    transform-origin: top;
+}
+
+.songs .song.del {
+    transform: scaleY(0);
+    height: 0;
+    max-height: 0;
+    min-height: 0;
+}
+
 @media screen and (max-width: 554px) {
     #content[data-page="now"] {
         padding-top: 0;
         padding-bottom: 0;
-        transition-duration: all .3s;
     }
     [data-player]>.info .ctrl .lrc {
         display: none
