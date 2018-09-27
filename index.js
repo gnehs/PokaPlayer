@@ -71,6 +71,11 @@ server.listen(3000, () => {
         console.log("[PokaPlayer] Debug 模式已開啟")
 })
 
+//安裝頁面
+app.get('/install', (req, res) => {
+    res.render('install', { "version": package.version })
+})
+
 // 隨機圖圖
 app.get('/og/og.png', (req, res) => {
     var files = fs.readdirSync("./ogimage/").filter(function(i, n) {
