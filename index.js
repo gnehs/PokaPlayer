@@ -72,9 +72,10 @@ server.listen(3000, () => {
 })
 
 //安裝頁面
-app.get('/install', (req, res) => {
-    res.render('install', { "version": package.version })
-})
+if (config.PokaPlayer.debug)
+    app.get('/install', (req, res) => {
+        res.render('install', { "version": package.version })
+    })
 
 // 隨機圖圖
 app.get('/og/og.png', (req, res) => {
