@@ -149,22 +149,25 @@ async function showSettingsTheme() {
     });
     $('[data-theme="mdui-theme-primary"],[data-theme="mdui-theme-accent"]').click(function() {
         let accent = $(this).attr('data-theme')=="mdui-theme-accent", 
-            option = '',
+            option = `<br><div class="poka four cards" style="text-transform:capitalize;">`,
             colors = ['red','pink','purple','deep-purple','indigo','blue','light-blue','cyan','teal','green','light-green','lime','yellow','amber','orange','deep-orange','brown','grey','blue-grey']
-        for (i = 0 ; i < colors.length; i++) {
+            for (i = 0 ; i < colors.length; i++) {
             if (i<= (colors.length - 3 - 1) && accent || !accent){
                 let color = colors[i]
                 option += `
-                <li class="mdui-list-item mdui-ripple" 
-                    data-color-type="${accent ? `accent` : `primary`}"
-                    data-color="${color}"> 
-                    <div class="mdui-list-item-content mdui-text-color-${color}${accent?'-accent':''}">${color.replace("-"," ")}</div>
-                </li>`
+                <a class="card" 
+                   title="${color.replace("-"," ")}"
+                   data-color-type="${accent ? `accent` : `primary`}"
+                   data-color="${color}">
+                    <div class="image mdui-ripple mdui-color-${color}${accent?'-accent':''}"></div>
+                    <div class="title mdui-text-color-theme-text">${color.replace("-"," ")}</div>
+                </a>`
             }
         }
+        option += "</div>"
         mdui.dialog({
             title: `設定${accent ? `強調色` : `主色`}`,
-            content: `<ul class="mdui-list" style="text-transform:capitalize;">${option}</ul>`,
+            content: option,
             history: false,
             buttons: [{text: '確定'}]
         });  
