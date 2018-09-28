@@ -363,7 +363,9 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 #aplayer {
-    display: none;
+    visibility: hidden;
+    height: 0;
+    width: 0;
 }
 
 
@@ -652,6 +654,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     transition: all .3s;
     transform: scaleY(1);
     transform-origin: top;
+    will-change: transform, height, opacity;
 }
 
 .songs .song.del {
@@ -659,6 +662,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     height: 0;
     max-height: 0;
     min-height: 0;
+    opacity: 0;
 }
 
 @media screen and (max-width: 554px) {

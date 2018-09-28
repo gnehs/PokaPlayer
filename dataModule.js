@@ -32,7 +32,7 @@ fs.readdir(__dirname + "/dataModule", (err, files) => {
             };
             let enabled =
                 moduleData.active.indexOf("onLoaded") > -1 ? await _module.onLoaded() : true;
-            if (enabled) moduleList[moduleData.name] = moduleData;
+            if (enabled && _module.enabled) moduleList[moduleData.name] = moduleData;
         }
     });
 });

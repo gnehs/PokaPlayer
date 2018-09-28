@@ -1167,6 +1167,7 @@ async function getHome() {
 
 module.exports = {
     name: "Netease2",
+    enabled: config.enabled,
     onLoaded,
     getSong, // done
     getSongs, // done

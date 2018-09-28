@@ -1,11 +1,11 @@
 {
     "name": "pokaplayer",
-    "version": "0.11.9",
+    "version": "0.11.10",
     "description": "",
     "main": "index.js",
     "scripts": {
         "dev": "nodemon index.js --watch index.js --watch dataModule.js --watch '/dataModule/*.js'",
-        "start": "npm install --production && node index.js"
+        "start": "node index.js"
     },
     "repository": {
         "type": "git",

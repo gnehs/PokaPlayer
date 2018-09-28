@@ -1,6 +1,6 @@
 const fs = require('fs'); //檔案系統
-const config = require(__dirname + '/config.json'); // 設定檔
-const package = require(__dirname + '/package.json'); // 設定檔
+const config = require('./config.json'); // 設定檔
+const package = require('./package.json'); // 設定檔
 const schedule = require('node-schedule'); // 很會計時ㄉ朋友
 const base64 = require('base-64');
 const git = require('simple-git/promise')(__dirname);
@@ -70,6 +70,12 @@ server.listen(3000, () => {
     if (config.PokaPlayer.debug)
         console.log("[PokaPlayer] Debug 模式已開啟")
 })
+
+//安裝頁面
+if (config.PokaPlayer.debug)
+    app.get('/install', (req, res) => {
+        res.render('install', { "version": package.version })
+    })
 
 // 隨機圖圖
 app.get('/og/og.png', (req, res) => {

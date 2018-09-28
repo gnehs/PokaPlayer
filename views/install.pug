@@ -1,0 +1,239 @@
+doctype html
+html
+    head
+        title PokaPlayer - 安裝嚮導
+        meta(name='viewport', content='width=device-width, initial-scale=1.0')       
+        link(href='//cdnjs.cloudflare.com/ajax/libs/mdui/0.4.1/css/mdui.min.css',rel='stylesheet')
+        link(href='//fonts.googleapis.com/css?family=Product+Sans',rel='stylesheet')
+        link(href='/css/style.css?'+version,rel='stylesheet')
+        script(src='//cdnjs.cloudflare.com/ajax/libs/mdui/0.4.1/js/mdui.min.js')
+        //-app
+        meta(name="theme-color" content="#3f51b5")
+        link(rel="icon" href="/img/PokaPlayer.png")
+        //-Add to home screen for Safari on iOS
+        meta(name="apple-mobile-web-app-capable" content="yes")
+        meta(name="apple-mobile-web-app-status-bar-style" content="black")
+        meta(name="apple-mobile-web-app-title" content="PokaPlayer")
+        link(rel="apple-touch-icon" href="/img/PokaPlayeriOS.png")
+        //-Windows
+        meta(name="msapplication-TileImage" content="/img/PokaPlayer.png")
+        meta(name="msapplication-TileColor" content="#3f51b5")
+
+    body
+        header.mdui-appbar.mdui-appbar-fixed
+            .mdui-toolbar.mdui-color-theme
+                a.mdui-btn.mdui-btn-icon
+                    i.mdui-icon.material-icons  
+                .mdui-typo-title PokaPlayer
+                .mdui-toolbar-spacer
+        #header-wrapper
+            .bg2
+            .bg(style="background-image: url('/og/og.png');")
+            .title.mdui-container
+                .title 安裝嚮導
+                .subtitle=`PokaPlayer ${version}`
+        #content.mdui-container
+            .mdui-typo
+                h1 說明
+                p 本頁面將協助您進行初始設定，好讓 PokaPlayer 能夠連接至伺服器上，並開始享受音樂。
+                h1 注意
+                    small  / 請確認這些項目已開啟
+                ul
+                    li 已開啟 Docker 自動重啟功能
+                    li 若您要使用網易雲服務
+                        ul
+                            li 請先架設好 
+                                a(href="https://hub.docker.com/r/gnehs/neteasecloudmusicapi-docker/") gnehs/neteasecloudmusicapi-docker
+                            li 已設定好容器別名或是確認能夠讓 PokaPlayer 正常連接（別擔心，您稍候可以測試連線是否正常）
+                    li 若您要使用 DSM 的 Audio Station
+                        ul
+                            li 已安裝好並啟動 Audio Station
+                            li DSM 已建立一個供 PokaPlayer 存取的帳號（請確認兩步驟驗證已關閉）
+                            li 確認能夠讓 PokaPlayer 正常連接（別擔心，您稍候可以測試連線是否正常）
+                hr
+                h1 PokaPlayer 設定
+                .mdui-panel.mdui-panel-gapless(mdui-panel="{accordion: true}")
+                    .mdui-panel-item.mdui-panel-item-open
+                        .mdui-panel-item-header 
+                            .mdui-panel-item-title 基本設定
+                            i.mdui-panel-item-arrow.mdui-icon.material-icons keyboard_arrow_down
+                        .mdui-panel-item-body
+                            h3 登入密碼
+                            p 當您進入 PokaPlayer 時是否需要密碼來登入，注意若您將 PokaPlayer 暴露在網路上強烈建議您設立密碼來確保安全
+                            .mdui-row-md-4
+                                .mdui-col
+                                    label.mdui-radio
+                                        input(type="radio",name="pokapass",checked)
+                                        i.mdui-radio-icon
+                                        |開啟
+                                .mdui-col
+                                    label.mdui-radio
+                                        input(type="radio",name="pokapass")
+                                        i.mdui-radio-icon
+                                        |關閉
+                            form.mdui-row-md-4
+                                .mdui-col
+                                    .mdui-textfield
+                                        label.mdui-textfield-label 密碼
+                                        input.mdui-textfield-input(type="password")
+                                .mdui-col
+                                    .mdui-textfield
+                                        label.mdui-textfield-label 確認密碼
+                                        input.mdui-textfield-input(type="password")
+                            h3 管理員密碼
+                            p 請設定較強的密碼，像是
+                                code correcthorsebatterystaple
+                                | 之類由單字組成的密碼，並好好保存
+                                del (反正你也用不到幾次)
+                            form.mdui-row-md-4
+                                .mdui-col
+                                    .mdui-textfield
+                                        label.mdui-textfield-label 密碼
+                                        input.mdui-textfield-input(type="password")
+                                .mdui-col
+                                    .mdui-textfield
+                                        label.mdui-textfield-label 確認密碼
+                                        input.mdui-textfield-input(type="password")
+                    .mdui-panel-item
+                        .mdui-panel-item-header 
+                            .mdui-panel-item-title 進階設定
+                            .mdui-panel-item-summary 沒事不要亂改專區
+                            i.mdui-panel-item-arrow.mdui-icon.material-icons keyboard_arrow_down
+                        .mdui-panel-item-body
+                            h4 Session secret
+                            .mdui-textfield
+                                label.mdui-textfield-label Session secret
+                                input.mdui-textfield-input(type="text")
+                            h4 開發人員模式
+                            form
+                                .mdui-row-md-4
+                                    .mdui-col
+                                        label.mdui-radio
+                                            input(type="radio",name="pokadev")
+                                            i.mdui-radio-icon
+                                            |開啟
+                                    .mdui-col
+                                        label.mdui-radio
+                                            input(type="radio",name="pokadev",checked)
+                                            i.mdui-radio-icon
+                                            |關閉
+                hr
+                h1 Netease 設定
+                .mdui-panel.mdui-panel-gapless(mdui-panel="{accordion: true}")
+                    .mdui-panel-item.mdui-panel-item-open
+                        .mdui-panel-item-header 
+                            .mdui-panel-item-title 基本設定
+                            i.mdui-panel-item-arrow.mdui-icon.material-icons keyboard_arrow_down
+                        .mdui-panel-item-body
+                            h4 啟用
+                            form
+                                .mdui-row-md-4
+                                    .mdui-col
+                                        label.mdui-radio
+                                            input(type="radio",name="neteaseenabled")
+                                            i.mdui-radio-icon
+                                            |啟用
+                                    .mdui-col
+                                        label.mdui-radio
+                                            input(type="radio",name="neteaseenabled",checked)
+                                            i.mdui-radio-icon
+                                            |關閉
+                            h4 連接到 NeteaseCloudMusicApi
+                            form.mdui-row-md-4
+                                .mdui-col
+                                    h5 通訊協定 
+                                        small protocol
+                                    div(style="padding-top: 16px;text-align: right;")
+                                        select.mdui-select(mdui-select)
+                                            option(value="http") http://
+                                            option(value="https") https://
+                                .mdui-col
+                                    h5 網域或 IP 或別名 
+                                        small host
+                                    .mdui-textfield
+                                        input.mdui-textfield-input(type="text",placeholder="網域或 IP")
+                                .mdui-col
+                                    h5 端口 
+                                        small port
+                                    .mdui-textfield
+                                        input.mdui-textfield-input(type="number",value="3000")
+                            h4 帳號 
+                            form.mdui-row-md-4
+                                .mdui-col
+                                    div(style="padding-top: 46px;text-align: right;")
+                                        select.mdui-select(mdui-select)
+                                            option(value="http") E-mail
+                                            option(value="https") 電話號碼
+                                .mdui-col
+                                    .mdui-textfield
+                                        label.mdui-textfield-label 帳號
+                                        input.mdui-textfield-input(type="text")
+                                .mdui-col
+                                    .mdui-textfield
+                                        label.mdui-textfield-label 密碼
+                                        input.mdui-textfield-input(type="password")
+                            .mdui-panel-item-actions
+                                    .mdui-btn.mdui-ripple 測試連線
+                hr
+                h1 DSM 設定
+                .mdui-panel.mdui-panel-gapless(mdui-panel="{accordion: true}")
+                    .mdui-panel-item.mdui-panel-item-open
+                        .mdui-panel-item-header 
+                            .mdui-panel-item-title 基本設定
+                            i.mdui-panel-item-arrow.mdui-icon.material-icons keyboard_arrow_down
+                        .mdui-panel-item-body
+                            h4 啟用
+                            form.mdui-row-md-4
+                                .mdui-col
+                                    label.mdui-radio
+                                        input(type="radio",name="dsmenabled")
+                                        i.mdui-radio-icon
+                                        |啟用
+                                .mdui-col
+                                    label.mdui-radio
+                                        input(type="radio",name="dsmenabled",checked)
+                                        i.mdui-radio-icon
+                                        |關閉
+                            h4 連接到 DSM
+                            form.mdui-row-md-4
+                                .mdui-col
+                                    h5 通訊協定 
+                                        small protocol
+                                    div(style="padding-top: 16px;text-align: right;")
+                                        select.mdui-select(mdui-select)
+                                            option(value="http") http://
+                                            option(value="https") https://
+                                .mdui-col
+                                    h5 網域或 IP 
+                                        small host
+                                    .mdui-textfield
+                                        input.mdui-textfield-input(type="text",placeholder="網域或 IP")
+                                .mdui-col
+                                    h5 端口 
+                                        small port
+                                    .mdui-textfield
+                                        input.mdui-textfield-input(type="number",value="5000")
+                            h5 登入 
+                                small login
+                            form.mdui-row-md-4
+                                .mdui-col
+                                    .mdui-textfield
+                                        label.mdui-textfield-label 帳號
+                                        input.mdui-textfield-input(type="text")
+                                .mdui-col
+                                    .mdui-textfield
+                                        label.mdui-textfield-label 密碼
+                                        input.mdui-textfield-input(type="password")
+                            .mdui-panel-item-actions
+                                    .mdui-btn.mdui-ripple 測試連線
+                br
+                hr
+                .mdui-btn.mdui-btn-block.mdui-color-theme-accent.mdui-ripple 完成
+
+                                
+
+                
+                    
+        script(src='//cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js')
+        script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js')
+        script(src='/js/color-theme.js?'+version)
