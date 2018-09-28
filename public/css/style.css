@@ -362,10 +362,13 @@ header.mdui-appbar.mdui-appbar-fixed {
     --album-size: calc(25% - 2em);
 }
 
-#aplayer {
+#aplayer:not(.show) {
     visibility: hidden;
     height: 0;
     width: 0;
+    position: fixed;
+    z-index: 9999;
+    opacity: 0;
 }
 
 
