@@ -363,7 +363,9 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 #aplayer {
-    display: none;
+    visibility: hidden;
+    height: 0;
+    width: 0;
 }
 
 

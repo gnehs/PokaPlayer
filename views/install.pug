@@ -45,10 +45,10 @@ html
                             li 請先架設好 
                                 a(href="https://hub.docker.com/r/gnehs/neteasecloudmusicapi-docker/") gnehs/neteasecloudmusicapi-docker
                             li 已設定好容器別名或是確認能夠讓 PokaPlayer 正常連接（別擔心，您稍候可以測試連線是否正常）
-                    li 若您要使用 Audio Station
+                    li 若您要使用 DSM 的 Audio Station
                         ul
                             li 已安裝好並啟動 Audio Station
-                            li 已建立一個供 PokaPlayer 存取的帳號（請確認兩步驟驗證已關閉）
+                            li DSM 已建立一個供 PokaPlayer 存取的帳號（請確認兩步驟驗證已關閉）
                             li 確認能夠讓 PokaPlayer 正常連接（別擔心，您稍候可以測試連線是否正常）
                 hr
                 h1 PokaPlayer 設定
@@ -59,6 +59,7 @@ html
                             i.mdui-panel-item-arrow.mdui-icon.material-icons keyboard_arrow_down
                         .mdui-panel-item-body
                             h3 登入密碼
+                            p 當您進入 PokaPlayer 時是否需要密碼來登入，注意若您將 PokaPlayer 暴露在網路上強烈建議您設立密碼來確保安全
                             .mdui-row-md-4
                                 .mdui-col
                                     label.mdui-radio
@@ -142,7 +143,7 @@ html
                                 .mdui-col
                                     h5 通訊協定 
                                         small protocol
-                                    div(style="padding-top: 16px;")
+                                    div(style="padding-top: 16px;text-align: right;")
                                         select.mdui-select(mdui-select)
                                             option(value="http") http://
                                             option(value="https") https://
@@ -156,11 +157,10 @@ html
                                         small port
                                     .mdui-textfield
                                         input.mdui-textfield-input(type="number",value="3000")
-                            h5 登入 
-                                small login
+                            h4 帳號 
                             form.mdui-row-md-4
                                 .mdui-col
-                                    div(style="padding-top: 46px;")
+                                    div(style="padding-top: 46px;text-align: right;")
                                         select.mdui-select(mdui-select)
                                             option(value="http") E-mail
                                             option(value="https") 電話號碼
@@ -172,8 +172,8 @@ html
                                     .mdui-textfield
                                         label.mdui-textfield-label 密碼
                                         input.mdui-textfield-input(type="password")
-                                .mdui-col(style="padding-top: 45px;")
-                                    .mdui-btn.mdui-btn-raised.mdui-color-theme-accent 測試連線
+                            .mdui-panel-item-actions
+                                    .mdui-btn.mdui-ripple 測試連線
                 hr
                 h1 DSM 設定
                 .mdui-panel.mdui-panel-gapless(mdui-panel="{accordion: true}")
@@ -199,7 +199,7 @@ html
                                 .mdui-col
                                     h5 通訊協定 
                                         small protocol
-                                    div(style="padding-top: 16px;")
+                                    div(style="padding-top: 16px;text-align: right;")
                                         select.mdui-select(mdui-select)
                                             option(value="http") http://
                                             option(value="https") https://
@@ -224,8 +224,11 @@ html
                                     .mdui-textfield
                                         label.mdui-textfield-label 密碼
                                         input.mdui-textfield-input(type="password")
-                                .mdui-col(style="padding-top: 45px;")
-                                    .mdui-btn.mdui-btn-raised.mdui-color-theme-accent 測試連線
+                            .mdui-panel-item-actions
+                                    .mdui-btn.mdui-ripple 測試連線
+                br
+                hr
+                .mdui-btn.mdui-btn-block.mdui-color-theme-accent.mdui-ripple 完成
 
                                 
 
