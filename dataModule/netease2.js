@@ -358,7 +358,7 @@ function migrate(org, t, offset = 10 ** -3) {
     return result;
 }
 
-async function login() {
+async function login(config) {
     let result;
     if (config.login.phone) {
         result = await rp(
@@ -389,11 +389,11 @@ async function onLoaded() {
             (config.login.phone || config.login.email) &&
             config.login.password
         ) {
-            let result = await login();
+            let result = await login(config);
             if ((await result.code) == 200) {
                 schedule.scheduleJob("'* */12 * * *'", async function() {
                     console.log("[DataModules][Netease2] 正在重新登入...");
-                    await login();
+                    await login(config);
                 });
                 return true;
             } else {
@@ -1194,5 +1194,6 @@ module.exports = {
     unPin,
     isPinned,
     getHome,
-    req
+    req,
+    login
 };
