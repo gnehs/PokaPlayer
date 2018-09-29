@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const config = require("./config.json"); // 設定檔
-const playlist = fs.existsSync("./playlist.json") ? require("./playlist.json") : !1; // 歌單
+const playlist = fs.existsSync("./playlist.json") ? require("./playlist.json") : []; // 歌單
 const router = require("express").Router();
 const FileStore = require("session-file-store")(require("express-session")); // session
 const session = require("express-session")({
