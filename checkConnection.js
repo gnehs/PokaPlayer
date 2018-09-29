@@ -1,11 +1,13 @@
+const request = require("request");
 const jar = require("request").jar();
 const rp = require("request-promise").defaults({ jar });
 const router = require("express").Router();
 const bodyParser = require("body-parser");
+const fs = require("fs-extra");
 
 router.use(bodyParser.json());
 
-router.get("netease2", async (req, res) => {
+router.post("/netease2", async(req, res) => {
     async function netease2(config) {
         const options = (url, qs = {}) => ({
             uri: url,
@@ -38,10 +40,61 @@ router.get("netease2", async (req, res) => {
     }
 
     try {
-        res.send(await netease2(req.body.config));
+        res.send(await netease2(req.body));
     } catch (e) {
         res.status(500).send(e.toString());
     }
 });
+router.post("/dsm", async(req, res) => {
+    //- API 請求
+    async function getAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 1, config) {
+        return new Promise(function(resolve, reject) {
+            let PARAMS = "";
+            for (i = 0; i < PARAMS_JSON.length; i++) {
+                PARAMS += "&" + PARAMS_JSON[i].key + "=" + encodeURIComponent(PARAMS_JSON[i].value);
+            }
+            request(
+                `${config.protocol}://${config.host}:${config.port}/webapi/${CGI_PATH}?api=${API_NAME}&method=${METHOD}&version=${VERSION}${PARAMS}`,
+                function(error, res, body) {
+                    if (!error && res.statusCode == 200) {
+                        resolve(JSON.parse(body));
+                    } else {
+                        reject(error);
+                    }
+                }
+            );
+        });
+    }
+    async function login(config) {
+        if (!config.account && !config.password) {
+            return false;
+        }
+        let result = await getAPI("auth.cgi", "SYNO.API.Auth", "Login", [
+            { key: "account", value: config.account },
+            { key: "passwd", value: config.password },
+            { key: "session", value: "AudioStation" },
+            { key: "format", value: "cookie" }
+        ], 1, config);
+        if (result.success) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    try {
+        res.send(await login(req.body));
+    } catch (e) {
+        res.status(500).send(e.toString());
+    }
+})
+router.post("/config", async(req, res) => {
+    try {
+        await fs.writeJson('./config.json', req.body)
+        res.send('done')
+    } catch (e) {
+        res.status(500).send(e.toString());
+    }
+})
 
 module.exports = router;
