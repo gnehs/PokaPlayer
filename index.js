@@ -1,5 +1,5 @@
 const fs = require('fs'); //檔案系統
-const config = require('./config.json'); // 設定檔
+const config = fs.existsSync('./config.json') ? require("./config.json") : !1; // 設定檔
 const package = require('./package.json'); // 設定檔
 const schedule = require('node-schedule'); // 很會計時ㄉ朋友
 const base64 = require('base-64');
@@ -10,7 +10,7 @@ const express = require('express');
 const FileStore = require('session-file-store')(require('express-session')); // session
 const session = require('express-session')({
     store: new FileStore({ "reapInterval": -1, "logFn": void(0) }),
-    secret: config.PokaPlayer.sessionSecret,
+    secret: config ? config.PokaPlayer.sessionSecret : 'no config.json',
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -36,23 +36,25 @@ io.use(sharedsession(session, {
     autoSave: true
 }));
 // 檢查 branch
-git
-    .raw(['symbolic-ref', '--short', 'HEAD'])
-    .then(branch => {
-        branch = branch.slice(0, -1) // 結果會多一個換行符
-        if (branch != (config.PokaPlayer.debug ? 'dev' : 'master')) {
-            git
-                .raw(['config', '--global', 'user.email', '"you@example.com"'])
-                .then(() => git.fetch(["--all"]))
-                .then(() => git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? 'dev' : 'master')]))
-                .then(() => git.checkout(config.PokaPlayer.debug ? 'dev' : 'master'))
-                .then(() => process.exit())
-                .catch(err => {
-                    console.error('failed: ', err)
-                    socket.emit('err', err.toString())
-                })
-        }
-    })
+if (config) {
+    git
+        .raw(['symbolic-ref', '--short', 'HEAD'])
+        .then(branch => {
+            branch = branch.slice(0, -1) // 結果會多一個換行符
+            if (branch != (config.PokaPlayer.debug ? 'dev' : 'master')) {
+                git
+                    .raw(['config', '--global', 'user.email', '"you@example.com"'])
+                    .then(() => git.fetch(["--all"]))
+                    .then(() => git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? 'dev' : 'master')]))
+                    .then(() => git.checkout(config.PokaPlayer.debug ? 'dev' : 'master'))
+                    .then(() => process.exit())
+                    .catch(err => {
+                        console.error('failed: ', err)
+                        socket.emit('err', err.toString())
+                    })
+            }
+        })
+}
 
 
 // 時間處理
@@ -67,15 +69,15 @@ app.use(express.static('public'))
 server.listen(3000, () => {
     console.log("[PokaPlayer]  URL: http://localhost:3000")
     console.log(`[PokaPlayer] Time: ${moment().format("YYYY/MM/DD HH:mm:ss")}`)
-    if (config.PokaPlayer.debug)
+    if (config && config.PokaPlayer.debug)
         console.log("[PokaPlayer] Debug 模式已開啟")
+    if (!config)
+        console.log("[PokaPlayer] 未讀取到 config.json 請訪問 /install 或是使用 config-simple.json 來建立設定檔")
 })
 
 //安裝頁面
-if (config.PokaPlayer.debug)
-    app.get('/install', (req, res) => {
-        res.render('install', { "version": package.version })
-    })
+if (!config)
+    app.get('/install', (req, res) => res.render('install', { "version": package.version }))
 
 // 隨機圖圖
 app.get('/og/og.png', (req, res) => {
@@ -89,18 +91,35 @@ app.get('/og/og.png', (req, res) => {
 
     res.sendFile(img)
 });
-// 首頁
-app.get('/', (req, res) => {
-    // 沒登入的快去啦
-    if (config.PokaPlayer.passwordSwitch && req.session.pass != config.PokaPlayer.password)
-        res.redirect("/login/")
-    else
-        res.render('index', { "version": package.version }) //有登入給首頁吼吼
-})
+// 登入
+app
+    .get('/login/', (req, res) => res.render('login'))
+    .post('/login/', (req, res) => {
+        req.session.pass = req.body['userPASS']
+        if (config.PokaPlayer.passwordSwitch && req.body['userPASS'] != config.PokaPlayer.password)
+            res.send('fail')
+        else
+            res.send('success')
+    })
+    .get('/logout/', (req, res) => { // 登出
+        req.session.destroy()
+        res.redirect("/")
+    });
 
-function pp_decode(str) {
-    return base64.decode(decodeURIComponent(str))
-}
+// PONG
+app.get('/ping', (req, res) => res.send("PONG"))
+
+// 沒設定檔給設定頁面，沒登入給登入頁
+app.use((req, res, next) => {
+    if (!config)
+        res.redirect("/install/")
+    else if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
+        res.redirect("/login/")
+    else next();
+});
+// 首頁
+app.get('/', (req, res) => res.render('index', { "version": package.version }))
+
 io.on('connection', socket => {
     socket.emit('hello')
         // Accept a login event with user's data
@@ -130,86 +149,41 @@ io.on('connection', socket => {
                     console.error('failed: ', err)
                     socket.emit('err', err.toString())
                 })
-        } else { socket.emit('Permission Denied Desu') }
+        } else {
+            socket.emit('Permission Denied Desu')
+        }
     })
-
 });
 // 更新
 app.get('/upgrade', (req, res) => {
-    if (config.PokaPlayer.passwordSwitch && req.session.pass != config.PokaPlayer.password)
-        res.status(403).send('Permission Denied Desu')
-    else {
-        if (!config.PokaPlayer.instantUpgradeProcess) {
-            git
-                .raw(['config', '--global', 'user.email', '"you@example.com"'])
-                .then(() => git.fetch(["--all"]))
-                .then(() => git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? 'dev' : 'master')]))
-                .then(() => git.checkout(config.PokaPlayer.debug ? 'dev' : 'master'))
-                .then(() => process.exit())
-                .catch(err => {
-                    console.error('failed: ', err)
-                    socket.emit('err', err.toString())
-                })
-        } else {
-            res.send('socket')
-        }
+    if (!config.PokaPlayer.instantUpgradeProcess) {
+        git
+            .raw(['config', '--global', 'user.email', '"you@example.com"'])
+            .then(() => git.fetch(["--all"]))
+            .then(() => git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? 'dev' : 'master')]))
+            .then(() => git.checkout(config.PokaPlayer.debug ? 'dev' : 'master'))
+            .then(() => process.exit())
+            .catch(err => {
+                console.error('failed: ', err)
+                socket.emit('err', err.toString())
+            })
+    } else {
+        res.send('socket')
     }
 })
 
 // get info
-app.get('/info', (req, res) => {
-    if (config.PokaPlayer.passwordSwitch && req.session.pass != config.PokaPlayer.password)
-        res.status(403).send('Permission Denied Desu')
-    else {
-        res.json(package)
-    }
-})
+app.get('/info', (req, res) => res.json(package))
+app.get('/debug', async(req, res) => res.send(config.PokaPlayer.debug ? (await git.raw(['rev-parse', '--short', 'HEAD'])).slice(0, -1) : 'false'))
 
-app.get('/debug', async(req, res) => {
-    if (config.PokaPlayer.passwordSwitch && req.session.pass != config.PokaPlayer.password)
-        res.status(403).send('Permission Denied Desu')
-    else
-        res.send(config.PokaPlayer.debug ? (await git.raw(['rev-parse', '--short', 'HEAD'])).slice(0, -1) : 'false')
-})
-
-app.get('/meting', (req, res) => {
-    if (config.PokaPlayer.passwordSwitch && req.session.pass != config.PokaPlayer.password)
-        res.status(403).send('Permission Denied Desu')
-    else
-        res.json(config.Meting)
-})
 
 app.post('/restart', (req, res) => {
-    if (config.PokaPlayer.passwordSwitch && req.session.pass != config.PokaPlayer.password)
-        res.status(403).send('Permission Denied Desu')
-    else
-        res.send('k')
+    res.send('k');
     process.exit()
 })
 
-app.get('/ping', (req, res) => {
-    res.send("PONG")
-})
-
-// 登入
-app
-    .get('/login/', (req, res) => {
-        res.render('login')
-    })
-    .post('/login/', (req, res) => {
-        req.session.pass = req.body['userPASS']
-        if (config.PokaPlayer.passwordSwitch && req.body['userPASS'] != config.PokaPlayer.password)
-            res.send('fail')
-        else
-            res.send('success')
-    });
-// 登出
-app.get('/logout/', (req, res) => {
-    req.session.destroy()
-    res.redirect("/")
-});
 app.use((req, res, next) => {
     res.status(404).redirect("/")
 });
 // 報錯處理
-process.on('uncaughtException', err => { if (config.PokaPlayer.debug) console.log(err) });
+process.on('uncaughtException', err => { if (config && config.PokaPlayer.debug) console.log(err) });

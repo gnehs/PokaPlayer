@@ -1,3 +1,10 @@
+code {
+    background-color: rgba(0, 0, 0, 0.06);
+    line-height: 1;
+    padding: 3px 4px;
+}
+
+
 /* scrollbar fix for Windows */
 
 body {
