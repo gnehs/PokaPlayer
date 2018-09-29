@@ -67,9 +67,13 @@ $(() => {
             /*let testDsm = data.dsmenabled == "on" ? await axios.get('/pakaapi/?moduleName=DSM&configData=' + encodeURIComponent(JSON.stringify(config["DSM"]))) : true,
                 testNetease = data.neteaseenabled == "on" ? await axios.get('/pakaapi/?moduleName=Netease2&configData=' + encodeURIComponent(JSON.stringify(config["Netease2"]))) : true;*/
             if (testDsm && testNetease) {
-                let sendConfig = await axios.post('/pokaapi/config', config)
-                console.log(sendConfig)
-                $('#done').modal('show')
+                let sendConfig = (await axios.post('/pokaapi/config', config)).data
+                if (sendConfig == "done")
+                    $('#done').modal('show')
+                else {
+                    $('#error>.content').html(sendConfig)
+                    $('#error').modal('show')
+                }
             } else {
                 let content = `<p>您填寫的資料不正確</p>`
                 content += testDsm ? `` : `<p>DSM 填寫有誤</p>`
