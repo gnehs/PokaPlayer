@@ -381,6 +381,7 @@ async function login(config) {
 }
 
 async function onLoaded() {
+    if (!config.enabled) return false;
     console.log("[DataModules][Netease2] 正在登入...");
     return await fs.ensureFile(pin).then(async () => {
         if (
