@@ -24,11 +24,9 @@ const server = require("http").createServer(app),
     io = require("socket.io").listen(server),
     sharedsession = require("express-socket.io-session");
 
-// 資料模組
-app.use("/pokaapi", require("./dataModule.js"));
+// 資料模組 or 連線測試模組
+app.use("/pokaapi", config ? require("./dataModule.js") : require("./checkConnection.js"));
 
-// 連線測試模組
-app.use("/checkConnection", require("./checkConnection.js"));
 
 //
 app.set("views", __dirname + "/views");
@@ -75,9 +73,7 @@ server.listen(3000, () => {
     console.log(`[PokaPlayer] Time: ${moment().format("YYYY/MM/DD HH:mm:ss")}`);
     if (config && config.PokaPlayer.debug) console.log("[PokaPlayer] Debug 模式已開啟");
     if (!config)
-        console.log(
-            "[PokaPlayer] 未讀取到 config.json 請訪問 /install 或是使用 config-simple.json 來建立設定檔"
-        );
+        console.log("[PokaPlayer] 未讀取到 config.json 請訪問 /install 或是使用 config-simple.json 來建立設定檔");
 });
 
 //安裝頁面
@@ -86,10 +82,7 @@ if (!config) app.get("/install", (req, res) => res.render("install", { version: 
 // 隨機圖圖
 app.get("/og/og.png", (req, res) => {
     var files = fs.readdirSync("./ogimage/").filter(function(i, n) {
-        if (
-            (i.toString().indexOf(".png") > -1 || i.toString().indexOf(".jpg") > -1) &&
-            i.toString().indexOf("._") < 0
-        )
+        if ((i.toString().indexOf(".png") > -1 || i.toString().indexOf(".jpg") > -1) && i.toString().indexOf("._") < 0)
             return i;
     });
     //og
@@ -181,11 +174,11 @@ app.get("/upgrade", (req, res) => {
 
 // get info
 app.get("/info", (req, res) => res.json(package));
-app.get("/debug", async (req, res) =>
+app.get("/debug", async(req, res) =>
     res.send(
-        config.PokaPlayer.debug
-            ? (await git.raw(["rev-parse", "--short", "HEAD"])).slice(0, -1)
-            : "false"
+        config.PokaPlayer.debug ?
+        (await git.raw(["rev-parse", "--short", "HEAD"])).slice(0, -1) :
+        "false"
     )
 );
 

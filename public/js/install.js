@@ -62,11 +62,27 @@ $(() => {
                     }
                 }
             }
-            let testDsm = data.dsmenabled == "on" ? await axios.post('/pakaapi/testconnection', { moduleName: "DSM", configData: config["DSM"] }) : true,
-                testNetease = data.neteaseenabled == "on" ? await axios.post('/pakaapi/testconnection', { moduleName: "Netease2", configData: config["Netease2"] }) : true;
+            let testDsm = data.dsmenabled == "on" ? (await axios.post('/pokaapi/dsm', config["DSM"])).data : true,
+                testNetease = data.neteaseenabled == "on" ? (await axios.post('/pokaapi/netease2', config["Netease2"])).data : true;
             /*let testDsm = data.dsmenabled == "on" ? await axios.get('/pakaapi/?moduleName=DSM&configData=' + encodeURIComponent(JSON.stringify(config["DSM"]))) : true,
                 testNetease = data.neteaseenabled == "on" ? await axios.get('/pakaapi/?moduleName=Netease2&configData=' + encodeURIComponent(JSON.stringify(config["Netease2"]))) : true;*/
-            console.log(testDsm, testNetease)
+            if (testDsm && testNetease) {
+                let sendConfig = (await axios.post('/pokaapi/config', config)).data
+                if (sendConfig == "done") {
+                    $('#done').modal({ closable: false }).modal('show')
+
+                    self.setInterval("pingServer()", 3000)
+                } else {
+                    $('#error>.content').html(sendConfig)
+                    $('#error').modal('show')
+                }
+            } else {
+                let content = `<p>您填寫的資料不正確</p>`
+                content += testDsm ? `` : `<p>DSM 填寫有誤</p>`
+                content += testNetease ? `` : `<p>Netease 填寫有誤</p>`
+                $('#error>.content').html(content)
+                $('#error').modal('show')
+            }
         } else
             $('#somthingError').modal('show');
     })
@@ -203,6 +219,8 @@ $(() => {
     });
 });
 
-function toBoolean(val) {
-    return val == "true" ? true : false
+async function pingServer() {
+    let ping = (await axios.get('/ping')).data
+    if (ping == 'PONG')
+        location.href = '/'
 }
