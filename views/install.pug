@@ -192,9 +192,14 @@ html
                 .ui.ok.button 我知道了
         #done.ui.modal
             .header 完成！
-            .content 您已完成設定
-            .actions
-                .ui.ok.button 我知道了
+            .content 
+                p 您已完成設定
+                p 若您未啟用自動重啟，您必須手動啟動 PokaPlayer
+                .ui.active.inline.centered.loader
+                style.
+                    .ui.active.inline.centered.loader:after{
+                        border-color: #767676 transparent transparent;
+                    }
 
         script(src='//cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js')

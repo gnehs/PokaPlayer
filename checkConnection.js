@@ -91,11 +91,11 @@ router.post("/dsm", async(req, res) => {
 router.post("/config", async(req, res) => {
     try {
         await fs.writeJson('./config.json', req.body)
-        fs.existsSync("./playlist.json") ? await fs.writeJson('./playlist.json', []) : void(0)
-        res.send('done')
+        await fs.writeJson('./playlist.json', [])
+        await res.send('done')
+        process.exit()
     } catch (e) {
         res.status(500).send(e.toString());
     }
 })
-
 module.exports = router;

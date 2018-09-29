@@ -68,9 +68,11 @@ $(() => {
                 testNetease = data.neteaseenabled == "on" ? await axios.get('/pakaapi/?moduleName=Netease2&configData=' + encodeURIComponent(JSON.stringify(config["Netease2"]))) : true;*/
             if (testDsm && testNetease) {
                 let sendConfig = (await axios.post('/pokaapi/config', config)).data
-                if (sendConfig == "done")
-                    $('#done').modal('show')
-                else {
+                if (sendConfig == "done") {
+                    $('#done').modal({ closable: false }).modal('show')
+
+                    self.setInterval("pingServer()", 3000)
+                } else {
                     $('#error>.content').html(sendConfig)
                     $('#error').modal('show')
                 }
@@ -217,6 +219,8 @@ $(() => {
     });
 });
 
-function toBoolean(val) {
-    return val == "true" ? true : false
+async function pingServer() {
+    let ping = (await axios.get('/ping')).data
+    if (ping == 'PONG')
+        location.href = '/'
 }
