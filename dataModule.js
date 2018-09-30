@@ -30,8 +30,9 @@ fs.readdir(__dirname + "/dataModule", (err, files) => {
                 active: Object.keys(_module),
                 js: uri
             };
-            let enabled =
-                moduleData.active.indexOf("onLoaded") > -1 ? await _module.onLoaded() : true;
+            let enabled = moduleData.active.indexOf("onLoaded") > -1 && _module.enabled ?
+                await _module.onLoaded() :
+                true;
             if (enabled && _module.enabled) moduleList[moduleData.name] = moduleData;
         }
     });

@@ -4,7 +4,6 @@ const package = require("./package.json"); // 設定檔
 const schedule = require("node-schedule"); // 很會計時ㄉ朋友
 const base64 = require("base-64");
 const git = require("simple-git/promise")(__dirname);
-
 //express
 const express = require("express");
 const FileStore = require("session-file-store")(require("express-session")); // session
@@ -25,7 +24,10 @@ const server = require("http").createServer(app),
     sharedsession = require("express-socket.io-session");
 
 // 資料模組 or 連線測試模組
-app.use("/pokaapi", config ? require("./dataModule.js") : require("./checkConnection.js"));
+if (config)
+    app.use("/pokaapi", require("./dataModule.js"));
+if (!config || config.PokaPlayer.debug)
+    app.use("/installapi", require("./checkConnection.js"));
 
 
 //

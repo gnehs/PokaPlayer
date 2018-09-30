@@ -62,15 +62,12 @@ $(() => {
                     }
                 }
             }
-            let testDsm = data.dsmenabled == "on" ? (await axios.post('/pokaapi/dsm', config["DSM"])).data : true,
-                testNetease = data.neteaseenabled == "on" ? (await axios.post('/pokaapi/netease2', config["Netease2"])).data : true;
-            /*let testDsm = data.dsmenabled == "on" ? await axios.get('/pakaapi/?moduleName=DSM&configData=' + encodeURIComponent(JSON.stringify(config["DSM"]))) : true,
-                testNetease = data.neteaseenabled == "on" ? await axios.get('/pakaapi/?moduleName=Netease2&configData=' + encodeURIComponent(JSON.stringify(config["Netease2"]))) : true;*/
+            let testDsm = data.dsmenabled == "on" ? (await axios.post('/installapi/dsm', config["DSM"])).data : true,
+                testNetease = data.neteaseenabled == "on" ? (await axios.post('/installapi/netease2', config["Netease2"])).data : true;
             if (testDsm && testNetease) {
-                let sendConfig = (await axios.post('/pokaapi/config', config)).data
+                let sendConfig = (await axios.post('/installapi/config', config)).data
                 if (sendConfig == "done") {
                     $('#done').modal({ closable: false }).modal('show')
-
                     self.setInterval("pingServer()", 3000)
                 } else {
                     $('#error>.content').html(sendConfig)
