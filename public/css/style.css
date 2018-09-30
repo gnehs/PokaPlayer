@@ -202,8 +202,10 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 /* fab fix*/
 
-.mdui-fab-wrapper {
-    bottom: 84px;
+@media screen and (max-width: 767px) {
+    .mdui-fab-wrapper {
+        bottom: 84px;
+    }
 }
 
 

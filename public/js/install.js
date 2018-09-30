@@ -113,7 +113,7 @@ $(() => {
                 depends: 'pokapass',
                 rules: [{
                     type: 'match[pokapassword]',
-                    prompt: '密碼不一致'
+                    prompt: '輸入的密碼與確認密碼不相符'
                 }]
             },
             pokaadminpassword: {
@@ -133,7 +133,7 @@ $(() => {
                 identifier: 'pokaadminpasswordcom',
                 rules: [{
                     type: 'match[pokaadminpassword]',
-                    prompt: '密碼不一致'
+                    prompt: '輸入的密碼與確認密碼不相符'
                 }]
             }
         }
