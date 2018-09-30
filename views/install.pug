@@ -3,10 +3,9 @@ html
     head
         title PokaPlayer - 安裝嚮導
         meta(name='viewport', content='width=device-width, initial-scale=1.0')       
-        link(href='//cdnjs.cloudflare.com/ajax/libs/mdui/0.4.1/css/mdui.min.css',rel='stylesheet')
         link(href='//fonts.googleapis.com/css?family=Product+Sans',rel='stylesheet')
+        link(href='//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.3/semantic.min.css',rel='stylesheet')
         link(href='/css/style.css?'+version,rel='stylesheet')
-        script(src='//cdnjs.cloudflare.com/ajax/libs/mdui/0.4.1/js/mdui.min.js')
         //-app
         meta(name="theme-color" content="#3f51b5")
         link(rel="icon" href="/img/PokaPlayer.png")
@@ -20,220 +19,190 @@ html
         meta(name="msapplication-TileColor" content="#3f51b5")
 
     body
-        header.mdui-appbar.mdui-appbar-fixed
-            .mdui-toolbar.mdui-color-theme
-                a.mdui-btn.mdui-btn-icon
-                    i.mdui-icon.material-icons  
-                .mdui-typo-title PokaPlayer
-                .mdui-toolbar-spacer
         #header-wrapper
             .bg2
             .bg(style="background-image: url('/og/og.png');")
-            .title.mdui-container
-                .title 安裝嚮導
+            .title.ui.container(style="max-width: 950px !important;")
+                .title(style="line-height: normal;") 安裝嚮導
                 .subtitle=`PokaPlayer ${version}`
-        #content.mdui-container
-            .mdui-typo
-                h1 說明
-                p 本頁面將協助您進行初始設定，好讓 PokaPlayer 能夠連接至伺服器上，並開始享受音樂。
-                h1 注意
-                    small  / 請確認這些項目已開啟
-                ul
-                    li 已開啟 Docker 自動重啟功能
-                    li 若您要使用網易雲服務
-                        ul
-                            li 請先架設好 
-                                a(href="https://hub.docker.com/r/gnehs/neteasecloudmusicapi-docker/") gnehs/neteasecloudmusicapi-docker
-                            li 已設定好容器別名或是確認能夠讓 PokaPlayer 正常連接（別擔心，您稍候可以測試連線是否正常）
-                    li 若您要使用 DSM 的 Audio Station
-                        ul
-                            li 已安裝好並啟動 Audio Station
-                            li DSM 已建立一個供 PokaPlayer 存取的帳號（請確認兩步驟驗證已關閉）
-                            li 確認能夠讓 PokaPlayer 正常連接（別擔心，您稍候可以測試連線是否正常）
-                hr
-                h1 PokaPlayer 設定
-                .mdui-panel.mdui-panel-gapless(mdui-panel="{accordion: true}")
-                    .mdui-panel-item.mdui-panel-item-open
-                        .mdui-panel-item-header 
-                            .mdui-panel-item-title 基本設定
-                            i.mdui-panel-item-arrow.mdui-icon.material-icons keyboard_arrow_down
-                        .mdui-panel-item-body
-                            h3 登入密碼
-                            p 當您進入 PokaPlayer 時是否需要密碼來登入，注意若您將 PokaPlayer 暴露在網路上強烈建議您設立密碼來確保安全
-                            .mdui-row-md-4
-                                .mdui-col
-                                    label.mdui-radio
-                                        input(type="radio",name="pokapass",checked)
-                                        i.mdui-radio-icon
-                                        |開啟
-                                .mdui-col
-                                    label.mdui-radio
-                                        input(type="radio",name="pokapass")
-                                        i.mdui-radio-icon
-                                        |關閉
-                            form.mdui-row-md-4
-                                .mdui-col
-                                    .mdui-textfield
-                                        label.mdui-textfield-label 密碼
-                                        input.mdui-textfield-input(type="password")
-                                .mdui-col
-                                    .mdui-textfield
-                                        label.mdui-textfield-label 確認密碼
-                                        input.mdui-textfield-input(type="password")
-                            h3 管理員密碼
-                            p 請設定較強的密碼，像是
-                                code correcthorsebatterystaple
-                                | 之類由單字組成的密碼，並好好保存
-                                del (反正你也用不到幾次)
-                            form.mdui-row-md-4
-                                .mdui-col
-                                    .mdui-textfield
-                                        label.mdui-textfield-label 密碼
-                                        input.mdui-textfield-input(type="password")
-                                .mdui-col
-                                    .mdui-textfield
-                                        label.mdui-textfield-label 確認密碼
-                                        input.mdui-textfield-input(type="password")
-                    .mdui-panel-item
-                        .mdui-panel-item-header 
-                            .mdui-panel-item-title 進階設定
-                            .mdui-panel-item-summary 沒事不要亂改專區
-                            i.mdui-panel-item-arrow.mdui-icon.material-icons keyboard_arrow_down
-                        .mdui-panel-item-body
-                            h4 Session secret
-                            .mdui-textfield
-                                label.mdui-textfield-label Session secret
-                                input.mdui-textfield-input(type="text")
-                            h4 開發人員模式
-                            form
-                                .mdui-row-md-4
-                                    .mdui-col
-                                        label.mdui-radio
-                                            input(type="radio",name="pokadev")
-                                            i.mdui-radio-icon
-                                            |開啟
-                                    .mdui-col
-                                        label.mdui-radio
-                                            input(type="radio",name="pokadev",checked)
-                                            i.mdui-radio-icon
-                                            |關閉
-                hr
-                h1 Netease 設定
-                .mdui-panel.mdui-panel-gapless(mdui-panel="{accordion: true}")
-                    .mdui-panel-item.mdui-panel-item-open
-                        .mdui-panel-item-header 
-                            .mdui-panel-item-title 基本設定
-                            i.mdui-panel-item-arrow.mdui-icon.material-icons keyboard_arrow_down
-                        .mdui-panel-item-body
-                            h4 啟用
-                            form
-                                .mdui-row-md-4
-                                    .mdui-col
-                                        label.mdui-radio
-                                            input(type="radio",name="neteaseenabled")
-                                            i.mdui-radio-icon
-                                            |啟用
-                                    .mdui-col
-                                        label.mdui-radio
-                                            input(type="radio",name="neteaseenabled",checked)
-                                            i.mdui-radio-icon
-                                            |關閉
-                            h4 連接到 NeteaseCloudMusicApi
-                            form.mdui-row-md-4
-                                .mdui-col
-                                    h5 通訊協定 
-                                        small protocol
-                                    div(style="padding-top: 16px;text-align: right;")
-                                        select.mdui-select(mdui-select)
-                                            option(value="http") http://
-                                            option(value="https") https://
-                                .mdui-col
-                                    h5 網域或 IP 或別名 
-                                        small host
-                                    .mdui-textfield
-                                        input.mdui-textfield-input(type="text",placeholder="網域或 IP")
-                                .mdui-col
-                                    h5 端口 
-                                        small port
-                                    .mdui-textfield
-                                        input.mdui-textfield-input(type="number",value="3000")
-                            h4 帳號 
-                            form.mdui-row-md-4
-                                .mdui-col
-                                    div(style="padding-top: 46px;text-align: right;")
-                                        select.mdui-select(mdui-select)
-                                            option(value="http") E-mail
-                                            option(value="https") 電話號碼
-                                .mdui-col
-                                    .mdui-textfield
-                                        label.mdui-textfield-label 帳號
-                                        input.mdui-textfield-input(type="text")
-                                .mdui-col
-                                    .mdui-textfield
-                                        label.mdui-textfield-label 密碼
-                                        input.mdui-textfield-input(type="password")
-                            .mdui-panel-item-actions
-                                    .mdui-btn.mdui-ripple 測試連線
-                hr
-                h1 DSM 設定
-                .mdui-panel.mdui-panel-gapless(mdui-panel="{accordion: true}")
-                    .mdui-panel-item.mdui-panel-item-open
-                        .mdui-panel-item-header 
-                            .mdui-panel-item-title 基本設定
-                            i.mdui-panel-item-arrow.mdui-icon.material-icons keyboard_arrow_down
-                        .mdui-panel-item-body
-                            h4 啟用
-                            form.mdui-row-md-4
-                                .mdui-col
-                                    label.mdui-radio
-                                        input(type="radio",name="dsmenabled")
-                                        i.mdui-radio-icon
-                                        |啟用
-                                .mdui-col
-                                    label.mdui-radio
-                                        input(type="radio",name="dsmenabled",checked)
-                                        i.mdui-radio-icon
-                                        |關閉
-                            h4 連接到 DSM
-                            form.mdui-row-md-4
-                                .mdui-col
-                                    h5 通訊協定 
-                                        small protocol
-                                    div(style="padding-top: 16px;text-align: right;")
-                                        select.mdui-select(mdui-select)
-                                            option(value="http") http://
-                                            option(value="https") https://
-                                .mdui-col
-                                    h5 網域或 IP 
-                                        small host
-                                    .mdui-textfield
-                                        input.mdui-textfield-input(type="text",placeholder="網域或 IP")
-                                .mdui-col
-                                    h5 端口 
-                                        small port
-                                    .mdui-textfield
-                                        input.mdui-textfield-input(type="number",value="5000")
-                            h5 登入 
-                                small login
-                            form.mdui-row-md-4
-                                .mdui-col
-                                    .mdui-textfield
-                                        label.mdui-textfield-label 帳號
-                                        input.mdui-textfield-input(type="text")
-                                .mdui-col
-                                    .mdui-textfield
-                                        label.mdui-textfield-label 密碼
-                                        input.mdui-textfield-input(type="password")
-                            .mdui-panel-item-actions
-                                    .mdui-btn.mdui-ripple 測試連線
-                br
-                hr
-                .mdui-btn.mdui-btn-block.mdui-color-theme-accent.mdui-ripple 完成
-
-                                
-
-                
+        #content.ui.container(style="max-width: 950px !important;")
+            h1.ui.dividing.header 說明
+            p 本頁面將協助您進行初始設定，好讓 PokaPlayer 能夠連接至伺服器上，並開始享受音樂。
+            p 如果你很閒的話可以參考 config-simple.json 來設定，別忘了移除上頭的註解！
+            h1.ui.dividing.header 注意
+            p 請確認這些項目已開啟
+            .ui.bulleted.list
+                .item 已開啟 Docker 自動重啟功能
+                .item
+                    div 若您要使用網易雲服務
+                    .list
+                        .item  請先架設好 
+                            a(href="https://hub.docker.com/r/gnehs/neteasecloudmusicapi-docker/") gnehs/neteasecloudmusicapi-docker
+                        .item  建議可設定好容器別名以方便連接
+                .item
+                    div 若您要使用 DSM 的 Audio Station
+                    .list
+                        .item 已安裝好並啟動 Audio Station
+                        .item DSM 已建立一個供 PokaPlayer 存取的帳號（請確認兩步驟驗證已關閉）
+            h1.ui.dividing.header 設定檔
+            .ui.padded.segment
+                h2.ui.dividing.header PokaPlayer 設定
+                .ui.form(data-install="poka")
+                    h3.ui.dividing.header 登入密碼
+                    .ui.ignored.info.message 
+                        p 選擇當您進入 PokaPlayer 時是否需要密碼來登入
+                        p 注意！若您將 PokaPlayer 暴露在網路上強烈建議您設立密碼來確保最基本的安全。
+                    .field
+                        .ui.checkbox
+                            input(name='pokapass', type='checkbox', checked) 
+                            label 啟用密碼登入
+                    .two.fields
+                        .field
+                            label 密碼
+                            input(type='password',name="pokapassword")
+                        .field
+                            label 確認密碼
+                            input(type='password',name="pokapasswordcom")
+                    h3.ui.dividing.header 管理員密碼
+                    .ui.ignored.info.message
+                        p 請設定較強的密碼，像是
+                            code correcthorsebatterystaple
+                            | 之類由單字組成的密碼，並好好保存 
+                            del (反正你也用不到幾次)
+                    .two.fields
+                        .field
+                            label 密碼
+                            input(type='password',name="pokaadminpassword")
+                        .field
+                            label 確認密碼
+                            input(type='password',name="pokaadminpasswordcom")
+                    h3.ui.dividing.header 開發人員選項
+                    .ui.ignored.info.message 
+                        p 供開發人員選用的選項，建議保持預設
+                    .field
+                        label Session secret
+                        input(type='text',name="pokasessionsecret")
+                    .inline.fields
+                        label instantUpgradeProcess
+                        .field
+                            .ui.radio.checkbox
+                                input.hidden(name='instantUpgradeProcess', tabindex='0', type='radio', value="true", checked)
+                                label true
+                        .field
+                            .ui.radio.checkbox
+                                input.hidden(name='instantUpgradeProcess', tabindex='0',value="false", type='radio')
+                                label false
+                    .inline.fields
+                        label debug
+                        .field
+                            .ui.radio.checkbox
+                                input.hidden(name='pokadev', tabindex='0', type='radio', value="true")
+                                label true
+                        .field
+                            .ui.radio.checkbox
+                                input.hidden(name='pokadev', tabindex='0', type='radio', value="false", checked)
+                                label false
+                    .ui.error.message
+            .ui.padded.segment
+                h2.ui.dividing.header Netease 設定
+                .ui.form(data-install="netease")
+                    h3.ui.dividing.header 啟用
+                    .field
+                        .ui.checkbox
+                            input(name='neteaseenabled', type='checkbox', checked) 
+                            label 啟用 Netease 模組
+                    h3.ui.dividing.header 連接到 NeteaseCloudMusicApi
+                    .three.fields
+                        .field
+                            label 通訊協定
+                            select.ui.selection.dropdown(name="neteaseprotocol")
+                                option(value="http") http://
+                                option(value="https") https://
+                        .field
+                            label 網域、IP 或別名 
+                            input(type="text",placeholder="網域或 IP",name="neteasehost")
+                            small e.g 192.168.1.2, netease, netease.example.com
+                        .field
+                            label 端口
+                            input(type="number",value="3000",name="neteaseport")
+                    h3.ui.dividing.header 帳號 
+                    .three.fields
+                        .field
+                            label E-mail 或 電話號碼
+                            select.ui.selection.dropdown(name="neteaseaccounttype")
+                                option(value="email") E-mail
+                                option(value="phone") 電話號碼
+                        .field
+                            label 帳號
+                            input(type="text",placeholder="帳號",name="neteaseaccount")
+                        .field
+                            label 密碼
+                            input(type="password",placeholder="密碼",name="neteasepassword")
+                    h3.ui.dividing.header 訂閱歌單 
+                    .ui.ignored.info.message 
+                        p 在這裡選擇您想訂閱的歌單，會在首頁及播放清單中顯示
+                    .field
+                        select.ui.fluid.dropdown(name="neteaseplaylist",multiple)
+                            option(value) 選取歌單
+                            option(value="topPlaylist") 網友精選碟歌單
+                            option(value="dailyRecommendsongs") 每日推薦歌曲
+                            option(value="dailyRecommendplaylist") 每日推薦歌單
+                            option(value="hqPlaylist") 精品歌單
                     
+            .ui.padded.segment
+                h2.ui.dividing.header DSM 設定
+                .ui.form(data-install="dsm")
+                    h3.ui.dividing.header 啟用
+                    .field
+                        .ui.checkbox
+                            input(name='dsmenabled', type='checkbox', checked) 
+                            label 啟用 DSM 模組
+                    h3.ui.dividing.header 連接到 DSM
+                    .three.fields
+                        .field
+                            label 通訊協定
+                            select.ui.selection.dropdown(name="dsmprotocol")
+                                option(value="http") http://
+                                option(value="https") https://
+                        .field
+                            label 網域、IP
+                            input(type="text",placeholder="網域或 IP",name="dsmhost")
+                            small e.g 192.168.1.2, nas.example.com
+                        .field
+                            label 端口
+                            input(type="number",value="5000",name="dsmport")
+                    h3.ui.dividing.header 登入
+                    .two.fields
+                        .field
+                            label 帳號
+                            input(type="text",placeholder="帳號",name="dsmaccount")
+                        .field
+                            label 密碼
+                            input(type="password",placeholder="密碼",name="dsmpassword")
+            #submit.fluid.ui.submit.button 完成
+        #somthingError.ui.modal
+            .header 哎呀！
+            .content 您似乎有些資料未填寫完整，請檢查看看
+            .actions
+                .ui.ok.button 我知道了
+        #error.ui.modal
+            .header 哎呀！
+            .content
+            .actions
+                .ui.ok.button 我知道了
+        #done.ui.modal
+            .header 完成！
+            .content 
+                p 您已完成設定
+                p 若您未啟用自動重啟，您必須手動啟動 PokaPlayer
+                .ui.active.inline.centered.loader
+                style.
+                    .ui.active.inline.centered.loader:after{
+                        border-color: #767676 transparent transparent;
+                    }
+
         script(src='//cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js')
+        script(src='//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.3/semantic.min.js')
         script(src='/js/color-theme.js?'+version)
+        script(src='/js/install.js?'+version)
