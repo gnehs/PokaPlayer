@@ -39,7 +39,7 @@ $(() => {
                         "category": "ACG",
                         "limit": 5,
                         "order": "hot",
-                        "image": "https://i.imgur.com/ZFaycMw.gif"
+                        "image": "/img/topPlaylist.png"
                     },
                     "login": {
                         "phone": data.neteaseaccounttype == "phone" ? data.neteaseaccount : null,
@@ -48,17 +48,17 @@ $(() => {
                     },
                     "dailyRecommendSongs": {
                         "enabled": data.neteaseplaylist.includes('dailyRecommendsongs'),
-                        "image": "https://i.imgur.com/ZFaycMw.gif"
+                        "image": "/img/dailyRecommendSongs.png"
                     },
                     "dailyRecommendPlaylists": {
                         "enabled": data.neteaseplaylist.includes('dailyRecommendplaylist'),
-                        "image": "https://i.imgur.com/ZFaycMw.gif"
+                        "image": "/img/dailyRecommendPlaylists.png"
                     },
                     "hqPlaylist": {
                         "enabled": data.neteaseplaylist.includes('hqPlaylist'),
                         "category": "ACG",
                         "limit": 5,
-                        "image": "https://i.imgur.com/ZFaycMw.gif"
+                        "image": "/img/hqPlaylist.png"
                     }
                 }
             }
