@@ -200,6 +200,13 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 
+/* fab fix*/
+
+.mdui-fab-wrapper {
+    bottom: 84px;
+}
+
+
 /* 專輯頁面檢視 */
 
 .poka.cards {

@@ -7,6 +7,10 @@ const fs = require("fs-extra");
 
 router.use(bodyParser.json());
 
+// 首頁
+router.get("/", (req, res) => {
+    res.send("PokaPlayer Install API");
+});
 router.post("/netease2", async(req, res) => {
     async function netease2(config) {
         const options = (url, qs = {}) => ({
