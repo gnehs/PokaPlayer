@@ -901,7 +901,6 @@ async function showNow() {
     window.addEventListener("hashchange", function(e) {
         let r = /now\/songlist$/
         if (!e.newURL.match(r)) {
-            console.log('resume')
             $('.mdui-list.songs').removeClass('show')
             router.resume();
         }
