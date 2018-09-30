@@ -7,10 +7,11 @@ const franc = require("franc-min");
 const config = require(__dirname + "/../config.json").Netease2; // 設定
 const server = config.server || "http://localhost:4000/";
 const pin = __dirname + "/netease2Pin.json";
-const options = (url, qs = {}) => ({
+const options = (url, qs = {}, resolveWithFullResponse = false) => ({
     uri: url,
     qs,
-    json: true // Automatically parses the JSON string in the response
+    json: true, // Automatically parses the JSON string in the response
+    resolveWithFullResponse
 });
 try {
     fs.readFileJSON(pin, "utf8");
@@ -1117,6 +1118,35 @@ async function getHome() {
     };
 }
 
+function playlistOperation(operation) {
+    switch (operation) {
+        case "add":
+            return async (songIds, playlistId) => {
+                if (Array.isArray(songIds)) songIds = songIds.join(",");
+                let response = await rp(
+                    options(
+                        `${server}playlist/tracks?op=add&pid=${playlistId}&tracks=${songIds}`,
+                        {},
+                        true
+                    )
+                );
+                return response.code < 300 && code >= 200 ? response.body || true : false;
+            };
+        case "del":
+            return async (songIds, playlistId) => {
+                if (Array.isArray(songIds)) songIds = songIds.join(",");
+                let response = await rp(
+                    options(
+                        `${server}playlist/tracks?op=del&pid=${playlistId}&tracks=${songIds}`,
+                        {},
+                        true
+                    )
+                );
+                return response.code < 300 && code >= 200 ? response.body || true : false;
+            };
+    }
+}
+
 module.exports = {
     name: "Netease2",
     enabled: config.enabled,
@@ -1147,5 +1177,6 @@ module.exports = {
     isPinned,
     getHome,
     req,
-    login
+    login,
+    playlistOperation
 };
