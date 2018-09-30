@@ -8,6 +8,27 @@ const ap = new APlayer({
     fixed: true,
     preload: 'metadata'
 });
+const nothingHere = () => {
+    let n = [
+        "哎呀，這裡沒有任何東西欸",
+        "合理懷疑資料在送過來的途中被吃掉ㄌ",
+        "哈囉！這裡是太虛之境，啥都沒有",
+        "欲從海上覓仙跡，令人可望不可攀。",
+        "資料被一隻大嘴怪吃掉了！",
+        "喔不，你的法力不足，沒拿到任何資料",
+        "～佛系讀資料～",
+        "喔嗚...別哭啦，只是沒資料而已啦",
+        "什麼～都～沒有",
+        "找不到任何資料，請不要太難過",
+        "尼是不是故意來找沒有資料的",
+        "🙈沒資料",
+        "若您嘗試多次，請再次確認模組是否開啟"
+    ]
+    return `<div class="mdui-valign" style="height:150px">
+                <p class="mdui-center">${n[Math.floor(Math.random() * n.length)]}</p>
+            </div>`
+}
+
 // 初始化歌詞解析
 const lrc = new Lyrics(`[00:00.000]`);
 
@@ -375,7 +396,8 @@ async function showHome() {
     let result = await request(`/pokaapi/home`)
 
     if ($("#content").attr('data-page') == 'home') {
-        $("#content").html(template.parseHome(result))
+        let parseResult = template.parseHome(result)
+        $("#content").html(parseResult != '' ? parseResult : nothingHere)
         router.updatePageLinks()
     }
 }
@@ -450,7 +472,7 @@ async function showAlbum() {
     let result = await request('/pokaapi/albums')
     let html = template.parseAlbums(result.albums)
     if ($("#content").attr('data-page') == 'album') {
-        $("#content").html(html)
+        $("#content").html(result.albums.length > 0 ? html : nothingHere())
         mdui.mutation()
         router.updatePageLinks()
     }
@@ -512,7 +534,7 @@ async function showAlbumSongs(albumSource, albumID) {
     html = template.parseSongs(result.songs)
     albumInfo = template.infoHeader(cover, name, artist)
     if ($("#content").attr('data-page') == `album` && $("#content").attr('data-item') == `album${albumID}`) {
-        $("#content").html(albumInfo + html)
+        $("#content").html(result.songs.length > 0 ? albumInfo + html : nothingHere())
         pokaHeader('', '', cover)
         $("#content .info-header .time").html(`${result.songs.length} 首歌曲`)
         $("#content .info-header .actions").html(actions)
@@ -552,7 +574,7 @@ async function showFolder(moduleName, folderId) {
     let result = await request(url)
     let folderHTML = template.parseFolder(result.folders) + template.parseSongs(result.songs)
     if ($("#content").attr('data-page') == 'folder') {
-        $("#content").html(folderHTML)
+        $("#content").html(result.folders.length > 0 || result.songs.length > 0 ? folderHTML : nothingHere())
         router.updatePageLinks()
     }
 }
@@ -577,7 +599,7 @@ async function showArtist(moduleName, artist = false) {
             pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="加入該演出者到首頁釘選" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
         let albumHTML = template.parseAlbums(result.albums)
         if ($("#content").attr('data-item') == `artist${artist}`) {
-            $("#content").html(albumHTML + pinButton)
+            $("#content").html(result.albums.length > 0 ? albumHTML + pinButton : nothingHere())
             $("[data-pinned]").click(async function() {
                 let pinStatus = $(this).attr('data-pinned')
                 if (pinStatus == "true") {
@@ -599,7 +621,7 @@ async function showArtist(moduleName, artist = false) {
         let result = await request(`/pokaapi/artists`),
             artistsHTML = template.parseArtists(result.artists)
         if ($("#content").attr('data-page') == 'artist')
-            $("#content").html(artistsHTML)
+            $("#content").html(result.artists.length > 0 ? artistsHTML : nothingHere())
     }
     if ($("#content").attr('data-page') == 'artist')
         router.updatePageLinks()
@@ -624,7 +646,7 @@ async function showComposer(moduleName, composer) {
             pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="加入該作曲者到首頁釘選" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
         let albumHTML = template.parseAlbums(result.albums)
         if ($("#content").attr('data-item') == `composer${composer}`) {
-            $("#content").html(albumHTML + pinButton)
+            $("#content").html(result.albums.length > 0 ? albumHTML + pinButton : nothingHere())
             $("[data-pinned]").click(async function() {
                 let pinStatus = $(this).attr('data-pinned')
                 if (pinStatus == "true") {
@@ -648,7 +670,7 @@ async function showComposer(moduleName, composer) {
         let result = await request(`/pokaapi/composers`),
             composersHTML = template.parseComposers(result.composers)
         if ($("#content").attr('data-page') == 'composer')
-            $("#content").html(composersHTML)
+            $("#content").html(result.composers.length > 0 ? composersHTML : nothingHere())
     }
     if ($("#content").attr('data-page') == 'composer')
         router.updatePageLinks()
@@ -662,10 +684,7 @@ async function showPlaylist() {
     mdui.mutation()
     let result = await request(`/pokaapi/playlists`)
     if ($("#content").attr('data-page') == 'playlist') {
-        if (result.playlists.length < 0)
-            $("#content").html(`<div class="mdui-valign" style="height:150px"><p class="mdui-center">沒有任何播放清單</p></div>`)
-        else
-            $("#content").html(template.parsePlaylists(result.playlists))
+        $("#content").html(result.playlists.length > 0 ? template.parsePlaylists(result.playlists) : nothingHere())
         router.updatePageLinks()
     }
 }
@@ -754,7 +773,7 @@ async function showPlaylistSongs(moduleName, playlistId) {
     `
 
     if ($("#content").attr('data-item') == `playlist${playlistId}`) {
-        $("#content").html(songs + fab)
+        $("#content").html(result.songs.length > 0 ? songs + fab : nothingHere())
         $("[data-pinned]").click(async function() {
             let pinStatus = $(this).attr('data-pinned')
             if (pinStatus == "true") {
@@ -788,7 +807,7 @@ async function showRandom() {
                        <i class="mdui-icon material-icons">playlist_add</i>
                 </button>`
     if ($("#content").attr('data-page') == 'random')
-        $("#content").html(template.parseSongs(result.songs) + fab)
+        $("#content").html(result.songs.length > 0 ? template.parseSongs(result.songs) + fab : nothingHere())
 }
 async function playRandom() {
     router.navigate('now')
