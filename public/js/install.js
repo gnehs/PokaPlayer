@@ -8,6 +8,7 @@ $(() => {
     $('.ui.radio.checkbox').checkbox()
     $('input[name="pokasessionsecret"]').val(Math.random().toString(36).substring(2))
     $('#submit').click(async function() {
+        $(this).text('確認中...').addClass('active')
         let poka = $(`.ui.form[data-install="poka"]`).submit().hasClass('success')
         let netease = $(`.ui.form[data-install="netease"]`).submit().hasClass('success')
         let dsm = $(`.ui.form[data-install="dsm"]`).submit().hasClass('success')
@@ -82,6 +83,7 @@ $(() => {
             }
         } else
             $('#somthingError').modal('show');
+        $(this).text('完成').removeClass('active')
     })
     $('.ui.form[data-install="poka"]').form({
         inline: true,
