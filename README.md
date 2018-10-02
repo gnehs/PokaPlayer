@@ -11,10 +11,11 @@ PokaPlayer 是 Synology Audio Station 的新朋友！
 
 ## 開始使用
 
-1.  下載 Docker 映像 (https://hub.docker.com/r/gnehs/pokaplayer/)
-2.  掛載修改好的 `config.json` 到 `/app/config.json` (參考 `config-simple.json`)
-3.  (選用)掛載 `/ogimage/` 來替換隨機的 header 圖片
-4.  啟動囉(##
+1.  使用 Docker 映像來部署 (https://hub.docker.com/r/gnehs/pokaplayer/)
+    -   [Synology Docker 可參考此教學](https://github.com/gnehs/PokaPlayer/wiki/%E5%A6%82%E4%BD%95%E5%9C%A8-Synology-NAS-%E4%BD%BF%E7%94%A8-Docker-%E9%83%A8%E7%BD%B2-PokaPlayer)
+2.  或是使用 node.js 來手動啟動
+    -   `npm i`
+    -   `npm start`
 
 ## 小提示
 
@@ -43,7 +44,10 @@ PokaPlayer 是 Synology Audio Station 的新朋友！
 
 ## 備註
 
-Repo 內附的背景來自 [Free Set of 40+ Material Design Backgrounds](https://www.oxygenna.com/news/brand-new-set-of-40-material-design-backgrounds)
+Repo 內附的背景來自
+
+-   [Free Set of 40+ Material Design Backgrounds](https://www.oxygenna.com/news/brand-new-set-of-40-material-design-backgrounds)
+-   [New free set of 30 material design backgrounds](https://www.oxygenna.com/freebies/new-free-set-of-material-design-backgrounds)
 
 ## 貢獻者 Contributors
 
