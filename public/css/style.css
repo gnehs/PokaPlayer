@@ -1,7 +1,9 @@
 code {
     background-color: rgba(0, 0, 0, 0.06);
     line-height: 1;
-    padding: 3px 4px;
+    padding: 3px 3px;
+    border-radius: 3px;
+    margin: 0 2px;
 }
 
 

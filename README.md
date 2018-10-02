@@ -43,7 +43,10 @@ PokaPlayer 是 Synology Audio Station 的新朋友！
 
 ## 備註
 
-Repo 內附的背景來自 [Free Set of 40+ Material Design Backgrounds](https://www.oxygenna.com/news/brand-new-set-of-40-material-design-backgrounds)
+Repo 內附的背景來自
+
+-   [Free Set of 40+ Material Design Backgrounds](https://www.oxygenna.com/news/brand-new-set-of-40-material-design-backgrounds)
+-   [New free set of 30 material design backgrounds](https://www.oxygenna.com/freebies/new-free-set-of-material-design-backgrounds)
 
 ## 貢獻者 Contributors
 
