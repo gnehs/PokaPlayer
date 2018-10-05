@@ -28,7 +28,9 @@ html
         #content.ui.container(style="max-width: 950px !important;")
             h1.ui.dividing.header 說明
             p 本頁面將協助您進行初始設定，好讓 PokaPlayer 能夠連接至伺服器上，並開始享受音樂。
-            p 如果你很閒的話可以參考 config-simple.json 來設定，別忘了移除上頭的註解！
+            p 如果你很閒的話可以參考 Repo 內的 
+                code config-simple.json
+                | 來設定，別忘了移除上頭的註解！
             h1.ui.dividing.header 注意
             p 請確認這些項目已開啟
             .ui.bulleted.list
@@ -167,7 +169,7 @@ html
                         .field
                             label 網域、IP
                             input(type="text",placeholder="網域或 IP",name="dsmhost")
-                            small e.g 192.168.1.2, nas.example.com
+                            small e.g. 192.168.1.2, nas.example.com
                         .field
                             label 端口
                             input(type="number",value="5000",name="dsmport")
@@ -179,22 +181,23 @@ html
                         .field
                             label 密碼
                             input(type="password",placeholder="密碼",name="dsmpassword")
-            #submit.fluid.ui.submit.button 完成
+            #submit.fluid.ui.submit.primary.button 完成
         #somthingError.ui.modal
             .header 哎呀！
             .content 您似乎有些資料未填寫完整，請檢查看看
             .actions
-                .ui.ok.button 我知道了
+                .ui.ok.primary.button 我知道了
         #error.ui.modal
             .header 哎呀！
             .content
             .actions
-                .ui.ok.button 我知道了
+                .ui.ok.primary.button 我知道了
         #done.ui.modal
             .header 完成！
             .content 
                 p 您已完成設定
                 p 若您未啟用自動重啟，您必須手動啟動 PokaPlayer
+                p 正在等待伺服器上線...
                 .ui.active.inline.centered.loader
                 style.
                     .ui.active.inline.centered.loader:after{

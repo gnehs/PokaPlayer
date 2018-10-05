@@ -1,7 +1,9 @@
 code {
     background-color: rgba(0, 0, 0, 0.06);
     line-height: 1;
-    padding: 3px 4px;
+    padding: 3px 3px;
+    border-radius: 3px;
+    margin: 0 2px;
 }
 
 
@@ -222,13 +224,11 @@ header.mdui-appbar.mdui-appbar-fixed {
     height: 0;
     width: var(--album-size);
     font-size: 10px;
-    margin: .875em 1em;
+    margin: .4em .5em;
     background-position: center;
     background-size: cover;
     padding-bottom: var(--album-size);
-}
-
-.poka.cards .card {
+    padding: .475em .5em;
     display: block;
     height: auto;
     padding-bottom: 0;

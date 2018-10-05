@@ -21,7 +21,7 @@ router.post("/netease2", async(req, res) => {
 
         async function login(config) {
             const server = config.server;
-            if (config.login.phone) {
+            if (config.login.phone)
                 return await rp(
                     options(
                         `${server}login/cellphone?phone=${config.login.phone}&password=${
@@ -29,7 +29,7 @@ router.post("/netease2", async(req, res) => {
                         }`
                     )
                 );
-            } else {
+            else
                 return await rp(
                     options(
                         `${server}login?email=${config.login.email}&password=${
@@ -37,7 +37,7 @@ router.post("/netease2", async(req, res) => {
                         }`
                     )
                 );
-            }
+
         }
 
         return (await login(config)).code == 200;
@@ -46,7 +46,7 @@ router.post("/netease2", async(req, res) => {
     try {
         res.send(await netease2(req.body));
     } catch (e) {
-        res.status(500).send(e.toString());
+        res.send('error');
     }
 });
 router.post("/dsm", async(req, res) => {
@@ -89,7 +89,7 @@ router.post("/dsm", async(req, res) => {
     try {
         res.send(await login(req.body));
     } catch (e) {
-        res.status(500).send(e.toString());
+        res.send('error');
     }
 })
 router.post("/config", async(req, res) => {
@@ -99,7 +99,7 @@ router.post("/config", async(req, res) => {
         await res.send('done')
         process.exit()
     } catch (e) {
-        res.status(500).send(e.toString());
+        res.send(e);
     }
 })
 module.exports = router;
