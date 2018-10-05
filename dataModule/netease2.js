@@ -1151,11 +1151,11 @@ module.exports = {
     name: "Netease2",
     enabled: config.enabled,
     onLoaded,
-    getSong, // done
-    getSongs, // done
-    getSongsUrl,
-    getCover, // done
-    getCovers, // done
+    getSong,
+    getSongs, // test
+    getSongsUrl, // test
+    getCover,
+    getCovers,
     search,
     getAlbum,
     getAlbumSongs,
