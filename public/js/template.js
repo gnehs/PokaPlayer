@@ -33,9 +33,9 @@ const template = {
         for (i = 0; i < folders.length; i++) {
             let folder = folders[i]
             html += `<li class="mdui-list-item mdui-ripple" href="folder/${folder.source}/${folder.id}" data-navigo>
-                        <i class="mdui-list-item-avatar mdui-icon material-icons">folder</i>
-                        <div class="mdui-list-item-content">${folder.name}</div>
-                    </li>`
+                    <i class="mdui-list-item-avatar mdui-icon material-icons">folder</i>
+                    <div class="mdui-list-item-content">${folder.name}</div>
+                </li>`
         }
         html += `</ul>`
         return html
@@ -85,11 +85,12 @@ const template = {
             html += `
                <a class="card" 
                   title="${name}${artist ? '&#10;' + artist : ''}"
-                  href="album/${album.source}/${encodeURIComponent(album.id)}"  
+                  href="album/${album.source}/${encodeURIComponent(album.id)}" 
+                  data-source="${album.source}" 
                   data-navigo>
                    <div class="image mdui-ripple" style="background-image:url('${img}')"></div>
-                   <div class="title mdui-text-color-theme-text mdui-text-truncate">${name}</div>
-                   <div class="subtitle mdui-text-color-theme-text mdui-text-truncate">${artist}</div>
+                   <div class="title mdui-text-color-theme-text">${name}</div>
+                   <div class="subtitle mdui-text-color-theme-text">${artist}</div>
                </a>`
         }
         html += "</div>"
@@ -105,9 +106,10 @@ const template = {
             <a class="card" 
                title="${name}"
                href="artist/${encodeURIComponent(artist.source)}/${encodeURIComponent(artist.source == 'DSM' ? name : artist.id)}" 
+               data-source="${moduleShowName[artist.source]}" 
                data-navigo>
                 <div class="image mdui-ripple" style="background-image:url('${img}')"></div>
-                <div class="title mdui-text-color-theme-text mdui-text-truncate">${name}</div>
+                <div class="title mdui-text-color-theme-text">${name}</div>
             </a>`
         }
         html += '</div>'
@@ -123,9 +125,10 @@ const template = {
             <a class="card" 
                title="${name}"
                href="composer/${encodeURIComponent(composer.source)}/${encodeURIComponent(composer.source == 'DSM' ? name : composer.id)}" 
+               data-source="${moduleShowName[composer.source]}" 
                data-navigo>
                 <div class="image mdui-ripple" style="background-image:url('${img}')"></div>
-                <div class="title mdui-text-color-theme-text mdui-text-truncate">${name}</div>
+                <div class="title mdui-text-color-theme-text">${name}</div>
             </a>`
         }
         html += '</div>'
@@ -148,9 +151,10 @@ const template = {
             <a class="card" 
                title="${playlist.name}"
                href="${href}"
+               data-source="${moduleShowName[playlist.source]}" 
                data-navigo>
                 <div class="image mdui-ripple" ${img}>${icon}</div>
-                <div class="title mdui-text-color-theme-text mdui-text-truncate">${playlist.name}</div>
+                <div class="title mdui-text-color-theme-text">${playlist.name}</div>
             </a>`
         }
         sessionStorage.temporalPlaylist = JSON.stringify(temporalPlaylist)

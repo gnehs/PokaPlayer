@@ -233,6 +233,33 @@ header.mdui-appbar.mdui-appbar-fixed {
     height: auto;
     padding-bottom: 0;
     text-decoration: none;
+    position: relative;
+}
+
+.poka.cards .card[data-source]:before {
+    content: attr(data-source);
+    position: absolute;
+    color: #FFF;
+    display: block;
+    position: absolute;
+    text-align: right;
+    right: 10px;
+    z-index: 1;
+    top: 11px;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 2px 3px;
+    border-radius: 4px;
+    font-size: 12px;
+    max-width: 7em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all .2s;
+    will-change: transform;
+}
+
+.poka.cards .card[data-source]:hover:before {
+    transform: translateY(-5px);
 }
 
 .poka.cards .card .image {
@@ -248,7 +275,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 .poka.cards .card:hover .image {
     box-shadow: 0 10px 15px #0000004d;
-    transform: translateY(-3px);
+    transform: translateY(-5px);
 }
 
 .poka.cards .card .image i {
