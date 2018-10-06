@@ -89,8 +89,8 @@ const template = {
                   data-source="${album.source}" 
                   data-navigo>
                    <div class="image mdui-ripple" style="background-image:url('${img}')"></div>
-                   <div class="title mdui-text-color-theme-text">${name}</div>
-                   <div class="subtitle mdui-text-color-theme-text">${artist}</div>
+                   <div class="title mdui-text-color-theme-text mdui-text-truncate">${name}</div>
+                   <div class="subtitle mdui-text-color-theme-text mdui-text-truncate">${artist}</div>
                </a>`
         }
         html += "</div>"
@@ -109,7 +109,7 @@ const template = {
                data-source="${moduleShowName[artist.source]}" 
                data-navigo>
                 <div class="image mdui-ripple" style="background-image:url('${img}')"></div>
-                <div class="title mdui-text-color-theme-text">${name}</div>
+                <div class="title mdui-text-color-theme-text mdui-text-truncate">${name}</div>
             </a>`
         }
         html += '</div>'
@@ -128,7 +128,7 @@ const template = {
                data-source="${moduleShowName[composer.source]}" 
                data-navigo>
                 <div class="image mdui-ripple" style="background-image:url('${img}')"></div>
-                <div class="title mdui-text-color-theme-text">${name}</div>
+                <div class="title mdui-text-color-theme-text mdui-text-truncate">${name}</div>
             </a>`
         }
         html += '</div>'
@@ -154,7 +154,7 @@ const template = {
                data-source="${moduleShowName[playlist.source]}" 
                data-navigo>
                 <div class="image mdui-ripple" ${img}>${icon}</div>
-                <div class="title mdui-text-color-theme-text">${playlist.name}</div>
+                <div class="title mdui-text-color-theme-text mdui-text-truncate">${playlist.name}</div>
             </a>`
         }
         sessionStorage.temporalPlaylist = JSON.stringify(temporalPlaylist)
