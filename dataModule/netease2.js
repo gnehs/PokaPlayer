@@ -639,14 +639,14 @@ async function getPlaylists(playlists) {
         return [].concat(...(await Promise.all(userList)));
     }
 
-    async function getUserPlaylists(id) {
+    async function getCustomPlaylists(id) {
         let result = await rp(options(`${server}user/playlist?uid=${id}`));
         return result.playlist.map(x => ({
             name: x.name,
             source: "Netease2",
             id: x.id,
             image: imageUrl(x.coverImgUrl || x.picUrl),
-            from: "getUserPlaylists"
+            from: "getCustomPlaylists"
         }));
     }
 
@@ -683,7 +683,7 @@ async function getPlaylists(playlists) {
                         if (isLoggedin === undefined) {
                             login.then(x => {
                                 if (x.code == 200) {
-                                    userList.push(getUserPlaylists(x.id));
+                                    userList.push(getCustomPlaylists(x.id));
                                 } else
                                     console.error(
                                         "[DataModules][Netease2] 未登入，無法獲取用戶歌單。"
@@ -692,7 +692,7 @@ async function getPlaylists(playlists) {
                         } else if (!isLoggedin) {
                             console.error("[DataModules][Netease2] 未登入，無法獲取用戶歌單。");
                         } else {
-                            userList.push(getUserPlaylists(x.id));
+                            userList.push(getCustomPlaylists(x.id));
                         }
                         break;
                     case "folder":
@@ -1147,15 +1147,38 @@ function playlistOperation(operation) {
     }
 }
 
+async function getUserPlaylists(uid) {
+    if (!uid) {
+        if (isLoggedin === undefined) {
+            login.then(async x => {
+                if (x.code == 200) {
+                    uid = (await rp(options(`${server}user/playlist?uid=${uid}}`))).userId;
+                } else console.error("[DataModules][Netease2] 未登入，無法獲取用戶歌單。");
+            });
+        } else if (!isLoggedin) {
+            console.error("[DataModules][Netease2] 未登入，無法獲取用戶歌單。");
+        } else {
+            uid = (await rp(options(`${server}user/playlist?uid=${uid}}`))).userId;
+        }
+    }
+    return (await rp(options(`${server}user/playlist?uid=${uid}}`))).playlist.filter(x => ({
+        name: x.name,
+        source: "Netease2",
+        image: imageUrl(x.coverImgUrl) || defaultImage,
+        type: "playlist",
+        id: x.id
+    }));
+}
+
 module.exports = {
     name: "Netease2",
     enabled: config.enabled,
     onLoaded,
-    getSong, // done
-    getSongs, // done
-    getSongsUrl,
-    getCover, // done
-    getCovers, // done
+    getSong,
+    getSongs, // test
+    getSongsUrl, // test
+    getCover,
+    getCovers,
     search,
     getAlbum,
     getAlbumSongs,
@@ -1177,6 +1200,6 @@ module.exports = {
     isPinned,
     getHome,
     req,
-    login,
+    getUserPlaylists,
     playlistOperation
 };

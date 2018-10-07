@@ -347,6 +347,22 @@ router.get("/playlistSongs/", async(req, res) => {
     }
     return res.json(r || null);
 });
+// 取得可加入的播放清單
+router.get("/userPlaylists/", async(req, res) => {
+    //http://localhost:3000/pokaapi/userPlaylists/?moduleName=netease2
+    let moduleName = req.query.moduleName;
+    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+    // 沒這東西
+    if (!_module || moduleList[moduleName].active.indexOf("getUserPlaylists") == -1)
+        return res.status(501).send("The required module is currently unavailable :(");
+    let r;
+    try {
+        r = await _module.getUserPlaylists();
+    } catch (e) {
+        console.log(`[DataModules][${moduleName}]發生了錯誤：（`, e);
+    }
+    return res.json(r || null);
+});
 
 //-----------------------------> 演出者
 // 取得演出者資料

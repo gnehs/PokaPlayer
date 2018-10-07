@@ -5,13 +5,20 @@ $(async() => {
     if (!window.localStorage["randomImg"]) window.localStorage["randomImg"] = "/og/og.png"
     if (!window.localStorage["randomImgName"]) window.localStorage["randomImgName"] = "預設圖庫"
     if (!window.localStorage["imgRes"]) window.localStorage["imgRes"] = "false"
+    if (!window.localStorage["pokaSW"]) window.localStorage["pokaSW"] = "true"
     let version = (await request('/info/')).version
         //serviceWorker
-    if ('serviceWorker' in navigator && !await request('/debug/')) {
+    if ('serviceWorker' in navigator && window.localStorage["pokaSW"] == "true") {
         navigator.serviceWorker
             .register('/sw.js', { scope: '/' })
             .then(reg => {
                 if (version != window.localStorage["PokaPlayerVersion"]) reg.update()
+            })
+            .catch(err => console.log('Error!', err));
+    } else {
+        navigator.serviceWorker
+            .getRegistration("/").then(reg => {
+                reg.unregister();
             })
             .catch(err => console.log('Error!', err));
     }
@@ -42,9 +49,14 @@ async function showSettings() {
     let settingItems = `<ul class="mdui-list">
         ${settingsItem("主題","設定主題色、主色及強調色","color_lens","settings/theme")}
         ${settingsItem("音質",window.localStorage["musicRes"],"music_note","","data-music-res")}
-        ${settingsItem("圖片流量節省",window.localStorage["imgRes"]=="true"? "已開啟" : "已關閉","image","","data-imgRes",
+        ${settingsItem("圖片流量節省",window.localStorage["imgRes"]=="true"? "將會把所有圖片替換為您指定的隨機圖片" : "已關閉","image","","data-imgRes",
         `<label class="mdui-switch">
             <input type="checkbox" ${window.localStorage["imgRes"]=="true"?"checked":""}/>
+            <i class="mdui-switch-icon"></i>
+        </label>`)} 
+        ${settingsItem("Service Worker",window.localStorage["pokaSW"]=="true"? "已開啟" : "已關閉","android","","data-pokaSW",
+        `<label class="mdui-switch">
+            <input type="checkbox" ${window.localStorage["pokaSW"]=="true"?"checked":""}/>
             <i class="mdui-switch-icon"></i>
         </label>`)} 
         ${settingsItem("隨機圖片",window.localStorage["randomImgName"],"shuffle","settings/pic")}
@@ -111,6 +123,25 @@ async function showSettings() {
         window.localStorage["imgRes"] = $("[data-imgRes] input").prop('checked');
         $("[data-imgRes] .mdui-list-item-text").text($("[data-imgRes] input").prop('checked') ? "將會把所有圖片替換為您指定的隨機圖片" : "已關閉");
     });
+    $("[data-pokaSW]").click(function() {
+        $("[data-pokaSW] input").prop('checked', !$("[data-pokaSW] input").prop('checked'))
+        window.localStorage["pokaSW"] = $("[data-pokaSW] input").prop('checked');
+        console.log($("[data-pokaSW] input").prop('checked'))
+        $("[data-pokaSW] .mdui-list-item-text").text($("[data-pokaSW] input").prop('checked') ? "已開啟" : "已關閉");
+        mdui.snackbar({ message: "請重新整理來註冊或註銷 Service Worker", timeout: 2000, position: getSnackbarPosition() });
+        if($("[data-pokaSW] input").prop('checked'))
+            navigator.serviceWorker
+                .register('/sw.js', { scope: '/' })
+                .then(reg => reg.update())
+                .catch(err => console.log('Error!', err));
+        else
+            navigator.serviceWorker
+                .getRegistration("/").then(reg => {
+                    reg.unregister();
+                    caches.delete('PokaPlayer')
+                })
+                .catch(err => console.log('Error!', err));
+    });
 }
 async function showSettingsTheme() {
     $('#content').attr('data-page', 'settings')
@@ -121,7 +152,7 @@ async function showSettingsTheme() {
         ${settingsItem("主色",window.localStorage["mdui-theme-primary"].replace("-"," "),"color_lens","",`data-theme="mdui-theme-primary"`)}
         ${settingsItem("強調色",window.localStorage["mdui-theme-accent"].replace("-"," "),"color_lens","",`data-theme="mdui-theme-accent"`)}
     </ul>`
-    $("#content").html( settingItems)
+    $("#content").html(settingItems)
     $('[data-theme="mdui-theme-color"]').click(function() {
         mdui.dialog({
             title: '設定主題色',
