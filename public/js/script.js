@@ -53,8 +53,9 @@ router
         'now*': showNow,
         'lrc': showLrc,
         'settings': showSettings,
-        'settings/theme': showSettingsTheme,
-        'settings/pic': showSettingsPic,
+        'settings/network': showSettingsNetwork,
+        'settings/customize': showSettingsCustomize,
+        'settings/system': showSettingsSystem,
         'settings/about': showSettingsAbout,
         '*': showHome
     })
