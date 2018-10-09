@@ -6,6 +6,7 @@ $(async() => {
     if (!window.localStorage["randomImgName"]) window.localStorage["randomImgName"] = "預設圖庫"
     if (!window.localStorage["imgRes"]) window.localStorage["imgRes"] = "false"
     if (!window.localStorage["pokaSW"]) window.localStorage["pokaSW"] = "true"
+    if (!window.localStorage["PokaPlayerVersion"]) window.localStorage["PokaPlayerVersion"] = ""
     let version = (await request('/info/')).version
         //serviceWorker
     if ('serviceWorker' in navigator && window.localStorage["pokaSW"] == "true")
@@ -477,4 +478,5 @@ async function showSettingsAbout() {
     let getInfo = await request('/info/');
     $("[data-dev] .mdui-list-item-text").text(getInfo.author)
     $("[data-version] .mdui-list-item-text").text(getInfo.version)
+    window.localStorage["PokaPlayerVersion"] = getInfo.version
 }
