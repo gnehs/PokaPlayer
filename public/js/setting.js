@@ -8,7 +8,14 @@ $(async() => {
     if (!window.localStorage["pokaSW"]) window.localStorage["pokaSW"] = "true"
     if (!window.localStorage["PokaPlayerVersion"]) window.localStorage["PokaPlayerVersion"] = ""
     let version = (await request('/info/')).version
-        //serviceWorker
+
+    // 更新版本號
+    if (version != window.localStorage["PokaPlayerVersion"])
+        if ($("#content").attr("data-page") == "settings" || $("#content").attr("data-page") == "home")
+            $("#header-wrapper .title .subtitle").text(`PokaPlayer ${version}`)
+    window.localStorage["PokaPlayerVersion"] = version;
+
+    //serviceWorker
     if ('serviceWorker' in navigator && window.localStorage["pokaSW"] == "true")
         navigator.serviceWorker
         .register('/sw.js', { scope: '/' })
@@ -23,11 +30,6 @@ $(async() => {
         })
         .catch(err => console.log('Error!', err));
 
-    // 更新版本號
-    if (version != window.localStorage["PokaPlayerVersion"])
-        if ($("#content").attr("data-page") == "settings" || $("#content").attr("data-page") == "home")
-            $("#header-wrapper .title .subtitle").text(`PokaPlayer ${version}`)
-    window.localStorage["PokaPlayerVersion"] = version;
 });
 //- 設定頁面用的範本
 var settingsItem = (title, text = '', icon = '', link = '', data = '', other = '', cssClass = '') => {
