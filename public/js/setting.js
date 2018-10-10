@@ -61,9 +61,11 @@ async function showSettingsSystem() {
     pokaHeader('系統和更新', "設定")
     let settingItems = `<ul class="mdui-list">
         ${settingsItem("返回","","arrow_back","settings")}
-        ${settingsItem("更新","正在檢查更新...","system_update","","data-upgrade")}
+        <li class="mdui-subheader">帳號</li>
         ${settingsItem("登出","","account_circle","",`onclick="window.localStorage['userPASS']=false;location.href='/login'"`)}
         ${settingsItem("嘗試重新登入","","account_circle","",`onclick="location.href='/login'"`)}
+        <li class="mdui-subheader">系統</li>
+        ${settingsItem("更新","正在檢查更新...","system_update","","data-upgrade")}
         ${settingsItem("重新啟動","","refresh","","data-restart")}
     </ul>`
     $("#content").html(settingItems);
