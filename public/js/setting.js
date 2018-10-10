@@ -5,7 +5,7 @@ $(async() => {
     if (!window.localStorage["randomImg"]) window.localStorage["randomImg"] = "/og/og.png"
     if (!window.localStorage["randomImgName"]) window.localStorage["randomImgName"] = "預設圖庫"
     if (!window.localStorage["imgRes"]) window.localStorage["imgRes"] = "false"
-    if (!window.localStorage["pokaSW"]) window.localStorage["pokaSW"] = "true"
+    if (!window.localStorage["pokaSW"]) window.localStorage["pokaSW"] = "false"
     if (!window.localStorage["PokaPlayerVersion"]) window.localStorage["PokaPlayerVersion"] = ""
     let version = (await request('/info/')).version
 
