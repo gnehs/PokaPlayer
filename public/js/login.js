@@ -1,7 +1,7 @@
 // 初始化網頁
 $(function() {
     var userPASS = window.localStorage["userPASS"]
-    if (userPASS) {
+    if (userPASS && userPASS != "false") {
         mdui.snackbar({
             message: '偵測到已儲存的密碼，正在嘗試登入',
             timeout: 1000
