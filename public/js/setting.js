@@ -16,19 +16,20 @@ $(async() => {
     window.localStorage["PokaPlayerVersion"] = version;
 
     //serviceWorker
-    if ('serviceWorker' in navigator && window.localStorage["pokaSW"] == "true")
+    if ('serviceWorker' in navigator && window.localStorage["pokaSW"] == "true") {
         navigator.serviceWorker
-        .register('/sw.js', { scope: '/' })
-        .then(reg => {
-            if (version != window.localStorage["PokaPlayerVersion"]) reg.update()
-        })
-        .catch(err => console.log('Error!', err));
-    else
+            .register('/sw.js', { scope: '/' })
+            .then(reg => {
+                if (version != window.localStorage["PokaPlayerVersion"]) reg.update()
+            })
+            .catch(err => console.log('Error!', err));
+    } else {
         navigator.serviceWorker
-        .getRegistration("/").then(reg => {
-            reg.unregister();
-        })
-        .catch(err => console.log('Error!', err));
+            .getRegistration("/").then(reg => {
+                reg ? reg.unregister() : void(0)
+            })
+            .catch(err => console.log('Error!', err));
+    }
 
 });
 //- 設定頁面用的範本
@@ -84,14 +85,18 @@ async function showSettingsSystem() {
     $("[data-upgrade] .mdui-list-item-text").text(update)
     //重啟
     $("[data-restart]").click(() => {
-        mdui.confirm('注意：若您未開啟 Docker 的自動重啟功能，您必須手動開啟 PokaPlayer', '確定要重新啟動嗎', 
-            ()=>{
-                mdui.alert('正在重新啟動','','',{history: false});
-                axios.post('/restart')
-            },()=>{},{history: false})
+        let r = confirm("確定要重新啟動嗎\n注意：若您未開啟 Docker 的自動重啟功能，您必須手動開啟 PokaPlayer");
+        if(r){
+            mdui.snackbar('正在重新啟動', {
+                buttonText: '重新連接',
+                onButtonClick: () => window.location.reload(),
+            })
+            axios.post('/restart')
+        }
     })
     //更新
     $("[data-upgrade=\"true\"]").click(() => {
+        router.pause();
         mdui.dialog({
             title:`${checkUpdate[0].tag_name} 更新日誌`,
             content: `<div class="mdui-typo" style="min-height:450px">
@@ -101,7 +106,10 @@ async function showSettingsSystem() {
                         <hr>
                         </div>
                         注意：若您未開啟 Docker 的自動重啟功能，您必須手動開啟 PokaPlayer`,
-            history: false,
+            onClosed:()=> {
+                router.resume();
+                router.navigate('settings/system');
+            },
             buttons: [{
                     text: '取消'
                 },
@@ -175,6 +183,7 @@ async function showSettingsNetwork(){
     $("#content").html(settingItems);
     // 音質設定
     $("[data-music-res]").click(function() {
+        router.pause();
         mdui.dialog({
             title: '音質設定',
             content: `</br>
@@ -220,11 +229,14 @@ async function showSettingsNetwork(){
                     </div>
             </div>
             </div>`,
-            history: false,
             buttons: [{
                 text: '取消'
             }],
-            onClose: ()=>$("[data-music-res] .mdui-list-item-text").text(window.localStorage["musicRes"])
+            onClose: ()=>$("[data-music-res] .mdui-list-item-text").text(window.localStorage["musicRes"]),
+            onClosed: ()=> {
+                router.resume();
+                router.navigate('settings/network');
+            }
         });
     });
     // 圖片流量節省
@@ -237,7 +249,6 @@ async function showSettingsNetwork(){
     $("[data-pokaSW]").click(function() {
         $("[data-pokaSW] input").prop('checked', !$("[data-pokaSW] input").prop('checked'))
         window.localStorage["pokaSW"] = $("[data-pokaSW] input").prop('checked');
-        console.log($("[data-pokaSW] input").prop('checked'))
         $("[data-pokaSW] .mdui-list-item-text").text($("[data-pokaSW] input").prop('checked') ? "已開啟" : "已關閉");
         if($("[data-pokaSW] input").prop('checked'))
             navigator.serviceWorker
@@ -274,6 +285,7 @@ async function showSettingsCustomize() {
     $("#content").html(settingItems);
     // 主題
     $('[data-theme="mdui-theme-color"]').click(function() {
+        router.pause();
         mdui.dialog({
             title: '設定主題色',
             content: `<ul class="mdui-list">
@@ -282,7 +294,6 @@ async function showSettingsCustomize() {
             ${settingsItem("Dark","","","",
                             `onclick="window.localStorage['mdui-theme-color']='true'" mdui-dialog-close`)}
         </ul>`,
-            history: false,
             buttons: [{
                 text: '取消'
               }],
@@ -295,6 +306,10 @@ async function showSettingsCustomize() {
                     //設定顏色
                 let metaThemeColor = document.querySelector("meta[name=theme-color]");
                 metaThemeColor.setAttribute("content", $('header>div:first-child').css("background-color"));
+            }, 
+            onClosed: ()=> {
+                router.navigate('settings/customize');
+                router.resume();
             }
           });  
     });
@@ -316,11 +331,15 @@ async function showSettingsCustomize() {
             }
         }
         option += "</div>"
+        router.pause();
         mdui.dialog({
             title: `設定${accent ? `強調色` : `主色`}`,
             content: option,
-            history: false,
-            buttons: [{text: '確定'}]
+            buttons: [{text: '確定'}], 
+            onClosed: ()=> {
+                router.navigate('settings/customize');
+                router.resume();
+            }
         });  
         $('[data-color-type]').click(function(){
             let isAccent= $(this).attr('data-color-type') == "accent"
@@ -345,12 +364,6 @@ async function showSettingsCustomize() {
     // 隨機圖片
     $('[data-pic-source]').click(function() {
         let imgsOption = imgs => {
-            /*let option = ''
-            for (i = 0; i < imgs.length; i++) {
-                let img = imgs[i]
-                option += settingsItem(img.name,  '', '',  '', `data-img-src="${img.src}" mdui-dialog-close`)
-            }
-            return option*/
             let option =  `<div class="poka three cards">`
             for (i = 0; i < imgs.length; i++) {
                 let img = imgs[i]
@@ -435,33 +448,35 @@ async function showSettingsCustomize() {
             description: '雲圖床提供',
             src: 'https://api.yuntuchuang.com/api/jianyue.php'
         }]
+        router.pause();
         mdui.dialog({
             title: '設定圖片來源',
             content: `<ul class="mdui-list">${imgsOption(imgs)}</ul>`,
-            history: false,
-            buttons: [{text: '取消'}]
+            buttons: [{text: '取消'}], 
+            onClosed: ()=> {
+                router.navigate('settings/customize');
+                router.resume();
+            }
         });
         $('[data-img-src]').click(function(){
             let src = $(this).attr('data-img-src')
             let name = $(this).children('.title').text()
             window.localStorage["randomImg"] = src
             window.localStorage["randomImgName"] = name
-            pokaHeader('設定', '隨機圖片',src,false,false)
+            pokaHeader('個人化', "設定",src,false,false)
             $('[data-pic-source] .mdui-list-item-text').text(name)
             $('[data-pic-custom-link] .mdui-list-item-text').text(src)
         })
     });
     $('[data-pic-custom-link]').click(function(){
-        mdui.prompt('請輸入圖片網址', '自訂圖片來源',
-            value => {
-                if (value){
-                    window.localStorage["randomImg"] = value
-                    $('[data-pic-custom-link] .mdui-list-item-text').text(value)
-                    window.localStorage["randomImgName"] = "自訂"
-                    pokaHeader('設定', '隨機圖片',value,false,false)
-                }
-            },()=>{},{history: false}
-        );
+        //似乎有 bug
+        let img=prompt("請輸入圖片網址", "https://images2.imgbox.com/99/e2/knJdNcns_o.jpg");
+        if(img != null){
+            window.localStorage["randomImg"] = img
+            $('[data-pic-custom-link] .mdui-list-item-text').text(img)
+            window.localStorage["randomImgName"] = "自訂"
+            pokaHeader('個人化', "設定",img,false,false)
+        }
     })
 }
 async function showSettingsAbout() {
