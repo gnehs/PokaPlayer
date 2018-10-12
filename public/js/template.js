@@ -28,8 +28,12 @@ const template = {
         }
         return r
     },
-    parseFolder: folders => {
+    parseFolder: (folders, isRootDirectory) => {
         let html = `<ul class="mdui-list">`
+        html += isRootDirectory ? '' : `<li class="mdui-list-item mdui-ripple" onclick="history.go(-1)">
+                <i class="mdui-list-item-avatar mdui-icon material-icons">arrow_back</i>
+                <div class="mdui-list-item-content">回上一頁</div>
+            </li>`
         for (i = 0; i < folders.length; i++) {
             let folder = folders[i]
             html += `<li class="mdui-list-item mdui-ripple" href="folder/${folder.source}/${folder.id}" data-navigo>

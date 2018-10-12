@@ -573,7 +573,7 @@ async function showFolder(moduleName, folderId) {
         url = `/pokaapi/folders`
     }
     let result = await request(url)
-    let folderHTML = template.parseFolder(result.folders) + template.parseSongs(result.songs)
+    let folderHTML = template.parseFolder(result.folders, !folderId) + template.parseSongs(result.songs)
     if ($("#content").attr('data-page') == 'folder') {
         $("#content").html(result.folders.length > 0 || result.songs.length > 0 ? folderHTML : nothingHere())
         router.updatePageLinks()
