@@ -516,4 +516,15 @@ async function showSettingsAbout() {
     $("[data-dev] .mdui-list-item-text").text(getInfo.author)
     $("[data-version] .mdui-list-item-text").text(getInfo.version)
     window.localStorage["PokaPlayerVersion"] = getInfo.version
+    // 點七次的彩蛋蛋
+    $("[data-version]").click(function(){
+        let click=$(this).attr("data-click")
+        $(this).attr("data-click",click?Number(click)+1:1)
+        if(Number(click)+1==7){
+            $(this).attr("data-click",0)
+            s     =  document.createElement('script');
+            s.src = 'https://anohito.tw/thisUnitIsAFlippinPlatelet/flippin_platelet.js';
+            document.getElementsByTagName('body')[0].appendChild(s);
+        }
+    })
 }
