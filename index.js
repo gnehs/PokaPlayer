@@ -120,6 +120,9 @@ app.use((req, res, next) => {
 // 首頁
 app.get("/", (req, res) => res.render("index", { version: package.version }));
 
+if (config.PokaPlayer.debug)
+    app.get("/share", (req, res) => res.render("share"));
+
 io.on("connection", socket => {
     socket.emit("hello");
     // Accept a login event with user's data
