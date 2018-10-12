@@ -20,13 +20,26 @@ const nothingHere = () => {
         "喔嗚...別哭啦，只是沒資料而已啦",
         "什麼～都～沒有",
         "找不到任何資料，請不要太難過",
+        "❓❓🌚❓❓",
         "尼是不是故意來找沒有資料的",
         "🙈沒資料",
-        "若您嘗試多次，請再次確認模組是否開啟"
+        "找不到 那些美好",
+        "我 找不到 你形容的那種驕傲",
+        "若您嘗試多次，請再次確認模組是否開啟",
+        "我找不到 我到不了 你所謂的將來的美好"
     ]
-    return `<div class="mdui-valign" style="height:150px">
-                <p class="mdui-center">${n[Math.floor(Math.random() * n.length)]}</p>
-            </div>`
+    return `<div class="mdui-card" style="max-width:500px;margin:0 auto;">
+        <div class="mdui-card-media">
+            <img src="${getBackground()}"/>
+        </div>
+        <div class="mdui-card-primary">
+            <div class="mdui-card-primary-title">沒有找到資料</div>
+            <div class="mdui-card-primary-subtitle">${n[Math.floor(Math.random() * n.length)]}</div>
+        </div>
+        <div class="mdui-card-actions">
+            <button class="mdui-btn mdui-ripple" onclick="history.go(-1)">回上一頁</button>
+        </div>
+    </div>`
 }
 
 // 初始化歌詞解析
@@ -559,8 +572,9 @@ async function showAlbumSongs(albumSource, albumID) {
     }
 }
 // 資料夾
-async function showFolder(moduleName, folderId) {
+async function showFolder(moduleName, folderId = false) {
     $("#content").attr('data-page', 'folder')
+    $("#content").attr('data-item', 'folder' + folderId)
         // 展示讀取中
     pokaHeader("資料夾", "檢視資料夾的項目")
     $("#content").html(template.getSpinner())
@@ -573,9 +587,10 @@ async function showFolder(moduleName, folderId) {
         url = `/pokaapi/folders`
     }
     let result = await request(url)
-    let folderHTML = template.parseFolder(result.folders, !folderId) + template.parseSongs(result.songs)
-    if ($("#content").attr('data-page') == 'folder') {
-        $("#content").html(result.folders.length > 0 || result.songs.length > 0 ? folderHTML : nothingHere())
+    let folderHTML = template.parseFolder(result.folders, folderId) + template.parseSongs(result.songs)
+    folderHTML = result.folders.length > 0 || result.songs.length > 0 ? folderHTML : nothingHere()
+    if ($("#content").attr('data-page') == 'folder' && $("#content").attr('data-item') == 'folder' + folderId) {
+        $("#content").html(folderHTML)
         router.updatePageLinks()
     }
 }
