@@ -103,7 +103,7 @@ async function showSettingsSystem() {
         router.pause();
         mdui.dialog({
             title:`${checkUpdate[0].tag_name} 更新日誌`,
-            content: `<div class="mdui-typo" style="min-height:450px">
+            content: `<div class="mdui-typo" style="min-height:150px">
                             <blockquote style="margin:0">
                                 ${new showdown.Converter().makeHtml(checkUpdate[0].body)}
                             </blockquote>
