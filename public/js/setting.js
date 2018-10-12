@@ -6,8 +6,12 @@ $(async() => {
     if (!window.localStorage["randomImgName"]) window.localStorage["randomImgName"] = "預設圖庫"
     if (!window.localStorage["imgRes"]) window.localStorage["imgRes"] = "false"
     if (!window.localStorage["pokaSW"]) window.localStorage["pokaSW"] = "false"
+    if (!window.localStorage["pokaCardSource"]) window.localStorage["pokaCardSource"] = "true"
     if (!window.localStorage["PokaPlayerVersion"]) window.localStorage["PokaPlayerVersion"] = ""
     let version = (await request('/info/')).version
+
+    //卡片右上角的來源標籤
+    $("#content").attr('data-sourcelabel', window.localStorage["pokaCardSource"])
 
     // 更新版本號
     if (version != window.localStorage["PokaPlayerVersion"])
@@ -51,7 +55,7 @@ async function showSettings() {
     pokaHeader('設定', "PokaPlayer "+window.localStorage["PokaPlayerVersion"])
     let settingItems = `<ul class="mdui-list">
         ${settingsItem("網路和快取","流量節省、音質和快取設定","public","settings/network")}
-        ${settingsItem("個人化","隨機圖片、主題配色","face","settings/customize")}
+        ${settingsItem("個人化","隨機圖片、主題配色、其他細節設定","face","settings/customize")}
         ${settingsItem("系統和更新","更新 PokaPlayer、重新啟動","system_update","settings/system")}
         ${settingsItem("關於","一些連結和開發者的資料","info","settings/about","data-about")}
     </ul>`
@@ -99,7 +103,7 @@ async function showSettingsSystem() {
         router.pause();
         mdui.dialog({
             title:`${checkUpdate[0].tag_name} 更新日誌`,
-            content: `<div class="mdui-typo" style="min-height:450px">
+            content: `<div class="mdui-typo" style="min-height:150px">
                             <blockquote style="margin:0">
                                 ${new showdown.Converter().makeHtml(checkUpdate[0].body)}
                             </blockquote>
@@ -167,13 +171,13 @@ async function showSettingsNetwork(){
         ${settingsItem("返回","","arrow_back","settings")}
         <li class="mdui-subheader">網路</li>
         ${settingsItem("音質",window.localStorage["musicRes"],"music_note","","data-music-res")}
-        ${settingsItem("圖片流量節省",window.localStorage["imgRes"]=="true"? "將會把所有圖片替換為您指定的隨機圖片" : "已關閉","image","","data-imgRes",
+        ${settingsItem("圖片流量節省",false,"image","","data-imgRes",
         `<label class="mdui-switch">
             <input type="checkbox" ${window.localStorage["imgRes"]=="true"?"checked":""}/>
             <i class="mdui-switch-icon"></i>
         </label>`)} 
         <li class="mdui-subheader">快取</li>
-        ${settingsItem("快取 (service worker)",window.localStorage["pokaSW"]=="true"? "已開啟" : "已關閉","free_breakfast","","data-pokaSW",
+        ${settingsItem("快取 (service worker)",false,"free_breakfast","","data-pokaSW",
         `<label class="mdui-switch">
             <input type="checkbox" ${window.localStorage["pokaSW"]=="true"?"checked":""}/>
             <i class="mdui-switch-icon"></i>
@@ -243,13 +247,11 @@ async function showSettingsNetwork(){
     $("[data-imgRes]").click(function() {
         $("[data-imgRes] input").prop('checked', !$("[data-imgRes] input").prop('checked'))
         window.localStorage["imgRes"] = $("[data-imgRes] input").prop('checked');
-        $("[data-imgRes] .mdui-list-item-text").text($("[data-imgRes] input").prop('checked') ? "將會把所有圖片替換為您指定的隨機圖片" : "已關閉");
     });
     // 快取開關
     $("[data-pokaSW]").click(function() {
         $("[data-pokaSW] input").prop('checked', !$("[data-pokaSW] input").prop('checked'))
         window.localStorage["pokaSW"] = $("[data-pokaSW] input").prop('checked');
-        $("[data-pokaSW] .mdui-list-item-text").text($("[data-pokaSW] input").prop('checked') ? "已開啟" : "已關閉");
         if($("[data-pokaSW] input").prop('checked'))
             navigator.serviceWorker
                 .register('/sw.js', { scope: '/' })
@@ -280,9 +282,22 @@ async function showSettingsCustomize() {
         ${settingsItem("強調色",window.localStorage["mdui-theme-accent"].replace("-"," "),"color_lens","",`data-theme="mdui-theme-accent"`)}
         <li class="mdui-subheader">隨機圖片</li>
         ${settingsItem("圖片來源",window.localStorage["randomImgName"],"image","","data-pic-source")}
-        ${settingsItem("自訂圖片來源",window.localStorage["randomImg"],"link","","data-pic-custom-link")}
+        ${settingsItem("自訂圖片來源",window.localStorage["randomImg"],"link","","data-pic-custom-link")}        
+        <li class="mdui-subheader">細節設定</li>
+        ${settingsItem("於卡片右上角顯示來源標籤",false,"label","","data-pokaCardSource",
+        `<label class="mdui-switch">
+            <input type="checkbox" ${window.localStorage["pokaCardSource"]=="true"?"checked":""}/>
+            <i class="mdui-switch-icon"></i>
+        </label>`)} 
         </ul>`
     $("#content").html(settingItems);
+
+    // 卡片右上角的來源標籤
+    $("[data-pokaCardSource]").click(function() {
+        $("[data-pokaCardSource] input").prop('checked', !$("[data-pokaCardSource] input").prop('checked'))
+        window.localStorage["pokaCardSource"] = $("[data-pokaCardSource] input").prop('checked');
+        $("#content").attr('data-sourcelabel', window.localStorage["pokaCardSource"])
+    });
     // 主題
     $('[data-theme="mdui-theme-color"]').click(function() {
         router.pause();
@@ -474,6 +489,7 @@ async function showSettingsCustomize() {
         if(img != null){
             window.localStorage["randomImg"] = img
             $('[data-pic-custom-link] .mdui-list-item-text').text(img)
+            $('[data-pic-source] .mdui-list-item-text').text("自訂")
             window.localStorage["randomImgName"] = "自訂"
             pokaHeader('個人化', "設定",img,false,false)
         }
@@ -493,6 +509,17 @@ async function showSettingsAbout() {
     </ul>`
     $("#content").html(settingItems)
     
+    // 點七次的彩蛋蛋
+    $("[data-version]").click(function(){
+        let click=$(this).attr("data-click")
+        $(this).attr("data-click",click?Number(click)+1:1)
+        if(Number(click)+1==7){
+            $(this).attr("data-click",0)
+            s     =  document.createElement('script');
+            s.src = 'https://anohito.tw/thisUnitIsAFlippinPlatelet/flippin_platelet.js';
+            document.getElementsByTagName('body')[0].appendChild(s);
+        }
+    })
     // PokaPlayer 詳細資料
     let getInfo = await request('/info/');
     $("[data-dev] .mdui-list-item-text").text(getInfo.author)
