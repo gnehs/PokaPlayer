@@ -491,6 +491,7 @@ async function showSettingsCustomize() {
         if(img != null){
             window.localStorage["randomImg"] = img
             $('[data-pic-custom-link] .mdui-list-item-text').text(img)
+            $('[data-pic-source] .mdui-list-item-text').text("自訂")
             window.localStorage["randomImgName"] = "自訂"
             pokaHeader('個人化', "設定",img,false,false)
         }
