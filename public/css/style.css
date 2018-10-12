@@ -236,7 +236,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     position: relative;
 }
 
-.poka.cards .card[data-source]:before {
+#content:not([data-sourcelabel="false"]) .poka.cards .card[data-source]:before {
     content: attr(data-source);
     position: absolute;
     color: #FFF;

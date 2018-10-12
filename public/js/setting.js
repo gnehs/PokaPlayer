@@ -6,8 +6,12 @@ $(async() => {
     if (!window.localStorage["randomImgName"]) window.localStorage["randomImgName"] = "預設圖庫"
     if (!window.localStorage["imgRes"]) window.localStorage["imgRes"] = "false"
     if (!window.localStorage["pokaSW"]) window.localStorage["pokaSW"] = "false"
+    if (!window.localStorage["pokaCardSource"]) window.localStorage["pokaCardSource"] = "true"
     if (!window.localStorage["PokaPlayerVersion"]) window.localStorage["PokaPlayerVersion"] = ""
     let version = (await request('/info/')).version
+
+    //卡片右上角的來源標籤
+    $("#content").attr('data-sourcelabel', window.localStorage["pokaCardSource"])
 
     // 更新版本號
     if (version != window.localStorage["PokaPlayerVersion"])
@@ -51,7 +55,7 @@ async function showSettings() {
     pokaHeader('設定', "PokaPlayer "+window.localStorage["PokaPlayerVersion"])
     let settingItems = `<ul class="mdui-list">
         ${settingsItem("網路和快取","流量節省、音質和快取設定","public","settings/network")}
-        ${settingsItem("個人化","隨機圖片、主題配色","face","settings/customize")}
+        ${settingsItem("個人化","隨機圖片、主題配色、其他細節設定","face","settings/customize")}
         ${settingsItem("系統和更新","更新 PokaPlayer、重新啟動","system_update","settings/system")}
         ${settingsItem("關於","一些連結和開發者的資料","info","settings/about","data-about")}
     </ul>`
@@ -280,9 +284,23 @@ async function showSettingsCustomize() {
         ${settingsItem("強調色",window.localStorage["mdui-theme-accent"].replace("-"," "),"color_lens","",`data-theme="mdui-theme-accent"`)}
         <li class="mdui-subheader">隨機圖片</li>
         ${settingsItem("圖片來源",window.localStorage["randomImgName"],"image","","data-pic-source")}
-        ${settingsItem("自訂圖片來源",window.localStorage["randomImg"],"link","","data-pic-custom-link")}
+        ${settingsItem("自訂圖片來源",window.localStorage["randomImg"],"link","","data-pic-custom-link")}        
+        <li class="mdui-subheader">細節設定</li>
+        ${settingsItem("卡片右上角的來源標籤",window.localStorage["pokaCardSource"]=="true"? "顯示" : "隱藏","label","","data-pokaCardSource",
+        `<label class="mdui-switch">
+            <input type="checkbox" ${window.localStorage["pokaCardSource"]=="true"?"checked":""}/>
+            <i class="mdui-switch-icon"></i>
+        </label>`)} 
         </ul>`
     $("#content").html(settingItems);
+
+    // 卡片右上角的來源標籤
+    $("[data-pokaCardSource]").click(function() {
+        $("[data-pokaCardSource] input").prop('checked', !$("[data-pokaCardSource] input").prop('checked'))
+        window.localStorage["pokaCardSource"] = $("[data-pokaCardSource] input").prop('checked');
+        $("#content").attr('data-sourcelabel', window.localStorage["pokaCardSource"])
+        $("[data-pokaCardSource] .mdui-list-item-text").text($("[data-pokaCardSource] input").prop('checked') ? "顯示" : "隱藏");
+    });
     // 主題
     $('[data-theme="mdui-theme-color"]').click(function() {
         router.pause();
