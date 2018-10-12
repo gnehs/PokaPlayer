@@ -286,7 +286,7 @@ async function showSettingsCustomize() {
         ${settingsItem("圖片來源",window.localStorage["randomImgName"],"image","","data-pic-source")}
         ${settingsItem("自訂圖片來源",window.localStorage["randomImg"],"link","","data-pic-custom-link")}        
         <li class="mdui-subheader">細節設定</li>
-        ${settingsItem("卡片右上角的來源標籤",window.localStorage["pokaCardSource"]=="true"? "顯示" : "隱藏","label","","data-pokaCardSource",
+        ${settingsItem("於卡片右上角顯示來源標籤",false,"label","","data-pokaCardSource",
         `<label class="mdui-switch">
             <input type="checkbox" ${window.localStorage["pokaCardSource"]=="true"?"checked":""}/>
             <i class="mdui-switch-icon"></i>
@@ -299,7 +299,6 @@ async function showSettingsCustomize() {
         $("[data-pokaCardSource] input").prop('checked', !$("[data-pokaCardSource] input").prop('checked'))
         window.localStorage["pokaCardSource"] = $("[data-pokaCardSource] input").prop('checked');
         $("#content").attr('data-sourcelabel', window.localStorage["pokaCardSource"])
-        $("[data-pokaCardSource] .mdui-list-item-text").text($("[data-pokaCardSource] input").prop('checked') ? "顯示" : "隱藏");
     });
     // 主題
     $('[data-theme="mdui-theme-color"]').click(function() {
