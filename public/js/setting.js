@@ -171,13 +171,13 @@ async function showSettingsNetwork(){
         ${settingsItem("返回","","arrow_back","settings")}
         <li class="mdui-subheader">網路</li>
         ${settingsItem("音質",window.localStorage["musicRes"],"music_note","","data-music-res")}
-        ${settingsItem("圖片流量節省",window.localStorage["imgRes"]=="true"? "將會把所有圖片替換為您指定的隨機圖片" : "已關閉","image","","data-imgRes",
+        ${settingsItem("圖片流量節省",false,"image","","data-imgRes",
         `<label class="mdui-switch">
             <input type="checkbox" ${window.localStorage["imgRes"]=="true"?"checked":""}/>
             <i class="mdui-switch-icon"></i>
         </label>`)} 
         <li class="mdui-subheader">快取</li>
-        ${settingsItem("快取 (service worker)",window.localStorage["pokaSW"]=="true"? "已開啟" : "已關閉","free_breakfast","","data-pokaSW",
+        ${settingsItem("快取 (service worker)",false,"free_breakfast","","data-pokaSW",
         `<label class="mdui-switch">
             <input type="checkbox" ${window.localStorage["pokaSW"]=="true"?"checked":""}/>
             <i class="mdui-switch-icon"></i>
@@ -247,13 +247,11 @@ async function showSettingsNetwork(){
     $("[data-imgRes]").click(function() {
         $("[data-imgRes] input").prop('checked', !$("[data-imgRes] input").prop('checked'))
         window.localStorage["imgRes"] = $("[data-imgRes] input").prop('checked');
-        $("[data-imgRes] .mdui-list-item-text").text($("[data-imgRes] input").prop('checked') ? "將會把所有圖片替換為您指定的隨機圖片" : "已關閉");
     });
     // 快取開關
     $("[data-pokaSW]").click(function() {
         $("[data-pokaSW] input").prop('checked', !$("[data-pokaSW] input").prop('checked'))
         window.localStorage["pokaSW"] = $("[data-pokaSW] input").prop('checked');
-        $("[data-pokaSW] .mdui-list-item-text").text($("[data-pokaSW] input").prop('checked') ? "已開啟" : "已關閉");
         if($("[data-pokaSW] input").prop('checked'))
             navigator.serviceWorker
                 .register('/sw.js', { scope: '/' })
