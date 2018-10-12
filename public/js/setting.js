@@ -509,11 +509,6 @@ async function showSettingsAbout() {
     </ul>`
     $("#content").html(settingItems)
     
-    // PokaPlayer 詳細資料
-    let getInfo = await request('/info/');
-    $("[data-dev] .mdui-list-item-text").text(getInfo.author)
-    $("[data-version] .mdui-list-item-text").text(getInfo.version)
-    window.localStorage["PokaPlayerVersion"] = getInfo.version
     // 點七次的彩蛋蛋
     $("[data-version]").click(function(){
         let click=$(this).attr("data-click")
@@ -525,4 +520,9 @@ async function showSettingsAbout() {
             document.getElementsByTagName('body')[0].appendChild(s);
         }
     })
+    // PokaPlayer 詳細資料
+    let getInfo = await request('/info/');
+    $("[data-dev] .mdui-list-item-text").text(getInfo.author)
+    $("[data-version] .mdui-list-item-text").text(getInfo.version)
+    window.localStorage["PokaPlayerVersion"] = getInfo.version
 }
