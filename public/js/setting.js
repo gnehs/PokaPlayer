@@ -330,7 +330,7 @@ async function showSettingsCustomize() {
     });
     $('[data-theme="mdui-theme-primary"],[data-theme="mdui-theme-accent"]').click(function() {
         let accent = $(this).attr('data-theme')=="mdui-theme-accent", 
-            option = `<br><div class="poka ten cards" style="text-transform:capitalize;">`,
+            option = `<br><div class="poka ten doubling cards" style="text-transform:capitalize;">`,
             colors = ['red','pink','purple','deep-purple','indigo','blue','light-blue','cyan','teal','green','light-green','lime','yellow','amber','orange','deep-orange','brown','grey','blue-grey']
             for (i = 0 ; i < colors.length; i++) {
             if (i<= (colors.length - 3 - 1) && accent || !accent){
