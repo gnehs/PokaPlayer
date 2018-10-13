@@ -1,32 +1,44 @@
 const template = {
     getSpinner: () => `<div class="mdui-spinner mdui-spinner-colorful mdui-center" style="margin-top:80px"></div>`,
     parseHome: data => {
+        let tab = `<div class="mdui-tab" mdui-tab>`
+        let tabItem = (href, label, icon) => `<a href="#${href}" class="mdui-ripple">
+            <i class="mdui-icon">${icon}</i>
+            <label>${label}</label>
+        </a>`
         let r = ``;
         if (data.albums.length > 0) {
-            r += `<h1>專輯</h1>`
-            r += template.parseAlbums(data.albums)
+            let randomId = Math.random().toString(36).substring(8)
+            tab += tabItem(randomId, '專輯', data.albums.length)
+            r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseAlbums(data.albums)}</div>`
         }
         if (data.artists.length > 0) {
-            r += `<h1>演出者</h1>`
-            r += template.parseArtists(data.artists)
+            let randomId = Math.random().toString(36).substring(8)
+            tab += tabItem(randomId, '演出者', data.artists.length)
+            r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseArtists(data.artists)}</div>`
         }
         if (data.composers.length > 0) {
-            r += `<h1>作曲者</h1>`
-            r += template.parseComposers(data.composers)
+            let randomId = Math.random().toString(36).substring(8)
+            tab += tabItem(randomId, '作曲者', data.composers.length)
+            r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseComposers(data.composers)}</div>`
         }
         if (data.playlists.length > 0) {
-            r += `<h1>播放清單</h1>`
-            r += template.parsePlaylists(data.playlists)
+            let randomId = Math.random().toString(36).substring(8)
+            tab += tabItem(randomId, '播放清單', data.playlists.length)
+            r += `<div id="${randomId}" class="mdui-p-a-2">${template.parsePlaylists(data.playlists)}</div>`
         }
         if (data.folders.length > 0) {
-            r += `<h1>資料夾</h1>`
-            r += template.parseFolder(data.folders)
+            let randomId = Math.random().toString(36).substring(8)
+            tab += tabItem(randomId, '資料夾', data.folders.length)
+            r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseFolder(data.folders)}</div>`
         }
         if (data.songs.length > 0) {
-            r += `<h1>歌曲</h1>`
-            r += template.parseSongs(data.songs)
+            let randomId = Math.random().toString(36).substring(8)
+            tab += tabItem(randomId, '歌曲', data.songs.length)
+            r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseSongs(data.songs)}</div>`
         }
-        return r
+        tab += `</div>`
+        return (tab + r)
     },
     parseFolder: (folders, showBackButton = false) => {
         let html = `<ul class="mdui-list">`
