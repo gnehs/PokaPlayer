@@ -412,6 +412,8 @@ async function showHome() {
     if ($("#content").attr('data-page') == 'home') {
         let parseResult = template.parseHome(result)
         $("#content").html(parseResult != '' ? parseResult : nothingHere)
+            //初始化
+        mdui.mutation()
         router.updatePageLinks()
     }
 }

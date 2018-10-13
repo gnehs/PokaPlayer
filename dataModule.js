@@ -88,7 +88,7 @@ router.get("/home/", async(req, res) => {
                             resData.playlists.push(result.playlists[i]);
                 }
             } catch (e) {
-                console.log(`[DataModules][${x.name}]發生了錯誤：（`, e);
+                showError(x.name, e)
             }
         }
     }
@@ -106,7 +106,7 @@ router.post("/addPin/", async(req, res) => {
     try {
         res.json(await _module.addPin(req.query.type, req.query.id, req.query.name));
     } catch (e) {
-        console.log(`[DataModules][${moduleList[moduleName].name}]發生了錯誤：（`, e);
+        showError(moduleList[moduleName].name, e)
         return res.send("disabled");
     }
 });
@@ -122,7 +122,7 @@ router.post("/unPin/", async(req, res) => {
     try {
         res.json(await _module.unPin(req.query.type, req.query.id, req.query.name));
     } catch (e) {
-        console.log(`[DataModules][${moduleList[moduleName].name}]發生了錯誤：（`, e);
+        showError(moduleList[moduleName].name, e)
         return res.send("disabled");
     }
 });
@@ -138,7 +138,7 @@ router.post("/isPinned/", async(req, res) => {
     try {
         res.json(await _module.isPinned(req.query.type, req.query.id, req.query.name));
     } catch (e) {
-        console.log(`[DataModules][${moduleList[moduleName].name}]發生了錯誤：（`, e);
+        showError(moduleList[moduleName].name, e)
         return res.send("disabled");
     }
 });
@@ -161,7 +161,7 @@ router.get("/folders/", async(req, res) => {
                         folders.songs.push(folderList.songs[i]);
                 }
             } catch (e) {
-                console.log(`[DataModules][${x.name}]發生了錯誤：（`, e);
+                showError(x.name, e)
             }
         }
     }
@@ -183,7 +183,7 @@ router.get("/folderFiles/", async(req, res) => {
         for (i = 0; i < info.folders.length; i++) resData.folders.push(info.folders[i]);
         for (i = 0; i < info.songs.length; i++) resData.songs.push(info.songs[i]);
     } catch (e) {
-        console.log(`[DataModules][${moduleName}]發生了錯誤：（`, e);
+        showError(moduleName, e)
     }
     return res.json(resData);
 });
@@ -228,7 +228,7 @@ router.get("/search/", async(req, res) => {
                             resData.playlists.push(result.playlists[i]);
                 }
             } catch (e) {
-                console.log(`[DataModules][${x.name}]發生了錯誤：（`, e);
+                showError(x.name, e)
             }
         }
     }
@@ -250,7 +250,7 @@ router.get("/albums/", async(req, res) => {
                         albums.albums.push(albumList.albums[i]);
                 }
             } catch (e) {
-                console.log(`[DataModules][${x.name}]發生了錯誤：（`, e);
+                showError(x.name, e)
             }
         }
     }
@@ -271,7 +271,7 @@ router.get("/albumSongs/", async(req, res) => {
         albumSongs = await _module.getAlbumSongs(req.query.data);
     } catch (e) {
         albumSongs = { songs: [] };
-        console.log(`[DataModules][${x.name}]發生了錯誤：（`, e);
+        showError(moduleName, e)
     }
     return res.json(albumSongs);
 });
@@ -289,7 +289,7 @@ router.get("/album/", async(req, res) => {
     try {
         album = await _module.getAlbum(req.query.id);
     } catch (e) {
-        console.log(`[DataModules][${x.name}]發生了錯誤：（`, e);
+        showError(x.name, e)
     }
     return res.json(album);
 });
@@ -308,7 +308,7 @@ router.get("/playlists/", async(req, res) => {
                     for (i = 0; i < list.playlists.length; i++) r.playlists.push(list.playlists[i]);
                 }
             } catch (e) {
-                console.log(`[DataModules][${x.name}]發生了錯誤：（`, e);
+                showError(x.name, e)
             }
         }
     }
@@ -326,7 +326,7 @@ router.post("/playlists/", async(req, res) => {
     try {
         r = await _module.getPlaylists(req.body.playlists);
     } catch (e) {
-        console.log(`[DataModules][${moduleName}]發生了錯誤：（`, e);
+        showError(moduleName, e)
     }
     return res.json(r || null);
 });
@@ -343,7 +343,7 @@ router.get("/playlistSongs/", async(req, res) => {
     try {
         r = await _module.getPlaylistSongs(req.query.id);
     } catch (e) {
-        console.log(`[DataModules][${moduleName}]發生了錯誤：（`, e);
+        showError(moduleName, e)
     }
     return res.json(r || null);
 });
@@ -359,7 +359,7 @@ router.get("/userPlaylists/", async(req, res) => {
     try {
         r = await _module.getUserPlaylists();
     } catch (e) {
-        console.log(`[DataModules][${moduleName}]發生了錯誤：（`, e);
+        showError(moduleName, e)
     }
     return res.json(r || null);
 });
@@ -377,7 +377,7 @@ router.get("/artist/", async(req, res) => {
     try {
         r = await _module.getArtist(req.query.id);
     } catch (e) {
-        console.log(`[DataModules][${moduleName}]發生了錯誤：（`, e);
+        showError(moduleName, e)
     }
     return res.json(r || null);
 });
@@ -396,7 +396,7 @@ router.get("/artists/", async(req, res) => {
                     for (i = 0; i < list.artists.length; i++) r.artists.push(list.artists[i]);
                 }
             } catch (e) {
-                console.log(`[DataModules][${x.name}]發生了錯誤：（`, e);
+                showError(x.name, e)
             }
         }
     }
@@ -414,7 +414,7 @@ router.get("/artistAlbums/", async(req, res) => {
     try {
         r = await _module.getArtistAlbums(req.query.id);
     } catch (e) {
-        console.log(`[DataModules][${moduleName}]發生了錯誤：（`, e);
+        showError(moduleName, e)
     }
     return res.json(r);
 });
@@ -433,7 +433,7 @@ router.get("/composers/", async(req, res) => {
                     for (i = 0; i < list.composers.length; i++) r.composers.push(list.composers[i]);
                 }
             } catch (e) {
-                console.log(`[DataModules][${x.name}]發生了錯誤：（`, e);
+                showError(x.name, e)
             }
         }
     }
@@ -452,7 +452,7 @@ router.get("/composerAlbums/", async(req, res) => {
     try {
         r = await _module.getComposerAlbums(req.query.id);
     } catch (e) {
-        console.log(`[DataModules][${moduleName}]發生了錯誤：（`, e);
+        showError(moduleName, e)
     }
     return res.json(r || { albums: [] });
 });
@@ -529,7 +529,7 @@ router.get("/searchLyrics/", async(req, res) => {
                     for (i = 0; i < result.lyrics.length; i++)
                         resData.lyrics.push(result.lyrics[i]);
             } catch (e) {
-                console.log(`[DataModules][${x.name}]發生了錯誤：（`, e);
+                showError(x.name, e)
             }
         }
     }
@@ -546,7 +546,7 @@ router.get("/lyric/", async(req, res) => {
     try {
         lyric = await _module.getLyric(req.query.id);
     } catch (e) {
-        console.log(`[DataModules][${moduleName}]發生了錯誤：（`, e);
+        showError(moduleName, e)
     }
     return res.json({
         lyrics: [{
@@ -570,7 +570,7 @@ router.get("/randomSongs/", async(req, res) => {
                 if (result && result.songs)
                     for (i = 0; i < result.songs.length; i++) resData.songs.push(result.songs[i]);
             } catch (e) {
-                console.log(`[DataModules][${x.name}]發生了錯誤：（`, e);
+                showError(x.name, e)
             }
         }
     }
@@ -581,4 +581,8 @@ router.use((req, res, next) => {
     res.status(404).send("PokaPlayer API - 404");
 });
 
+function showError(moduleName = false, error) {
+    console.log(`[DataModules]${moduleName?`[${moduleName}]`:''}發生了錯誤：（`);
+    console.error(e);
+}
 module.exports = router;
