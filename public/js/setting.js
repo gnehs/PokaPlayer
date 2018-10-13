@@ -57,7 +57,7 @@ async function showSettings() {
         ${settingsItem("網路和快取","流量節省、音質和快取設定","public","settings/network")}
         ${settingsItem("個人化","隨機圖片、主題配色、其他細節設定","face","settings/customize")}
         ${settingsItem("系統和更新","更新 PokaPlayer、重新啟動","system_update","settings/system")}
-        ${settingsItem("關於","一些連結和開發者的資料","info","settings/about","data-about")}
+        ${settingsItem("關於","PokaPlayer 相關訊息、錯誤回報等","info","settings/about","data-about")}
     </ul>`
     $("#content").html(settingItems);
 }
@@ -330,7 +330,7 @@ async function showSettingsCustomize() {
     });
     $('[data-theme="mdui-theme-primary"],[data-theme="mdui-theme-accent"]').click(function() {
         let accent = $(this).attr('data-theme')=="mdui-theme-accent", 
-            option = `<br><div class="poka four cards" style="text-transform:capitalize;">`,
+            option = `<br><div class="poka ten cards" style="text-transform:capitalize;">`,
             colors = ['red','pink','purple','deep-purple','indigo','blue','light-blue','cyan','teal','green','light-green','lime','yellow','amber','orange','deep-orange','brown','grey','blue-grey']
             for (i = 0 ; i < colors.length; i++) {
             if (i<= (colors.length - 3 - 1) && accent || !accent){
@@ -341,7 +341,7 @@ async function showSettingsCustomize() {
                    data-color-type="${accent ? `accent` : `primary`}"
                    data-color="${color}">
                     <div class="image mdui-ripple mdui-color-${color}${accent?'-accent':''}"></div>
-                    <div class="title mdui-text-color-theme-text">${color.replace("-"," ")}</div>
+                    <!--<div class="title mdui-text-color-theme-text">${color.replace("-"," ")}</div>-->
                 </a>`
             }
         }
@@ -357,7 +357,7 @@ async function showSettingsCustomize() {
             }
         });  
         $('[data-color-type]').click(function(){
-            let isAccent= $(this).attr('data-color-type') == "accent"
+            let isAccent = $(this).attr('data-color-type') == "accent"
             let color = $(this).attr('data-color')
             let classStr = $('body').attr('class');
             let classes = classStr.split(' ');
@@ -484,9 +484,8 @@ async function showSettingsCustomize() {
         })
     });
     $('[data-pic-custom-link]').click(function(){
-        //似乎有 bug
-        let img=prompt("請輸入圖片網址", "https://images2.imgbox.com/99/e2/knJdNcns_o.jpg");
-        if(img != null){
+        let img = prompt("請輸入圖片網址", "https://images2.imgbox.com/99/e2/knJdNcns_o.jpg");
+        if (img != null){
             window.localStorage["randomImg"] = img
             $('[data-pic-custom-link] .mdui-list-item-text').text(img)
             $('[data-pic-source] .mdui-list-item-text').text("自訂")
@@ -511,9 +510,9 @@ async function showSettingsAbout() {
     
     // 點七次的彩蛋蛋
     $("[data-version]").click(function(){
-        let click=$(this).attr("data-click")
-        $(this).attr("data-click",click?Number(click)+1:1)
-        if(Number(click)+1==7){
+        let click = $(this).attr("data-click")?Number($(this).attr("data-click"))+1:1
+        $(this).attr("data-click",click)
+        if (click == 7){
             $(this).attr("data-click",0)
             s     =  document.createElement('script');
             s.src = 'https://anohito.tw/thisUnitIsAFlippinPlatelet/flippin_platelet.js';

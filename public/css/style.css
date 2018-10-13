@@ -405,6 +405,10 @@ header.mdui-appbar.mdui-appbar-fixed {
     --album-size: calc(25% - 2em);
 }
 
+.poka.ten.cards .card {
+    --album-size: calc(10% - 2em);
+}
+
 #aplayer:not(.show) {
     visibility: hidden;
     height: 0;
