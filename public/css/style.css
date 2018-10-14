@@ -522,7 +522,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     width: 100vw;
     height: 67px;
     position: fixed;
-    bottom: 0;
+    bottom: 5px;
     right: 0;
     left: 0;
     z-index: 1999;
@@ -531,9 +531,9 @@ header.mdui-appbar.mdui-appbar-fixed {
     width: 100%;
     box-sizing: border-box;
     align-items: center;
-    border-radius: 10px 10px 0 0;
+    border-radius: 10px 10px;
     overflow: hidden;
-    box-shadow: 0 0 10px #0000004d;
+    box-shadow: 0 3px 10px #0000004d;
     background-position: left bottom;
     background-repeat: no-repeat;
     background-size: 100% 3px;
@@ -548,7 +548,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 #player.hide {
-    transform: translateY(67px);
+    transform: translateY(80px);
     box-shadow: none
 }
 
@@ -624,6 +624,7 @@ header.mdui-appbar.mdui-appbar-fixed {
 @media screen and (max-width: 767px) {
     #player {
         border-radius: 0;
+        bottom: 0;
     }
     #player .timer {
         font-size: 12px;
