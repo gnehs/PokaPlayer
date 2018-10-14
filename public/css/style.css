@@ -531,14 +531,14 @@ header.mdui-appbar.mdui-appbar-fixed {
     width: 100%;
     box-sizing: border-box;
     align-items: center;
-    border-radius: 10px 10px;
+    border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 3px 10px #0000004d;
     background-position: left bottom;
     background-repeat: no-repeat;
     background-size: 100% 3px;
     transform: translateY(0);
-    transition: transform .3s ease, width .3s ease, border-radius .3s ease, box-shadow .3s ease;
+    transition: transform .3s cubic-bezier(0.42, 0, 0.58, 1.79), width .3s ease, border-radius .3s ease, box-shadow .3s ease, opacity .5s linear;
     margin: 0 auto;
     padding-bottom: 3px;
 }
@@ -549,7 +549,8 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 #player.hide {
     transform: translateY(80px);
-    box-shadow: none
+    box-shadow: none;
+    opacity: 0;
 }
 
 #player .mdui-btn {
