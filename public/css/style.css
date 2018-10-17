@@ -538,7 +538,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     background-repeat: no-repeat;
     background-size: 100% 3px;
     transform: translateY(0);
-    transition: transform .3s cubic-bezier(0.42, 0, 0.58, 1.79), width .3s ease, border-radius .3s ease, box-shadow .3s ease, opacity .5s linear;
+    transition: transform .3s cubic-bezier(0.42, 0, 0.58, 1.79), width .3s ease, border-radius .3s ease, box-shadow .3s ease, opacity .35s linear;
     margin: 0 auto;
     padding-bottom: 3px;
 }
