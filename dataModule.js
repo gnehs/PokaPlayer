@@ -46,7 +46,12 @@ router.get("/", (req, res) => {
 router.use((req, res, next) => {
     if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
         res.status(403).send("Permission Denied Desu");
-    else next();
+    else {
+        if (req.method.toUpperCase() === "GET") {
+            res.header("Cache-Control", "max-age=7200") //快取 2hr
+        }
+        next();
+    }
 });
 //-----------------------------> 首頁
 // 取得想推薦的東西(?
