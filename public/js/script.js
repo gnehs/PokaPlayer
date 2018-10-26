@@ -233,10 +233,11 @@ ap.on("timeupdate", () => {
         transparent 100%
     );`)
     updateMediaSession()
+    updateBottomPlayer()
 })
 ap.on("pause", () => {
     $('#player button.play[onclick="ap.toggle()"] i').text("play_arrow")
-    $(document).attr("title", `Pokaplayer`);
+    $(document).attr("title", `PokaPlayer`);
 })
 
 function updateBottomPlayer() {
