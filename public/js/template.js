@@ -58,13 +58,14 @@ const template = {
     },
     parseSongs: songs => {
         songList = songs
-        let html = `<div class="songs"><div class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4">`
+        let html = `<div class="songs"><div class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-2 mdui-row-lg-3">`
         for (i = 0; i < songs.length; i++) {
             let song = songs[i]
             let title = song.name
             let artist = song.artist
             let clickAction = `onclick="playSongs(songList,'${song.id}');router.navigate('now');" `
             let addAction = `onclick="addSong(songList,'${song.id}')"`
+            let songAction = `onclick="songAction(\`${song.id}\`,\`${song.source}\`)"`
 
             let img = window.localStorage["imgRes"] == "true" ? '' :
                 `<div class="mdui-list-item-avatar" ${clickAction}>
@@ -80,6 +81,11 @@ const template = {
                     <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
                     <div class="mdui-list-item-text mdui-list-item-one-line">${artist}</div>
                 </div>
+                <!--#todo <button class="mdui-btn mdui-btn-icon mdui-ripple" 
+                        ${songAction}
+                        title="更多選項">
+                    <i class="mdui-icon material-icons">more_vert</i>
+                </button> -->
                 <button class="mdui-btn mdui-btn-icon mdui-ripple add" 
                         ${addAction}
                         title="加入這首歌曲到現正播放">

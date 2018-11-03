@@ -840,9 +840,10 @@ async function showNow() {
     let html = `<ul class="mdui-list songs" id="/now/songlist">`
     for (i = 0; i < ap.list.audios.length; i++) {
         let focus = ap.list.index == i ? 'mdui-list-item-active' : '',
-            title = ap.list.audios[i].name,
-            artist = ap.list.audios[i].artist,
-            album = ap.list.audios[i].album,
+            song = ap.list.audios[i],
+            title = song.name,
+            artist = song.artist,
+            album = song.album,
             img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${ap.list.audios[i].cover || getBackground()}"/></div>`
         html += `<li class="mdui-list-item mdui-ripple song ${focus}" >
             ${img}
@@ -850,6 +851,9 @@ async function showNow() {
                 <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
                 <div class="mdui-list-item-text mdui-list-item-one-line">${artist}</div>
             </div>
+            <!--#todo <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="songAction(\`${song.id}\`, \`${song.source}\`)">
+                <i class="mdui-icon material-icons">more_vert</i>
+            </button>-->
             <button class="mdui-btn mdui-btn-icon mdui-ripple close" data-now-play-id="${i}">
                 <i class="mdui-icon material-icons">close</i>
             </button>
@@ -912,18 +916,21 @@ async function showNow() {
             $('.mdui-list.songs').addClass('show')
             $('.mdui-list.songs').scrollTop(72 * ap.list.index - 100)
         }, 50)
+
+        function listenHash(e) {
+            if (e.oldURL.match(/now\/songlist$/)) {
+                $('.mdui-list.songs').removeClass('show')
+                router.navigate('#/now');
+                router.resume();
+                window.removeEventListener("hashchange", listenHash);
+            }
+        }
+        window.addEventListener("hashchange", listenHash);
     })
     $(`[data-player-container]>a.mdui-overlay`).click(function() {
-        $('.mdui-list.songs').removeClass('show')
-        router.resume();
+        window.location.hash = '#/now'
     })
-    window.addEventListener("hashchange", function(e) {
-        let r = /now\/songlist$/
-        if (!e.newURL.match(r)) {
-            $('.mdui-list.songs').removeClass('show')
-            router.resume();
-        }
-    }, false);
+
     //初始化滑塊
     mdui.mutation();
     // 確認播放鈕狀態
@@ -1053,9 +1060,6 @@ async function showNow() {
                 $(del[i]).attr('data-now-play-id', i)
             }
         }, 301)
-
-
-
     })
 }
 //- 歌詞
@@ -1100,8 +1104,8 @@ function showLrc() {
         showLrcChoose()
     })
 }
-//- 播放音樂
 
+//- 播放音樂
 function playSongs(songs, song = false, clear = true) {
     if (clear) ap.list.clear()
     let playlist = []
@@ -1180,6 +1184,7 @@ function getSnackbarPosition() {
         return "left-bottom"
 }
 
+//- 顯示歌詞選擇窗窗
 async function showLrcChoose() {
     let nowPlaying = ap.list.audios[ap.list.index],
         name = nowPlaying.name || '',
@@ -1260,4 +1265,34 @@ async function showLrcChoose() {
         })
     }
     search(`${name} ${artist}`)
+}
+//- 彈出歌曲操作窗窗
+async function songAction(song, source) {
+    let url = window.location.hash
+    router.pause();
+    mdui.dialog({
+        title: '歌曲操作',
+        content: `
+        <ul class="mdui-list">
+            <li class="mdui-list-item mdui-ripple">
+                <i class="mdui-list-item-icon mdui-icon material-icons">turned_in_not</i>
+                <div class="mdui-list-item-content">收藏</div>
+            </li>
+            <li class="mdui-list-item mdui-ripple">
+                <i class="mdui-list-item-icon mdui-icon material-icons">star</i>
+                <div class="mdui-list-item-content">評分</div>
+            </li>
+            <li class="mdui-list-item mdui-ripple">
+                <i class="mdui-list-item-icon mdui-icon material-icons">playlist_add</i>
+                <div class="mdui-list-item-content">加入到播放清單</div>
+            </li>
+        </ul>
+        <div class="mdui-dialog-actions">
+            <button class="mdui-btn mdui-ripple" mdui-dialog-confirm>取消</button>
+        </div>`,
+        onClosed: () => {
+            router.navigate(url);
+            router.resume();
+        }
+    });
 }
