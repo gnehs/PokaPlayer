@@ -175,15 +175,16 @@ async function showSettingsNetwork(){
         `<label class="mdui-switch">
             <input type="checkbox" ${window.localStorage["imgRes"]=="true"?"checked":""}/>
             <i class="mdui-switch-icon"></i>
-        </label>`)} 
+        </label>`)} `
+    settingItems+= window.electron ? `` : `
         <li class="mdui-subheader">快取</li>
         ${settingsItem("快取 (service worker)",false,"free_breakfast","","data-pokaSW",
         `<label class="mdui-switch">
             <input type="checkbox" ${window.localStorage["pokaSW"]=="true"?"checked":""}/>
             <i class="mdui-switch-icon"></i>
         </label>`)} 
-        ${settingsItem("清除 Service Worker 快取","","delete_forever","","data-clean")}
-        </ul>`
+        ${settingsItem("清除 Service Worker 快取","","delete_forever","","data-clean")}`
+    settingItems+=`</ul>`
     $("#content").html(settingItems);
     // 音質設定
     $("[data-music-res]").click(function() {
@@ -484,14 +485,37 @@ async function showSettingsCustomize() {
         })
     });
     $('[data-pic-custom-link]').click(function(){
-        let img = prompt("請輸入圖片網址", "https://images2.imgbox.com/99/e2/knJdNcns_o.jpg");
-        if (img != null){
-            window.localStorage["randomImg"] = img
-            $('[data-pic-custom-link] .mdui-list-item-text').text(img)
-            $('[data-pic-source] .mdui-list-item-text').text("自訂")
-            window.localStorage["randomImgName"] = "自訂"
-            pokaHeader('個人化', "設定",img,false,false)
-        }
+
+        router.pause();
+        mdui.dialog({
+            title: '請輸入圖片網址',
+            content: `
+            <div class="mdui-textfield">
+                <label class="mdui-textfield-label">圖片網址</label>
+                <input class="mdui-textfield-input" type="text" value="https://images2.imgbox.com/99/e2/knJdNcns_o.jpg" data-imgurl/>
+            </div>`,
+            buttons:[{
+                text: '取消'
+            },{
+                text: '確定',
+                bold: true,
+                onClick: () => {
+                    let img = $('[data-imgurl]').val()
+                    console.log(img)
+                    if (img != null){
+                        window.localStorage["randomImg"] = img
+                        $('[data-pic-custom-link] .mdui-list-item-text').text(img)
+                        $('[data-pic-source] .mdui-list-item-text').text("自訂")
+                        window.localStorage["randomImgName"] = "自訂"
+                        pokaHeader('個人化', "設定",img,false,false)
+                    }
+                }
+            }],
+            onClosed: ()=> {
+                router.navigate('settings/customize');
+                router.resume();
+            }
+        });
     })
 }
 async function showSettingsAbout() {
@@ -500,12 +524,17 @@ async function showSettingsAbout() {
     let settingItems = `<ul class="mdui-list">
         ${settingsItem("返回","","arrow_back","settings")}
         <li class="mdui-subheader">關於</li>
-        ${settingsItem("PokaPlayer 版本",window.localStorage["PokaPlayerVersion"],"info","","data-version")}
-        ${settingsItem("開發者","載入中...","supervisor_account","","data-dev")}
-        <li class="mdui-subheader">外部連結</li>
-        ${settingsItem("GitHub","前往 PokaPlayer 的 GitHub","language","",`onclick="window.open('https://github.com/gnehs/PokaPlayer')"`)}
-        ${settingsItem("錯誤回報","若有任何錯誤或是建議歡迎填寫，並協助我們變得更好","feedback","",`onclick="window.open('https://github.com/gnehs/PokaPlayer/issues/new/choose')"`)}
-    </ul>`
+        ${settingsItem("PokaPlayer 版本",window.localStorage["PokaPlayerVersion"],"info","","data-version")}`
+        settingItems += window.electron 
+        ? settingsItem("PokaPlayer Electron 版本",`Pokaplayer-Electron: ${window.electronAppVersion} / Chrome: ${window.electronChromeVersion} / Electron: ${window.electronVersion}`,"info",'','data-poka-ele')
+        : ``
+    settingItems+=
+    `${settingsItem("開發者","載入中...","supervisor_account","","data-dev")}
+    <li class="mdui-subheader">外部連結</li>
+    ${settingsItem("GitHub","前往 PokaPlayer 的 GitHub","language","",`onclick="window.open('https://github.com/gnehs/PokaPlayer')"`)}
+    ${settingsItem("錯誤回報","若有任何錯誤或是建議歡迎填寫，並協助我們變得更好","feedback","",`onclick="window.open('https://github.com/gnehs/PokaPlayer/issues/new/choose')"`)}
+    `
+    settingItems+=`</ul>`
     $("#content").html(settingItems)
     
     // 點七次的彩蛋蛋
@@ -514,11 +543,23 @@ async function showSettingsAbout() {
         $(this).attr("data-click",click)
         if (click == 7){
             $(this).attr("data-click",0)
-            s     =  document.createElement('script');
-            s.src = 'https://anohito.tw/thisUnitIsAFlippinPlatelet/flippin_platelet.js';
-            document.getElementsByTagName('body')[0].appendChild(s);
+            loadJS('https://anohito.tw/thisUnitIsAFlippinPlatelet/flippin_platelet.js')
         }
     })
+    $("[data-poka-ele]").click(function(){
+        let click = $(this).attr("data-click")?Number($(this).attr("data-click"))+1:1
+        $(this).attr("data-click",click)
+        if (click == 7){
+            $(this).attr("data-click",0)
+            loadJS('https://gnehs.github.io/Sealed/negi/negi.js')
+        }
+    })
+    function loadJS(js){
+
+        s     =  document.createElement('script');
+        s.src = js
+        document.getElementsByTagName('body')[0].appendChild(s);
+    }
     // PokaPlayer 詳細資料
     let getInfo = await request('/info/');
     $("[data-dev] .mdui-list-item-text").text(getInfo.author)
