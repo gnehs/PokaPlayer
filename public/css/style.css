@@ -92,6 +92,20 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 
+/* 按鈕 */
+
+.mdui-btn:not(.mdui-btn-icon) {
+    border-radius: 8px;
+}
+
+
+/* 彈窗 */
+
+.mdui-dialog {
+    border-radius: 12px;
+}
+
+
 /* 列表 */
 
 .mdui-list-item {
