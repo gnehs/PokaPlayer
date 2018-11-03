@@ -588,6 +588,6 @@ router.use((req, res, next) => {
 
 function showError(moduleName = false, error) {
     console.log(`[DataModules]${moduleName?`[${moduleName}]`:''}發生了錯誤：（`);
-    console.error(e);
+    console.error(error);
 }
 module.exports = router;
