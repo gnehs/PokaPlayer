@@ -1079,7 +1079,7 @@ function playlistOperation(operation) {
 }
 
 async function getUserPlaylists(uid) {
-    if (!uid) {
+    while (!uid) {
         if (isLoggedin === undefined) {
             login.then(async x => {
                 if (x.code == 200) {
@@ -1092,7 +1092,7 @@ async function getUserPlaylists(uid) {
             uid = (await rp(options(`${server}login/status`))).profile.userId;
         }
     }
-    return (await rp(options(`${server}user/playlist?uid=${uid}}`))).playlist.filter(x => ({
+    return (await rp(options(`${server}user/playlist?uid=${uid}`))).playlist.filter(x => ({
         name: x.name,
         source: "Netease2",
         image: imageUrl(x.coverImgUrl) || defaultImage,
