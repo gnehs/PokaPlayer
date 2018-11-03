@@ -1092,13 +1092,15 @@ async function getUserPlaylists(uid) {
             uid = (await rp(options(`${server}login/status`))).profile.userId;
         }
     }
-    return (await rp(options(`${server}user/playlist?uid=${uid}`))).playlist.filter(x => ({
-        name: x.name,
-        source: "Netease2",
-        image: imageUrl(x.coverImgUrl) || defaultImage,
-        type: "playlist",
-        id: x.id
-    }));
+    return (await rp(options(`${server}user/playlist?uid=${uid}`))).playlist
+        .filter(x => x.creator.userId == uid)
+        .map(x => ({
+            name: x.name,
+            source: "Netease2",
+            image: imageUrl(x.coverImgUrl) || defaultImage,
+            type: "playlist",
+            id: x.id
+        }));
 }
 
 module.exports = {
