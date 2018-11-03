@@ -205,9 +205,9 @@ function migrate(org, t, offset = 10 ** -3) {
     const tagToTime = tag =>
         isDigit(tag[0])
             ? tag
-                  .split(":")
-                  .reverse()
-                  .reduce((acc, cur, index) => plus(acc, Number(cur) * 60 ** index), 0)
+                .split(":")
+                .reverse()
+                .reduce((acc, cur, index) => plus(acc, Number(cur) * 60 ** index), 0)
             : tag;
     const parse = (x, isTranslated = false) => {
         let pLyricLines = x
@@ -320,7 +320,7 @@ async function onLoaded() {
         if (config && config.login && (config.login.phone || config.login.email) && config.login.password) {
             let result = await login(config);
             if ((await result.code) == 200) {
-                schedule.scheduleJob("'* */12 * * *'", async function() {
+                schedule.scheduleJob("'* */12 * * *'", async function () {
                     console.log("[DataModules][Netease2] 正在重新登入...");
                     await login(config);
                 });
@@ -544,12 +544,12 @@ async function resolveTopPlaylistStack(topPlaylistStack) {
         x =>
             x
                 ? {
-                      name: x.name,
-                      source: "Netease2",
-                      id: x.id,
-                      image: imageUrl(x.coverImgUrl || x.picUrl),
-                      from: "topPlaylistStack"
-                  }
+                    name: x.name,
+                    source: "Netease2",
+                    id: x.id,
+                    image: imageUrl(x.coverImgUrl || x.picUrl),
+                    from: "topPlaylistStack"
+                }
                 : false
     );
     return [].concat(...playlists);
@@ -561,19 +561,19 @@ async function resolvePlaylistStack(playlistStack) {
         x =>
             Array.isArray(x)
                 ? {
-                      name: x[1].name || x[0].playlist.name,
-                      source: "Netease2",
-                      id: x[0].playlist.id,
-                      image: x[1].image || imageUrl(x[0].playlist.coverImgUrl || x[0].playlist.picUrl),
-                      from: "playlistStack"
-                  }
+                    name: x[1].name || x[0].playlist.name,
+                    source: "Netease2",
+                    id: x[0].playlist.id,
+                    image: x[1].image || imageUrl(x[0].playlist.coverImgUrl || x[0].playlist.picUrl),
+                    from: "playlistStack"
+                }
                 : {
-                      name: x.playlist.name,
-                      source: "Netease2",
-                      id: x.playlist.id,
-                      image: imageUrl(x.playlist.coverImgUrl || x.playlist.picUrl),
-                      from: "playlistStack"
-                  }
+                    name: x.playlist.name,
+                    source: "Netease2",
+                    id: x.playlist.id,
+                    image: imageUrl(x.playlist.coverImgUrl || x.playlist.picUrl),
+                    from: "playlistStack"
+                }
     );
 }
 
@@ -587,19 +587,19 @@ async function resolvedailyRecommendStack(dailyRecommendStack) {
             x =>
                 Array.isArray(x)
                     ? {
-                          name: x[1].name,
-                          id: x[1].id,
-                          image: x[0] || imageUrl(x.coverImgUrl || x.picUrl),
-                          source: "Netease2",
-                          from: "dailyRecommendStack"
-                      }
+                        name: x[1].name,
+                        id: x[1].id,
+                        image: x[0] || imageUrl(x.coverImgUrl || x.picUrl),
+                        source: "Netease2",
+                        from: "dailyRecommendStack"
+                    }
                     : {
-                          name: x.name,
-                          id: x.id,
-                          image: imageUrl(x.coverImgUrl || x.picUrl),
-                          source: "Netease2",
-                          from: "dailyRecommendStack"
-                      }
+                        name: x.name,
+                        id: x.id,
+                        image: imageUrl(x.coverImgUrl || x.picUrl),
+                        source: "Netease2",
+                        from: "dailyRecommendStack"
+                    }
         )
     );
 }
@@ -701,7 +701,7 @@ async function getPlaylists(playlists) {
                 rp(
                     options(
                         `${server}top/playlist?limit=${c.limit}&order=${
-                            c.order in ["hot", "new"] ? c.order : "hot"
+                        c.order in ["hot", "new"] ? c.order : "hot"
                         }&cat=${c.category}`
                     )
                 )
@@ -970,7 +970,7 @@ async function getHome() {
                 rp(
                     options(
                         `${server}top/playlist?limit=${c.limit}&order=${
-                            c.order in ["hot", "new"] ? c.order : "hot"
+                        c.order in ["hot", "new"] ? c.order : "hot"
                         }&cat=${c.category}`
                     )
                 )
@@ -1065,15 +1065,15 @@ function playlistOperation(operation) {
                 let response = await rp(
                     options(`${server}playlist/tracks?op=add&pid=${playlistId}&tracks=${songIds}`, {}, true)
                 );
-                return response.code < 300 && code >= 200 ? response.body || true : false;
+                return response.body
             };
-        case "del":
+        case "delete":
             return async (songIds, playlistId) => {
                 if (Array.isArray(songIds)) songIds = songIds.join(",");
                 let response = await rp(
                     options(`${server}playlist/tracks?op=del&pid=${playlistId}&tracks=${songIds}`, {}, true)
                 );
-                return response.code < 300 && code >= 200 ? response.body || true : false;
+                return response.body
             };
     }
 }
