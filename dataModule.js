@@ -561,6 +561,24 @@ router.get("/lyric/", async(req, res) => {
         }]
     });
 });
+//-----------------------------> 加入清單
+router.get("/getUserPlaylists", async(req, res) => {
+    //http://localhost:3000/pokaapi/getUserPlaylists/?moduleName=Netease2
+    let moduleName = req.query.moduleName;
+    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+    // 沒這東西
+    if (!_module || moduleList[moduleName].active.indexOf("getUserPlaylists") == -1)
+        return res.status(501).send("The required module is currently unavailable :(");
+    let result;
+    try {
+        result = await _module.getUserPlaylists()
+    } catch (e) {
+        result = false
+        showError(moduleName, e)
+    }
+    return res.json(result);
+})
+
 //-----------------------------> 隨機
 // 隨機歌曲
 router.get("/randomSongs/", async(req, res) => {
