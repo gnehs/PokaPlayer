@@ -1,5 +1,5 @@
 const template = {
-    getSpinner: () => `<div class="mdui-spinner mdui-spinner-colorful mdui-center" style="margin-top:80px"></div>`,
+    getSpinner: () => `<div class="mdui-spinner mdui-spinner-colorful mdui-center" style="margin:50px 0"></div>`,
     parseHome: data => {
         let tab = `<div class="mdui-tab" mdui-tab>`
         let tabItem = (href, label, icon) => `<a href="#${href}" class="mdui-ripple">
@@ -204,3 +204,4 @@ const template = {
         <div class="mdui-divider" style="margin: 10px 0"></div>`
     }
 }
+8

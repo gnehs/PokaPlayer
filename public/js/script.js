@@ -1280,7 +1280,7 @@ async function songAction(songID, source) {
         buttons: [{
             text: '取消'
         }],
-        content: `<div data-content style="min-height:200px">${template.getSpinner()}</div><data-close mdui-dialog-close></data-close>`,
+        content: `<div data-content>${template.getSpinner()}</div><data-close mdui-dialog-close></data-close>`,
         onClosed: () => {
             router.navigate(url);
             router.resume();
@@ -1288,12 +1288,13 @@ async function songAction(songID, source) {
     });
     mdui.mutation();
     let userPlaylists = await getUserPlaylists(song.source)
+    let iscanRating = await canRating(song.source)
     let actions = `<ul class="mdui-list">
         <li class="mdui-list-item mdui-ripple" mdui-dialog-close data-action="like" style="pointer-events: none; opacity: .5;">
             <i class="mdui-list-item-icon mdui-icon material-icons">turned_in_not</i>
             <div class="mdui-list-item-content">收藏</div>
         </li>
-        <li class="mdui-list-item mdui-ripple" mdui-dialog-close data-action="rating" style="pointer-events: none; opacity: .5;">
+        <li class="mdui-list-item mdui-ripple" data-action="rating" ${iscanRating?``:`style="pointer-events: none; opacity: .5;"`}>
             <i class="mdui-list-item-icon mdui-icon material-icons">star</i>
             <div class="mdui-list-item-content">評分</div>
         </li>
@@ -1305,7 +1306,26 @@ async function songAction(songID, source) {
     $(`[data-content]`).html(actions)
     $(`[data-content]`).animateCss('fadeIn faster')
     $(`[data-action="like"]`).click(() => songActionLike(song, url))
-    $(`[data-action="rating"]`).click(() => songActionRating(song, url))
+    $(`[data-action="rating"]`).click(() => {
+        $(`[data-title]`).text(`評分`)
+        $(`[data-content]`).html(`
+        <div id="rating" class="mdui-text-center">
+            <button class="mdui-btn mdui-btn-icon" data-rating="1"><i class="mdui-icon material-icons">star</i></button>
+            <button class="mdui-btn mdui-btn-icon" data-rating="2"><i class="mdui-icon material-icons">star</i></button>
+            <button class="mdui-btn mdui-btn-icon" data-rating="3"><i class="mdui-icon material-icons">star</i></button>
+            <button class="mdui-btn mdui-btn-icon" data-rating="4"><i class="mdui-icon material-icons">star</i></button>
+            <button class="mdui-btn mdui-btn-icon" data-rating="5"><i class="mdui-icon material-icons">star</i></button>
+        </div>
+        `)
+        $(`[data-content]`).animateCss('fadeIn faster')
+        $(`[data-rating]`).click(async function(){
+            $(`data-close`).click()
+            let star=$(this).attr('data-rating')
+            let rating = await ratingSong(song.source, song.id, star)
+            let msg = rating ? `${song.name} 評分 ${star} 星成功！` : `${song.name} 評分失敗！`
+            mdui.snackbar({ message: msg, timeout: 500, position: getSnackbarPosition() });
+        })
+    })
     $(`[data-action="playlistAdd"]`).click(async function() {
         $(`[data-title]`).text(`加入到播放清單`)
         let content;
@@ -1340,9 +1360,6 @@ async function songAction(songID, source) {
 }
 async function songActionLike(song) {
     mdui.snackbar({ message: `已收藏 ${song.name}`, timeout: 500, position: getSnackbarPosition() });
-}
-async function songActionRating(song) {
-    mdui.snackbar({ message: `${song.name} 評分`, timeout: 500, position: getSnackbarPosition() });
 }
 //- animateCss
 $.fn.extend({

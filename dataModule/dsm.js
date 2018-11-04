@@ -701,7 +701,7 @@ async function ratingSong(songid, rating) {
         { key: "id", value: songid },
         { key: "rating", value: rating }
     ], 3);
-    return result
+    return result.success
 }
 async function getUserPlaylists() {
     let info = await getAPI("AudioStation/info.cgi", "SYNO.AudioStation.Info", "getinfo", [], 4);

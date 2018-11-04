@@ -78,6 +78,29 @@ async function searchLrc(keyword) {
     return await axios.get(`/pokaapi/searchLyrics/?keyword=${encodeURIComponent(keyword)}`)
 }
 
+/*===== 評等 =====*/
+async function canRating(moduleName) {
+    let result;
+    try {
+        result = (await axios.get(`/pokaapi/ratingSong/?moduleName=${encodeURIComponent(moduleName)}`)).data
+    } catch (e) {
+        result = false
+    }
+    return result
+}
+async function ratingSong(moduleName, songId, rating) {
+    let result;
+    try {
+        result = (await axios.post(`/pokaapi/ratingSong/`, {
+            moduleName: moduleName,
+            songId: songId,
+            rating: rating
+        })).data
+    } catch (e) {
+        result = false
+    }
+    return result
+}
 /*===== 加入到播放清單 =====*/
 async function getUserPlaylists(module) {
     let result

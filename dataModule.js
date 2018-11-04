@@ -491,6 +491,33 @@ router.get("/song/", async(req, res) => {
             })
             .pipe(res);
 });
+//- 評分
+router
+    .get("/ratingSong/", async(req, res) => { // 戳戳看能不能用
+        //http://localhost:3000/pokaapi/ratingSong/?moduleName=DSM
+        let moduleName = req.query.moduleName;
+        let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+        // 沒這東西
+        if (!_module || moduleList[moduleName].active.indexOf("ratingSong") == -1)
+            return res.status(501).send("The required module is currently unavailable :(");
+        return res.json(true)
+    })
+    .post("/ratingSong/", async(req, res) => {
+        /*
+            req.body: {
+                moduleName: "Netease2",
+                songId: [songId <int>],
+                rating: 0-5
+            }
+        */
+        let moduleName = req.body.moduleName;
+        let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+        // 沒這東西
+        if (!_module || moduleList[moduleName].active.indexOf("ratingSong") == -1)
+            return res.status(501).send("The required module is currently unavailable :(");
+        return res.json(await _module.ratingSong(req.body.songId, req.body.rating))
+    })
+
 //-----------------------------> 封面
 // 取得封面
 router.get("/cover/", async(req, res) => {
