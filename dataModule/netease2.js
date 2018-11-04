@@ -1059,8 +1059,18 @@ async function getHome() {
 
 function playlistOperation(operation) {
     switch (operation) {
+        case "get":
+            return async(songIds, playlistId) => {
+                let playlist = (await getPlaylistSongs(playlistId)).songs,
+                    offset
+                for (let i = 0; i < playlist.length; i++) {
+                    if (playlist[i].id == songIds[0][0])
+                        offset = true
+                }
+                return { code: offset ? 200 : 404 }
+            };
         case "add":
-            return async (songIds, playlistId) => {
+            return async(songIds, playlistId) => {
                 if (Array.isArray(songIds)) songIds = songIds.join(",");
                 let response = await rp(
                     options(`${server}playlist/tracks?op=add&pid=${playlistId}&tracks=${songIds}`, {}, true)
@@ -1068,7 +1078,7 @@ function playlistOperation(operation) {
                 return response.body
             };
         case "delete":
-            return async (songIds, playlistId) => {
+            return async(songIds, playlistId) => {
                 if (Array.isArray(songIds)) songIds = songIds.join(",");
                 let response = await rp(
                     options(`${server}playlist/tracks?op=del&pid=${playlistId}&tracks=${songIds}`, {}, true)
