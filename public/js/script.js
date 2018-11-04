@@ -1328,6 +1328,8 @@ async function songAction(songID, source) {
     })
     $(`[data-action="playlistAdd"]`).click(async function() {
         $(`[data-title]`).text(`加入到播放清單`)
+        $(`[data-content]`).html(template.getSpinner())
+        mdui.mutation();
         let content;
         /* */
         content = $(`<ul class="mdui-list"/>`)
@@ -1386,4 +1388,4 @@ $.fn.extend({
 
         return this;
     },
-});
+})
