@@ -17,12 +17,13 @@ const bodyParser = require("body-parser");
 
 router.use(session);
 router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({ extended: true }));
 
 let moduleList = {};
 fs.readdir(__dirname + "/dataModule", (err, files) => {
     if (err) return console.error(err);
     files.forEach(async file => {
-        if (path.extname(file) == ".js") {
+        if (path.extname(file) == ".js" && !file.match(/^._/)) {
             let uri = __dirname + "/dataModule/" + file,
                 _module = require(uri);
             let moduleData = {
@@ -490,6 +491,33 @@ router.get("/song/", async(req, res) => {
             })
             .pipe(res);
 });
+//- 評分
+router
+    .get("/ratingSong/", async(req, res) => { // 戳戳看能不能用
+        //http://localhost:3000/pokaapi/ratingSong/?moduleName=DSM
+        let moduleName = req.query.moduleName;
+        let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+        // 沒這東西
+        if (!_module || moduleList[moduleName].active.indexOf("ratingSong") == -1)
+            return res.status(501).send("The required module is currently unavailable :(");
+        return res.json(true)
+    })
+    .post("/ratingSong/", async(req, res) => {
+        /*
+            req.body: {
+                moduleName: "Netease2",
+                songId: [songId <int>],
+                rating: 0-5
+            }
+        */
+        let moduleName = req.body.moduleName;
+        let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+        // 沒這東西
+        if (!_module || moduleList[moduleName].active.indexOf("ratingSong") == -1)
+            return res.status(501).send("The required module is currently unavailable :(");
+        return res.json(await _module.ratingSong(req.body.songId, req.body.rating))
+    })
+
 //-----------------------------> 封面
 // 取得封面
 router.get("/cover/", async(req, res) => {
@@ -561,6 +589,99 @@ router.get("/lyric/", async(req, res) => {
         }]
     });
 });
+//-----------------------------> 加入清單
+router.get("/getUserPlaylists", async(req, res) => {
+    //http://localhost:3000/pokaapi/getUserPlaylists/?moduleName=Netease2
+    let moduleName = req.query.moduleName;
+    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+    // 沒這東西
+    if (!_module || moduleList[moduleName].active.indexOf("getUserPlaylists") == -1)
+        return res.status(501).send("The required module is currently unavailable :(");
+    let result;
+    try {
+        result = await _module.getUserPlaylists()
+    } catch (e) {
+        result = false
+        showError(moduleName, e)
+    }
+    return res.json(result);
+})
+
+//-----------------------------> 清單動作
+router
+    .get("/playlistOperation", async(req, res) => {
+        // http://localhost:3000/pokaapi/playlistOperation/
+        /*
+            ------->>>>>req.query: {
+                moduleName: "Netease2",
+                songIds: [songId <int>],
+                playlistId <int>
+            }
+        */
+        let moduleName = req.query.moduleName;
+        let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+        // 沒這東西
+        if (!_module || moduleList[moduleName].active.indexOf("playlistOperation") == -1)
+            return res.status(501).send("The required module is currently unavailable :(");
+        let result;
+        try {
+            result = await _module.playlistOperation("get")(JSON.parse(req.query.songIds), req.query.playlistId)
+        } catch (e) {
+            result = false
+            showError(moduleName, e)
+        }
+        res.header("Cache-Control", "max-age=0") //快取 0
+        return res.json(result);
+    })
+    .post("/playlistOperation", async(req, res) => {
+        // http://localhost:3000/pokaapi/playlistOperation/
+        /*
+            req.body: {
+                moduleName: "Netease2",
+                songIds: [songId <int>],
+                playlistId <int>
+            }
+        */
+        let moduleName = req.body.moduleName;
+        let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+        // 沒這東西
+        if (!_module || moduleList[moduleName].active.indexOf("playlistOperation") == -1)
+            return res.status(501).send("The required module is currently unavailable :(");
+        let result;
+        try {
+            console.log(req.body.songIds, req.body.playlistId)
+            result = await _module.playlistOperation("add")(req.body.songIds, req.body.playlistId)
+        } catch (e) {
+            result = false
+            showError(moduleName, e)
+        }
+        return res.json(result);
+    })
+    .delete("/playlistOperation", async(req, res) => {
+        // http://localhost:3000/pokaapi/playlistOperation/
+        /*
+            req.query: {
+                moduleName: "Netease2",
+                songIds: [songId <int>],
+                playlistId <int>
+            }
+        */
+        let moduleName = req.query.moduleName;
+        let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+        // 沒這東西
+        if (!_module || moduleList[moduleName].active.indexOf("playlistOperation") == -1)
+            return res.status(501).send("The required module is currently unavailable :(");
+        let result;
+        try {
+            result = await _module.playlistOperation("delete")(JSON.parse(req.query.songIds), req.query.playlistId)
+        } catch (e) {
+            result = false
+            showError(moduleName, e)
+        }
+        res.header("Cache-Control", "max-age=0") //快取 0
+        return res.json(result);
+    })
+
 //-----------------------------> 隨機
 // 隨機歌曲
 router.get("/randomSongs/", async(req, res) => {
@@ -587,7 +708,7 @@ router.use((req, res, next) => {
 });
 
 function showError(moduleName = false, error) {
-    console.log(`[DataModules]${moduleName?`[${moduleName}]`:''}發生了錯誤：（`);
-    console.error(e);
+    console.log(`[DataModules]${moduleName ? `[${moduleName}]` : ''}發生了錯誤：（`);
+    console.error(error);
 }
 module.exports = router;

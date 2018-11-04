@@ -128,7 +128,7 @@ function isIdName(id) {
 
 var isLoggedin;
 
-const normalOptions = async(url, req = {}) => {
+const normalOptions = async (url, req = {}) => {
     async function m10() {
         return (await m10s)[Math.floor(Math.random() * (await m10s).length)];
     }
@@ -143,7 +143,8 @@ const normalOptions = async(url, req = {}) => {
             "Cache-Control": "max-age=0",
             DNT: 1,
             "Upgrade-Insecure-Requests": 1,
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
+            "User-Agent":
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
             Range: req.headers && req.headers.range ? req.headers.range : "",
             Accept: req.headers && req.headers.accept ? req.headers.accept : ""
         },
@@ -173,9 +174,7 @@ function migrate(org, t, offset = 10 ** -3) {
         // 精確乘法
         function checkBoundary(num) {
             if (num > Number.MAX_SAFE_INTEGER || num < Number.MIN_SAFE_INTEGER) {
-                console.warn(
-                    `${num} is beyond boundary when transfer to integer, the results may not be accurate`
-                );
+                console.warn(`${num} is beyond boundary when transfer to integer, the results may not be accurate`);
             }
         }
 
@@ -204,12 +203,12 @@ function migrate(org, t, offset = 10 ** -3) {
     const strip = (x, precision = 12) => +parseFloat(x.toPrecision(precision)); // 數字精確化
 
     const tagToTime = tag =>
-        isDigit(tag[0]) ?
-        tag
-        .split(":")
-        .reverse()
-        .reduce((acc, cur, index) => plus(acc, Number(cur) * 60 ** index), 0) :
-        tag;
+        isDigit(tag[0])
+            ? tag
+                .split(":")
+                .reverse()
+                .reduce((acc, cur, index) => plus(acc, Number(cur) * 60 ** index), 0)
+            : tag;
     const parse = (x, isTranslated = false) => {
         let pLyricLines = x
             .split("\n")
@@ -267,22 +266,14 @@ function migrate(org, t, offset = 10 ** -3) {
             i += 1;
         } else if (i != parsedLyrics.length - 1) {
             if (parsedLyrics[i][0] == parsedLyrics[i + 1][0]) {
-                parsedLyricPairs.push([
-                    parsedLyrics[i][0],
-                    [parsedLyrics[i][1], parsedLyrics[i + 1][1]]
-                ]);
+                parsedLyricPairs.push([parsedLyrics[i][0], [parsedLyrics[i][1], parsedLyrics[i + 1][1]]]);
                 i += 2;
             } else {
-                parsedLyricPairs.push([
-                    parsedLyrics[i][0],
-                    [parsedLyrics[i][1], parsedLyrics[i][1]]
-                ]);
+                parsedLyricPairs.push([parsedLyrics[i][0], [parsedLyrics[i][1], parsedLyrics[i][1]]]);
                 i += 1;
             }
         } else {
-            parsedLyricPairs.push([parsedLyrics[i][0],
-                [parsedLyrics[i][1], parsedLyrics[i][1]]
-            ]);
+            parsedLyricPairs.push([parsedLyrics[i][0], [parsedLyrics[i][1], parsedLyrics[i][1]]]);
             i += 1;
         }
     }
@@ -294,15 +285,13 @@ function migrate(org, t, offset = 10 ** -3) {
         if (typeof parsedLyricPairs[i][0] == "string") result += `[${parsedLyricPairs[i][0]}]\n`;
         else {
             if (i != parsedLyricPairs.length - 1) {
-                result += `[${timeToTag(parsedLyricPairs[i][0])}]${
-                    parsedLyricPairs[i][1][0]
-                }\n[${timeToTag(plus(parsedLyricPairs[i + 1][0], -offset))}]${
-                    parsedLyricPairs[i][1][1]
-                }\n`;
+                result += `[${timeToTag(parsedLyricPairs[i][0])}]${parsedLyricPairs[i][1][0]}\n[${timeToTag(
+                    plus(parsedLyricPairs[i + 1][0], -offset)
+                )}]${parsedLyricPairs[i][1][1]}\n`;
             } else {
-                result += `[${timeToTag(parsedLyricPairs[i][0])}]${
-                    parsedLyricPairs[i][1][0]
-                }\n[${timeToTag(parsedLyricPairs[i][0])}]${parsedLyricPairs[i][1][1]}\n`;
+                result += `[${timeToTag(parsedLyricPairs[i][0])}]${parsedLyricPairs[i][1][0]}\n[${timeToTag(
+                    parsedLyricPairs[i][0]
+                )}]${parsedLyricPairs[i][1][1]}\n`;
             }
         }
     }
@@ -314,37 +303,24 @@ async function login(config) {
     let result;
     if (config.login.phone) {
         result = await rp(
-            options(
-                `${server}login/cellphone?phone=${config.login.phone}&password=${
-                    config.login.password
-                }`
-            )
+            options(`${server}login/cellphone?phone=${config.login.phone}&password=${config.login.password}`)
         );
     } else {
-        result = await rp(
-            options(`${server}login?email=${config.login.email}&password=${config.login.password}`)
-        );
+        result = await rp(options(`${server}login?email=${config.login.email}&password=${config.login.password}`));
     }
     isLoggedin = result.code == 200;
-    console.log(
-        `[DataModules][Netease2] ${result.profile.nickname} 登入${isLoggedin ? "成功" : "失敗"}`
-    );
+    console.log(`[DataModules][Netease2] ${result.profile.nickname} 登入${isLoggedin ? "成功" : "失敗"}`);
     return result;
 }
 
 async function onLoaded() {
     if (!config.enabled) return false;
     console.log("[DataModules][Netease2] 正在登入...");
-    return await fs.ensureFile(pin).then(async() => {
-        if (
-            config &&
-            config.login &&
-            (config.login.phone || config.login.email) &&
-            config.login.password
-        ) {
+    return await fs.ensureFile(pin).then(async () => {
+        if (config && config.login && (config.login.phone || config.login.email) && config.login.password) {
             let result = await login(config);
             if ((await result.code) == 200) {
-                schedule.scheduleJob("'* */12 * * *'", async function() {
+                schedule.scheduleJob("'* */12 * * *'", async function () {
                     console.log("[DataModules][Netease2] 正在重新登入...");
                     await login(config);
                 });
@@ -388,7 +364,7 @@ function genReq(link) {
 
 async function parseSongs(songs, br = 999000) {
     return await Promise.all(
-        (await songs).map(async(song, index) => {
+        (await songs).map(async (song, index) => {
             song = await song;
             return {
                 name: song.name,
@@ -411,8 +387,8 @@ async function getSong(req, songRes, id) {
     id = isArray ? id : [id];
     let result = await Promise.all(
         (await getSongsUrl(id, br)).map(async x => {
-            let url = x.url ? x.url : `http://music.163.com/song/media/outer/url?id=${x.id}.mp3`
-            return request(await normalOptions(url, req))
+            let url = x.url ? x.url : `http://music.163.com/song/media/outer/url?id=${x.id}.mp3`;
+            return request(await normalOptions(url, req));
         })
     );
     return isArray ? result : result[0];
@@ -422,9 +398,7 @@ async function getSongs(songs, br = 999000) {
     let isArray = Array.isArray(songs);
     songs = isArray ? songs : [songs];
     let result = await parseSongs(
-        await Promise.all(
-            songs.map(async x => (await rp(options(`${server}song/detail?ids=${x}`))).songs[0])
-        ),
+        await Promise.all(songs.map(async x => (await rp(options(`${server}song/detail?ids=${x}`))).songs[0])),
         br
     );
     return isArray ? result : result[0];
@@ -449,9 +423,7 @@ async function getCover(id) {
 }
 
 async function getCovers(ids) {
-    return await Promise.all(
-        (await getSongs(ids)).map(async x => request(await normalOptions((await x).cover)))
-    );
+    return await Promise.all((await getSongs(ids)).map(async x => request(await normalOptions((await x).cover))));
 }
 
 async function parseAlbums(albums) {
@@ -506,20 +478,20 @@ async function search(keywords, limit = 30) {
         album: 10,
         artist: 100,
         playlist: 1000
-            // user: 1002,
-            // mv: 1004,
-            // lyric: 1006,
-            // radio: 1009
+        // user: 1002,
+        // mv: 1004,
+        // lyric: 1006,
+        // radio: 1009
     };
 
-    let result = await Object.keys(typeNums).reduce(async(results, type) => {
+    let result = await Object.keys(typeNums).reduce(async (results, type) => {
         let types = type + "s";
         let typeNum = typeNums[type];
         let result;
         try {
-            result = (await rp(
-                options(`${server}search?keywords=${keywords}&type=${typeNum}&limit=${limit}`)
-            )).result[types];
+            result = (await rp(options(`${server}search?keywords=${keywords}&type=${typeNum}&limit=${limit}`))).result[
+                types
+            ];
         } catch (e) {
             result = [];
         }
@@ -570,14 +542,15 @@ async function resolveTopPlaylistStack(topPlaylistStack) {
         (await Promise.all(topPlaylistStack)).map(x => (x[0] ? x[0].playlists : x.playlists))
     ).map(
         x =>
-        x ? {
-            name: x.name,
-            source: "Netease2",
-            id: x.id,
-            image: imageUrl(x.coverImgUrl || x.picUrl),
-            from: "topPlaylistStack"
-        } :
-        false
+            x
+                ? {
+                    name: x.name,
+                    source: "Netease2",
+                    id: x.id,
+                    image: imageUrl(x.coverImgUrl || x.picUrl),
+                    from: "topPlaylistStack"
+                }
+                : false
     );
     return [].concat(...playlists);
 }
@@ -586,19 +559,21 @@ async function resolvePlaylistStack(playlistStack) {
     if (playlistStack.length === 0) return playlistStack;
     return (await Promise.all(playlistStack)).map(
         x =>
-        Array.isArray(x) ? {
-            name: x[1].name || x[0].playlist.name,
-            source: "Netease2",
-            id: x[0].playlist.id,
-            image: x[1].image || imageUrl(x[0].playlist.coverImgUrl || x[0].playlist.picUrl),
-            from: "playlistStack"
-        } : {
-            name: x.playlist.name,
-            source: "Netease2",
-            id: x.playlist.id,
-            image: imageUrl(x.playlist.coverImgUrl || x.playlist.picUrl),
-            from: "playlistStack"
-        }
+            Array.isArray(x)
+                ? {
+                    name: x[1].name || x[0].playlist.name,
+                    source: "Netease2",
+                    id: x[0].playlist.id,
+                    image: x[1].image || imageUrl(x[0].playlist.coverImgUrl || x[0].playlist.picUrl),
+                    from: "playlistStack"
+                }
+                : {
+                    name: x.playlist.name,
+                    source: "Netease2",
+                    id: x.playlist.id,
+                    image: imageUrl(x.playlist.coverImgUrl || x.playlist.picUrl),
+                    from: "playlistStack"
+                }
     );
 }
 
@@ -607,24 +582,24 @@ async function resolvedailyRecommendStack(dailyRecommendStack) {
     return [].concat(
         ...flatMap(
             x => x,
-            (await Promise.all(dailyRecommendStack)).map(
-                x => (Array.isArray(x) ? [x[0], x[1].recommend] : x.recommend)
-            )
+            (await Promise.all(dailyRecommendStack)).map(x => (Array.isArray(x) ? [x[0], x[1].recommend] : x.recommend))
         ).map(
             x =>
-            Array.isArray(x) ? {
-                name: x[1].name,
-                id: x[1].id,
-                image: x[0] || imageUrl(x.coverImgUrl || x.picUrl),
-                source: "Netease2",
-                from: "dailyRecommendStack"
-            } : {
-                name: x.name,
-                id: x.id,
-                image: imageUrl(x.coverImgUrl || x.picUrl),
-                source: "Netease2",
-                from: "dailyRecommendStack"
-            }
+                Array.isArray(x)
+                    ? {
+                        name: x[1].name,
+                        id: x[1].id,
+                        image: x[0] || imageUrl(x.coverImgUrl || x.picUrl),
+                        source: "Netease2",
+                        from: "dailyRecommendStack"
+                    }
+                    : {
+                        name: x.name,
+                        id: x.id,
+                        image: imageUrl(x.coverImgUrl || x.picUrl),
+                        source: "Netease2",
+                        from: "dailyRecommendStack"
+                    }
         )
     );
 }
@@ -670,10 +645,7 @@ async function getPlaylists(playlists) {
                                             .catch(e => reject(e));
                                     })
                                 );
-                            else
-                                playlistStack.push(
-                                    rp(options(`${server}playlist/detail?id=${x.id}`))
-                                );
+                            else playlistStack.push(rp(options(`${server}playlist/detail?id=${x.id}`)));
                         }
                         break;
                     case "user":
@@ -681,10 +653,7 @@ async function getPlaylists(playlists) {
                             login.then(x => {
                                 if (x.code == 200) {
                                     userList.push(getCustomPlaylists(x.id));
-                                } else
-                                    console.error(
-                                        "[DataModules][Netease2] 未登入，無法獲取用戶歌單。"
-                                    );
+                                } else console.error("[DataModules][Netease2] 未登入，無法獲取用戶歌單。");
                             });
                         } else if (!isLoggedin) {
                             console.error("[DataModules][Netease2] 未登入，無法獲取用戶歌單。");
@@ -732,7 +701,7 @@ async function getPlaylists(playlists) {
                 rp(
                     options(
                         `${server}top/playlist?limit=${c.limit}&order=${
-                            c.order in ["hot", "new"] ? c.order : "hot"
+                        c.order in ["hot", "new"] ? c.order : "hot"
                         }&cat=${c.category}`
                     )
                 )
@@ -791,13 +760,7 @@ async function getPlaylists(playlists) {
                         type: "folder",
                         id: "dailyRecommendPlaylists",
                         playlists: await resolvedailyRecommendStack([
-                            rp(
-                                options(
-                                    `${server}recommend/resource?timestamp=${Math.floor(
-                                        Date.now() / 1000
-                                    )}`
-                                )
-                            )
+                            rp(options(`${server}recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`))
                         ])
                     });
                 else console.error("[DataModules][Netease2] 未登入，無法獲取每日推薦歌單。");
@@ -812,24 +775,17 @@ async function getPlaylists(playlists) {
                 type: "folder",
                 id: "dailyRecommendPlaylists",
                 playlists: await resolvedailyRecommendStack([
-                    rp(
-                        options(
-                            `${server}recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`
-                        )
-                    )
+                    rp(options(`${server}recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`))
                 ])
             });
     }
-    let result = r.concat(
-        ...(await resolveUserList(userList)),
-        ...(await resolvePlaylistStack(playlistStack))
-    );
+    let result = r.concat(...(await resolveUserList(userList)), ...(await resolvePlaylistStack(playlistStack)));
     return { playlists: result };
 }
 
 async function getPlaylistSongs(id, br = 999000) {
     let name;
-    if (isIdName(id))[id, name] = decomposeIdName(id);
+    if (isIdName(id)) [id, name] = decomposeIdName(id);
     if (id == "dailyRecommendSongs") {
         let result = await rp(options(`${server}recommend/songs`));
         if (result.code == 200) {
@@ -845,11 +801,13 @@ async function getPlaylistSongs(id, br = 999000) {
             }));
             return {
                 songs: r,
-                playlists: [{
-                    name: "每日推薦歌曲",
-                    source: "Netease2",
-                    id
-                }]
+                playlists: [
+                    {
+                        name: "每日推薦歌曲",
+                        source: "Netease2",
+                        id
+                    }
+                ]
             };
         } else {
             console.error(`[DataModules][Netease2] 無法獲取每日推薦歌單。(${result.code})`);
@@ -860,11 +818,13 @@ async function getPlaylistSongs(id, br = 999000) {
         if (result.code == 200) {
             return {
                 songs: await parseSongs(result.data.map(x => x.simpleSong)),
-                playlists: [{
-                    name: "網易雲音樂雲盤",
-                    source: "Netease2",
-                    id: "yunPan"
-                }]
+                playlists: [
+                    {
+                        name: "網易雲音樂雲盤",
+                        source: "Netease2",
+                        id: "yunPan"
+                    }
+                ]
             };
         } else {
             console.error(`[DataModules][Netease2] 無法獲取網易雲音樂雲盤。(${result.code})`);
@@ -875,12 +835,14 @@ async function getPlaylistSongs(id, br = 999000) {
         if (result.code == 200) {
             return {
                 songs: await parseSongs(result.playlist.tracks),
-                playlists: [{
-                    name: name ? name : result.playlist.name,
-                    source: "Netease2",
-                    id: id,
-                    image: imageUrl(result.playlist.coverImgUrl || result.playlist.picUrl)
-                }]
+                playlists: [
+                    {
+                        name: name ? name : result.playlist.name,
+                        source: "Netease2",
+                        id: id,
+                        image: imageUrl(result.playlist.coverImgUrl || result.playlist.picUrl)
+                    }
+                ]
             };
         } else {
             console.error(`[DataModules][Netease2] 無法獲取歌單 ${id}。(${result.code})`);
@@ -1006,15 +968,13 @@ async function getHome() {
         topPlaylistStack.push(
             new Promise((resolve, reject) => {
                 rp(
-                        options(
-                            `${server}top/playlist?limit=${c.limit}&order=${
-                            c.order in ["hot", "new"] ? c.order : "hot"
+                    options(
+                        `${server}top/playlist?limit=${c.limit}&order=${
+                        c.order in ["hot", "new"] ? c.order : "hot"
                         }&cat=${c.category}`
-                        )
                     )
-                    .then(data =>
-                        resolve([data, { image: config.topPlaylist.image || defaultImage }])
-                    )
+                )
+                    .then(data => resolve([data, { image: config.topPlaylist.image || defaultImage }]))
                     .catch(e => reject(e));
             })
         );
@@ -1029,9 +989,7 @@ async function getHome() {
         topPlaylistStack.push(
             new Promise((resolve, reject) => {
                 rp(options(`${server}top/playlist/highquality?limit=${c.limit}&cat=${c.category}`))
-                    .then(data =>
-                        resolve([data, { image: config.hqPlaylist.image || defaultImage }])
-                    )
+                    .then(data => resolve([data, { image: config.hqPlaylist.image || defaultImage }]))
                     .catch(e => reject(e));
             })
         );
@@ -1064,13 +1022,7 @@ async function getHome() {
             login.then(async x => {
                 if (x.code == 200)
                     dailyRecommendStack.push(
-                        rp(
-                            options(
-                                `${server}recommend/resource?timestamp=${Math.floor(
-                                    Date.now() / 1000
-                                )}`
-                            )
-                        )
+                        rp(options(`${server}recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`))
                     );
                 else console.error("[DataModules][Netease2] 未登入，無法獲取每日推薦歌單。");
             });
@@ -1078,11 +1030,7 @@ async function getHome() {
             console.error("[DataModules][Netease2] 未登入，無法獲取每日推薦歌單。");
         } else
             dailyRecommendStack.push(
-                rp(
-                    options(
-                        `${server}recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`
-                    )
-                )
+                rp(options(`${server}recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`))
             );
     }
 
@@ -1111,52 +1059,58 @@ async function getHome() {
 
 function playlistOperation(operation) {
     switch (operation) {
+        case "get":
+            return async(songIds, playlistId) => {
+                let playlist = (await getPlaylistSongs(playlistId)).songs,
+                    offset
+                for (let i = 0; i < playlist.length; i++) {
+                    if (playlist[i].id == songIds[0][0])
+                        offset = true
+                }
+                return { code: offset ? 200 : 404 }
+            };
         case "add":
             return async(songIds, playlistId) => {
                 if (Array.isArray(songIds)) songIds = songIds.join(",");
                 let response = await rp(
-                    options(
-                        `${server}playlist/tracks?op=add&pid=${playlistId}&tracks=${songIds}`, {},
-                        true
-                    )
+                    options(`${server}playlist/tracks?op=add&pid=${playlistId}&tracks=${songIds}`, {}, true)
                 );
-                return response.code < 300 && code >= 200 ? response.body || true : false;
+                return response.body
             };
-        case "del":
+        case "delete":
             return async(songIds, playlistId) => {
                 if (Array.isArray(songIds)) songIds = songIds.join(",");
                 let response = await rp(
-                    options(
-                        `${server}playlist/tracks?op=del&pid=${playlistId}&tracks=${songIds}`, {},
-                        true
-                    )
+                    options(`${server}playlist/tracks?op=del&pid=${playlistId}&tracks=${songIds}`, {}, true)
                 );
-                return response.code < 300 && code >= 200 ? response.body || true : false;
+                return response.body
             };
     }
 }
 
 async function getUserPlaylists(uid) {
-    if (!uid) {
+    while (!uid) {
         if (isLoggedin === undefined) {
             login.then(async x => {
                 if (x.code == 200) {
-                    uid = (await rp(options(`${server}user/playlist?uid=${uid}}`))).userId;
+                    uid = (await rp(options(`${server}login/status`))).profile.userId;
                 } else console.error("[DataModules][Netease2] 未登入，無法獲取用戶歌單。");
             });
         } else if (!isLoggedin) {
             console.error("[DataModules][Netease2] 未登入，無法獲取用戶歌單。");
         } else {
-            uid = (await rp(options(`${server}user/playlist?uid=${uid}}`))).userId;
+            uid = (await rp(options(`${server}login/status`))).profile.userId;
         }
     }
-    return (await rp(options(`${server}user/playlist?uid=${uid}}`))).playlist.filter(x => ({
-        name: x.name,
-        source: "Netease2",
-        image: imageUrl(x.coverImgUrl) || defaultImage,
-        type: "playlist",
-        id: x.id
-    }));
+    return (await rp(options(`${server}user/playlist?uid=${uid}`))).playlist
+        .filter(x => x.creator.userId == uid)
+        .map(x => ({
+            name: x.name,
+            source: "Netease2",
+            image: imageUrl(x.coverImgUrl) || defaultImage,
+            type: "playlist",
+            id: x.id
+        }));
 }
 
 module.exports = {

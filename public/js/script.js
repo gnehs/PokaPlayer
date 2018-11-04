@@ -838,6 +838,7 @@ async function showNow() {
     pokaHeader('', '', false, true)
     $('#content').attr('data-page', 'now')
     let html = `<ul class="mdui-list songs" id="/now/songlist">`
+    songList = ap.list.audios
     for (i = 0; i < ap.list.audios.length; i++) {
         let focus = ap.list.index == i ? 'mdui-list-item-active' : '',
             song = ap.list.audios[i],
@@ -851,9 +852,9 @@ async function showNow() {
                 <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
                 <div class="mdui-list-item-text mdui-list-item-one-line">${artist}</div>
             </div>
-            <!--#todo <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="songAction(\`${song.id}\`, \`${song.source}\`)">
+            <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="songAction(\`${song.id}\`, \`${song.source}\`)">
                 <i class="mdui-icon material-icons">more_vert</i>
-            </button>-->
+            </button>
             <button class="mdui-btn mdui-btn-icon mdui-ripple close" data-now-play-id="${i}">
                 <i class="mdui-icon material-icons">close</i>
             </button>
@@ -1191,21 +1192,21 @@ async function showLrcChoose() {
         artist = nowPlaying.artist || ''
     let list = (lyrics, keyword = '') => {
         r = `<div class="mdui-row">
-                            <div class="mdui-col-md-6 mdui-col-offset-md-3">
-                                <div class="mdui-textfield">
-                                    <i class="mdui-icon material-icons">search</i>
-                                    <input class="mdui-textfield-input" 
-                                        id="searchLrc" 
-                                        type="text" 
-                                        placeholder="搜尋歌詞" 
-                                        value="${keyword}" 
-                                        required/>
-                                    <div class="mdui-textfield-error">尚未輸入關鍵字</div>
-                                    <div class="mdui-textfield-helper">輸入完後按下 Enter 開始搜尋歌詞</div>
-                                </div>
-                            </div>
-                        </div>
-                    <ul class="mdui-list">`;
+                <div class="mdui-col-md-6 mdui-col-offset-md-3">
+                    <div class="mdui-textfield">
+                        <i class="mdui-icon material-icons">search</i>
+                        <input class="mdui-textfield-input" 
+                            id="searchLrc" 
+                            type="text" 
+                            placeholder="搜尋歌詞" 
+                            value="${keyword}" 
+                            required/>
+                        <div class="mdui-textfield-error">尚未輸入關鍵字</div>
+                        <div class="mdui-textfield-helper">輸入完後按下 Enter 開始搜尋歌詞</div>
+                    </div>
+                </div>
+            </div>
+        <ul class="mdui-list">`;
         r += `<li class="mdui-list-item mdui-ripple" data-lrc-id="no">
                     <div class="mdui-list-item-content">
                         <div class="mdui-list-item-title mdui-list-item-one-line">不載入歌詞</div>
@@ -1223,8 +1224,6 @@ async function showLrcChoose() {
                         </li>`
             }
         }
-
-
         r += `</ul></div>`
         return r
     }
@@ -1267,32 +1266,124 @@ async function showLrcChoose() {
     search(`${name} ${artist}`)
 }
 //- 彈出歌曲操作窗窗
-async function songAction(song, source) {
+async function songAction(songID, source) {
     let url = window.location.hash
+    let song = () => {
+        for (i = 0; i < songList.length; i++)
+            if (songList[i].id == songID)
+                return songList[i]
+    }
+    song = song()
     router.pause();
     mdui.dialog({
-        title: '歌曲操作',
-        content: `
-        <ul class="mdui-list">
-            <li class="mdui-list-item mdui-ripple">
-                <i class="mdui-list-item-icon mdui-icon material-icons">turned_in_not</i>
-                <div class="mdui-list-item-content">收藏</div>
-            </li>
-            <li class="mdui-list-item mdui-ripple">
-                <i class="mdui-list-item-icon mdui-icon material-icons">star</i>
-                <div class="mdui-list-item-content">評分</div>
-            </li>
-            <li class="mdui-list-item mdui-ripple">
-                <i class="mdui-list-item-icon mdui-icon material-icons">playlist_add</i>
-                <div class="mdui-list-item-content">加入到播放清單</div>
-            </li>
-        </ul>
-        <div class="mdui-dialog-actions">
-            <button class="mdui-btn mdui-ripple" mdui-dialog-confirm>取消</button>
-        </div>`,
+        title: '<div data-title>歌曲操作</div>',
+        buttons: [{
+            text: '取消'
+        }],
+        content: `<div data-content>${template.getSpinner()}</div><data-close mdui-dialog-close></data-close>`,
         onClosed: () => {
             router.navigate(url);
             router.resume();
         }
     });
+    mdui.mutation();
+    let userPlaylists = await getUserPlaylists(song.source)
+    let iscanRating = await canRating(song.source)
+    let actions = `<ul class="mdui-list">
+        <li class="mdui-list-item mdui-ripple" mdui-dialog-close data-action="like" style="pointer-events: none; opacity: .5;">
+            <i class="mdui-list-item-icon mdui-icon material-icons">turned_in_not</i>
+            <div class="mdui-list-item-content">收藏</div>
+        </li>
+        <li class="mdui-list-item mdui-ripple" data-action="rating" ${iscanRating?``:`style="pointer-events: none; opacity: .5;"`}>
+            <i class="mdui-list-item-icon mdui-icon material-icons">star</i>
+            <div class="mdui-list-item-content">評分</div>
+        </li>
+        <li class="mdui-list-item mdui-ripple" data-action="playlistAdd" ${userPlaylists.length>0?``:`style="pointer-events: none; opacity: .5;"`}>
+            <i class="mdui-list-item-icon mdui-icon material-icons">playlist_add</i>
+            <div class="mdui-list-item-content">加入到播放清單</div>
+        </li>
+    </ul>`
+    $(`[data-content]`).html(actions)
+    $(`[data-content]`).animateCss('fadeIn faster')
+    $(`[data-action="like"]`).click(() => songActionLike(song, url))
+    $(`[data-action="rating"]`).click(() => {
+        $(`[data-title]`).text(`評分`)
+        $(`[data-content]`).html(`
+        <div id="rating" class="mdui-text-center">
+            <button class="mdui-btn mdui-btn-icon" data-rating="1"><i class="mdui-icon material-icons">star</i></button>
+            <button class="mdui-btn mdui-btn-icon" data-rating="2"><i class="mdui-icon material-icons">star</i></button>
+            <button class="mdui-btn mdui-btn-icon" data-rating="3"><i class="mdui-icon material-icons">star</i></button>
+            <button class="mdui-btn mdui-btn-icon" data-rating="4"><i class="mdui-icon material-icons">star</i></button>
+            <button class="mdui-btn mdui-btn-icon" data-rating="5"><i class="mdui-icon material-icons">star</i></button>
+        </div>
+        `)
+        $(`[data-content]`).animateCss('fadeIn faster')
+        $(`[data-rating]`).click(async function(){
+            $(`data-close`).click()
+            let star=$(this).attr('data-rating')
+            let rating = await ratingSong(song.source, song.id, star)
+            let msg = rating ? `${song.name} 評分 ${star} 星成功！` : `${song.name} 評分失敗！`
+            mdui.snackbar({ message: msg, timeout: 500, position: getSnackbarPosition() });
+        })
+    })
+    $(`[data-action="playlistAdd"]`).click(async function() {
+        $(`[data-title]`).text(`加入到播放清單`)
+        let content;
+        /* */
+        content = $(`<ul class="mdui-list"/>`)
+        for (let i = 0; i < userPlaylists.length; i++) {
+            let icon = userPlaylists[i].image ? `<div class="mdui-list-item-avatar"><img src="${userPlaylists[i].image}"/></div>` : ``
+            let exist = (await playlistExist(userPlaylists[i].source, [song.id], userPlaylists[i].id)).code == 200
+            content.append(
+                $(`<li class="mdui-list-item mdui-ripple">
+                        ${icon}
+                        <div class="mdui-list-item-content">
+                            <div class="mdui-list-item-title">${userPlaylists[i].name}</div>
+                            <div class="mdui-list-item-text">${moduleShowName[userPlaylists[i].source]}${exist?` / 該歌曲已存在，點擊來刪除`:``}</div>
+                        </div>
+                        <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-grey-400">${exist?`remove_circle`:`playlist_add`}</i>
+                </li>`).click(async() => {
+                        $(`data-close`).click()
+                        let result = await playlistOperation(userPlaylists[i].source, [song.id], userPlaylists[i].id)
+                        let message
+                        if (!result.result) message = `處理 ${song.name} 時發生了錯誤`
+                        if (result.exist == 404) message = `已將 ${song.name} 加入到 ${userPlaylists[i].name}`
+                        if (result.exist == 200) message = `已將 ${song.name} 從 ${userPlaylists[i].name} 刪除`
+                        mdui.snackbar({ message: message, timeout: 500, position: getSnackbarPosition() });
+                })
+            )
+        }
+        $(`[data-content]`).html('')
+        $(`[data-content]`).append(content)
+        $(`[data-content]`).animateCss('fadeIn faster')
+    })
 }
+async function songActionLike(song) {
+    mdui.snackbar({ message: `已收藏 ${song.name}`, timeout: 500, position: getSnackbarPosition() });
+}
+//- animateCss
+$.fn.extend({
+    animateCss: function(animationName, callback) {
+        var animationEnd = (function(el) {
+            var animations = {
+                animation: 'animationend',
+                OAnimation: 'oAnimationEnd',
+                MozAnimation: 'mozAnimationEnd',
+                WebkitAnimation: 'webkitAnimationEnd',
+            };
+
+            for (var t in animations) {
+                if (el.style[t] !== undefined) {
+                    return animations[t];
+                }
+            }
+        })(document.createElement('div'));
+
+        this.addClass('animated ' + animationName).one(animationEnd, function() {
+            $(this).removeClass('animated ' + animationName);
+            if (typeof callback === 'function') callback();
+        });
+
+        return this;
+    },
+});

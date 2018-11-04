@@ -167,6 +167,29 @@ async function getAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 1)
         );
     });
 }
+async function postAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 3) {
+    return new Promise(function(resolve, reject) {
+        let form = {}
+        form.api = API_NAME
+        form.method = METHOD
+        form.version = VERSION
+        for (i = 0; i < PARAMS_JSON.length; i++) {
+            form[PARAMS_JSON[i].key] = PARAMS_JSON[i].value
+        }
+        request.post(
+            `${dsmURL}/webapi/${CGI_PATH}`, {
+                form: form
+            },
+            function(error, res, body) {
+                if (!error && res.statusCode == 200) {
+                    resolve(JSON.parse(body));
+                } else {
+                    reject(error);
+                }
+            }
+        );
+    });
+}
 
 async function getHome() {
     let result = await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "list", [
@@ -259,23 +282,19 @@ async function addPin(type, id, name) {
         let albumData = JSON.parse(id);
         let criteria = "{";
         criteria += albumData.album_name ? `"album":"${albumData.album_name}",` : "";
-        criteria += albumData.album_artist_name
-            ? `"album_artist":"${albumData.album_artist_name || albumData.artist_name}"`
-            : "";
+        criteria += albumData.album_artist_name ?
+            `"album_artist":"${albumData.album_artist_name || albumData.artist_name}"` :
+            "";
         criteria += "}";
-        PARAMS_JSON = [
-            {
-                key: "items",
-                value: `[{"type":"${type}","criteria":${criteria},"name":"${name}"}]`
-            }
-        ];
+        PARAMS_JSON = [{
+            key: "items",
+            value: `[{"type":"${type}","criteria":${criteria},"name":"${name}"}]`
+        }];
     } else
-        PARAMS_JSON = [
-            {
-                key: "items",
-                value: `[{"type":"${type}","criteria":{"${type}":"${id}"},"name":"${name}"}]`
-            }
-        ];
+        PARAMS_JSON = [{
+            key: "items",
+            value: `[{"type":"${type}","criteria":{"${type}":"${id}"},"name":"${name}"}]`
+        }];
     result = await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "pin", PARAMS_JSON);
     if (result.success) return result.success;
     else return result.error;
@@ -287,17 +306,16 @@ async function isPinned(type, id, name) {
     ])).data;
     for (i = 0; i < result.items.length; i++) {
         let pin = result.items[i];
-        if (pin.type == type) if (pin.name == name) return pin.id;
+        if (pin.type == type)
+            if (pin.name == name) return pin.id;
     }
     return false;
 }
 async function unPin(type, id, name) {
-    let PARAMS_JSON = [
-            {
-                key: "items",
-                value: `["${await isPinned(type, id, name)}"]`
-            }
-        ],
+    let PARAMS_JSON = [{
+            key: "items",
+            value: `["${await isPinned(type, id, name)}"]`
+        }],
         result = await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "unpin", PARAMS_JSON);
     if (result.success) return result.success;
     else return result.error;
@@ -325,8 +343,7 @@ async function getSong(req, songRes, songId) {
     return request.get({
         url: url,
         headers: {
-            "User-Agent":
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
             Range: req.headers.range,
             Accept: req.headers.accept,
             Host: config.DSM.host
@@ -339,14 +356,14 @@ async function getCover(data) {
     let url = `${dsmURL}/webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getcover&view=default`;
     switch (coverData.type) {
         case "artist": //演出者
-            url += coverData.info
-                ? `&artist_name=${encodeURIComponent(coverData.info)}`
-                : `&artist_name=`;
+            url += coverData.info ?
+                `&artist_name=${encodeURIComponent(coverData.info)}` :
+                `&artist_name=`;
             break;
         case "composer": //作曲者
-            url += coverData.info
-                ? `&composer_name=${encodeURIComponent(coverData.info)}`
-                : `&composer_name=`;
+            url += coverData.info ?
+                `&composer_name=${encodeURIComponent(coverData.info)}` :
+                `&composer_name=`;
             break;
         case "genre": //類型
             url += coverData.info ? `&genre_name=${encodeURIComponent(coverData.info)}` : ``;
@@ -362,15 +379,15 @@ async function getCover(data) {
             }`;
             break;
         case "album": //專輯
-            url += coverData.info.album_name
-                ? `&album_name=${encodeURIComponent(coverData.info.album_name)}`
-                : ``;
-            url += coverData.info.artist_name
-                ? `&artist_name=${encodeURIComponent(coverData.info.artist_name)}`
-                : ``;
-            url += coverData.info.album_artist_name
-                ? `&album_artist_name=${encodeURIComponent(coverData.info.album_artist_name)}`
-                : `&album_artist_name=`;
+            url += coverData.info.album_name ?
+                `&album_name=${encodeURIComponent(coverData.info.album_name)}` :
+                ``;
+            url += coverData.info.artist_name ?
+                `&artist_name=${encodeURIComponent(coverData.info.artist_name)}` :
+                ``;
+            url += coverData.info.album_artist_name ?
+                `&album_artist_name=${encodeURIComponent(coverData.info.album_artist_name)}` :
+                `&album_artist_name=`;
             break;
     }
     return request.get(url);
@@ -403,8 +420,7 @@ async function getAlbums() {
     let result = await getAPI(
         "AudioStation/album.cgi",
         "SYNO.AudioStation.Album",
-        "list",
-        [
+        "list", [
             { key: "additional", value: "avg_rating" },
             { key: "library", value: "shared" },
             { key: "limit", value: 1000 },
@@ -560,8 +576,7 @@ async function getPlaylists() {
     let playlist = await getAPI(
         "AudioStation/playlist.cgi",
         "SYNO.AudioStation.Playlist",
-        "list",
-        [
+        "list", [
             { key: "limit", value: 1000 },
             { key: "library", value: "shared" },
             { key: "sort_by", value: "" },
@@ -576,8 +591,7 @@ async function getPlaylistSongs(id) {
     let playlist = await getAPI(
         "AudioStation/playlist.cgi",
         "SYNO.AudioStation.Playlist",
-        "getinfo",
-        [
+        "getinfo", [
             { key: "limit", value: 1000 },
             { key: "library", value: "shared" },
             { key: "sort_by", value: "" },
@@ -593,21 +607,18 @@ async function getPlaylistSongs(id) {
     let result = playlist.data.playlists[0];
     return {
         songs: parseSongs(result.additional.songs),
-        playlists: [
-            {
-                name: result.name,
-                source: "DSM",
-                id: result.id
-            }
-        ]
+        playlists: [{
+            name: result.name,
+            source: "DSM",
+            id: result.id
+        }]
     };
 }
 async function getRandomSongs(id) {
     let result = await getAPI(
         "AudioStation/song.cgi",
         "SYNO.AudioStation.Song",
-        "list",
-        [
+        "list", [
             { key: "additional", value: "song_tag,song_audio,song_rating" },
             { key: "library", value: "shared" },
             { key: "limit", value: 100 },
@@ -622,8 +633,7 @@ async function getLyric(id) {
     let result = (await getAPI(
         "AudioStation/lyrics.cgi",
         "SYNO.AudioStation.Lyrics",
-        "getlyrics",
-        [{ key: "id", value: id }],
+        "getlyrics", [{ key: "id", value: id }],
         2
     )).data;
     result = result && result.lyrics ? result.lyrics : false;
@@ -631,6 +641,74 @@ async function getLyric(id) {
     else return false;
 }
 
+function playlistOperation(operation) {
+    /*
+    req.body: {
+        moduleName: "Netease2",
+        songIds: [songId <int>],
+        playlistId <int>
+    }
+*/
+    switch (operation) {
+        case "get":
+            return async(songIds, playlistId) => {
+                let offset = false;
+                let playlist = (await getPlaylistSongs(playlistId)).songs
+                for (let i = 0; i < playlist.length; i++)
+                    if (playlist[i].id == songIds[0])
+                        offset = true
+                return { code: offset ? 200 : 404 }
+            }
+        case "add":
+            return async(songIds, playlistId) => {
+                let result = await getAPI(
+                    "AudioStation/playlist.cgi",
+                    "SYNO.AudioStation.Playlist",
+                    "updatesongs", [
+                        { key: "offset", value: -1 },
+                        { key: "limit", value: 0 },
+                        { key: "id", value: playlistId },
+                        { key: "songs", value: songIds[0] }
+                    ]
+                );
+                return { code: result.success ? 200 : 400 }
+            }
+        case "delete":
+            return async(songIds, playlistId) => {
+                let offset;
+                let playlist = (await getPlaylistSongs(playlistId)).songs
+                for (let i = 0; i < playlist.length; i++)
+                    if (playlist[i].id == songIds[0])
+                        offset = i
+                let result = await getAPI(
+                    "AudioStation/playlist.cgi",
+                    "SYNO.AudioStation.Playlist",
+                    "updatesongs", [
+                        { key: "offset", value: offset },
+                        { key: "limit", value: 1 },
+                        { key: "id", value: playlistId },
+                        { key: "songs", value: '' }
+                    ],
+                    3
+                );
+                return { code: result.success ? 200 : 400 }
+            };
+
+    }
+}
+async function ratingSong(songid, rating) {
+    let result = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "setrating", [
+        { key: "id", value: songid },
+        { key: "rating", value: rating }
+    ], 3);
+    return result.success
+}
+async function getUserPlaylists() {
+    let info = await getAPI("AudioStation/info.cgi", "SYNO.AudioStation.Info", "getinfo", [], 4);
+    let result = (await getPlaylists()).playlists
+        // 看看 484 管理員
+    return info.data.is_manager ? result : result.filter(i => i.id.match(/^playlist_personal_normal/g));
+}
 async function searchLyrics(keyword) {
     let PARAMS_JSON = [
         { key: "additional", value: "full_lyrics" },
@@ -671,6 +749,9 @@ module.exports = {
     getPlaylists,
     getPlaylistSongs,
     getRandomSongs,
-    getLyric
+    getLyric,
+    playlistOperation,
+    getUserPlaylists,
+    ratingSong
     //searchLyrics //太慢
 };

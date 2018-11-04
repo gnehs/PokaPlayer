@@ -92,6 +92,45 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 
+/* 按鈕 */
+
+.mdui-btn:not(.mdui-btn-icon) {
+    border-radius: 8px;
+}
+
+
+/* 彈窗 */
+
+.mdui-dialog {
+    border-radius: 12px;
+    bottom: 0 !important;
+    top: 0 !important;
+    height: fit-content !important;
+}
+
+.mdui-dialog-content {
+    height: fit-content !important;
+    max-height: 635px;
+}
+
+
+/* 評比 */
+
+#rating>button:hover+button>i,
+#rating>button:hover+button+button>i,
+#rating>button:hover+button+button+button>i,
+#rating>button:hover+button+button+button+button>i {
+    font-size: 0;
+}
+
+#rating>button:hover+button>i:before,
+#rating>button:hover+button+button>i:before,
+#rating>button:hover+button+button+button>i:before,
+#rating>button:hover+button+button+button+button>i:before {
+    content: "star_border";
+}
+
+
 /* 列表 */
 
 .mdui-list-item {

@@ -77,3 +77,78 @@ async function getLrc(artist, title, id = false, source) {
 async function searchLrc(keyword) {
     return await axios.get(`/pokaapi/searchLyrics/?keyword=${encodeURIComponent(keyword)}`)
 }
+
+/*===== 評等 =====*/
+async function canRating(moduleName) {
+    let result;
+    try {
+        result = (await axios.get(`/pokaapi/ratingSong/?moduleName=${encodeURIComponent(moduleName)}`)).data
+    } catch (e) {
+        result = false
+    }
+    return result
+}
+async function ratingSong(moduleName, songId, rating) {
+    let result;
+    try {
+        result = (await axios.post(`/pokaapi/ratingSong/`, {
+            moduleName: moduleName,
+            songId: songId,
+            rating: rating
+        })).data
+    } catch (e) {
+        result = false
+    }
+    return result
+}
+/*===== 加入到播放清單 =====*/
+async function getUserPlaylists(module) {
+    let result
+    try {
+        result = (await axios.get(`/pokaapi/getUserPlaylists/?moduleName=${encodeURIComponent(module)}`)).data
+    } catch (e) {
+        result = false
+    }
+    return result
+}
+
+async function playlistExist(moduleName, songIds, playlistId) {
+    let exist, result;
+    // 確定存在
+    try {
+        result = (await axios.get(`/pokaapi/playlistOperation/?moduleName=${encodeURIComponent(moduleName)}&songIds=${encodeURIComponent(JSON.stringify([songIds]))}&playlistId=${encodeURIComponent(playlistId)}`)).data
+    } catch (e) {
+        result = false
+    }
+    return result
+}
+async function playlistOperation(moduleName, songIds, playlistId) {
+    let exist, result;
+    // 確定存在
+    try {
+        result = (await playlistExist(moduleName, songIds, playlistId))
+        exist = result.code
+    } catch (e) {
+        exist = false
+    }
+    // 刪除或新增
+    if (exist == 200) {
+        try {
+            result = (await axios.delete(`/pokaapi/playlistOperation/?moduleName=${encodeURIComponent(moduleName)}&songIds=${encodeURIComponent(JSON.stringify([songIds]))}&playlistId=${encodeURIComponent(playlistId)}`)).data
+        } catch (e) {
+            result = false
+        }
+    } else if (exist == 404 || !exist) {
+        //嘗試新增
+        try {
+            result = (await axios.post('/pokaapi/playlistOperation/', {
+                moduleName: moduleName,
+                songIds: songIds,
+                playlistId: playlistId
+            })).data
+        } catch (e) {
+            result = false
+        }
+    }
+    return { result, exist }
+}

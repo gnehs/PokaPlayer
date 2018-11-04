@@ -1,5 +1,5 @@
 const template = {
-    getSpinner: () => `<div class="mdui-spinner mdui-spinner-colorful mdui-center" style="margin-top:80px"></div>`,
+    getSpinner: () => `<div class="mdui-spinner mdui-spinner-colorful mdui-center" style="margin:50px 0"></div>`,
     parseHome: data => {
         let tab = `<div class="mdui-tab" mdui-tab>`
         let tabItem = (href, label, icon) => `<a href="#${href}" class="mdui-ripple">
@@ -81,11 +81,11 @@ const template = {
                     <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
                     <div class="mdui-list-item-text mdui-list-item-one-line">${artist}</div>
                 </div>
-                <!--#todo <button class="mdui-btn mdui-btn-icon mdui-ripple" 
+                <button class="mdui-btn mdui-btn-icon mdui-ripple" 
                         ${songAction}
                         title="更多選項">
                     <i class="mdui-icon material-icons">more_vert</i>
-                </button> -->
+                </button>
                 <button class="mdui-btn mdui-btn-icon mdui-ripple add" 
                         ${addAction}
                         title="加入這首歌曲到現正播放">
@@ -204,3 +204,4 @@ const template = {
         <div class="mdui-divider" style="margin: 10px 0"></div>`
     }
 }
+8
