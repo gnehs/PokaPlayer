@@ -1307,7 +1307,7 @@ async function songAction(songID, source) {
     $(`[data-content]`).animateCss('fadeIn faster')
     $(`[data-action="like"]`).click(() => songActionLike(song, url))
     $(`[data-action="rating"]`).click(() => {
-        $(`[data-title]`).text(`評分`)
+        $(`[data-title]`).text(`評等`)
         $(`[data-content]`).html(`
         <div id="rating" class="mdui-text-center">
             <button class="mdui-btn mdui-btn-icon" data-rating="1"><i class="mdui-icon material-icons">star</i></button>
@@ -1316,13 +1316,17 @@ async function songAction(songID, source) {
             <button class="mdui-btn mdui-btn-icon" data-rating="4"><i class="mdui-icon material-icons">star</i></button>
             <button class="mdui-btn mdui-btn-icon" data-rating="5"><i class="mdui-icon material-icons">star</i></button>
         </div>
+        <div class="mdui-text-center">
+            <p>為「${song.name}評等</p>
+            <button class="mdui-btn mdui-btn-raised mdui-text-center" data-rating="0">清除評等</button>
+        </div>
         `)
         $(`[data-content]`).animateCss('fadeIn faster')
         $(`[data-rating]`).click(async function(){
             $(`data-close`).click()
             let star=$(this).attr('data-rating')
             let rating = await ratingSong(song.source, song.id, star)
-            let msg = rating ? `${song.name} 評分 ${star} 星成功！` : `${song.name} 評分失敗！`
+            let msg = rating ? `為「${song.name}」${star==0 ? `清除評等` : `評分 ${star} 星`}成功！` : `為「${song.name}」評等失敗！`
             mdui.snackbar({ message: msg, timeout: 500, position: getSnackbarPosition() });
         })
     })
