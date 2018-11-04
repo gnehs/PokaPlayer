@@ -503,7 +503,7 @@ async function showAlbumSongs(albumSource, albumID) {
     // 展示讀取中
     let albumInfo = template.infoHeader('', '', '')
     pokaHeader('', '')
-    $("#content").html(albumInfo + template.getSpinner())
+    $("#content").html(template.getSpinner())
     mdui.mutation()
 
     let name, artist, cover, result;
