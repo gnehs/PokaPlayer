@@ -1315,25 +1315,24 @@ async function songAction(songID, source) {
             let icon = userPlaylists[i].image ? `<div class="mdui-list-item-avatar"><img src="${userPlaylists[i].image}"/></div>` : ``
             let exist = (await playlistExist(userPlaylists[i].source, [song.id], userPlaylists[i].id)).code == 200
             content.append(
-                    $(`<li class="mdui-list-item mdui-ripple">
-                            ${icon}
-                            <div class="mdui-list-item-content">
-                                <div class="mdui-list-item-title">${userPlaylists[i].name}</div>
-                                <div class="mdui-list-item-text">${moduleShowName[userPlaylists[i].source]}${exist?` / 該歌曲已存在，點擊來刪除`:``}</div>
-                            </div>
-                            <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-grey-400">${exist?`remove_circle`:`playlist_add`}</i>
-                    </li>`).click(async() => {
-                            $(`data-close`).click()
-                            let result = await playlistOperation(userPlaylists[i].source, [song.id], userPlaylists[i].id)
-                            let message
-                            if (!result.result) message = `處理 ${song.name} 時發生了錯誤`
-                            if (result.exist == 404) message = `已將 ${song.name} 加入到 ${userPlaylists[i].name}`
-                            if (result.exist == 200) message = `已將 ${song.name} 從 ${userPlaylists[i].name} 刪除`
-                            mdui.snackbar({ message: message, timeout: 500, position: getSnackbarPosition() });
-                    })
-                )
-            }
-        
+                $(`<li class="mdui-list-item mdui-ripple">
+                        ${icon}
+                        <div class="mdui-list-item-content">
+                            <div class="mdui-list-item-title">${userPlaylists[i].name}</div>
+                            <div class="mdui-list-item-text">${moduleShowName[userPlaylists[i].source]}${exist?` / 該歌曲已存在，點擊來刪除`:``}</div>
+                        </div>
+                        <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-grey-400">${exist?`remove_circle`:`playlist_add`}</i>
+                </li>`).click(async() => {
+                        $(`data-close`).click()
+                        let result = await playlistOperation(userPlaylists[i].source, [song.id], userPlaylists[i].id)
+                        let message
+                        if (!result.result) message = `處理 ${song.name} 時發生了錯誤`
+                        if (result.exist == 404) message = `已將 ${song.name} 加入到 ${userPlaylists[i].name}`
+                        if (result.exist == 200) message = `已將 ${song.name} 從 ${userPlaylists[i].name} 刪除`
+                        mdui.snackbar({ message: message, timeout: 500, position: getSnackbarPosition() });
+                })
+            )
+        }
         $(`[data-content]`).html('')
         $(`[data-content]`).append(content)
         $(`[data-content]`).animateCss('fadeIn faster')
