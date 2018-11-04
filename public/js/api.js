@@ -88,22 +88,35 @@ async function getUserPlaylists(module) {
     }
     return result
 }
-async function playlistOperation(moduleName, songIds, playlistId) {
+
+async function playlistExist(moduleName, songIds, playlistId) {
     let exist, result;
     // 確定存在
     try {
         result = (await axios.get(`/pokaapi/playlistOperation/?moduleName=${encodeURIComponent(moduleName)}&songIds=${encodeURIComponent(JSON.stringify([songIds]))}&playlistId=${encodeURIComponent(playlistId)}`)).data
+    } catch (e) {
+        result = false
+    }
+    return result
+}
+async function playlistOperation(moduleName, songIds, playlistId) {
+    let exist, result;
+    // 確定存在
+    try {
+        result = (await playlistExist(moduleName, songIds, playlistId))
         exist = result.code
     } catch (e) {
         exist = false
     }
-    if (exist == 200)
+    // 刪除或新增
+    if (exist == 200) {
         try {
             result = (await axios.delete(`/pokaapi/playlistOperation/?moduleName=${encodeURIComponent(moduleName)}&songIds=${encodeURIComponent(JSON.stringify([songIds]))}&playlistId=${encodeURIComponent(playlistId)}`)).data
         } catch (e) {
             result = false
         }
-    else if (exist == 404)
+    } else if (exist == 404 || !exist) {
+        //嘗試新增
         try {
             result = (await axios.post('/pokaapi/playlistOperation/', {
                 moduleName: moduleName,
@@ -113,5 +126,6 @@ async function playlistOperation(moduleName, songIds, playlistId) {
         } catch (e) {
             result = false
         }
+    }
     return { result, exist }
 }

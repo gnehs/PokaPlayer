@@ -603,6 +603,7 @@ router
             result = false
             showError(moduleName, e)
         }
+        res.header("Cache-Control", "max-age=0") //快取 0
         return res.json(result);
     })
     .post("/playlistOperation", async(req, res) => {
@@ -650,6 +651,7 @@ router
             result = false
             showError(moduleName, e)
         }
+        res.header("Cache-Control", "max-age=0") //快取 0
         return res.json(result);
     })
 
