@@ -77,3 +77,27 @@ async function getLrc(artist, title, id = false, source) {
 async function searchLrc(keyword) {
     return await axios.get(`/pokaapi/searchLyrics/?keyword=${encodeURIComponent(keyword)}`)
 }
+
+/*===== 加入到播放清單 =====*/
+async function getUserPlaylists(module) {
+    let result
+    try {
+        result = (await axios.get(`/pokaapi/getUserPlaylists/?moduleName=${encodeURIComponent(module)}`)).data
+    } catch (e) {
+        result = false
+    }
+    return result
+}
+async function playlistOperation(moduleName, songIds, playlistId) {
+    let result
+    try {
+        result = (await axios.post('/pokaapi/playlistOperation/', {
+            moduleName: moduleName,
+            songIds: songIds,
+            playlistId: playlistId
+        })).data
+    } catch (e) {
+        result = false
+    }
+    return result
+}
