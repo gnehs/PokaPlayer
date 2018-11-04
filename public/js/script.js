@@ -1296,7 +1296,7 @@ async function songAction(songID, source) {
         </li>
         <li class="mdui-list-item mdui-ripple" data-action="rating" ${iscanRating?``:`style="pointer-events: none; opacity: .5;"`}>
             <i class="mdui-list-item-icon mdui-icon material-icons">star</i>
-            <div class="mdui-list-item-content">評分</div>
+            <div class="mdui-list-item-content">評等</div>
         </li>
         <li class="mdui-list-item mdui-ripple" data-action="playlistAdd" ${userPlaylists.length>0?``:`style="pointer-events: none; opacity: .5;"`}>
             <i class="mdui-list-item-icon mdui-icon material-icons">playlist_add</i>

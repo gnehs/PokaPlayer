@@ -491,7 +491,7 @@ router.get("/song/", async(req, res) => {
             })
             .pipe(res);
 });
-//- 評分
+//- 評等
 router
     .get("/ratingSong/", async(req, res) => { // 戳戳看能不能用
         //http://localhost:3000/pokaapi/ratingSong/?moduleName=DSM
