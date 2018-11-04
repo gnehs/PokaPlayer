@@ -582,6 +582,29 @@ router.get("/getUserPlaylists", async(req, res) => {
 
 //-----------------------------> 清單動作
 router
+    .get("/playlistOperation", async(req, res) => {
+        // http://localhost:3000/pokaapi/playlistOperation/
+        /*
+            ------->>>>>req.query: {
+                moduleName: "Netease2",
+                songIds: [songId <int>],
+                playlistId <int>
+            }
+        */
+        let moduleName = req.query.moduleName;
+        let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+        // 沒這東西
+        if (!_module || moduleList[moduleName].active.indexOf("playlistOperation") == -1)
+            return res.status(501).send("The required module is currently unavailable :(");
+        let result;
+        try {
+            result = await _module.playlistOperation("get")(JSON.parse(req.query.songIds), req.query.playlistId)
+        } catch (e) {
+            result = false
+            showError(moduleName, e)
+        }
+        return res.json(result);
+    })
     .post("/playlistOperation", async(req, res) => {
         // http://localhost:3000/pokaapi/playlistOperation/
         /*
@@ -594,10 +617,11 @@ router
         let moduleName = req.body.moduleName;
         let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
         // 沒這東西
-        if (!_module || moduleList[moduleName].active.indexOf("getUserPlaylists") == -1)
+        if (!_module || moduleList[moduleName].active.indexOf("playlistOperation") == -1)
             return res.status(501).send("The required module is currently unavailable :(");
         let result;
         try {
+            console.log(req.body.songIds, req.body.playlistId)
             result = await _module.playlistOperation("add")(req.body.songIds, req.body.playlistId)
         } catch (e) {
             result = false
@@ -608,20 +632,20 @@ router
     .delete("/playlistOperation", async(req, res) => {
         // http://localhost:3000/pokaapi/playlistOperation/
         /*
-            req.body: {
+            req.query: {
                 moduleName: "Netease2",
                 songIds: [songId <int>],
                 playlistId <int>
             }
         */
-        let moduleName = req.body.moduleName;
+        let moduleName = req.query.moduleName;
         let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
         // 沒這東西
-        if (!_module || moduleList[moduleName].active.indexOf("getUserPlaylists") == -1)
+        if (!_module || moduleList[moduleName].active.indexOf("playlistOperation") == -1)
             return res.status(501).send("The required module is currently unavailable :(");
         let result;
         try {
-            result = await _module.playlistOperation("delete")(req.body.songIds, req.body.playlistId)
+            result = await _module.playlistOperation("delete")(JSON.parse(req.query.songIds), req.query.playlistId)
         } catch (e) {
             result = false
             showError(moduleName, e)

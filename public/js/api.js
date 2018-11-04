@@ -89,15 +89,29 @@ async function getUserPlaylists(module) {
     return result
 }
 async function playlistOperation(moduleName, songIds, playlistId) {
-    let result
+    let exist, result;
+    // 確定存在
     try {
-        result = (await axios.post('/pokaapi/playlistOperation/', {
-            moduleName: moduleName,
-            songIds: songIds,
-            playlistId: playlistId
-        })).data
+        result = (await axios.get(`/pokaapi/playlistOperation/?moduleName=${encodeURIComponent(moduleName)}&songIds=${encodeURIComponent(JSON.stringify([songIds]))}&playlistId=${encodeURIComponent(playlistId)}`)).data
+        exist = result.code
     } catch (e) {
-        result = false
+        exist = false
     }
-    return result
+    if (exist == 200)
+        try {
+            result = (await axios.delete(`/pokaapi/playlistOperation/?moduleName=${encodeURIComponent(moduleName)}&songIds=${encodeURIComponent(JSON.stringify([songIds]))}&playlistId=${encodeURIComponent(playlistId)}`)).data
+        } catch (e) {
+            result = false
+        }
+    else if (exist == 404)
+        try {
+            result = (await axios.post('/pokaapi/playlistOperation/', {
+                moduleName: moduleName,
+                songIds: songIds,
+                playlistId: playlistId
+            })).data
+        } catch (e) {
+            result = false
+        }
+    return { result, exist }
 }
