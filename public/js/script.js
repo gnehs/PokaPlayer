@@ -1309,7 +1309,8 @@ async function songAction(songID, source) {
                 $(`[data-content]`).html(template.getSpinner())
                 mdui.mutation();
                 let userPlaylists = await getUserPlaylists(song.source),
-                    content
+                    content;
+                /* */
                 if (userPlaylists) {
                     content = $(`<ul class="mdui-list"/>`)
                     for (let i = 0; i < userPlaylists.length; i++) {
@@ -1317,29 +1318,29 @@ async function songAction(songID, source) {
                         let exist = (await playlistExist(userPlaylists[i].source, [song.id], userPlaylists[i].id)).code == 200
                         content.append(
                                 $(`<li class="mdui-list-item mdui-ripple">
-                            ${icon}
-                            <div class="mdui-list-item-content">
-                                <div class="mdui-list-item-title">${userPlaylists[i].name}</div>
-                                <div class="mdui-list-item-text">${moduleShowName[userPlaylists[i].source]}${exist?` / 該歌曲已存在，點擊來刪除`:``}</div>
-                            </div>
-                            <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-grey-400">${exist?`remove_circle`:`playlist_add`}</i>
-                        </li>`).click(async() => {
-                        $(`data-close`).click()
-                        let result = await playlistOperation(userPlaylists[i].source, [song.id], userPlaylists[i].id)
-                        let message
-                        if (!result.result) message = `處理 ${song.name} 時發生了錯誤`
-                        if (result.exist == 404) message = `已將 ${song.name} 加入到 ${userPlaylists[i].name}`
-                        if (result.exist == 200) message = `已將 ${song.name} 從 ${userPlaylists[i].name} 刪除`
-                        mdui.snackbar({ message: message, timeout: 500, position: getSnackbarPosition() });
-                    })
-                )
-            }
-        } else {
-            content = $('<div class="mdui-text-center" style="margin-top:80px">無播放清單可加入或該模組無此功能</div>')
-        }
-        $(`[data-content]`).html('')
-        $(`[data-content]`).append(content)
-        $(`[data-content]`).animateCss('fadeIn faster')
+                                    ${icon}
+                                    <div class="mdui-list-item-content">
+                                        <div class="mdui-list-item-title">${userPlaylists[i].name}</div>
+                                        <div class="mdui-list-item-text">${moduleShowName[userPlaylists[i].source]}${exist?` / 該歌曲已存在，點擊來刪除`:``}</div>
+                                    </div>
+                                    <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-grey-400">${exist?`remove_circle`:`playlist_add`}</i>
+                            </li>`).click(async() => {
+                                    $(`data-close`).click()
+                                    let result = await playlistOperation(userPlaylists[i].source, [song.id], userPlaylists[i].id)
+                                    let message
+                                    if (!result.result) message = `處理 ${song.name} 時發生了錯誤`
+                                    if (result.exist == 404) message = `已將 ${song.name} 加入到 ${userPlaylists[i].name}`
+                                    if (result.exist == 200) message = `已將 ${song.name} 從 ${userPlaylists[i].name} 刪除`
+                                    mdui.snackbar({ message: message, timeout: 500, position: getSnackbarPosition() });
+                            })
+                        )
+                    }
+                } else {
+                    content = $('<div class="mdui-text-center" style="margin-top:80px">無播放清單可加入或該模組無此功能</div>')
+                }
+                $(`[data-content]`).html('')
+                $(`[data-content]`).append(content)
+                $(`[data-content]`).animateCss('fadeIn faster')
     })
 }
 async function songActionLike(song) {

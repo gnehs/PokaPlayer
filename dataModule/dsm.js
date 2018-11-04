@@ -696,6 +696,13 @@ function playlistOperation(operation) {
 
     }
 }
+async function ratingSong(songid, rating) {
+    let result = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "setrating", [
+        { key: "id", value: songid },
+        { key: "rating", value: rating }
+    ], 3);
+    return result
+}
 async function getUserPlaylists() {
     let info = await getAPI("AudioStation/info.cgi", "SYNO.AudioStation.Info", "getinfo", [], 4);
     let result = (await getPlaylists()).playlists
@@ -744,6 +751,7 @@ module.exports = {
     getRandomSongs,
     getLyric,
     playlistOperation,
-    getUserPlaylists
+    getUserPlaylists,
+    ratingSong
     //searchLyrics //太慢
 };
