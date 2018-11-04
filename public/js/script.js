@@ -1320,10 +1320,10 @@ async function songAction(songID, source) {
                         <div class="mdui-list-item-title">${userPlaylists[i].name}</div>
                         <div class="mdui-list-item-text">${moduleShowName[userPlaylists[i].source]}</div>
                     </div>
+                    <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-grey-400">playlist_add</i>
                 </li>`).click(async() => {
                         $(`data-close`).click()
                         let result = await playlistOperation(userPlaylists[i].source, [song.id], userPlaylists[i].id)
-                        console.log(result)
                         let message = result.code == 200 ? `已將 ${song.name} 加入到 ${userPlaylists[i].name}` : `加入 ${song.name} 到播放清單時發生了錯誤`
                         mdui.snackbar({ message: message, timeout: 500, position: getSnackbarPosition() });
                     })
