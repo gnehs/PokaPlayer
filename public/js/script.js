@@ -551,7 +551,7 @@ async function showAlbumSongs(albumSource, albumID) {
     html = template.parseSongs(result.songs)
     albumInfo = template.infoHeader(cover, name, artist)
     if ($("#content").attr('data-page') == `album` && $("#content").attr('data-item') == `album${albumID}`) {
-        $("#content").html(result.songs.length > 0 ? albumInfo + html : nothingHere())
+        $("#content").html(result.songs.length > 0 ? albumInfo + html : nothingHere()).animateCss('fadeIn faster')
         pokaHeader('', '', cover)
         $("#content .info-header .time").html(`${result.songs.length} 首歌曲`)
         $("#content .info-header .actions").html(actions)
