@@ -649,7 +649,6 @@ router
             return res.status(501).send("The required module is currently unavailable :(");
         let result;
         try {
-            console.log(req.body.songIds, req.body.playlistId)
             result = await _module.playlistOperation("add")(req.body.songIds, req.body.playlistId)
         } catch (e) {
             result = false
