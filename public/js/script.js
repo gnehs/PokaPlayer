@@ -852,11 +852,11 @@ async function showNow() {
                 <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
                 <div class="mdui-list-item-text mdui-list-item-one-line">${artist}</div>
             </div>
-            <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="songAction(\`${song.id}\`, \`${song.source}\`)">
-                <i class="mdui-icon material-icons">more_vert</i>
-            </button>
             <button class="mdui-btn mdui-btn-icon mdui-ripple close" data-now-play-id="${i}">
                 <i class="mdui-icon material-icons">close</i>
+            </button>
+            <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="songAction(\`${song.id}\`, \`${song.source}\`)">
+                <i class="mdui-icon material-icons">more_horiz</i>
             </button>
         </li>`
     }

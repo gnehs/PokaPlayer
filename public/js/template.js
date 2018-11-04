@@ -81,15 +81,15 @@ const template = {
                     <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
                     <div class="mdui-list-item-text mdui-list-item-one-line">${artist}</div>
                 </div>
-                <button class="mdui-btn mdui-btn-icon mdui-ripple" 
-                        ${songAction}
-                        title="更多選項">
-                    <i class="mdui-icon material-icons">more_vert</i>
-                </button>
                 <button class="mdui-btn mdui-btn-icon mdui-ripple add" 
                         ${addAction}
                         title="加入這首歌曲到現正播放">
                     <i class="mdui-icon material-icons">add</i>
+                </button>
+                <button class="mdui-btn mdui-btn-icon mdui-ripple" 
+                        ${songAction}
+                        title="更多選項">
+                    <i class="mdui-icon material-icons">more_horiz</i>
                 </button>
             </li></div>`
         }
