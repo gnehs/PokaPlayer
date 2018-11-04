@@ -23,7 +23,7 @@ let moduleList = {};
 fs.readdir(__dirname + "/dataModule", (err, files) => {
     if (err) return console.error(err);
     files.forEach(async file => {
-        if (path.extname(file) == ".js") {
+        if (path.extname(file) == ".js" && !file.match(/^._/)) {
             let uri = __dirname + "/dataModule/" + file,
                 _module = require(uri);
             let moduleData = {
