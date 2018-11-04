@@ -110,7 +110,19 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 .mdui-dialog-content {
     height: fit-content !important;
-    max-height: 635px;
+    max-height: 60vh;
+}
+
+@media screen and (max-height:512px) {
+    .mdui-dialog-content {
+        max-height: 40vh;
+    }
+}
+
+@media screen and (max-height:256px) {
+    .mdui-dialog-content {
+        max-height: 20vh;
+    }
 }
 
 
