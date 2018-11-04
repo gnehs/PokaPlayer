@@ -1308,24 +1308,30 @@ async function songAction(songID, source) {
         $(`[data-title]`).text(`加入到播放清單`)
         $(`[data-content]`).html(template.getSpinner())
         mdui.mutation();
-        let userPlaylists = await getUserPlaylists(song.source)
-        let content = $(`<ul class="mdui-list"/>`)
-        for (let i = 0; i < userPlaylists.length; i++)
-            content.append(
-                $(`<li class="mdui-list-item mdui-ripple">
+        let userPlaylists = await getUserPlaylists(song.source),
+            content
+        if (userPlaylists) {
+            content = $(`<ul class="mdui-list"/>`)
+            for (let i = 0; i < userPlaylists.length; i++) {
+                content.append(
+                    $(`<li class="mdui-list-item mdui-ripple">
                     <div class="mdui-list-item-avatar"><img src="${userPlaylists[i].image}"/></div>
                     <div class="mdui-list-item-content">
                         <div class="mdui-list-item-title">${userPlaylists[i].name}</div>
                         <div class="mdui-list-item-text">${moduleShowName[userPlaylists[i].source]}</div>
                     </div>
                 </li>`).click(async() => {
-                    $(`data-close`).click()
-                    let result = await playlistOperation(userPlaylists[i].source, [song.id], userPlaylists[i].id)
-                    console.log(result)
-                    let message = result.code == 200 ? `已將 ${song.name} 加入到 ${userPlaylists[i].name}` : `加入 ${song.name} 到播放清單時發生了錯誤`
-                    mdui.snackbar({ message: message, timeout: 500, position: getSnackbarPosition() });
-                })
-            )
+                        $(`data-close`).click()
+                        let result = await playlistOperation(userPlaylists[i].source, [song.id], userPlaylists[i].id)
+                        console.log(result)
+                        let message = result.code == 200 ? `已將 ${song.name} 加入到 ${userPlaylists[i].name}` : `加入 ${song.name} 到播放清單時發生了錯誤`
+                        mdui.snackbar({ message: message, timeout: 500, position: getSnackbarPosition() });
+                    })
+                )
+            }
+        } else {
+            content = $('<div class="mdui-center" style="margin-top:80px">無播放清單可加入或該模組無此功能</div>')
+        }
         $(`[data-content]`).html('')
         $(`[data-content]`).append(content)
         $(`[data-content]`).animateCss('fadeIn fast')
