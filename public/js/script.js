@@ -538,12 +538,14 @@ async function showAlbumSongs(albumSource, albumID) {
     $("#content").attr('data-item', `album${albumID}`)
 
     // 展示讀取中
-    let albumInfo = template.infoHeader('', '', '')
-    pokaHeader('', '')
+    let cover = '';
+    if (albumSource == 'DSM') cover = `/pokaapi/cover/?moduleName=${encodeURIComponent(albumSource)}&data=${encodeURIComponent(JSON.stringify({ type: "album", info: JSON.parse(albumID) }))}`
+    let albumInfo = template.infoHeader(cover, '', '')
+    pokaHeader('', '', cover)
     $("#content").html(template.getSpinner())
     mdui.mutation()
 
-    let name, artist, cover, result;
+    let name, artist, result;
     if (albumSource == 'DSM') {
         let albumData = JSON.parse(albumID)
         name = albumData.album_name
