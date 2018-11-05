@@ -6,7 +6,7 @@ const template = {
             result += `
             <div class="mdui-typo">
                 <h1>
-                    <strong>${data[i].title}</strong>
+                    <strong>${data[i].title}</strong> <small>${moduleShowName[data[i].source]}</small>
                     </br>
                     <small>${data[i].description}</small>
                 </h1>

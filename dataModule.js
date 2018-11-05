@@ -67,7 +67,6 @@ router.get("/home/", async (req, res) => {
         if (x.active.indexOf("getHome") > -1) {
             try {
                 let result = (await y.getHome(playlist)) || null;
-                console.log(result)
                 if (result)
                     for (i = 0; i < result.length; i++)
                         resData.push(result[i])

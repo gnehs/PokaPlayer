@@ -295,7 +295,11 @@ async function getHome() {
                 break;
         }
     }
-    return [home];
+    let latestAlbum = await getAlbums(20, "time", "desc")
+    latestAlbum.title = "最近加入的專輯"
+    latestAlbum.description = "資料庫裡最新的 20 張專輯"
+    latestAlbum.source = "DSM"
+    return [home, latestAlbum];
 }
 async function addPin(type, id, name) {
     let PARAMS_JSON;
@@ -430,7 +434,7 @@ async function search(keyword, options = {}) {
         },
         {
             key: "limit",
-            value: 1000
+            value: 50
         },
         {
             key: "sort_by",
@@ -459,7 +463,7 @@ async function search(keyword, options = {}) {
     };
 }
 
-async function getAlbums() {
+async function getAlbums(limit = 1000, sort_by = "name", sort_direction = "ASC") {
     let result = await getAPI(
         "AudioStation/album.cgi",
         "SYNO.AudioStation.Album",
@@ -473,15 +477,15 @@ async function getAlbums() {
             },
             {
                 key: "limit",
-                value: 1000
+                value: limit
             },
             {
                 key: "sort_by",
-                value: "name"
+                value: sort_by
             },
             {
                 key: "sort_direction",
-                value: "ASC"
+                value: sort_direction
             }
         ],
         3
