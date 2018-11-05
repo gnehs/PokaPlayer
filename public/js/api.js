@@ -35,7 +35,7 @@ async function addPin(source, type, id, name) {
             position: getSnackbarPosition()
         })
     else
-        caches.open('PokaPlayer').then(function(cache) {
+        caches.open('PokaPlayer').then(function (cache) {
             cache.delete('/pokaapi/home')
         })
     return result
@@ -49,7 +49,7 @@ async function unPin(source, type, id, name) {
             position: getSnackbarPosition()
         })
     else
-        caches.open('PokaPlayer').then(function(cache) {
+        caches.open('PokaPlayer').then(function (cache) {
             cache.delete('/pokaapi/home')
         })
     return result
@@ -65,13 +65,13 @@ async function getLrc(artist, title, id = false, source) {
             return result.data.lyrics[0].lyric
     }
     result = await axios.get(`/pokaapi/searchLyrics/?keyword=${encodeURIComponent(title+' '+artist)}`)
-
-    if (result.data.lyrics[0]) {
-        let lrcTitle = result.data.lyrics[0].name.toLowerCase().replace(/\.|\*|\~|\&|。|，|\ |\-|\!|！|\(|\)/g, '')
-        let songTitle = title.toLowerCase().replace(/\.|\*|\~|\&|。|，|\ |\-|\!|！|\(|\)/g, '')
-        if (lrcTitle == songTitle && result.data.lyrics[0].lyric.match(lyricRegex))
-            return result.data.lyrics[0].lyric
-    }
+    for (i = 0; i < (result.data.lyrics.length > 10 ? 10 : result.data.lyrics.length); i++)
+        if (result.data.lyrics[i]) {
+            let lrcTitle = result.data.lyrics[i].name.toLowerCase().replace(/\.|\*|\~|\&|。|，|\ |\-|\!|！|\(|\)/g, '')
+            let songTitle = title.toLowerCase().replace(/\.|\*|\~|\&|。|，|\ |\-|\!|！|\(|\)/g, '')
+            if (lrcTitle == songTitle && result.data.lyrics[i].lyric.match(lyricRegex))
+                return result.data.lyrics[i].lyric
+        }
     return false
 }
 async function searchLrc(keyword) {
@@ -150,5 +150,8 @@ async function playlistOperation(moduleName, songIds, playlistId) {
             result = false
         }
     }
-    return { result, exist }
+    return {
+        result,
+        exist
+    }
 }
