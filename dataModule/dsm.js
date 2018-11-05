@@ -215,8 +215,8 @@ async function getHome() {
         }
     ]);
     let home = {
-        title: '釘選的項目',
-        description: '使用釘選功能釘選在首頁的項目',
+        title: '釘選',
+        description: '釘選在首頁的項目',
         source: "DSM",
         artists: [],
         composers: [],
@@ -295,11 +295,14 @@ async function getHome() {
                 break;
         }
     }
+    let r = []
     let latestAlbum = await getAlbums(20, "time", "desc")
     latestAlbum.title = "最近加入的專輯"
-    latestAlbum.description = "資料庫裡最新的 20 張專輯"
+    latestAlbum.description = "Audio Station 裡最新的專輯"
     latestAlbum.source = "DSM"
-    return [home, latestAlbum];
+    r.push(home)
+    if (latestAlbum.albums.length > 0) r.push(latestAlbum)
+    return r
 }
 async function addPin(type, id, name) {
     let PARAMS_JSON;
