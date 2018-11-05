@@ -495,7 +495,7 @@ async function showSearch(keyword) {
     let noResult = `<div class="mdui-valign" style="height:150px"><p class="mdui-center">${noResultTexts[Math.floor(Math.random() * noResultTexts.length)]}</p></div>`
     if (keyword) {
         let result = await request(`/pokaapi/search/?keyword=${keyword}`);
-        let searchResults = template.parseHome(result);
+        let searchResults = template.parseSearch(result);
 
         //無搜尋結果
         if (!searchResults) searchResults = noResult

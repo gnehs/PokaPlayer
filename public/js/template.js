@@ -1,38 +1,54 @@
 const template = {
     getSpinner: () => `<div class="mdui-spinner mdui-spinner-colorful mdui-center" style="margin:50px 0"></div>`,
     parseHome: data => {
+        let result = ``
+        for (let i = 0; i < data.length; i++) {
+            result += `
+            <div class="mdui-typo">
+                <h1>
+                    <strong>${data[i].title}</strong>
+                    </br>
+                    <small>${data[i].description}</small>
+                </h1>
+            </div>`
+            result += template.parseSearch(data[i])
+            result += (i + 1 != data.length) ? `<div class="mdui-typo"><hr /></div>` : '' // 最後不加分隔線
+        }
+        return result
+    },
+    parseSearch: data => {
         let tab = `<div class="mdui-tab" mdui-tab>`
         let tabItem = (href, label, icon) => `<a href="#${href}" class="mdui-ripple">
             <i class="mdui-icon">${icon}</i>
             <label>${label}</label>
         </a>`
         let r = ``;
-        if (data.albums.length > 0) {
+        if (data.albums && data.albums.length > 0) {
             let randomId = Math.random().toString(36).substring(8)
             tab += tabItem(randomId, '專輯', data.albums.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseAlbums(data.albums)}</div>`
         }
-        if (data.artists.length > 0) {
+        if (data.artists && data.artists.length > 0) {
             let randomId = Math.random().toString(36).substring(8)
             tab += tabItem(randomId, '演出者', data.artists.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseArtists(data.artists)}</div>`
         }
-        if (data.composers.length > 0) {
+        if (data.composers && data.composers.length > 0) {
             let randomId = Math.random().toString(36).substring(8)
             tab += tabItem(randomId, '作曲者', data.composers.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseComposers(data.composers)}</div>`
         }
-        if (data.playlists.length > 0) {
+        if (data.playlists && data.playlists.length > 0) {
             let randomId = Math.random().toString(36).substring(8)
             tab += tabItem(randomId, '播放清單', data.playlists.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parsePlaylists(data.playlists)}</div>`
         }
-        if (data.folders.length > 0) {
+        if (data.folders && data.folders.length > 0) {
             let randomId = Math.random().toString(36).substring(8)
             tab += tabItem(randomId, '資料夾', data.folders.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseFolder(data.folders)}</div>`
         }
-        if (data.songs.length > 0) {
+        if (data.songs && data.songs.length > 0) {
             let randomId = Math.random().toString(36).substring(8)
             tab += tabItem(randomId, '歌曲', data.songs.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseSongs(data.songs)}</div>`

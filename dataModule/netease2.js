@@ -1034,7 +1034,10 @@ async function getHome() {
             );
     }
 
-    return {
+    return [{
+        title: '網易雲音樂',
+        description: '來自網易雲的推薦及釘選項目',
+        source: "Netease2",
         playlists: r.concat(
             ...(await resolveTopPlaylistStack(topPlaylistStack)),
             ...(await resolvedailyRecommendStack(dailyRecommendStack)),
@@ -1054,7 +1057,7 @@ async function getHome() {
             })
         ),
         composers: pinData.composers
-    };
+    }];
 }
 
 function playlistOperation(operation) {
