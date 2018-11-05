@@ -550,7 +550,6 @@ async function showAlbumSongs(albumSource, albumID) {
         let albumData = JSON.parse(albumID)
         name = albumData.album_name
         artist = albumData.album_artist_name
-        cover = `/pokaapi/cover/?moduleName=${encodeURIComponent(albumSource)}&data=${encodeURIComponent(JSON.stringify({ type: "album", info: albumData }))}`
         result = await request(`/pokaapi/albumSongs/?moduleName=${encodeURIComponent(albumSource)}&data=${encodeURIComponent(albumID)}`)
     } else {
         let albumData = (await request(`/pokaapi/album?moduleName=${encodeURIComponent(albumSource)}&id=${encodeURIComponent(albumID)}`))
@@ -569,22 +568,22 @@ async function showAlbumSongs(albumSource, albumID) {
     if (isAlbumPinned != 'disabled')
         if (isAlbumPinned)
             actions += `
-        <button class="mdui-btn mdui-btn-icon mdui-ripple" 
-                title="從首頁釘選移除此專輯" data-pinned="true">
-            <i class="mdui-icon material-icons">turned_in</i>
-        </button>`
+                <button class="mdui-btn mdui-btn-icon mdui-ripple" 
+                        title="從首頁釘選移除此專輯" data-pinned="true">
+                    <i class="mdui-icon material-icons">turned_in</i>
+                </button>`
     else
         actions += `
-       <button class="mdui-btn mdui-btn-icon mdui-ripple" 
-               title="加入此專輯到首頁釘選" data-pinned="false">
-           <i class="mdui-icon material-icons">turned_in_not</i>
-       </button>`
+            <button class="mdui-btn mdui-btn-icon mdui-ripple" 
+                    title="加入此專輯到首頁釘選" data-pinned="false">
+                <i class="mdui-icon material-icons">turned_in_not</i>
+            </button>`
     actions += `
-    <button class="mdui-btn mdui-btn-icon mdui-ripple" 
-            onclick="addSong(songList)" 
-            title="將此頁面歌曲全部加入到現正播放">
-        <i class="mdui-icon material-icons">playlist_add</i>
-    </button>`
+            <button class="mdui-btn mdui-btn-icon mdui-ripple" 
+                    onclick="addSong(songList)" 
+                    title="將此頁面歌曲全部加入到現正播放">
+                <i class="mdui-icon material-icons">playlist_add</i>
+            </button>`
 
     //抓資料
     html = template.parseSongs(result.songs)

@@ -15,41 +15,8 @@ body {
 }
 
 body::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
-    background: transparent;
-}
-
-@media (min-width: 1024px) {
-    body::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-    }
-}
-
-body::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, .2);
-}
-
-*::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, .3) !important;
-}
-
-body.mdui-theme-layout-dark::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
-    background: transparent;
-}
-
-@media (min-width: 1024px) {
-    body.mdui-theme-layout-dark::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-    }
-}
-
-body.mdui-theme-layout-dark::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, .3);
+    width: 0;
+    height: 0;
 }
 
 
@@ -165,6 +132,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     #drawer .mdui-list-item {
         border-radius: 0 500em 500em 0;
     }
+
     #drawer {
         padding-right: 10px;
     }
@@ -227,6 +195,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     0% {
         opacity: 0;
     }
+
     100% {
         opacity: 1;
     }
@@ -417,6 +386,7 @@ header.mdui-appbar.mdui-appbar-fixed {
         --album-size: calc(50% - 2em);
         font-size: 9px;
     }
+
     .poka.doubling.four.cards .card {
         --album-size: calc(50% - 2em);
     }
@@ -426,6 +396,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     .poka.cards .card {
         --album-size: calc(33.3% - 2em);
     }
+
     .poka.cards .card .image i {
         font-size: 5em;
     }
@@ -550,18 +521,22 @@ header.mdui-appbar.mdui-appbar-fixed {
         padding-left: 12px;
         padding-right: 0;
     }
+
     .info-header>.cover {
         height: 150px;
         width: 150px;
     }
+
     .info-header>.info>.album-name {
         font-size: 24px;
         line-height: 30px;
     }
+
     .info-header>.info>.artist-name {
         font-size: 20px;
         line-height: 25px;
     }
+
     .info-header>.info .time {
         font-size: 16px;
     }
@@ -679,6 +654,7 @@ header.mdui-appbar.mdui-appbar-fixed {
         border-radius: 0;
         bottom: 0;
     }
+
     #player .timer {
         font-size: 12px;
         letter-spacing: .04em;
@@ -780,12 +756,15 @@ header.mdui-appbar.mdui-appbar-fixed {
         padding-top: 0;
         padding-bottom: 0;
     }
+
     [data-player]>.info .ctrl .lrc {
         display: none
     }
+
     [data-player-container] {
         transition: all .25s ease;
     }
+
     [data-player-container]>.mdui-list.songs.nosongs:after {
         content: "無歌曲可供播放";
         text-align: center;
@@ -794,10 +773,12 @@ header.mdui-appbar.mdui-appbar-fixed {
         font-size: 1.25em;
         color: #838383;
     }
+
     [data-player-container]>.mdui-list.songs.nosongs {
         top: auto;
         max-height: 40vh;
     }
+
     [data-player-container]>.mdui-list.songs {
         visibility: hidden;
         max-height: calc(100vh - 200px);
@@ -813,16 +794,19 @@ header.mdui-appbar.mdui-appbar-fixed {
         transform: translateY(calc(100vh - 200px * -1));
         transform-origin: bottom;
     }
+
     .mdui-theme-layout-dark [data-player-container]>.mdui-list.songs {
         background-color: #303030;
         box-shadow: 0 5px 10px #000000e6;
     }
+
     [data-player-container]>.mdui-list.songs.show {
         visibility: visible;
         transform: translateY(0);
         overflow: scroll;
         border-radius: 5px 5px 0 0;
     }
+
     [data-player-container]>.mdui-list.songs.show+.mdui-overlay {
         visibility: visible;
         opacity: 1;
@@ -834,12 +818,14 @@ header.mdui-appbar.mdui-appbar-fixed {
     [data-player]>.info .ctrl .playlist {
         display: none
     }
+
     [data-player] {
         margin-top: 32px;
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
     }
+
     [data-player]>.info {
         margin-top: 10px;
         flex: 1;
@@ -848,26 +834,32 @@ header.mdui-appbar.mdui-appbar-fixed {
         display: flex;
         max-width: calc(100vw - 100px - 200px);
     }
+
     [data-player]>.mdui-card {
         display: flex;
     }
+
     [data-player]>.footer {
         display: flex;
     }
+
     [data-player]>.info>.grow {
         flex-grow: 1
     }
+
     [data-player]>.mdui-card {
         --main-size: 200px;
     }
 }
 
 @media screen and (min-width: 850px) and (min-height: 560px) {
+
     /* 超大兩欄檢視模式 */
     [data-player-container] {
         display: flex;
         margin-bottom: -100px;
     }
+
     [data-player-container]>ul {
         flex: 1;
         flex-direction: column;
@@ -875,24 +867,29 @@ header.mdui-appbar.mdui-appbar-fixed {
         overflow-y: scroll;
         margin-bottom: -64px;
     }
+
     [data-player] {
         margin-top: 32px;
         display: block;
         width: 320px;
         padding: 0 10px
     }
+
     [data-player]>.info {
         margin-top: 10px;
         padding-left: 0;
         display: block;
         text-align: center;
     }
+
     [data-player]>.mdui-card {
         display: block;
     }
+
     [data-player]>.footer {
         display: block;
     }
+
     [data-player]>.mdui-card {
         --main-size: 300px;
     }
@@ -909,6 +906,7 @@ header.mdui-appbar.mdui-appbar-fixed {
         max-width: 320px;
         height: calc(100vh - 64px - 350px);
     }
+
     [data-player]>.info>[data-lrc] {
         margin: 5px 0;
         max-width: 320px;
@@ -924,9 +922,11 @@ header.mdui-appbar.mdui-appbar-fixed {
         -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
         /* 1390 * 690*/
     }
+
     [data-player]>.info>[data-lrc] p {
         font-size: calc(8px + 1vmin);
     }
+
     [data-player]>.info>[data-lrc]>[data-lrc="inner"] {
         padding: 20px 0;
     }
@@ -936,6 +936,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     [data-player]>.mdui-card {
         margin: 0 auto;
     }
+
     [data-player]>.info {
         text-align: center;
     }
@@ -984,10 +985,12 @@ header.mdui-appbar.mdui-appbar-fixed {
         transform: scaleX(0);
         opacity: 0;
     }
+
     90% {
         transform: scaleX(1);
         opacity: 1;
     }
+
     100% {
         transform: scaleX(1);
         opacity: 0;
