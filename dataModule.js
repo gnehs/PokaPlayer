@@ -680,7 +680,7 @@ router
 
 //-----------------------------> 喜歡
 router.get('/canLike', async (req, res) => {
-        //http://localhost:3000/pokaapi/like/?moduleName=Netease2
+        //http://localhost:3000/pokaapi/canLike/?moduleName=Netease2
         let moduleName = req.query.moduleName;
         let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
         // 沒這東西
@@ -688,12 +688,12 @@ router.get('/canLike', async (req, res) => {
             return res.status(501).send("The required module is currently unavailable :(");
         return res.json(true)
     })
-    .post('isLiked', async (req, res) => {
-        //http://localhost:3000/pokaapi/isLiked/
+    .get('/isLiked', async (req, res) => {
+        //POST http://localhost:3000/pokaapi/isLiked/
         let moduleName = req.body.moduleName;
         let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
         // 沒這東西
-        if (!_module || moduleList[moduleName].active.indexOf("like") == -1)
+        if (!_module || moduleList[moduleName].active.indexOf("isLiked") == -1)
             return res.status(501).send("The required module is currently unavailable :(");
 
         let result;
@@ -705,8 +705,8 @@ router.get('/canLike', async (req, res) => {
         }
         return res.json(result);
     })
-    .post('like', async (req, res) => {
-        //http://localhost:3000/pokaapi/like/
+    .post('/like', async (req, res) => {
+        //POST http://localhost:3000/pokaapi/like/
         let moduleName = req.body.moduleName;
         let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
         // 沒這東西
@@ -722,8 +722,8 @@ router.get('/canLike', async (req, res) => {
         }
         return res.json(result);
     })
-    .post('disLike', async (req, res) => {
-        //http://localhost:3000/pokaapi/like/
+    .post('/disLike', async (req, res) => {
+        //POST http://localhost:3000/pokaapi/disLike/
         let moduleName = req.body.moduleName;
         let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
         // 沒這東西
