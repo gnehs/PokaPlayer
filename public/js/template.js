@@ -6,9 +6,9 @@ const template = {
             result += `
             <div class="mdui-typo">
                 <h1>
-                    <strong>${data[i].title}</strong> <small>${moduleShowName[data[i].source]}</small>
+                    <strong>${data[i].title}</strong>
                     </br>
-                    <small>${data[i].description}</small>
+                    <small>${data[i].description?`${moduleShowName[data[i].source]} / ${data[i].description}`:''}</small>
                 </h1>
             </div>`
             result += template.parseSearch(data[i])
