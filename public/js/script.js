@@ -878,7 +878,7 @@ async function showNow() {
     let html = `<ul class="mdui-list songs" id="/now/songlist">`
     songList = ap.list.audios
     for (i = 0; i < ap.list.audios.length; i++) {
-        let focus = ap.list.index == i ? 'mdui-list-item-active' : '',
+        let focus = ap.list.index == i ? 'mdui-color-theme' : '',
             song = ap.list.audios[i],
             title = song.name,
             artist = song.artist,
@@ -1015,8 +1015,8 @@ async function showNow() {
                 }, 250);
         }
         //- list 切換 active
-        $(".songs>li.song").removeClass('mdui-list-item-active')
-        $(".songs>li.song").eq(ap.list.index).addClass('mdui-list-item-active');
+        $(".songs>li.song").removeClass('mdui-color-theme')
+        $(".songs>li.song").eq(ap.list.index).addClass('mdui-color-theme');
         //- 播放器
         $('[data-player] button.play[onclick="ap.toggle()"] i').text("pause")
         let nowPlaying = ap.list.audios[ap.list.index]
@@ -1083,8 +1083,8 @@ async function showNow() {
         router.navigate('lrc')
     })
     $(".songs [data-now-play-id].songinfo").click(function () {
-        $(".songs>li.song").removeClass('mdui-list-item-active')
-        $(this).parent().eq(0).addClass('mdui-list-item-active')
+        $(".songs>li.song").removeClass('mdui-color-theme')
+        $(this).parent().eq(0).addClass('mdui-color-theme')
         let song = $(this).attr('data-now-play-id')
         ap.list.switch(song)
         ap.play()
