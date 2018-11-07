@@ -1,14 +1,21 @@
 // 初始化設定值
 $(async () => {
-    ///給定預設值
-    if (!window.localStorage["musicRes"]) window.localStorage["musicRes"] = "High"
-    if (!window.localStorage["randomImg"]) window.localStorage["randomImg"] = "/og/og.png"
-    if (!window.localStorage["randomImgName"]) window.localStorage["randomImgName"] = "預設圖庫"
-    if (!window.localStorage["imgRes"]) window.localStorage["imgRes"] = "false"
-    if (!window.localStorage["pokaSW"]) window.localStorage["pokaSW"] = "false"
-    if (!window.localStorage["change-color"]) window.localStorage["change-color"] = "false"
-    if (!window.localStorage["pokaCardSource"]) window.localStorage["pokaCardSource"] = "true"
-    if (!window.localStorage["PokaPlayerVersion"]) window.localStorage["PokaPlayerVersion"] = ""
+    let defaultSetting = {
+        "musicRes": "High",
+        "randomImg": "/og/og.png",
+        "randomImgName": "預設圖庫",
+        "imgRes": "false",
+        "pokaSW": "false",
+        "change-color": "false",
+        "pokaCardSource": "true",
+        "PokaPlayerVersion": "",
+        "mdui-theme-primary": "indigo",
+        "mdui-theme-accent": "pink",
+        "poka-theme-primary": "#009688",
+        "poka-theme-primary-text": "#FFF",
+    }
+    for (i = 0; i < Object.keys(defaultSetting).length; i++)
+        if (!localStorage[Object.keys(defaultSetting)[i]]) localStorage[Object.keys(defaultSetting)[i]] = defaultSetting[Object.keys(defaultSetting)[i]]
     let version = (await request('/info/')).version
 
     //卡片右上角的來源標籤
@@ -391,11 +398,9 @@ async function showSettingsCustomize() {
         localStorage["change-color"] = $("[data-change-color] input").prop('checked');
         if ($("[data-change-color] input").prop('checked'))
             $("[data-change-color-lab]").removeAttr('style')
-        else {
+        else
             $("[data-change-color-lab]").attr('style', 'pointer-events: none; opacity: .5;')
-            localStorage.removeItem(`poka-theme-primary`)
-            localStorage.removeItem(`poka-theme-primary-text`)
-        }
+
     });
     // 主題
     $('[data-theme="mdui-theme-color"]').click(function () {

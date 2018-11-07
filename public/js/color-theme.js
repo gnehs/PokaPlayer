@@ -1,7 +1,4 @@
 $(() => {
-    // 檢查有沒有設定顏色
-    if (!window.localStorage["mdui-theme-primary"]) window.localStorage["mdui-theme-primary"] = "indigo"
-    if (!window.localStorage["mdui-theme-accent"]) window.localStorage["mdui-theme-accent"] = "pink"
     if (localStorage["change-color"] == "true") {
         $("#colortheme").text(`:root {
              --poka-theme-primary-color: ${localStorage["poka-theme-primary"]};
