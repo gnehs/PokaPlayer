@@ -302,7 +302,7 @@ async function showSettingsCustomize() {
         ${settingsItem("主色",window.localStorage["mdui-theme-primary"].replace("-"," "),"color_lens","",`data-theme="mdui-theme-primary"`)}
         ${settingsItem("強調色",window.localStorage["mdui-theme-accent"].replace("-"," "),"color_lens","",`data-theme="mdui-theme-accent"`)}
         <li class="mdui-subheader">實驗性功能</li>
-        ${settingsItem("開啟實驗性主色更換功能","需要重新整理頁面才可檢視其效果","label","","data-change-color",
+        ${settingsItem("實驗性主色更換功能","需要重新整理頁面才可檢視其效果","label","","data-change-color",
         `<label class="mdui-switch">
             <input type="checkbox" ${window.localStorage["change-color"]=="true"?"checked":""}/>
             <i class="mdui-switch-icon"></i>
