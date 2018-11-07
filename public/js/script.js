@@ -958,10 +958,12 @@ async function showNow() {
 
         function listenHash(e) {
             if (e.oldURL.match(/now\/songlist$/)) {
-                $('.mdui-list.songs').removeClass('show')
-                router.navigate('#/now');
-                router.resume();
                 window.removeEventListener("hashchange", listenHash);
+                if (!e.newURL.match('mdui-dialog')) {
+                    router.navigate('#/now');
+                }
+                $('.mdui-list.songs').removeClass('show')
+                router.resume();
             }
         }
         window.addEventListener("hashchange", listenHash);
