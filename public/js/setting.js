@@ -15,7 +15,7 @@ $(async () => {
         "poka-theme-primary-text": "#FFF" // 實驗換色功能
     }
     for (i = 0; i < Object.keys(defaultSetting).length; i++)
-        if (!localStorage[Object.keys(defaultSetting)[i]]) localStorage[Object.keys(defaultSetting)[i]] = defaultSetting[Object.keys(defaultSetting)[i]]
+        if (!localStorage[Object.keys(defaultSetting)[i]]) localStorage[Object.keys(defaultSetting)[i]] = Object.values(defaultSetting)[i]
 
     //卡片右上角的來源標籤
     $("#content").attr('data-sourcelabel', window.localStorage["pokaCardSource"])
