@@ -1,25 +1,26 @@
 // 初始化設定值
 $(async () => {
     let defaultSetting = {
-        "musicRes": "High",
+        "musicRes": "High", //音質
         "randomImg": "/og/og.png",
         "randomImgName": "預設圖庫",
         "imgRes": "false",
-        "pokaSW": "false",
-        "change-color": "false",
+        "pokaSW": "false", //serviceWorker
+        "change-color": "false", // 實驗換色功能
         "pokaCardSource": "true",
         "PokaPlayerVersion": "",
         "mdui-theme-primary": "indigo",
         "mdui-theme-accent": "pink",
-        "poka-theme-primary": "#009688",
-        "poka-theme-primary-text": "#FFF",
+        "poka-theme-primary": "#009688", // 實驗換色功能
+        "poka-theme-primary-text": "#FFF" // 實驗換色功能
     }
     for (i = 0; i < Object.keys(defaultSetting).length; i++)
         if (!localStorage[Object.keys(defaultSetting)[i]]) localStorage[Object.keys(defaultSetting)[i]] = defaultSetting[Object.keys(defaultSetting)[i]]
-    let version = (await request('/info/')).version
 
     //卡片右上角的來源標籤
     $("#content").attr('data-sourcelabel', window.localStorage["pokaCardSource"])
+
+    let version = (await request('/info/')).version
 
     // 更新版本號
     if (version != window.localStorage["PokaPlayerVersion"])
