@@ -688,8 +688,14 @@ router.get('/canLike', async (req, res) => {
             return res.status(501).send("The required module is currently unavailable :(");
         return res.json(true)
     })
-    .get('/isLiked', async (req, res) => {
-        //POST http://localhost:3000/pokaapi/isLiked/
+    .post('/isLiked', async (req, res) => {
+        //POST http://localhost:3000/pokaapi/isLiked/ 
+        /*
+            req.query: {
+                moduleName: "Netease2",
+                songId: songId
+            }
+        */
         let moduleName = req.body.moduleName;
         let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
         // 沒這東西
@@ -707,6 +713,12 @@ router.get('/canLike', async (req, res) => {
     })
     .post('/like', async (req, res) => {
         //POST http://localhost:3000/pokaapi/like/
+        /*
+            req.query: {
+                moduleName: "Netease2",
+                songId: songId
+            }
+        */
         let moduleName = req.body.moduleName;
         let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
         // 沒這東西
@@ -724,6 +736,12 @@ router.get('/canLike', async (req, res) => {
     })
     .post('/disLike', async (req, res) => {
         //POST http://localhost:3000/pokaapi/disLike/
+        /*
+            req.query: {
+                moduleName: "Netease2",
+                songId: songId
+            }
+        */
         let moduleName = req.body.moduleName;
         let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
         // 沒這東西
