@@ -1412,7 +1412,7 @@ async function songAction(songID, source) {
         content = $(`<ul class="mdui-list"/>`)
         for (let i = 0; i < userPlaylists.length; i++) {
             let icon = userPlaylists[i].image ? `<div class="mdui-list-item-avatar"><img src="${userPlaylists[i].image}"/></div>` : ``
-            let exist = (await playlistExist(userPlaylists[i].source, [song.id], userPlaylists[i].id)).code == 200
+            let exist = (await playlistExist(userPlaylists[i].source, [song.id], userPlaylists[i].id))[song.id]
             content.append(
                 $(`<li class="mdui-list-item mdui-ripple">
                         ${icon}

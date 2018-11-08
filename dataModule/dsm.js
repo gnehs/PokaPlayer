@@ -884,14 +884,15 @@ function playlistOperation(operation) {
     switch (operation) {
         case "in":
             return async (songIds, playlistId) => {
-                let offset = false;
-                let playlist = (await getPlaylistSongs(playlistId)).songs
-                for (let i = 0; i < playlist.length; i++)
-                    if (playlist[i].id == songIds)
-                        offset = true
-                return {
-                    code: offset ? 200 : 404
+                let result = {};
+                let playlist = (await getPlaylistSongs(playlistId)).songs.map(x => x.id);
+                for (const i of songIds) {
+                    console.log(playlistId)
+                    console.log(playlist)
+                    console.log(i)
+                    result[i] = playlist.includes(i);
                 }
+                return result
             }
         case "add":
             return async (songIds, playlistId) => {
@@ -912,7 +913,7 @@ function playlistOperation(operation) {
                         },
                         {
                             key: "songs",
-                            value: songIds
+                            value: songIds[0]
                         }
                     ]
                 );
@@ -925,7 +926,7 @@ function playlistOperation(operation) {
                 let offset;
                 let playlist = (await getPlaylistSongs(playlistId)).songs
                 for (let i = 0; i < playlist.length; i++)
-                    if (playlist[i].id == songIds)
+                    if (playlist[i].id == songIds[0])
                         offset = i
                 let result = await getAPI(
                     "AudioStation/playlist.cgi",

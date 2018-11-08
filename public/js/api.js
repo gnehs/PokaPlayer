@@ -127,18 +127,18 @@ async function playlistOperation(moduleName, songIds, playlistId) {
     // 確定存在
     try {
         result = (await playlistExist(moduleName, songIds, playlistId))
-        exist = result.code
+        exist = result[songIds[0]]
     } catch (e) {
         exist = false
     }
     // 刪除或新增
-    if (exist == 200) {
+    if (exist) {
         try {
             result = (await axios.delete(`/pokaapi/playlistOperation/?moduleName=${encodeURIComponent(moduleName)}&songIds=${encodeURIComponent(JSON.stringify(songIds))}&playlistId=${encodeURIComponent(playlistId)}`)).data
         } catch (e) {
             result = false
         }
-    } else if (exist == 404 || !exist) {
+    } else {
         //嘗試新增
         try {
             result = (await axios.post('/pokaapi/playlistOperation/', {
