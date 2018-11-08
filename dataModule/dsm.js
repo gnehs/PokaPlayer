@@ -887,7 +887,7 @@ function playlistOperation(operation) {
                 let offset = false;
                 let playlist = (await getPlaylistSongs(playlistId)).songs
                 for (let i = 0; i < playlist.length; i++)
-                    if (playlist[i].id == songIds[0])
+                    if (playlist[i].id == songIds)
                         offset = true
                 return {
                     code: offset ? 200 : 404
@@ -912,7 +912,7 @@ function playlistOperation(operation) {
                         },
                         {
                             key: "songs",
-                            value: songIds[0]
+                            value: songIds
                         }
                     ]
                 );
@@ -925,7 +925,7 @@ function playlistOperation(operation) {
                 let offset;
                 let playlist = (await getPlaylistSongs(playlistId)).songs
                 for (let i = 0; i < playlist.length; i++)
-                    if (playlist[i].id == songIds[0])
+                    if (playlist[i].id == songIds)
                         offset = i
                 let result = await getAPI(
                     "AudioStation/playlist.cgi",

@@ -113,10 +113,10 @@ async function getUserPlaylists(module) {
 }
 
 async function playlistExist(moduleName, songIds, playlistId) {
-    let exist, result;
+    let result;
     // 確定存在
     try {
-        result = (await axios.get(`/pokaapi/playlistOperation/?moduleName=${encodeURIComponent(moduleName)}&songIds=${encodeURIComponent(JSON.stringify([songIds]))}&playlistId=${encodeURIComponent(playlistId)}`)).data
+        result = (await axios.get(`/pokaapi/playlistOperation/?moduleName=${encodeURIComponent(moduleName)}&songIds=${encodeURIComponent(JSON.stringify(songIds))}&playlistId=${encodeURIComponent(playlistId)}`)).data
     } catch (e) {
         result = false
     }
@@ -134,7 +134,7 @@ async function playlistOperation(moduleName, songIds, playlistId) {
     // 刪除或新增
     if (exist == 200) {
         try {
-            result = (await axios.delete(`/pokaapi/playlistOperation/?moduleName=${encodeURIComponent(moduleName)}&songIds=${encodeURIComponent(JSON.stringify([songIds]))}&playlistId=${encodeURIComponent(playlistId)}`)).data
+            result = (await axios.delete(`/pokaapi/playlistOperation/?moduleName=${encodeURIComponent(moduleName)}&songIds=${encodeURIComponent(JSON.stringify(songIds))}&playlistId=${encodeURIComponent(playlistId)}`)).data
         } catch (e) {
             result = false
         }
