@@ -1337,10 +1337,12 @@ async function songAction(songID, source) {
     mdui.mutation();
     let userPlaylists = await getUserPlaylists(song.source)
     let iscanRating = await canRating(song.source)
+    let songCanLike = await canLike(song.source)
+    let isSongLiked = songCanLike ? await isLiked(song.source, song.id) : false
     let actions = `<ul class="mdui-list">
-        <li class="mdui-list-item mdui-ripple" mdui-dialog-close data-action="like" style="pointer-events: none; opacity: .5;">
-            <i class="mdui-list-item-icon mdui-icon material-icons">turned_in_not</i>
-            <div class="mdui-list-item-content">收藏</div>
+        <li class="mdui-list-item mdui-ripple" mdui-dialog-close data-action="like" ${songCanLike?``:`style="pointer-events: none; opacity: .5;"`}>
+            <i class="mdui-list-item-icon mdui-icon material-icons">${isSongLiked?'turned_in':'turned_in_not'}</i>
+            <div class="mdui-list-item-content">${isSongLiked?'取消收藏':'收藏'}</div>
         </li>
         <li class="mdui-list-item mdui-ripple" data-action="rating" ${iscanRating?``:`style="pointer-events: none; opacity: .5;"`}>
             <i class="mdui-list-item-icon mdui-icon material-icons">star</i>
@@ -1353,9 +1355,22 @@ async function songAction(songID, source) {
     </ul>`
     $(`[data-content]`).html(actions)
     $(`[data-content]`).animateCss('fadeIn faster')
-    $(`[data-action="like"]`).click(() => {
+    $(`[data-action="like"]`).click(async () => {
+        let result = isSongLiked ? await like(song.source, song.id) : await disLike(song.source, song.id)
+        console.log(result)
+        let message
+        if (result && result.code == 200) {
+            if (isSongLiked) {
+                message = `已取消收藏「${song.name}」`
+            } else {
+                message = `已收藏「${song.name}」`
+            }
+        } else {
+            message = `收藏或取消收藏「${song.name}」時發生了錯誤`
+        }
+
         mdui.snackbar({
-            message: `已收藏「${song.name}」`,
+            message: message,
             timeout: 500,
             position: getSnackbarPosition()
         })

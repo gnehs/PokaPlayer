@@ -155,3 +155,53 @@ async function playlistOperation(moduleName, songIds, playlistId) {
         exist
     }
 }
+/*===== 喜歡 =====*/
+async function canLike(module) {
+    let result
+    try {
+        result = (await axios.get(`/pokaapi/canLike/?moduleName=${encodeURIComponent(module)}`)).data
+        console.log(result)
+    } catch (e) {
+        result = false
+    }
+    return result
+}
+async function isLiked(module, songId) {
+    let result
+    //嘗試新增
+    try {
+        result = (await axios.post('/pokaapi/isLiked/', {
+            moduleName: module,
+            songId: songId
+        })).data
+    } catch (e) {
+        result = false
+    }
+    return result
+}
+async function like(module, songId) {
+    let result
+    //嘗試新增
+    try {
+        result = (await axios.post('/pokaapi/like/', {
+            moduleName: module,
+            songId: songId
+        })).data
+    } catch (e) {
+        result = false
+    }
+    return result
+}
+async function disLike(module, songId) {
+    let result
+    //嘗試新增
+    try {
+        result = (await axios.post('/pokaapi/disLike/', {
+            moduleName: module,
+            songId: songId
+        })).data
+    } catch (e) {
+        result = false
+    }
+    return result
+}
