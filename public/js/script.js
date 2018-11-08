@@ -1356,8 +1356,8 @@ async function songAction(songID, source) {
     $(`[data-content]`).html(actions)
     $(`[data-content]`).animateCss('fadeIn faster')
     $(`[data-action="like"]`).click(async () => {
-        let result = isSongLiked ? await like(song.source, song.id) : await disLike(song.source, song.id)
-        console.log(result)
+        $(`data-close`).click()
+        let result = isSongLiked ? await disLike(song.source, song.id) : await like(song.source, song.id)
         let message
         if (result && result.code == 200) {
             if (isSongLiked) {

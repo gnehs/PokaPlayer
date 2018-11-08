@@ -160,7 +160,6 @@ async function canLike(module) {
     let result
     try {
         result = (await axios.get(`/pokaapi/canLike/?moduleName=${encodeURIComponent(module)}`)).data
-        console.log(result)
     } catch (e) {
         result = false
     }
@@ -174,6 +173,7 @@ async function isLiked(module, songId) {
             moduleName: module,
             songId: songId
         })).data
+        console.log(result)
     } catch (e) {
         result = false
     }
