@@ -1125,7 +1125,7 @@ async function like(songId, like = true) {
 }
 
 async function isLiked(songId) {
-    let myPlaylistId = (await getUserPlaylists()).find(x => x.includes("喜欢的音乐")).id;
+    let myPlaylistId = (await getUserPlaylists()).find(x => x.name.includes("喜欢的音乐")).id;
     return (await getPlaylistSongs(myPlaylistId)).songs.any(x => x.id == songId);
 }
 
