@@ -887,9 +887,6 @@ function playlistOperation(operation) {
                 let result = {};
                 let playlist = (await getPlaylistSongs(playlistId)).songs.map(x => x.id);
                 for (const i of songIds) {
-                    console.log(playlistId)
-                    console.log(playlist)
-                    console.log(i)
                     result[i] = playlist.includes(i);
                 }
                 return result
