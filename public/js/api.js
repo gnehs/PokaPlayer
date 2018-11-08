@@ -35,7 +35,7 @@ async function addPin(source, type, id, name) {
             position: getSnackbarPosition()
         })
     else
-        caches.open('PokaPlayer').then(function(cache) {
+        caches.open('PokaPlayer').then(function (cache) {
             cache.delete('/pokaapi/home')
         })
     return result
@@ -49,7 +49,7 @@ async function unPin(source, type, id, name) {
             position: getSnackbarPosition()
         })
     else
-        caches.open('PokaPlayer').then(function(cache) {
+        caches.open('PokaPlayer').then(function (cache) {
             cache.delete('/pokaapi/home')
         })
     return result
@@ -65,13 +65,13 @@ async function getLrc(artist, title, id = false, source) {
             return result.data.lyrics[0].lyric
     }
     result = await axios.get(`/pokaapi/searchLyrics/?keyword=${encodeURIComponent(title+' '+artist)}`)
-
-    if (result.data.lyrics[0]) {
-        let lrcTitle = result.data.lyrics[0].name.toLowerCase().replace(/\.|\*|\~|\&|。|，|\ |\-|\!|！|\(|\)/g, '')
-        let songTitle = title.toLowerCase().replace(/\.|\*|\~|\&|。|，|\ |\-|\!|！|\(|\)/g, '')
-        if (lrcTitle == songTitle && result.data.lyrics[0].lyric.match(lyricRegex))
-            return result.data.lyrics[0].lyric
-    }
+    for (i = 0; i < (result.data.lyrics.length > 10 ? 10 : result.data.lyrics.length); i++)
+        if (result.data.lyrics[i]) {
+            let lrcTitle = result.data.lyrics[i].name.toLowerCase().replace(/\.|\*|\~|\&|。|，|\ |\-|\!|！|\(|\)/g, '')
+            let songTitle = title.toLowerCase().replace(/\.|\*|\~|\&|。|，|\ |\-|\!|！|\(|\)/g, '')
+            if (lrcTitle == songTitle && result.data.lyrics[i].lyric.match(lyricRegex))
+                return result.data.lyrics[i].lyric
+        }
     return false
 }
 async function searchLrc(keyword) {
@@ -113,10 +113,10 @@ async function getUserPlaylists(module) {
 }
 
 async function playlistExist(moduleName, songIds, playlistId) {
-    let exist, result;
+    let result;
     // 確定存在
     try {
-        result = (await axios.get(`/pokaapi/playlistOperation/?moduleName=${encodeURIComponent(moduleName)}&songIds=${encodeURIComponent(JSON.stringify([songIds]))}&playlistId=${encodeURIComponent(playlistId)}`)).data
+        result = (await axios.get(`/pokaapi/playlistOperation/?moduleName=${encodeURIComponent(moduleName)}&songIds=${encodeURIComponent(JSON.stringify(songIds))}&playlistId=${encodeURIComponent(playlistId)}`)).data
     } catch (e) {
         result = false
     }
@@ -127,18 +127,18 @@ async function playlistOperation(moduleName, songIds, playlistId) {
     // 確定存在
     try {
         result = (await playlistExist(moduleName, songIds, playlistId))
-        exist = result.code
+        exist = result[songIds[0]]
     } catch (e) {
         exist = false
     }
     // 刪除或新增
-    if (exist == 200) {
+    if (exist) {
         try {
-            result = (await axios.delete(`/pokaapi/playlistOperation/?moduleName=${encodeURIComponent(moduleName)}&songIds=${encodeURIComponent(JSON.stringify([songIds]))}&playlistId=${encodeURIComponent(playlistId)}`)).data
+            result = (await axios.delete(`/pokaapi/playlistOperation/?moduleName=${encodeURIComponent(moduleName)}&songIds=${encodeURIComponent(JSON.stringify(songIds))}&playlistId=${encodeURIComponent(playlistId)}`)).data
         } catch (e) {
             result = false
         }
-    } else if (exist == 404 || !exist) {
+    } else {
         //嘗試新增
         try {
             result = (await axios.post('/pokaapi/playlistOperation/', {
@@ -150,5 +150,58 @@ async function playlistOperation(moduleName, songIds, playlistId) {
             result = false
         }
     }
-    return { result, exist }
+    return {
+        result,
+        exist
+    }
+}
+/*===== 喜歡 =====*/
+async function canLike(module) {
+    let result
+    try {
+        result = (await axios.get(`/pokaapi/canLike/?moduleName=${encodeURIComponent(module)}`)).data
+    } catch (e) {
+        result = false
+    }
+    return result
+}
+async function isLiked(module, songId) {
+    let result
+    //嘗試新增
+    try {
+        result = (await axios.post('/pokaapi/isLiked/', {
+            moduleName: module,
+            songId: songId
+        })).data
+        console.log(result)
+    } catch (e) {
+        result = false
+    }
+    return result
+}
+async function like(module, songId) {
+    let result
+    //嘗試新增
+    try {
+        result = (await axios.post('/pokaapi/like/', {
+            moduleName: module,
+            songId: songId
+        })).data
+    } catch (e) {
+        result = false
+    }
+    return result
+}
+async function disLike(module, songId) {
+    let result
+    //嘗試新增
+    try {
+        result = (await axios.post('/pokaapi/disLike/', {
+            moduleName: module,
+            songId: songId
+        })).data
+    } catch (e) {
+        result = false
+    }
+    return result
 }

@@ -1,6 +1,8 @@
 const config = require("../config.json"), // 很會設定ㄉ朋友
     schedule = require("node-schedule"), // 很會計時ㄉ朋友
-    request = require("request").defaults({ jar: require("request").jar() }), //很會請求ㄉ朋友
+    request = require("request").defaults({
+        jar: require("request").jar()
+    }), //很會請求ㄉ朋友
     dsmURL = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}`,
     lyricRegex = /\[([0-9.:]*)\]/i;
 
@@ -122,7 +124,7 @@ function parseLyrics(lyrics) {
     return r;
 }
 async function onLoaded() {
-    schedule.scheduleJob("'* */12 * * *'", async function() {
+    schedule.scheduleJob("'* */12 * * *'", async function () {
         console.log("[DataModules][DSM] 正在重新登入...");
         login();
     });
@@ -134,11 +136,22 @@ async function login() {
         console.error("[DataModules][DSM] 登入失敗，未設定帳號密碼");
         return false;
     }
-    let result = await getAPI("auth.cgi", "SYNO.API.Auth", "Login", [
-        { key: "account", value: config.DSM.account },
-        { key: "passwd", value: config.DSM.password },
-        { key: "session", value: "AudioStation" },
-        { key: "format", value: "cookie" }
+    let result = await getAPI("auth.cgi", "SYNO.API.Auth", "Login", [{
+            key: "account",
+            value: config.DSM.account
+        },
+        {
+            key: "passwd",
+            value: config.DSM.password
+        },
+        {
+            key: "session",
+            value: "AudioStation"
+        },
+        {
+            key: "format",
+            value: "cookie"
+        }
     ]);
     if (result.success) {
         console.log("[DataModules][DSM] 登入成功！");
@@ -150,14 +163,14 @@ async function login() {
 }
 //- API 請求
 async function getAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 1) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         let PARAMS = "";
         for (i = 0; i < PARAMS_JSON.length; i++) {
             PARAMS += "&" + PARAMS_JSON[i].key + "=" + encodeURIComponent(PARAMS_JSON[i].value);
         }
         request(
             `${dsmURL}/webapi/${CGI_PATH}?api=${API_NAME}&method=${METHOD}&version=${VERSION}${PARAMS}`,
-            function(error, res, body) {
+            function (error, res, body) {
                 if (!error && res.statusCode == 200) {
                     resolve(JSON.parse(body));
                 } else {
@@ -168,7 +181,7 @@ async function getAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 1)
     });
 }
 async function postAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 3) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         let form = {}
         form.api = API_NAME
         form.method = METHOD
@@ -180,7 +193,7 @@ async function postAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 3
             `${dsmURL}/webapi/${CGI_PATH}`, {
                 form: form
             },
-            function(error, res, body) {
+            function (error, res, body) {
                 if (!error && res.statusCode == 200) {
                     resolve(JSON.parse(body));
                 } else {
@@ -192,11 +205,19 @@ async function postAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 3
 }
 
 async function getHome() {
-    let result = await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "list", [
-        { key: "limit", value: -1 },
-        { key: "offset", value: 0 }
+    let result = await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "list", [{
+            key: "limit",
+            value: -1
+        },
+        {
+            key: "offset",
+            value: 0
+        }
     ]);
-    let r = {
+    let home = {
+        title: '釘選',
+        description: '釘選在首頁的項目',
+        source: "DSM",
         artists: [],
         composers: [],
         folders: [],
@@ -209,7 +230,7 @@ async function getHome() {
         switch (type) {
             case "artist":
                 //演出者
-                r.artists.push({
+                home.artists.push({
                     name: pin.name,
                     source: "DSM",
                     cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(
@@ -220,7 +241,7 @@ async function getHome() {
                 break;
             case "composer":
                 //作曲者
-                r.composers.push({
+                home.composers.push({
                     name: pin.name,
                     source: "DSM",
                     cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(
@@ -231,7 +252,7 @@ async function getHome() {
                 break;
             case "folder":
                 //資料夾
-                r.folders.push({
+                home.folders.push({
                     name: pin.name,
                     source: "DSM",
                     id: pin.criteria.folder,
@@ -242,7 +263,7 @@ async function getHome() {
                 break;
             case "playlist":
                 //播放清單
-                r.playlists.push({
+                home.playlists.push({
                     name: pin.name,
                     source: "DSM",
                     id: pin.criteria.playlist
@@ -263,7 +284,7 @@ async function getHome() {
                             info: coverInfo
                         })
                     );
-                r.albums.push({
+                home.albums.push({
                     name: pin.name,
                     artist: pin.criteria.artist || pin.criteria.album_artist || "",
                     year: 0,
@@ -274,7 +295,14 @@ async function getHome() {
                 break;
         }
     }
-    return r;
+    let r = []
+    let latestAlbum = await getAlbums(20, "time", "desc")
+    latestAlbum.title = "最近加入的專輯"
+    latestAlbum.description = "Audio Station 裡最新的專輯"
+    latestAlbum.source = "DSM"
+    r.push(home)
+    if (latestAlbum.albums.length > 0) r.push(latestAlbum)
+    return r
 }
 async function addPin(type, id, name) {
     let PARAMS_JSON;
@@ -300,9 +328,14 @@ async function addPin(type, id, name) {
     else return result.error;
 }
 async function isPinned(type, id, name) {
-    let result = (await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "list", [
-        { key: "limit", value: -1 },
-        { key: "offset", value: 0 }
+    let result = (await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "list", [{
+            key: "limit",
+            value: -1
+        },
+        {
+            key: "offset",
+            value: 0
+        }
     ])).data;
     for (i = 0; i < result.items.length; i++) {
         let pin = result.items[i];
@@ -394,13 +427,30 @@ async function getCover(data) {
 }
 
 async function search(keyword, options = {}) {
-    let PARAMS_JSON = [
-        { key: "additional", value: "song_tag,song_audio,song_rating" },
-        { key: "library", value: "shared" },
-        { key: "limit", value: 1000 },
-        { key: "sort_by", value: "title" },
-        { key: "sort_direction", value: "ASC" },
-        { key: "keyword", value: keyword }
+    let PARAMS_JSON = [{
+            key: "additional",
+            value: "song_tag,song_audio,song_rating"
+        },
+        {
+            key: "library",
+            value: "shared"
+        },
+        {
+            key: "limit",
+            value: 50
+        },
+        {
+            key: "sort_by",
+            value: "title"
+        },
+        {
+            key: "sort_direction",
+            value: "ASC"
+        },
+        {
+            key: "keyword",
+            value: keyword
+        }
     ];
     let result = await getAPI(
         "AudioStation/search.cgi",
@@ -416,34 +466,73 @@ async function search(keyword, options = {}) {
     };
 }
 
-async function getAlbums() {
+async function getAlbums(limit = 1000, sort_by = "name", sort_direction = "ASC") {
     let result = await getAPI(
         "AudioStation/album.cgi",
         "SYNO.AudioStation.Album",
-        "list", [
-            { key: "additional", value: "avg_rating" },
-            { key: "library", value: "shared" },
-            { key: "limit", value: 1000 },
-            { key: "sort_by", value: "name" },
-            { key: "sort_direction", value: "ASC" }
+        "list", [{
+                key: "additional",
+                value: "avg_rating"
+            },
+            {
+                key: "library",
+                value: "shared"
+            },
+            {
+                key: "limit",
+                value: limit
+            },
+            {
+                key: "sort_by",
+                value: sort_by
+            },
+            {
+                key: "sort_direction",
+                value: sort_direction
+            }
         ],
         3
     );
-    return { albums: parseAlbums(result.data.albums) };
+    return {
+        albums: parseAlbums(result.data.albums)
+    };
 }
 async function getAlbumSongs(id) {
     albumData = JSON.parse(id);
-    let PARAMS_JSON = [
-        { key: "additional", value: "song_tag,song_audio,song_rating" },
-        { key: "library", value: "shared" },
-        { key: "limit", value: 100000 },
-        { key: "sort_by", value: "title" },
-        { key: "sort_direction", value: "ASC" }
+    let PARAMS_JSON = [{
+            key: "additional",
+            value: "song_tag,song_audio,song_rating"
+        },
+        {
+            key: "library",
+            value: "shared"
+        },
+        {
+            key: "limit",
+            value: 100000
+        },
+        {
+            key: "sort_by",
+            value: "title"
+        },
+        {
+            key: "sort_direction",
+            value: "ASC"
+        }
     ];
-    if (albumData.album_name) PARAMS_JSON.push({ key: "album", value: albumData.album_name });
+    if (albumData.album_name) PARAMS_JSON.push({
+        key: "album",
+        value: albumData.album_name
+    });
     if (albumData.album_artist_name)
-        PARAMS_JSON.push({ key: "album_artist", value: albumData.album_artist_name });
-    if (albumData.artist_name) PARAMS_JSON.push({ key: "artist", value: albumData.artist_name });
+        PARAMS_JSON.push({
+            key: "album_artist",
+            value: albumData.album_artist_name
+        });
+    if (albumData.artist_name) PARAMS_JSON.push({
+        key: "artist",
+        value: albumData.artist_name
+    });
     let result = await getAPI(
         "AudioStation/song.cgi",
         "SYNO.AudioStation.Song",
@@ -451,7 +540,9 @@ async function getAlbumSongs(id) {
         PARAMS_JSON,
         3
     );
-    return { songs: parseSongs(result.data.songs) };
+    return {
+        songs: parseSongs(result.data.songs)
+    };
 }
 
 async function getFolders() {
@@ -459,15 +550,35 @@ async function getFolders() {
 }
 
 async function getFolderFiles(id) {
-    let paramsJson = [
-        { key: "additional", value: "song_tag,song_audio,song_rating" },
-        { key: "library", value: "shared" },
-        { key: "limit", value: 1000 },
-        { key: "method", value: "list" },
-        { key: "sort_by", value: "title" },
-        { key: "sort_direction", value: "ASC" }
+    let paramsJson = [{
+            key: "additional",
+            value: "song_tag,song_audio,song_rating"
+        },
+        {
+            key: "library",
+            value: "shared"
+        },
+        {
+            key: "limit",
+            value: 1000
+        },
+        {
+            key: "method",
+            value: "list"
+        },
+        {
+            key: "sort_by",
+            value: "title"
+        },
+        {
+            key: "sort_direction",
+            value: "ASC"
+        }
     ];
-    if (id) paramsJson.push({ key: "id", value: id });
+    if (id) paramsJson.push({
+        key: "id",
+        value: id
+    });
     let result = await getAPI(
         "AudioStation/folder.cgi",
         "SYNO.AudioStation.Folder",
@@ -475,7 +586,9 @@ async function getFolderFiles(id) {
         paramsJson,
         2
     );
-    let songs = parseSongs(result.data.items.filter(({ type }) => type === "file")),
+    let songs = parseSongs(result.data.items.filter(({
+            type
+        }) => type === "file")),
         folders = [];
 
     for (i = 0; i < result.data.items.length; i++) {
@@ -497,12 +610,26 @@ async function getFolderFiles(id) {
 }
 
 async function getArtists() {
-    let PARAMS_JSON = [
-        { key: "limit", value: 1000 },
-        { key: "library", value: "shared" },
-        { key: "additional", value: "avg_rating" },
-        { key: "sort_by", value: "name" },
-        { key: "sort_direction", value: "ASC" }
+    let PARAMS_JSON = [{
+            key: "limit",
+            value: 1000
+        },
+        {
+            key: "library",
+            value: "shared"
+        },
+        {
+            key: "additional",
+            value: "avg_rating"
+        },
+        {
+            key: "sort_by",
+            value: "name"
+        },
+        {
+            key: "sort_direction",
+            value: "ASC"
+        }
     ];
     let result = await getAPI(
         "AudioStation/artist.cgi",
@@ -511,18 +638,40 @@ async function getArtists() {
         PARAMS_JSON,
         4
     );
-    return { artists: parseArtists(result.data.artists) };
+    return {
+        artists: parseArtists(result.data.artists)
+    };
 }
 
 async function getArtistAlbums(id) {
-    let PARAMS_JSON = [
-            { key: "additional", value: "avg_rating" },
-            { key: "library", value: "shared" },
-            { key: "limit", value: 1000 },
-            { key: "method", value: "list" },
-            { key: "sort_by", value: "display_artist" },
-            { key: "sort_direction", value: "ASC" },
-            { key: "artist", value: id }
+    let PARAMS_JSON = [{
+                key: "additional",
+                value: "avg_rating"
+            },
+            {
+                key: "library",
+                value: "shared"
+            },
+            {
+                key: "limit",
+                value: 1000
+            },
+            {
+                key: "method",
+                value: "list"
+            },
+            {
+                key: "sort_by",
+                value: "display_artist"
+            },
+            {
+                key: "sort_direction",
+                value: "ASC"
+            },
+            {
+                key: "artist",
+                value: id
+            }
         ],
         result = await getAPI(
             "AudioStation/album.cgi",
@@ -531,16 +680,32 @@ async function getArtistAlbums(id) {
             PARAMS_JSON,
             3
         );
-    return { albums: parseAlbums(result.data.albums) };
+    return {
+        albums: parseAlbums(result.data.albums)
+    };
 }
 
 async function getComposers() {
-    let PARAMS_JSON = [
-            { key: "limit", value: 1000 },
-            { key: "library", value: "shared" },
-            { key: "additional", value: "avg_rating" },
-            { key: "sort_by", value: "name" },
-            { key: "sort_direction", value: "ASC" }
+    let PARAMS_JSON = [{
+                key: "limit",
+                value: 1000
+            },
+            {
+                key: "library",
+                value: "shared"
+            },
+            {
+                key: "additional",
+                value: "avg_rating"
+            },
+            {
+                key: "sort_by",
+                value: "name"
+            },
+            {
+                key: "sort_direction",
+                value: "ASC"
+            }
         ],
         result = await getAPI(
             "AudioStation/composer.cgi",
@@ -549,18 +714,40 @@ async function getComposers() {
             PARAMS_JSON,
             2
         );
-    return { composers: parseComposers(result.data.composers) };
+    return {
+        composers: parseComposers(result.data.composers)
+    };
 }
 
 async function getComposerAlbums(id) {
-    let PARAMS_JSON = [
-            { key: "additional", value: "avg_rating" },
-            { key: "library", value: "shared" },
-            { key: "limit", value: 1000 },
-            { key: "method", value: "list" },
-            { key: "sort_by", value: "display_artist" },
-            { key: "sort_direction", value: "ASC" },
-            { key: "composer", value: id }
+    let PARAMS_JSON = [{
+                key: "additional",
+                value: "avg_rating"
+            },
+            {
+                key: "library",
+                value: "shared"
+            },
+            {
+                key: "limit",
+                value: 1000
+            },
+            {
+                key: "method",
+                value: "list"
+            },
+            {
+                key: "sort_by",
+                value: "display_artist"
+            },
+            {
+                key: "sort_direction",
+                value: "ASC"
+            },
+            {
+                key: "composer",
+                value: id
+            }
         ],
         result = await getAPI(
             "AudioStation/album.cgi",
@@ -569,38 +756,67 @@ async function getComposerAlbums(id) {
             PARAMS_JSON,
             3
         );
-    return { albums: parseAlbums(result.data.albums) };
+    return {
+        albums: parseAlbums(result.data.albums)
+    };
 }
 
 async function getPlaylists() {
     let playlist = await getAPI(
         "AudioStation/playlist.cgi",
         "SYNO.AudioStation.Playlist",
-        "list", [
-            { key: "limit", value: 1000 },
-            { key: "library", value: "shared" },
-            { key: "sort_by", value: "" },
-            { key: "sort_direction", value: "ASC" }
+        "list", [{
+                key: "limit",
+                value: 1000
+            },
+            {
+                key: "library",
+                value: "shared"
+            },
+            {
+                key: "sort_by",
+                value: ""
+            },
+            {
+                key: "sort_direction",
+                value: "ASC"
+            }
         ],
         3
     );
-    return { playlists: parsePlaylists(playlist.data.playlists) };
+    return {
+        playlists: parsePlaylists(playlist.data.playlists)
+    };
 }
 
 async function getPlaylistSongs(id) {
     let playlist = await getAPI(
         "AudioStation/playlist.cgi",
         "SYNO.AudioStation.Playlist",
-        "getinfo", [
-            { key: "limit", value: 1000 },
-            { key: "library", value: "shared" },
-            { key: "sort_by", value: "" },
+        "getinfo", [{
+                key: "limit",
+                value: 1000
+            },
+            {
+                key: "library",
+                value: "shared"
+            },
+            {
+                key: "sort_by",
+                value: ""
+            },
             {
                 key: "additional",
                 value: "songs_song_tag,songs_song_audio,songs_song_rating,sharing_info"
             },
-            { key: "id", value: id },
-            { key: "sort_direction", value: "ASC" }
+            {
+                key: "id",
+                value: id
+            },
+            {
+                key: "sort_direction",
+                value: "ASC"
+            }
         ],
         3
     );
@@ -618,22 +834,38 @@ async function getRandomSongs(id) {
     let result = await getAPI(
         "AudioStation/song.cgi",
         "SYNO.AudioStation.Song",
-        "list", [
-            { key: "additional", value: "song_tag,song_audio,song_rating" },
-            { key: "library", value: "shared" },
-            { key: "limit", value: 100 },
-            { key: "sort_by", value: "random" }
+        "list", [{
+                key: "additional",
+                value: "song_tag,song_audio,song_rating"
+            },
+            {
+                key: "library",
+                value: "shared"
+            },
+            {
+                key: "limit",
+                value: 100
+            },
+            {
+                key: "sort_by",
+                value: "random"
+            }
         ],
         1
     );
-    return { songs: parseSongs(result.data.songs) };
+    return {
+        songs: parseSongs(result.data.songs)
+    };
 }
 
 async function getLyric(id) {
     let result = (await getAPI(
         "AudioStation/lyrics.cgi",
         "SYNO.AudioStation.Lyrics",
-        "getlyrics", [{ key: "id", value: id }],
+        "getlyrics", [{
+            key: "id",
+            value: id
+        }],
         2
     )).data;
     result = result && result.lyrics ? result.lyrics : false;
@@ -650,31 +882,44 @@ function playlistOperation(operation) {
     }
 */
     switch (operation) {
-        case "get":
-            return async(songIds, playlistId) => {
-                let offset = false;
-                let playlist = (await getPlaylistSongs(playlistId)).songs
-                for (let i = 0; i < playlist.length; i++)
-                    if (playlist[i].id == songIds[0])
-                        offset = true
-                return { code: offset ? 200 : 404 }
+        case "in":
+            return async (songIds, playlistId) => {
+                let result = {};
+                let playlist = (await getPlaylistSongs(playlistId)).songs.map(x => x.id);
+                for (const i of songIds) {
+                    result[i] = playlist.includes(i);
+                }
+                return result
             }
         case "add":
-            return async(songIds, playlistId) => {
+            return async (songIds, playlistId) => {
                 let result = await getAPI(
                     "AudioStation/playlist.cgi",
                     "SYNO.AudioStation.Playlist",
-                    "updatesongs", [
-                        { key: "offset", value: -1 },
-                        { key: "limit", value: 0 },
-                        { key: "id", value: playlistId },
-                        { key: "songs", value: songIds[0] }
+                    "updatesongs", [{
+                            key: "offset",
+                            value: -1
+                        },
+                        {
+                            key: "limit",
+                            value: 0
+                        },
+                        {
+                            key: "id",
+                            value: playlistId
+                        },
+                        {
+                            key: "songs",
+                            value: songIds[0]
+                        }
                     ]
                 );
-                return { code: result.success ? 200 : 400 }
+                return {
+                    code: result.success ? 200 : 400
+                }
             }
         case "delete":
-            return async(songIds, playlistId) => {
+            return async (songIds, playlistId) => {
                 let offset;
                 let playlist = (await getPlaylistSongs(playlistId)).songs
                 for (let i = 0; i < playlist.length; i++)
@@ -683,38 +928,67 @@ function playlistOperation(operation) {
                 let result = await getAPI(
                     "AudioStation/playlist.cgi",
                     "SYNO.AudioStation.Playlist",
-                    "updatesongs", [
-                        { key: "offset", value: offset },
-                        { key: "limit", value: 1 },
-                        { key: "id", value: playlistId },
-                        { key: "songs", value: '' }
+                    "updatesongs", [{
+                            key: "offset",
+                            value: offset
+                        },
+                        {
+                            key: "limit",
+                            value: 1
+                        },
+                        {
+                            key: "id",
+                            value: playlistId
+                        },
+                        {
+                            key: "songs",
+                            value: ''
+                        }
                     ],
                     3
                 );
-                return { code: result.success ? 200 : 400 }
+                return {
+                    code: result.success ? 200 : 400
+                }
             };
 
     }
 }
 async function ratingSong(songid, rating) {
-    let result = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "setrating", [
-        { key: "id", value: songid },
-        { key: "rating", value: rating }
+    let result = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "setrating", [{
+            key: "id",
+            value: songid
+        },
+        {
+            key: "rating",
+            value: rating
+        }
     ], 3);
     return result.success
 }
 async function getUserPlaylists() {
     let info = await getAPI("AudioStation/info.cgi", "SYNO.AudioStation.Info", "getinfo", [], 4);
     let result = (await getPlaylists()).playlists
-        // 看看 484 管理員
+    // 看看 484 管理員
     return info.data.is_manager ? result : result.filter(i => i.id.match(/^playlist_personal_normal/g));
 }
 async function searchLyrics(keyword) {
-    let PARAMS_JSON = [
-        { key: "additional", value: "full_lyrics" },
-        { key: "limit", value: 30 },
-        { key: "title", value: keyword },
-        { key: "artist", value: "" }
+    let PARAMS_JSON = [{
+            key: "additional",
+            value: "full_lyrics"
+        },
+        {
+            key: "limit",
+            value: 30
+        },
+        {
+            key: "title",
+            value: keyword
+        },
+        {
+            key: "artist",
+            value: ""
+        }
     ];
     result = (await getAPI(
         "AudioStation/lyrics_search.cgi",
@@ -723,7 +997,9 @@ async function searchLyrics(keyword) {
         PARAMS_JSON,
         2
     )).data;
-    if (result) return { lyrics: parseLyrics(result.lyrics) };
+    if (result) return {
+        lyrics: parseLyrics(result.lyrics)
+    };
     else return false;
 }
 

@@ -94,7 +94,7 @@ $(() => {
     tryRelogin()
 
     $(`#drawer a[href="${$("#content").attr("data-page")}"]`).addClass("mdui-list-item-active mdui-color-theme");
-    $(`#drawer a`).click(function() {
+    $(`#drawer a`).click(function () {
         if ($(window).width() < 1024) {
             new mdui.Drawer("#drawer").close();
         }
@@ -115,7 +115,11 @@ $(() => {
         if ($(".mdui-snackbar").length > 0)
             $(".mdui-snackbar .mdui-snackbar-text").text(text)
         else
-            mdui.snackbar({ message: text, timeout: 2000, position: getSnackbarPosition() });
+            mdui.snackbar({
+                message: text,
+                timeout: 2000,
+                position: getSnackbarPosition()
+            });
     });
     keyboardJS.bind('s', e => {
         if (e.target.tagName.toUpperCase() == 'INPUT') return;
@@ -124,7 +128,11 @@ $(() => {
         if ($(".mdui-snackbar").length > 0)
             $(".mdui-snackbar .mdui-snackbar-text").text(text)
         else
-            mdui.snackbar({ message: text, timeout: 2000, position: getSnackbarPosition() });
+            mdui.snackbar({
+                message: text,
+                timeout: 2000,
+                position: getSnackbarPosition()
+            });
     });
     keyboardJS.bind('a', e => {
         if (e.target.tagName.toUpperCase() == 'INPUT') return;
@@ -134,15 +142,15 @@ $(() => {
         if (e.target.tagName.toUpperCase() == 'INPUT') return;
         ap.skipForward()
     });
-    keyboardJS.bind('h', function(e) {
+    keyboardJS.bind('h', function (e) {
         if (e.target.tagName.toUpperCase() == 'INPUT') return;
         router.navigate('home')
     });
-    keyboardJS.bind('n', function(e) {
+    keyboardJS.bind('n', function (e) {
         if (e.target.tagName.toUpperCase() == 'INPUT') return;
         router.navigate('now')
     });
-    keyboardJS.bind('r', function(e) {
+    keyboardJS.bind('r', function (e) {
         if (e.target.tagName.toUpperCase() == 'INPUT') return;
         let icon = changePlayMode()
         let text = icon == "shuffle" ? `<i class="mdui-icon material-icons">shuffle</i>已切換至隨機播放` :
@@ -155,7 +163,11 @@ $(() => {
         if ($(".mdui-snackbar").length > 0)
             $(".mdui-snackbar .mdui-snackbar-text").html(text)
         else
-            mdui.snackbar({ message: text, timeout: 400, position: getSnackbarPosition() });
+            mdui.snackbar({
+                message: text,
+                timeout: 400,
+                position: getSnackbarPosition()
+            });
         $(".mdui-snackbar .mdui-snackbar-text i").attr('style', 'font-size: 14px;width: 25.2px;transform: scale(1.8)')
     });
 });
@@ -166,11 +178,11 @@ const socket = io();
 socket.on("hello", () => {
     socket.emit('login')
 });
-ap.on("listswitch", async() => {
+ap.on("listswitch", async () => {
     lrc.load(`[00:00.000]歌詞讀取中`)
     $("div[data-lrc=\"inner\"]").html(`<p class="loading">歌詞讀取中</p>`)
 })
-ap.on("play", async() => {
+ap.on("play", async () => {
     //沒歌就隨機播放
     if (ap.list.audios.length == 0) playRandom().then(() => {
         router.navigate('now');
@@ -186,7 +198,7 @@ ap.on("play", async() => {
     }
     updateMediaSession()
 })
-ap.on("loadedmetadata", async() => {
+ap.on("loadedmetadata", async () => {
     let nowPlaying = ap.list.audios[ap.list.index],
         name = nowPlaying.name,
         id = nowPlaying.id,
@@ -258,14 +270,29 @@ function updateMediaSession() {
         navigator.mediaSession.metadata = new MediaMetadata({
             title: $('#player .song-info .name').text(),
             artist: $('#player .song-info .artist').text(),
-            artwork: [{ src: $('#player img').attr('src'), type: 'image/png' }]
+            artwork: [{
+                src: $('#player img').attr('src'),
+                type: 'image/png'
+            }]
         });
-        navigator.mediaSession.setActionHandler('play', () => { ap.toggle() });
-        navigator.mediaSession.setActionHandler('pause', () => { ap.pause() });
-        navigator.mediaSession.setActionHandler('seekbackward', () => { ap.seek(ap.audio.currentTime - 10) });
-        navigator.mediaSession.setActionHandler('seekforward', () => { ap.seek(ap.audio.currentTime + 10) });
-        navigator.mediaSession.setActionHandler('previoustrack', () => { ap.skipBack() });
-        navigator.mediaSession.setActionHandler('nexttrack', () => { ap.skipForward() });
+        navigator.mediaSession.setActionHandler('play', () => {
+            ap.toggle()
+        });
+        navigator.mediaSession.setActionHandler('pause', () => {
+            ap.pause()
+        });
+        navigator.mediaSession.setActionHandler('seekbackward', () => {
+            ap.seek(ap.audio.currentTime - 10)
+        });
+        navigator.mediaSession.setActionHandler('seekforward', () => {
+            ap.seek(ap.audio.currentTime + 10)
+        });
+        navigator.mediaSession.setActionHandler('previoustrack', () => {
+            ap.skipBack()
+        });
+        navigator.mediaSession.setActionHandler('nexttrack', () => {
+            ap.skipForward()
+        });
     }
 }
 
@@ -276,19 +303,29 @@ function tryRelogin() {
     //如果有存到密碼或是嘗試次數少於 10 次就嘗試登入
     if (window.localStorage["userPASS"] || loginFailureCount <= 10) {
         console.log("[Login] 正在嘗試登入")
-        $.post("/login/", { userPASS: window.localStorage["userPASS"] }, data => {
+        $.post("/login/", {
+            userPASS: window.localStorage["userPASS"]
+        }, data => {
             if (data == 'success') {
                 console.log("[Login] 登入成功")
                 loginFailureCount = 0
             } else {
                 console.error("[Login] 登入失敗")
-                mdui.snackbar({ message: 'Session 過期，請重新登入', timeout: 1000, position: getSnackbarPosition() });
+                mdui.snackbar({
+                    message: 'Session 過期，請重新登入',
+                    timeout: 1000,
+                    position: getSnackbarPosition()
+                });
                 document.location.href = "/login/";
             }
         });
     } else if (loginFailureCount > 10) {
         console.log("[Login] 登入失敗超過十次，已放棄")
-        mdui.snackbar({ message: '發生了未知錯誤', timeout: 1000, position: getSnackbarPosition() });
+        mdui.snackbar({
+            message: '發生了未知錯誤',
+            timeout: 1000,
+            position: getSnackbarPosition()
+        });
     }
 }
 //-- 加解密
@@ -395,7 +432,7 @@ function pokaHeader(title, subtitle = '', image = false, hide = false, blur = tr
         $("#header-wrapper .bg2").attr('style', $("#header-wrapper .bg").attr('style'))
         $("#header-wrapper .bg").attr('style', style)
         $("#header-wrapper .bg,#header-wrapper .bg2").addClass('changeing')
-        setTimeout(function() {
+        setTimeout(function () {
             $("#header-wrapper .bg,#header-wrapper .bg2").removeClass('changeing')
         }, 400)
     }
@@ -403,7 +440,7 @@ function pokaHeader(title, subtitle = '', image = false, hide = false, blur = tr
 // 首頁
 async function showHome() {
     $('#content').attr('data-page', 'home')
-        // 展示讀取中
+    // 展示讀取中
     pokaHeader("歡迎使用", `PokaPlayer ${window.localStorage["PokaPlayerVersion"] || ''}`)
     $("#content").html(template.getSpinner())
     mdui.mutation()
@@ -413,7 +450,7 @@ async function showHome() {
     if ($("#content").attr('data-page') == 'home') {
         let parseResult = template.parseHome(result)
         $("#content").html(parseResult != '' ? parseResult : nothingHere)
-            //初始化
+        //初始化
         mdui.mutation()
         router.updatePageLinks()
     }
@@ -458,7 +495,7 @@ async function showSearch(keyword) {
     let noResult = `<div class="mdui-valign" style="height:150px"><p class="mdui-center">${noResultTexts[Math.floor(Math.random() * noResultTexts.length)]}</p></div>`
     if (keyword) {
         let result = await request(`/pokaapi/search/?keyword=${keyword}`);
-        let searchResults = template.parseHome(result);
+        let searchResults = template.parseSearch(result);
 
         //無搜尋結果
         if (!searchResults) searchResults = noResult
@@ -474,7 +511,7 @@ async function showSearch(keyword) {
     mdui.mutation()
     router.updatePageLinks()
 
-    $("#search").change(async function() {
+    $("#search").change(async function () {
         $("#search+.mdui-textfield-error+.mdui-textfield-helper").text("搜尋中...");
         router.navigate("search/" + encodeURIComponent($(this).val()));
     });
@@ -501,17 +538,18 @@ async function showAlbumSongs(albumSource, albumID) {
     $("#content").attr('data-item', `album${albumID}`)
 
     // 展示讀取中
-    let albumInfo = template.infoHeader('', '', '')
-    pokaHeader('', '')
-    $("#content").html(albumInfo + template.getSpinner())
+    let cover = '';
+    if (albumSource == 'DSM') cover = `/pokaapi/cover/?moduleName=${encodeURIComponent(albumSource)}&data=${encodeURIComponent(JSON.stringify({ type: "album", info: JSON.parse(albumID) }))}`
+    let albumInfo = template.infoHeader(cover, '', '')
+    pokaHeader('', '', cover)
+    $("#content").html(template.getSpinner())
     mdui.mutation()
 
-    let name, artist, cover, result;
+    let name, artist, result;
     if (albumSource == 'DSM') {
         let albumData = JSON.parse(albumID)
         name = albumData.album_name
         artist = albumData.album_artist_name
-        cover = `/pokaapi/cover/?moduleName=${encodeURIComponent(albumSource)}&data=${encodeURIComponent(JSON.stringify({ type: "album", info: albumData }))}`
         result = await request(`/pokaapi/albumSongs/?moduleName=${encodeURIComponent(albumSource)}&data=${encodeURIComponent(albumID)}`)
     } else {
         let albumData = (await request(`/pokaapi/album?moduleName=${encodeURIComponent(albumSource)}&id=${encodeURIComponent(albumID)}`))
@@ -530,33 +568,33 @@ async function showAlbumSongs(albumSource, albumID) {
     if (isAlbumPinned != 'disabled')
         if (isAlbumPinned)
             actions += `
-        <button class="mdui-btn mdui-btn-icon mdui-ripple" 
-                title="從首頁釘選移除此專輯" data-pinned="true">
-            <i class="mdui-icon material-icons">turned_in</i>
-        </button>`
-        else
-            actions += `
-       <button class="mdui-btn mdui-btn-icon mdui-ripple" 
-               title="加入此專輯到首頁釘選" data-pinned="false">
-           <i class="mdui-icon material-icons">turned_in_not</i>
-       </button>`
+                <button class="mdui-btn mdui-btn-icon mdui-ripple" 
+                        title="從首頁釘選移除此專輯" data-pinned="true">
+                    <i class="mdui-icon material-icons">turned_in</i>
+                </button>`
+    else
+        actions += `
+            <button class="mdui-btn mdui-btn-icon mdui-ripple" 
+                    title="加入此專輯到首頁釘選" data-pinned="false">
+                <i class="mdui-icon material-icons">turned_in_not</i>
+            </button>`
     actions += `
-    <button class="mdui-btn mdui-btn-icon mdui-ripple" 
-            onclick="addSong(songList)" 
-            title="將此頁面歌曲全部加入到現正播放">
-        <i class="mdui-icon material-icons">playlist_add</i>
-    </button>`
+            <button class="mdui-btn mdui-btn-icon mdui-ripple" 
+                    onclick="addSong(songList)" 
+                    title="將此頁面歌曲全部加入到現正播放">
+                <i class="mdui-icon material-icons">playlist_add</i>
+            </button>`
 
     //抓資料
     html = template.parseSongs(result.songs)
     albumInfo = template.infoHeader(cover, name, artist)
     if ($("#content").attr('data-page') == `album` && $("#content").attr('data-item') == `album${albumID}`) {
-        $("#content").html(result.songs.length > 0 ? albumInfo + html : nothingHere())
+        $("#content").html(result.songs.length > 0 ? albumInfo + html : nothingHere()).animateCss('fadeIn faster')
         pokaHeader('', '', cover)
         $("#content .info-header .time").html(`${result.songs.length} 首歌曲`)
         $("#content .info-header .actions").html(actions)
 
-        $("[data-pinned]").click(async function() {
+        $("[data-pinned]").click(async function () {
             let pinStatus = $(this).attr('data-pinned')
             if (pinStatus == "true") {
                 if (await unPin(albumSource, 'album', albumID, name) == true) {
@@ -578,7 +616,7 @@ async function showAlbumSongs(albumSource, albumID) {
 async function showFolder(moduleName, folderId = false) {
     $("#content").attr('data-page', 'folder')
     $("#content").attr('data-item', 'folder' + folderId)
-        // 展示讀取中
+    // 展示讀取中
     pokaHeader("資料夾", "檢視資料夾的項目")
     $("#content").html(template.getSpinner())
     mdui.mutation()
@@ -619,7 +657,7 @@ async function showArtist(moduleName, artist = false) {
         let albumHTML = template.parseAlbums(result.albums)
         if ($("#content").attr('data-item') == `artist${artist}`) {
             $("#content").html(result.albums.length > 0 ? albumHTML + pinButton : nothingHere())
-            $("[data-pinned]").click(async function() {
+            $("[data-pinned]").click(async function () {
                 let pinStatus = $(this).attr('data-pinned')
                 if (pinStatus == "true") {
                     if (await unPin(moduleName, 'artist', artist, moduleName == 'DSM' ? artist : data.name) == true) {
@@ -666,7 +704,7 @@ async function showComposer(moduleName, composer) {
         let albumHTML = template.parseAlbums(result.albums)
         if ($("#content").attr('data-item') == `composer${composer}`) {
             $("#content").html(result.albums.length > 0 ? albumHTML + pinButton : nothingHere())
-            $("[data-pinned]").click(async function() {
+            $("[data-pinned]").click(async function () {
                 let pinStatus = $(this).attr('data-pinned')
                 if (pinStatus == "true") {
                     if (await unPin(moduleName, 'composer', composer, composer) == true) {
@@ -685,7 +723,7 @@ async function showComposer(moduleName, composer) {
         }
     } else {
         pokaHeader("作曲者", "列出所有作曲者")
-            //請求資料囉
+        //請求資料囉
         let result = await request(`/pokaapi/composers`),
             composersHTML = template.parseComposers(result.composers)
         if ($("#content").attr('data-page') == 'composer')
@@ -793,7 +831,7 @@ async function showPlaylistSongs(moduleName, playlistId) {
 
     if ($("#content").attr('data-item') == `playlist${playlistId}`) {
         $("#content").html(result.songs.length > 0 ? songs + fab : nothingHere())
-        $("[data-pinned]").click(async function() {
+        $("[data-pinned]").click(async function () {
             let pinStatus = $(this).attr('data-pinned')
             if (pinStatus == "true") {
                 if (await unPin(moduleName, 'playlist', playlistId, result.playlists[0].name) == true) {
@@ -840,7 +878,7 @@ async function showNow() {
     let html = `<ul class="mdui-list songs" id="/now/songlist">`
     songList = ap.list.audios
     for (i = 0; i < ap.list.audios.length; i++) {
-        let focus = ap.list.index == i ? 'mdui-list-item-active' : '',
+        let focus = ap.list.index == i ? 'mdui-color-theme' : '',
             song = ap.list.audios[i],
             title = song.name,
             artist = song.artist,
@@ -852,11 +890,11 @@ async function showNow() {
                 <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
                 <div class="mdui-list-item-text mdui-list-item-one-line">${artist}</div>
             </div>
-            <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="songAction(\`${song.id}\`, \`${song.source}\`)">
-                <i class="mdui-icon material-icons">more_vert</i>
-            </button>
             <button class="mdui-btn mdui-btn-icon mdui-ripple close" data-now-play-id="${i}">
                 <i class="mdui-icon material-icons">close</i>
+            </button>
+            <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="songAction(\`${song.id}\`, \`${song.source}\`)">
+                <i class="mdui-icon material-icons">more_horiz</i>
             </button>
         </li>`
     }
@@ -900,17 +938,17 @@ async function showNow() {
     // 輸出
     $("#content").html(`<div data-player-container>${info + html}<a class="mdui-overlay"></a></div>`);
     if (ap.list.audios.length == 0) $("[data-player-container]>.mdui-list.songs").addClass('nosongs')
-        // 隱藏原本ㄉ播放器
+    // 隱藏原本ㄉ播放器
     $("#player").addClass('hide');
     // random＆loop
     $("[data-player]>.info>.ctrl>.random")
-        .html(function() {
+        .html(function () {
             return `<i class="mdui-icon material-icons">${changePlayMode(true)}</i>`
         })
-        .click(function() {
+        .click(function () {
             $(this).html(`<i class="mdui-icon material-icons">${changePlayMode()}</i>`)
         })
-    $("[data-player]>.info>.ctrl>.playlist").click(function() {
+    $("[data-player]>.info>.ctrl>.playlist").click(function () {
         router.pause();
         window.location.hash = '#/now/songlist'
         setTimeout(() => {
@@ -920,15 +958,17 @@ async function showNow() {
 
         function listenHash(e) {
             if (e.oldURL.match(/now\/songlist$/)) {
-                $('.mdui-list.songs').removeClass('show')
-                router.navigate('#/now');
-                router.resume();
                 window.removeEventListener("hashchange", listenHash);
+                if (!e.newURL.match('mdui-dialog')) {
+                    router.navigate('#/now');
+                }
+                $('.mdui-list.songs').removeClass('show')
+                router.resume();
             }
         }
         window.addEventListener("hashchange", listenHash);
     })
-    $(`[data-player-container]>a.mdui-overlay`).click(function() {
+    $(`[data-player-container]>a.mdui-overlay`).click(function () {
         window.location.hash = '#/now'
     })
 
@@ -965,16 +1005,18 @@ async function showNow() {
     ap.on("pause", () => {
         $('[data-player] button.play[onclick="ap.toggle()"] i').text("play_arrow")
     })
-    ap.on("play", async() => {
+    ap.on("play", async () => {
         //卷軸轉轉
         if ($(window).width() > 850 && $(window).height() > 560) {
             $('.mdui-list.songs')
                 .clearQueue()
-                .animate({ scrollTop: 72 * ap.list.index - 100 }, 250);
+                .animate({
+                    scrollTop: 72 * ap.list.index - 100
+                }, 250);
         }
         //- list 切換 active
-        $(".songs>li.song").removeClass('mdui-list-item-active')
-        $(".songs>li.song").eq(ap.list.index).addClass('mdui-list-item-active');
+        $(".songs>li.song").removeClass('mdui-color-theme')
+        $(".songs>li.song").eq(ap.list.index).addClass('mdui-color-theme');
         //- 播放器
         $('[data-player] button.play[onclick="ap.toggle()"] i').text("pause")
         let nowPlaying = ap.list.audios[ap.list.index]
@@ -1024,28 +1066,30 @@ async function showNow() {
                 let sh = $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].offsetTop - $('[data-player] .info>div[data-lrc]').height() / 2 - $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].clientHeight
                 $('[data-player] .info>div[data-lrc]')
                     .clearQueue()
-                    .animate({ scrollTop: sh }, 250);
+                    .animate({
+                        scrollTop: sh
+                    }, 250);
             }
         }
     });
-    $('[data-player] .info>div[data-lrc]').dblclick(function() {
+    $('[data-player] .info>div[data-lrc]').dblclick(function () {
         showLrcChoose()
     })
     $("[data-player]>.info>.player-bar input[type=range]").on("input", () => {
         let time = $("[data-player]>.info>.player-bar input[type=range]").val() / 100 * ap.audio.duration
         ap.seek(time);
     })
-    $('[data-player]>.mdui-card').click(function() {
+    $('[data-player]>.mdui-card').click(function () {
         router.navigate('lrc')
     })
-    $(".songs [data-now-play-id].songinfo").click(function() {
-        $(".songs>li.song").removeClass('mdui-list-item-active')
-        $(this).parent().eq(0).addClass('mdui-list-item-active')
+    $(".songs [data-now-play-id].songinfo").click(function () {
+        $(".songs>li.song").removeClass('mdui-color-theme')
+        $(this).parent().eq(0).addClass('mdui-color-theme')
         let song = $(this).attr('data-now-play-id')
         ap.list.switch(song)
         ap.play()
     })
-    $(".songs [data-now-play-id].close").click(function() {
+    $(".songs [data-now-play-id].close").click(function () {
         let song = $(this).attr('data-now-play-id')
         if (song == ap.list.index) ap.skipForward()
         $(this).parent().eq(0).addClass('del')
@@ -1098,10 +1142,12 @@ function showLrc() {
             let top = $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].offsetTop - $('div[data-lrc]').height() / 2 - $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].clientHeight * 2
             $('#content>div[data-lrc]')
                 .clearQueue()
-                .animate({ scrollTop: top }, 250);
+                .animate({
+                    scrollTop: top
+                }, 250);
         }
     });
-    $('#content>div[data-lrc]').dblclick(function() {
+    $('#content>div[data-lrc]').dblclick(function () {
         showLrcChoose()
     })
 }
@@ -1127,7 +1173,9 @@ function playSongs(songs, song = false, clear = true) {
             id: nowsong.id,
             source: source
         })
-        if (nowsong.id == song) { songtoplay = i }
+        if (nowsong.id == song) {
+            songtoplay = i
+        }
     }
     ap.list.add(playlist)
     if (song)
@@ -1246,7 +1294,7 @@ async function showLrcChoose() {
             $("[lrc-choose]").html(list(searchResult, keyword))
             mdui.mutation();
         }
-        $("[data-lrc-id]").click(async function() {
+        $("[data-lrc-id]").click(async function () {
             let lrcid = $(this).attr('data-lrc-id')
             var text = $(this).children().children('.mdui-list-item-text').text()
             $(this).children().children('.mdui-list-item-text').text('歌詞載入中...')
@@ -1258,7 +1306,7 @@ async function showLrcChoose() {
             $(this).children().children('.mdui-list-item-text').text(text)
             $('[data-lrc-done]').click()
         })
-        $("input#searchLrc").change(function() {
+        $("input#searchLrc").change(function () {
             $("input#searchLrc + * + .mdui-textfield-helper").text('搜尋中...')
             search($(this).val())
         })
@@ -1289,14 +1337,16 @@ async function songAction(songID, source) {
     mdui.mutation();
     let userPlaylists = await getUserPlaylists(song.source)
     let iscanRating = await canRating(song.source)
+    let songCanLike = await canLike(song.source)
+    let isSongLiked = songCanLike ? await isLiked(song.source, song.id) : false
     let actions = `<ul class="mdui-list">
-        <li class="mdui-list-item mdui-ripple" mdui-dialog-close data-action="like" style="pointer-events: none; opacity: .5;">
-            <i class="mdui-list-item-icon mdui-icon material-icons">turned_in_not</i>
-            <div class="mdui-list-item-content">收藏</div>
+        <li class="mdui-list-item mdui-ripple" mdui-dialog-close data-action="like" ${songCanLike?``:`style="pointer-events: none; opacity: .5;"`}>
+            <i class="mdui-list-item-icon mdui-icon material-icons">${isSongLiked?'turned_in':'turned_in_not'}</i>
+            <div class="mdui-list-item-content">${isSongLiked?'取消收藏':'收藏'}</div>
         </li>
         <li class="mdui-list-item mdui-ripple" data-action="rating" ${iscanRating?``:`style="pointer-events: none; opacity: .5;"`}>
             <i class="mdui-list-item-icon mdui-icon material-icons">star</i>
-            <div class="mdui-list-item-content">評分</div>
+            <div class="mdui-list-item-content">評等</div>
         </li>
         <li class="mdui-list-item mdui-ripple" data-action="playlistAdd" ${userPlaylists.length>0?``:`style="pointer-events: none; opacity: .5;"`}>
             <i class="mdui-list-item-icon mdui-icon material-icons">playlist_add</i>
@@ -1305,9 +1355,28 @@ async function songAction(songID, source) {
     </ul>`
     $(`[data-content]`).html(actions)
     $(`[data-content]`).animateCss('fadeIn faster')
-    $(`[data-action="like"]`).click(() => songActionLike(song, url))
+    $(`[data-action="like"]`).click(async () => {
+        $(`data-close`).click()
+        let result = isSongLiked ? await disLike(song.source, song.id) : await like(song.source, song.id)
+        let message
+        if (result && result.code == 200) {
+            if (isSongLiked) {
+                message = `已取消收藏「${song.name}」`
+            } else {
+                message = `已收藏「${song.name}」`
+            }
+        } else {
+            message = `收藏或取消收藏「${song.name}」時發生了錯誤`
+        }
+
+        mdui.snackbar({
+            message: message,
+            timeout: 500,
+            position: getSnackbarPosition()
+        })
+    })
     $(`[data-action="rating"]`).click(() => {
-        $(`[data-title]`).text(`評分`)
+        $(`[data-title]`).text(`評等`)
         $(`[data-content]`).html(`
         <div id="rating" class="mdui-text-center">
             <button class="mdui-btn mdui-btn-icon" data-rating="1"><i class="mdui-icon material-icons">star</i></button>
@@ -1316,24 +1385,34 @@ async function songAction(songID, source) {
             <button class="mdui-btn mdui-btn-icon" data-rating="4"><i class="mdui-icon material-icons">star</i></button>
             <button class="mdui-btn mdui-btn-icon" data-rating="5"><i class="mdui-icon material-icons">star</i></button>
         </div>
+        <div class="mdui-text-center">
+            <p>為「${song.name}」評等</p>
+            <button class="mdui-btn mdui-btn-raised mdui-text-center" data-rating="0">清除評等</button>
+        </div>
         `)
         $(`[data-content]`).animateCss('fadeIn faster')
-        $(`[data-rating]`).click(async function(){
+        $(`[data-rating]`).click(async function () {
             $(`data-close`).click()
-            let star=$(this).attr('data-rating')
+            let star = $(this).attr('data-rating')
             let rating = await ratingSong(song.source, song.id, star)
-            let msg = rating ? `${song.name} 評分 ${star} 星成功！` : `${song.name} 評分失敗！`
-            mdui.snackbar({ message: msg, timeout: 500, position: getSnackbarPosition() });
+            let msg = rating ? `為「${song.name}」${star==0 ? `清除評等` : `評等 ${star} 星`}成功！` : `為「${song.name}」評等失敗！`
+            mdui.snackbar({
+                message: msg,
+                timeout: 500,
+                position: getSnackbarPosition()
+            });
         })
     })
-    $(`[data-action="playlistAdd"]`).click(async function() {
+    $(`[data-action="playlistAdd"]`).click(async function () {
         $(`[data-title]`).text(`加入到播放清單`)
+        $(`[data-content]`).html(template.getSpinner())
+        mdui.mutation();
         let content;
         /* */
         content = $(`<ul class="mdui-list"/>`)
         for (let i = 0; i < userPlaylists.length; i++) {
             let icon = userPlaylists[i].image ? `<div class="mdui-list-item-avatar"><img src="${userPlaylists[i].image}"/></div>` : ``
-            let exist = (await playlistExist(userPlaylists[i].source, [song.id], userPlaylists[i].id)).code == 200
+            let exist = (await playlistExist(userPlaylists[i].source, [song.id], userPlaylists[i].id))[song.id]
             content.append(
                 $(`<li class="mdui-list-item mdui-ripple">
                         ${icon}
@@ -1342,14 +1421,18 @@ async function songAction(songID, source) {
                             <div class="mdui-list-item-text">${moduleShowName[userPlaylists[i].source]}${exist?` / 該歌曲已存在，點擊來刪除`:``}</div>
                         </div>
                         <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-grey-400">${exist?`remove_circle`:`playlist_add`}</i>
-                </li>`).click(async() => {
-                        $(`data-close`).click()
-                        let result = await playlistOperation(userPlaylists[i].source, [song.id], userPlaylists[i].id)
-                        let message
-                        if (!result.result) message = `處理 ${song.name} 時發生了錯誤`
-                        if (result.exist == 404) message = `已將 ${song.name} 加入到 ${userPlaylists[i].name}`
-                        if (result.exist == 200) message = `已將 ${song.name} 從 ${userPlaylists[i].name} 刪除`
-                        mdui.snackbar({ message: message, timeout: 500, position: getSnackbarPosition() });
+                </li>`).click(async () => {
+                    $(`data-close`).click()
+                    let result = await playlistOperation(userPlaylists[i].source, [song.id], userPlaylists[i].id)
+                    let message
+                    if (!result.result) message = `處理 ${song.name} 時發生了錯誤`
+                    if (result.exist == 404) message = `已將 ${song.name} 加入到 ${userPlaylists[i].name}`
+                    if (result.exist == 200) message = `已將 ${song.name} 從 ${userPlaylists[i].name} 刪除`
+                    mdui.snackbar({
+                        message: message,
+                        timeout: 500,
+                        position: getSnackbarPosition()
+                    });
                 })
             )
         }
@@ -1358,13 +1441,10 @@ async function songAction(songID, source) {
         $(`[data-content]`).animateCss('fadeIn faster')
     })
 }
-async function songActionLike(song) {
-    mdui.snackbar({ message: `已收藏 ${song.name}`, timeout: 500, position: getSnackbarPosition() });
-}
 //- animateCss
 $.fn.extend({
-    animateCss: function(animationName, callback) {
-        var animationEnd = (function(el) {
+    animateCss: function (animationName, callback) {
+        var animationEnd = (function (el) {
             var animations = {
                 animation: 'animationend',
                 OAnimation: 'oAnimationEnd',
@@ -1379,11 +1459,11 @@ $.fn.extend({
             }
         })(document.createElement('div'));
 
-        this.addClass('animated ' + animationName).one(animationEnd, function() {
+        this.addClass('animated ' + animationName).one(animationEnd, function () {
             $(this).removeClass('animated ' + animationName);
             if (typeof callback === 'function') callback();
         });
 
         return this;
     },
-});
+})
