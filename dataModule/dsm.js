@@ -882,7 +882,7 @@ function playlistOperation(operation) {
     }
 */
     switch (operation) {
-        case "get":
+        case "in":
             return async (songIds, playlistId) => {
                 let offset = false;
                 let playlist = (await getPlaylistSongs(playlistId)).songs

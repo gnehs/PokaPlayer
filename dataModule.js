@@ -622,7 +622,7 @@ router
             return res.status(501).send("The required module is currently unavailable :(");
         let result;
         try {
-            result = await _module.playlistOperation("get")(JSON.parse(req.query.songIds), req.query.playlistId)
+            result = await _module.playlistOperation("in")(JSON.parse(req.query.songIds), req.query.playlistId)
         } catch (e) {
             result = false
             showError(moduleName, e)
