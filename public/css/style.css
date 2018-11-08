@@ -1011,4 +1011,25 @@ header.mdui-appbar.mdui-appbar-fixed {
     font-size: calc(12px + 1.2vmin);
     line-height: 2em;
     margin: 0;
+
+}
+
+/* color picker*/
+.pcr-button {
+    display: none
+}
+
+.pcr-app {
+    z-index: 1;
+    position: unset;
+    box-shadow: none;
+    width: 100%;
+    background: transparent;
+    max-width: 100%;
+}
+
+.pcr-app .pcr-selection .pcr-color-palette {
+    background-color: #fff;
+    overflow: hidden;
+    border-radius: 4px;
 }

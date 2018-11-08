@@ -4,6 +4,7 @@ html
         title PokaPlayer
         meta(name='viewport', content='width=device-width, initial-scale=1.0')       
         link(href='//cdnjs.cloudflare.com/ajax/libs/mdui/0.4.2/css/mdui.min.css',rel='stylesheet')
+        link(href='//cdn.jsdelivr.net/npm/pickr-widget/dist/pickr.min.css',rel='stylesheet')
         link(href='//daneden.github.io/animate.css/animate.min.css',rel='stylesheet')
         link(href='//fonts.googleapis.com/css?family=Product+Sans',rel='stylesheet')
         link(href='/css/style.css?'+version,rel='stylesheet')
@@ -19,7 +20,7 @@ html
         //-Windows
         meta(name="msapplication-TileImage" content="/img/PokaPlayer.png")
         meta(name="msapplication-TileColor" content="#3f51b5")
-
+        style#colortheme
     body.mdui-drawer-body-left
         header.mdui-appbar.mdui-appbar-fixed
             .mdui-toolbar.mdui-color-theme
@@ -77,6 +78,7 @@ html
         script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/showdown/1.8.6/showdown.min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/keyboardjs/2.4.1/keyboard.min.js')
+        script(src='//cdn.jsdelivr.net/npm/pickr-widget/dist/pickr.min.js')
         script(src='/socket.io/socket.io.js')
         script(src='/js/navigo.min.js')
         script(src='/js/lyrics.min.js')

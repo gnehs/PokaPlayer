@@ -678,6 +678,67 @@ router
         return res.json(result);
     })
 
+//-----------------------------> 喜歡
+router.get('/canLike', async (req, res) => {
+        //http://localhost:3000/pokaapi/canLike/?moduleName=Netease2
+        let moduleName = req.query.moduleName;
+        let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+        // 沒這東西
+        if (!_module || moduleList[moduleName].active.indexOf("like") == -1)
+            return res.status(501).send("The required module is currently unavailable :(");
+        return res.json(true)
+    })
+    .get('/isLiked', async (req, res) => {
+        //POST http://localhost:3000/pokaapi/isLiked/
+        let moduleName = req.body.moduleName;
+        let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+        // 沒這東西
+        if (!_module || moduleList[moduleName].active.indexOf("isLiked") == -1)
+            return res.status(501).send("The required module is currently unavailable :(");
+
+        let result;
+        try {
+            result = await _module.isLiked(req.body.songId)
+        } catch (e) {
+            result = false
+            showError(moduleName, e)
+        }
+        return res.json(result);
+    })
+    .post('/like', async (req, res) => {
+        //POST http://localhost:3000/pokaapi/like/
+        let moduleName = req.body.moduleName;
+        let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+        // 沒這東西
+        if (!_module || moduleList[moduleName].active.indexOf("like") == -1)
+            return res.status(501).send("The required module is currently unavailable :(");
+
+        let result;
+        try {
+            result = await _module.like(req.body.songId, true)
+        } catch (e) {
+            result = false
+            showError(moduleName, e)
+        }
+        return res.json(result);
+    })
+    .post('/disLike', async (req, res) => {
+        //POST http://localhost:3000/pokaapi/disLike/
+        let moduleName = req.body.moduleName;
+        let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+        // 沒這東西
+        if (!_module || moduleList[moduleName].active.indexOf("like") == -1)
+            return res.status(501).send("The required module is currently unavailable :(");
+
+        let result;
+        try {
+            result = await _module.like(req.body.songId, false)
+        } catch (e) {
+            result = false
+            showError(moduleName, e)
+        }
+        return res.json(result);
+    })
 //-----------------------------> 隨機
 // 隨機歌曲
 router.get("/randomSongs/", async (req, res) => {

@@ -1,0 +1,21 @@
+:root .mdui-color-theme,
+.mdui-theme-layout-dark .mdui-appbar>[class*=mdui-color-]:not(.mdui-color-transparent) {
+    color: var(--poka-theme-primary-text-color) !important;
+    background-color: var(--poka-theme-primary-color) !important;
+}
+
+:root .mdui-tab .mdui-tab-active {
+    color: var(--poka-theme-primary-color);
+}
+
+:root .mdui-tab-indicator {
+    background-color: var(--poka-theme-primary-color);
+}
+
+:root .mdui-theme-layout-dark .mdui-tab .mdui-tab-active {
+    color: var(--poka-theme-primary-text-color);
+}
+
+:root .mdui-theme-layout-dark .mdui-tab-indicator {
+    background-color: var(--poka-theme-primary-text-color);
+}
