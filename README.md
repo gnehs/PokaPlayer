@@ -64,3 +64,4 @@ Repo 內附的背景來自
 [@coin3x](https://github.com/coin3x)
 [@hang333](https://github.com/hang333)
 [@hugwalk](https://github.com/hugwalk)
+[@koru1130](https://github.com/koru1130)
