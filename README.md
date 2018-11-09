@@ -1,29 +1,36 @@
 [![works badge](https://cdn.rawgit.com/nikku/works-on-my-machine/v0.2.0/badge.svg)](https://github.com/nikku/works-on-my-machine)
+[![GitHub issues](https://img.shields.io/github/issues/gnehs/PokaPlayer.svg)](https://github.com/gnehs/PokaPlayer/issues)
+[![GitHub forks](https://img.shields.io/github/forks/gnehs/PokaPlayer.svg)](https://github.com/gnehs/PokaPlayer/network)
+[![GitHub stars](https://img.shields.io/github/stars/gnehs/PokaPlayer.svg)](https://github.com/gnehs/PokaPlayer/stargazers)
+[![GitHub license](https://img.shields.io/github/license/gnehs/PokaPlayer.svg)](https://github.com/gnehs/PokaPlayer/blob/master/LICENSE)
+[![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/gnehs/PokaPlayer.svg)](https://github.com/gnehs/PokaPlayer/releases/latest)
+[![GitHub repo size in bytes](https://img.shields.io/github/repo-size/gnehs/PokaPlayer.svg)](https://github.com/gnehs/PokaPlayer/archive/master.zip)
+[![Docker Build Status](https://img.shields.io/docker/build/gnehs/pokaplayer.svg)](https://hub.docker.com/r/gnehs/pokaplayer/)
+
 
 # PokaPlayer
-
-PokaPlayer 是 Synology Audio Station 擅長撥放音樂的新朋友！
-功能正在慢慢補齊 ❤️
+PokaPlayer 是擅長播放音樂的新朋友！
 
 ## 截圖
-
 <img src="https://user-images.githubusercontent.com/16719720/44414375-30fc6d80-a5a0-11e8-8791-64b666b7d385.png" width="500px">
 
 ## 開始使用
 
-1.  使用 Docker 映像來部署 (https://hub.docker.com/r/gnehs/pokaplayer/)
+-  使用 Docker 映像來部署 (https://hub.docker.com/r/gnehs/pokaplayer/)
     -   [Synology Docker 可參考此教學](https://github.com/gnehs/PokaPlayer/wiki/%E5%A6%82%E4%BD%95%E5%9C%A8-Synology-NAS-%E4%BD%BF%E7%94%A8-Docker-%E9%83%A8%E7%BD%B2-PokaPlayer)
-2.  或是使用 node.js 來手動啟動
-    -   `npm i`
-    -   `npm start`
+-  或是使用 node.js 來手動啟動
+    1.   `npm i`
+    2.   `npm start`
 
-## 小提示
+## 建議和提示
 
--   手機建議使用 Chrome
--   手機 Chrome 右上角 `...` 選「加到主畫面」可以弄得很像原生 APP
--   歌曲列表的「+」可以只加入那首歌不清空現正播放
--   歌曲列表點擊歌名會將現正播放換成目前頁面的所有歌
--   **強烈建議開一個只能播音樂的帳號**
+-   手機建議使用 Chrome，右上角 `...` 選「加到主畫面」可以有原生 APP 般的體驗
+-   **DSM 強烈建議開一個只能播音樂的帳號**
+
+## 支援的模組
+
+-   [Synology DSM Audio Station](https://www.synology.com/zh-tw/dsm/feature/audio_station)
+-   [Netease Cloud Music](https://music.163.com/)
 
 ## 功能
 
