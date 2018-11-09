@@ -258,7 +258,7 @@ function updateBottomPlayer() {
     if (nowPlaying) {
         name = nowPlaying.name
         artist = nowPlaying.artist
-        img = window.localStorage["imgRes"] != "true" && ap.list.audios[ap.list.index].cover ? ap.list.audios[ap.list.index].cover : getBackground()
+        img = localStorage["imgRes"] != "true" && ap.list.audios[ap.list.index].cover ? ap.list.audios[ap.list.index].cover : getBackground()
         $('#player .song-info .name').text(name)
         $('#player .song-info .artist').text(artist)
         $('#player img').attr('src', img)
@@ -301,10 +301,10 @@ var loginFailureCount = 0
 
 function tryRelogin() {
     //如果有存到密碼或是嘗試次數少於 10 次就嘗試登入
-    if (window.localStorage["userPASS"] || loginFailureCount <= 10) {
+    if (localStorage["userPASS"] || loginFailureCount <= 10) {
         console.log("[Login] 正在嘗試登入")
         $.post("/login/", {
-            userPASS: window.localStorage["userPASS"]
+            userPASS: localStorage["userPASS"]
         }, data => {
             if (data == 'success') {
                 console.log("[Login] 登入成功")
@@ -313,10 +313,11 @@ function tryRelogin() {
                 console.error("[Login] 登入失敗")
                 mdui.snackbar({
                     message: 'Session 過期，請重新登入',
-                    timeout: 1000,
+                    timeout: 10 * 1000,
+                    buttonText: '登入',
+                    onButtonClick: () => document.location.href = "/login/",
                     position: getSnackbarPosition()
                 });
-                document.location.href = "/login/";
             }
         });
     } else if (loginFailureCount > 10) {
@@ -407,7 +408,7 @@ function changePlayMode(get) {
 }
 
 function pokaHeader(title, subtitle = '', image = false, hide = false, blur = true) {
-    let style = image && window.localStorage["imgRes"] == "false" ?
+    let style = image && localStorage["imgRes"] == "false" ?
         `background-image: url('${image.replace(/'/g, "\\'")}');` :
         `background-image: url('${getBackground().replace(/'/g, "\\'")}');`
 
@@ -423,7 +424,7 @@ function pokaHeader(title, subtitle = '', image = false, hide = false, blur = tr
     else
         $("#header-wrapper .bg2").removeClass('blur')
 
-    if (image && blur && window.localStorage["imgRes"] == "false")
+    if (image && blur && localStorage["imgRes"] == "false")
         $("#header-wrapper .bg").addClass('blur')
     else
         $("#header-wrapper .bg").removeClass('blur')
@@ -441,7 +442,7 @@ function pokaHeader(title, subtitle = '', image = false, hide = false, blur = tr
 async function showHome() {
     $('#content').attr('data-page', 'home')
     // 展示讀取中
-    pokaHeader("歡迎使用", `PokaPlayer ${window.localStorage["PokaPlayerVersion"] || ''}`)
+    pokaHeader("歡迎使用", `PokaPlayer ${localStorage["PokaPlayerVersion"] || ''}`)
     $("#content").html(template.getSpinner())
     mdui.mutation()
 
@@ -883,7 +884,7 @@ async function showNow() {
             title = song.name,
             artist = song.artist,
             album = song.album,
-            img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${ap.list.audios[i].cover || getBackground()}"/></div>`
+            img = localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${ap.list.audios[i].cover || getBackground()}"/></div>`
         html += `<li class="mdui-list-item mdui-ripple song ${focus}" >
             ${img}
             <div class="mdui-list-item-content songinfo" data-now-play-id="${i}">
@@ -905,7 +906,7 @@ async function showNow() {
         name = nowPlaying ? nowPlaying.name : "PokaPlayer",
         artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點擊播放鍵開始隨機播放",
         album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>",
-        img = (nowPlaying && window.localStorage["imgRes"] != "true" && nowPlaying.cover) ? nowPlaying.cover : getBackground(),
+        img = (nowPlaying && localStorage["imgRes"] != "true" && nowPlaying.cover) ? nowPlaying.cover : getBackground(),
         currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00",
         duration = ap.audio.currentTime ? secondToTime(ap.audio.duration) : "0:00",
         timer = currentTime + '/' + duration,
@@ -1023,7 +1024,7 @@ async function showNow() {
         let name = nowPlaying ? nowPlaying.name : "PokaPlayer"
         let artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點擊播放鍵開始隨機播放"
         let album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>"
-        let img = (nowPlaying && window.localStorage["imgRes"] != "true" && nowPlaying.cover) ? nowPlaying.cover : getBackground(); //一定會有圖片
+        let img = (nowPlaying && localStorage["imgRes"] != "true" && nowPlaying.cover) ? nowPlaying.cover : getBackground(); //一定會有圖片
         $('[data-player]>.mdui-card').attr('style', `background-image:url('${img.replace(/'/g, "\\'")}');`)
         $('[data-player]>.info .title').text(name)
         $('[data-player]>.info .artist').html(artist + album)
@@ -1158,7 +1159,7 @@ function playSongs(songs, song = false, clear = true) {
     let playlist = []
     for (i = 0; i < songs.length; i++) {
         let nowsong = songs[i],
-            src = nowsong.url + '&songRes=' + window.localStorage["musicRes"].toLowerCase(),
+            src = nowsong.url + '&songRes=' + localStorage["musicRes"].toLowerCase(),
             name = nowsong.name,
             artist = nowsong.artist,
             album = nowsong.album,
@@ -1191,7 +1192,7 @@ function addSong(songlist, songID = 0) {
     for (i = 0; i < songlist.length; i++) {
         let nowsong = songlist[i]
         if (nowsong.id == songID || songID == 0) {
-            let src = nowsong.url + '&songRes=' + window.localStorage["musicRes"].toLowerCase(),
+            let src = nowsong.url + '&songRes=' + localStorage["musicRes"].toLowerCase(),
                 name = nowsong.name,
                 artist = nowsong.artist,
                 album = nowsong.album,

@@ -1,6 +1,6 @@
 // 初始化網頁
 $(function () {
-    let userPASS = window.localStorage["userPASS"]
+    let userPASS = localStorage["userPASS"]
     if (userPASS && userPASS != "false") {
         mdui.snackbar({
             message: '偵測到已儲存的密碼',
@@ -20,6 +20,7 @@ $(function () {
 
 function check() {
     let userpass = $("#userPASS").val()
+    localStorage["userPASS"] = userpass
     userpass ? login($("#userPASS").val()) : mdui.snackbar({
         message: '密碼不得為空',
         timeout: 1000

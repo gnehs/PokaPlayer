@@ -18,24 +18,24 @@ $(async () => {
         if (!localStorage[Object.keys(defaultSetting)[i]]) localStorage[Object.keys(defaultSetting)[i]] = Object.values(defaultSetting)[i]
 
     //卡片右上角的來源標籤
-    $("#content").attr('data-sourcelabel', window.localStorage["pokaCardSource"])
+    $("#content").attr('data-sourcelabel', localStorage["pokaCardSource"])
 
     let version = (await request('/info/')).version
 
     // 更新版本號
-    if (version != window.localStorage["PokaPlayerVersion"])
+    if (version != localStorage["PokaPlayerVersion"])
         if ($("#content").attr("data-page") == "settings" || $("#content").attr("data-page") == "home")
             $("#header-wrapper .title .subtitle").text(`PokaPlayer ${version}`)
-    window.localStorage["PokaPlayerVersion"] = version;
+    localStorage["PokaPlayerVersion"] = version;
 
     //serviceWorker
-    if ('serviceWorker' in navigator && window.localStorage["pokaSW"] == "true") {
+    if ('serviceWorker' in navigator && localStorage["pokaSW"] == "true") {
         navigator.serviceWorker
             .register('/sw.js', {
                 scope: '/'
             })
             .then(reg => {
-                if (version != window.localStorage["PokaPlayerVersion"]) reg.update()
+                if (version != localStorage["PokaPlayerVersion"]) reg.update()
             })
             .catch(err => console.log('Error!', err));
     } else {
@@ -63,7 +63,7 @@ var settingsItem = (title, text = '', icon = '', link = '', data = '', other = '
 async function showSettings() {
     $('#content').attr('data-page', 'settings')
 
-    pokaHeader('設定', "PokaPlayer " + window.localStorage["PokaPlayerVersion"])
+    pokaHeader('設定', "PokaPlayer " + localStorage["PokaPlayerVersion"])
     let settingItems = `<ul class="mdui-list">
         ${settingsItem("網路和快取","流量節省、音質和快取設定","public","settings/network")}
         ${settingsItem("個人化","隨機圖片、主題配色、其他細節設定","face","settings/customize")}
@@ -78,7 +78,7 @@ async function showSettingsSystem() {
     let settingItems = `<ul class="mdui-list">
         ${settingsItem("返回","","arrow_back","settings")}
         <li class="mdui-subheader">帳號</li>
-        ${settingsItem("登出","","account_circle","",`onclick="window.localStorage['userPASS']=false;location.href='/login'"`)}
+        ${settingsItem("登出","","account_circle","",`onclick="localStorage['userPASS']=false;location.href='/login'"`)}
         ${settingsItem("嘗試重新登入","","account_circle","",`onclick="location.href='/login'"`)}
         <li class="mdui-subheader">系統</li>
         ${settingsItem("更新","正在檢查更新...","system_update","","data-upgrade")}
@@ -92,7 +92,7 @@ async function showSettingsSystem() {
     if (debug) {
         $("[data-upgrade]").attr('data-upgrade', true)
         update = `與開發分支同步`
-        $("[data-version] .mdui-list-item-text").text(`${window.localStorage["PokaPlayerVersion"]}(${debug})`)
+        $("[data-version] .mdui-list-item-text").text(`${localStorage["PokaPlayerVersion"]}(${debug})`)
     } else if (getInfo.version != checkUpdate[0].tag_name) {
         $("[data-upgrade]").attr('data-upgrade', true)
         pokaHeader('系統和更新', `可更新至 ${checkUpdate[0].tag_name}`)
@@ -183,17 +183,17 @@ async function showSettingsNetwork() {
     let settingItems = `<ul class="mdui-list">
         ${settingsItem("返回","","arrow_back","settings")}
         <li class="mdui-subheader">網路</li>
-        ${settingsItem("音質",window.localStorage["musicRes"],"music_note","","data-music-res")}
+        ${settingsItem("音質",localStorage["musicRes"],"music_note","","data-music-res")}
         ${settingsItem("圖片流量節省",false,"image","","data-imgRes",
         `<label class="mdui-switch">
-            <input type="checkbox" ${window.localStorage["imgRes"]=="true"?"checked":""}/>
+            <input type="checkbox" ${localStorage["imgRes"]=="true"?"checked":""}/>
             <i class="mdui-switch-icon"></i>
         </label>`)} `
     settingItems += window.electron ? `` : `
         <li class="mdui-subheader">快取</li>
         ${settingsItem("快取 (service worker)",false,"free_breakfast","","data-pokaSW",
         `<label class="mdui-switch">
-            <input type="checkbox" ${window.localStorage["pokaSW"]=="true"?"checked":""}/>
+            <input type="checkbox" ${localStorage["pokaSW"]=="true"?"checked":""}/>
             <i class="mdui-switch-icon"></i>
         </label>`)} 
         ${settingsItem("清除 Service Worker 快取","","delete_forever","","data-clean")}`
@@ -208,7 +208,7 @@ async function showSettingsNetwork() {
             <div class="poka four doubling cards">
                 <div class="card" 
                     title="低音質"
-                    onclick="window.localStorage['musicRes']='Low'"
+                    onclick="localStorage['musicRes']='Low'"
                     mdui-dialog-close>
                     <div class="image mdui-ripple"><i class="mdui-icon">Low</i></div>
                     <div class="title mdui-text-color-theme-text">Low</div>
@@ -218,7 +218,7 @@ async function showSettingsNetwork() {
             </div>
                 <div class="card" 
                     title="中等音質"
-                    onclick="window.localStorage['musicRes']='Medium'"
+                    onclick="localStorage['musicRes']='Medium'"
                     mdui-dialog-close>
                     <div class="image mdui-ripple"><i class="mdui-icon">Med</i></div>
                     <div class="title mdui-text-color-theme-text">Medium</div>
@@ -228,7 +228,7 @@ async function showSettingsNetwork() {
             </div>
                 <div class="card" 
                     title="高音質"
-                    onclick="window.localStorage['musicRes']='High'"
+                    onclick="localStorage['musicRes']='High'"
                     mdui-dialog-close>
                     <div class="image mdui-ripple"><i class="mdui-icon">High</i></div>
                     <div class="title mdui-text-color-theme-text">High</div>
@@ -238,7 +238,7 @@ async function showSettingsNetwork() {
             </div>
                 <div class="card" 
                     title="原始音質"
-                    onclick="window.localStorage['musicRes']='Original'"
+                    onclick="localStorage['musicRes']='Original'"
                     mdui-dialog-close>
                     <div class="image mdui-ripple"><i class="mdui-icon">Ori</i></div>
                     <div class="title mdui-text-color-theme-text">Original</div>
@@ -250,7 +250,7 @@ async function showSettingsNetwork() {
             buttons: [{
                 text: '取消'
             }],
-            onClose: () => $("[data-music-res] .mdui-list-item-text").text(window.localStorage["musicRes"]),
+            onClose: () => $("[data-music-res] .mdui-list-item-text").text(localStorage["musicRes"]),
             onClosed: () => {
                 router.resume();
                 router.navigate('settings/network');
@@ -260,12 +260,12 @@ async function showSettingsNetwork() {
     // 圖片流量節省
     $("[data-imgRes]").click(function () {
         $("[data-imgRes] input").prop('checked', !$("[data-imgRes] input").prop('checked'))
-        window.localStorage["imgRes"] = $("[data-imgRes] input").prop('checked');
+        localStorage["imgRes"] = $("[data-imgRes] input").prop('checked');
     });
     // 快取開關
     $("[data-pokaSW]").click(function () {
         $("[data-pokaSW] input").prop('checked', !$("[data-pokaSW] input").prop('checked'))
-        window.localStorage["pokaSW"] = $("[data-pokaSW] input").prop('checked');
+        localStorage["pokaSW"] = $("[data-pokaSW] input").prop('checked');
         if ($("[data-pokaSW] input").prop('checked'))
             navigator.serviceWorker
             .register('/sw.js', {
@@ -297,22 +297,22 @@ async function showSettingsCustomize() {
     let settingItems = `<ul class="mdui-list">
         ${settingsItem("返回","","arrow_back","settings")}
         <li class="mdui-subheader">隨機圖片</li>
-        ${settingsItem("圖片來源",window.localStorage["randomImgName"],"image","","data-pic-source")}
-        ${settingsItem("自訂圖片來源",window.localStorage["randomImg"],"link","","data-pic-custom-link")}        
+        ${settingsItem("圖片來源",localStorage["randomImgName"],"image","","data-pic-source")}
+        ${settingsItem("自訂圖片來源",localStorage["randomImg"],"link","","data-pic-custom-link")}        
         <li class="mdui-subheader">細節設定</li>
         ${settingsItem("於卡片右上角顯示來源標籤",false,"label","","data-pokaCardSource",
         `<label class="mdui-switch">
-            <input type="checkbox" ${window.localStorage["pokaCardSource"]=="true"?"checked":""}/>
+            <input type="checkbox" ${localStorage["pokaCardSource"]=="true"?"checked":""}/>
             <i class="mdui-switch-icon"></i>
         </label>`)} 
         <li class="mdui-subheader">主題</li>
-        ${settingsItem("主題色",window.localStorage["mdui-theme-color"]=='true'?'Dark':'Light',"color_lens","",`data-theme="mdui-theme-color"`)}
-        ${settingsItem("主色",window.localStorage["mdui-theme-primary"].replace("-"," "),"color_lens","",`data-theme="mdui-theme-primary"`)}
-        ${settingsItem("強調色",window.localStorage["mdui-theme-accent"].replace("-"," "),"color_lens","",`data-theme="mdui-theme-accent"`)}
+        ${settingsItem("主題色",localStorage["mdui-theme-color"]=='true'?'Dark':'Light',"color_lens","",`data-theme="mdui-theme-color"`)}
+        ${settingsItem("主色",localStorage["mdui-theme-primary"].replace("-"," "),"color_lens","",`data-theme="mdui-theme-primary"`)}
+        ${settingsItem("強調色",localStorage["mdui-theme-accent"].replace("-"," "),"color_lens","",`data-theme="mdui-theme-accent"`)}
         <li class="mdui-subheader">實驗性功能</li>
         ${settingsItem("實驗性主色更換功能",false,"label","","data-change-color",
         `<label class="mdui-switch">
-            <input type="checkbox" ${window.localStorage["change-color"]=="true"?"checked":""}/>
+            <input type="checkbox" ${localStorage["change-color"]=="true"?"checked":""}/>
             <i class="mdui-switch-icon"></i>
         </label>`)} 
         </ul>
@@ -414,16 +414,16 @@ async function showSettingsCustomize() {
             title: '設定主題色',
             content: `<ul class="mdui-list">
             ${settingsItem("Light","","","",
-                            `onclick="window.localStorage['mdui-theme-color']='false'" mdui-dialog-close`)}
+                            `onclick="localStorage['mdui-theme-color']='false'" mdui-dialog-close`)}
             ${settingsItem("Dark","","","",
-                            `onclick="window.localStorage['mdui-theme-color']='true'" mdui-dialog-close`)}
+                            `onclick="localStorage['mdui-theme-color']='true'" mdui-dialog-close`)}
         </ul>`,
             buttons: [{
                 text: '取消'
             }],
             onClose: () => {
-                $('[data-theme="mdui-theme-color"] .mdui-list-item-text').text(window.localStorage["mdui-theme-color"] == 'true' ? 'Dark' : 'Light')
-                if (window.localStorage["mdui-theme-color"] == "true")
+                $('[data-theme="mdui-theme-color"] .mdui-list-item-text').text(localStorage["mdui-theme-color"] == 'true' ? 'Dark' : 'Light')
+                if (localStorage["mdui-theme-color"] == "true")
                     $('body').addClass("mdui-theme-layout-dark")
                 else
                     $('body').removeClass("mdui-theme-layout-dark")
@@ -479,7 +479,7 @@ async function showSettingsCustomize() {
             }
             $('[data-theme="mdui-theme-primary"] .mdui-list-item-text').text(color)
             $('body').addClass(`mdui-theme-${isAccent?'accent':'primary'}-${color}`)
-            window.localStorage[`mdui-theme-${isAccent?'accent':'primary'}`] = color
+            localStorage[`mdui-theme-${isAccent?'accent':'primary'}`] = color
             if (!isAccent) {
                 //設定顏色
                 let metaThemeColor = document.querySelector("meta[name=theme-color]");
@@ -589,8 +589,8 @@ async function showSettingsCustomize() {
         $('[data-img-src]').click(function () {
             let src = $(this).attr('data-img-src')
             let name = $(this).children('.title').text()
-            window.localStorage["randomImg"] = src
-            window.localStorage["randomImgName"] = name
+            localStorage["randomImg"] = src
+            localStorage["randomImgName"] = name
             pokaHeader('個人化', "設定", src, false, false)
             $('[data-pic-source] .mdui-list-item-text').text(name)
             $('[data-pic-custom-link] .mdui-list-item-text').text(src)
@@ -615,10 +615,10 @@ async function showSettingsCustomize() {
                     let img = $('[data-imgurl]').val()
                     console.log(img)
                     if (img != null) {
-                        window.localStorage["randomImg"] = img
+                        localStorage["randomImg"] = img
                         $('[data-pic-custom-link] .mdui-list-item-text').text(img)
                         $('[data-pic-source] .mdui-list-item-text').text("自訂")
-                        window.localStorage["randomImgName"] = "自訂"
+                        localStorage["randomImgName"] = "自訂"
                         pokaHeader('個人化', "設定", img, false, false)
                     }
                 }
@@ -636,7 +636,7 @@ async function showSettingsAbout() {
     let settingItems = `<ul class="mdui-list">
         ${settingsItem("返回","","arrow_back","settings")}
         <li class="mdui-subheader">關於</li>
-        ${settingsItem("PokaPlayer 版本",window.localStorage["PokaPlayerVersion"],"info","","data-version")}`
+        ${settingsItem("PokaPlayer 版本",localStorage["PokaPlayerVersion"],"info","","data-version")}`
     settingItems += window.electron ?
         settingsItem("PokaPlayer Electron 版本", `Pokaplayer-Electron: ${window.electronAppVersion} / Chrome: ${window.electronChromeVersion} / Electron: ${window.electronVersion}`, "info", '', 'data-poka-ele') :
         ``
@@ -677,5 +677,5 @@ async function showSettingsAbout() {
     let getInfo = await request('/info/');
     $("[data-dev] .mdui-list-item-text").text(getInfo.author)
     $("[data-version] .mdui-list-item-text").text(getInfo.version)
-    window.localStorage["PokaPlayerVersion"] = getInfo.version
+    localStorage["PokaPlayerVersion"] = getInfo.version
 }
