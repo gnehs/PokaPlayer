@@ -362,6 +362,8 @@ async function showSettingsCustomize() {
                 --poka-theme-primary-text-color: ${localStorage["poka-theme-primary-text"]};
             }`)
             localStorage["poka-theme-primary"] = hsva.toRGBA().toString()
+            // 設定狀態欄顏色
+            $("meta[name=theme-color]").attr("content", hsva.toRGBA().toString());
         }
     });
     let primaryTextColor = new Pickr({
