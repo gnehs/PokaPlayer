@@ -12,7 +12,8 @@
 PokaPlayer 是擅長播放音樂的新朋友！
 
 ## 截圖
-<img src="https://user-images.githubusercontent.com/16719720/44414375-30fc6d80-a5a0-11e8-8791-64b666b7d385.png" width="500px">
+![image](https://user-images.githubusercontent.com/16719720/48269261-197fa300-e472-11e8-87d4-c9804a25c06f.png)
+
 
 ## 開始使用
 
