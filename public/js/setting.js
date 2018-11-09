@@ -310,7 +310,7 @@ async function showSettingsCustomize() {
         ${settingsItem("主色",window.localStorage["mdui-theme-primary"].replace("-"," "),"color_lens","",`data-theme="mdui-theme-primary"`)}
         ${settingsItem("強調色",window.localStorage["mdui-theme-accent"].replace("-"," "),"color_lens","",`data-theme="mdui-theme-accent"`)}
         <li class="mdui-subheader">實驗性功能</li>
-        ${settingsItem("實驗性主色更換功能","需要重新整理頁面才可檢視其效果","label","","data-change-color",
+        ${settingsItem("實驗性主色更換功能",false,"label","","data-change-color",
         `<label class="mdui-switch">
             <input type="checkbox" ${window.localStorage["change-color"]=="true"?"checked":""}/>
             <i class="mdui-switch-icon"></i>
@@ -394,9 +394,11 @@ async function showSettingsCustomize() {
         localStorage["pokaCardSource"] = $("[data-pokaCardSource] input").prop('checked');
         $("#content").attr('data-sourcelabel', localStorage["pokaCardSource"])
     });
+    //換色好朋友
     $("[data-change-color]").click(function () {
         $("[data-change-color] input").prop('checked', !$("[data-change-color] input").prop('checked'))
         localStorage["change-color"] = $("[data-change-color] input").prop('checked');
+        $('body').attr('color-theme', $("[data-change-color] input").prop('checked'))
         if ($("[data-change-color] input").prop('checked'))
             $("[data-change-color-lab]").removeAttr('style')
         else
