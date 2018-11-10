@@ -101,7 +101,8 @@ app.get("/og/og.png", (req, res) => {
     res.sendFile(img);
 });
 // 登入
-app.get("/login/", (req, res) => res.render("login"))
+app
+    .get("/login/", (req, res) => res.render("login"))
     .post("/login/", (req, res) => {
         req.session.pass = req.body["userPASS"];
         if (config.PokaPlayer.passwordSwitch && req.body["userPASS"] != config.PokaPlayer.password)
@@ -110,7 +111,7 @@ app.get("/login/", (req, res) => res.render("login"))
     })
     .get("/logout/", (req, res) => {
         // 登出
-        req.session.destroy();
+        req.session.pass = ''
         res.redirect("/");
     });
 
