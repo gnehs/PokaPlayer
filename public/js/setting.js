@@ -45,8 +45,32 @@ $(async () => {
             })
             .catch(err => console.log('Error!', err));
     }
-
+    // 檢查更新
+    let checkVersion = (await checkUpdate()).version
+    if (checkVersion) mdui.snackbar(`有新版本可更新 ${checkVersion}`, {
+        buttonText: '更新',
+        onButtonClick: () => router.navigate("settings/system"),
+        position: getSnackbarPosition()
+    })
 });
+async function checkUpdate() {
+    let compareVersion = (local, remote) => {
+        local = local.split('.')
+        remote = remote.split('.')
+        //版本號加權對比
+        local = local[0] * 1000 * 1000 + local[1] * 1000 + local[2]
+        remote = remote[0] * 1000 * 1000 + remote[1] * 1000 + remote[2]
+        return remote > local
+    }
+    let getInfo = await request('/info/');
+    let checkUpdate = await request(`https://api.github.com/repos/gnehs/PokaPlayer/releases`);
+    let nowversion = getInfo.version
+    let ghversion = checkUpdate[0].tag_name
+    return {
+        version: compareVersion(nowversion, ghversion) ? ghversion : false,
+        changelog: checkUpdate[0].body
+    }
+}
 //- 設定頁面用的範本
 var settingsItem = (title, text = '', icon = '', link = '', data = '', other = '', cssClass = '') => {
     return `<li class="mdui-list-item mdui-ripple ${cssClass}" ${link?`onclick="router.navigate('${link}')"`:''} ${data}>
@@ -85,19 +109,17 @@ async function showSettingsSystem() {
         ${settingsItem("重新啟動","","refresh","","data-restart")}
     </ul>`
     $("#content").html(settingItems);
-    let getInfo = await request('/info/');
+    //檢查更新
     let debug = await request('/debug/')
-    let checkUpdate = await request(`https://api.github.com/repos/gnehs/PokaPlayer/releases`);
-    let update = getInfo.version != checkUpdate[0].tag_name ? `更新到 ${checkUpdate[0].tag_name}` : `您的 PokaPlayer 已是最新版本`
+    let checkNewVersion = await checkUpdate()
+    let update = checkNewVersion.version ? `更新到 ${checkNewVersion.version}` : `您的 PokaPlayer 已是最新版本`
     if (debug) {
         $("[data-upgrade]").attr('data-upgrade', true)
-        update = `與開發分支同步`
-        $("[data-version] .mdui-list-item-text").text(`${localStorage["PokaPlayerVersion"]}(${debug})`)
-    } else if (getInfo.version != checkUpdate[0].tag_name) {
+    } else if (checkNewVersion.version) {
         $("[data-upgrade]").attr('data-upgrade', true)
-        pokaHeader('系統和更新', `可更新至 ${checkUpdate[0].tag_name}`)
+        pokaHeader('系統和更新', `可更新至 ${checkNewVersion.version}`)
     }
-    $("[data-upgrade] .mdui-list-item-text").text(update)
+    $("[data-upgrade] .mdui-list-item-text").text(debug ? `DEV#${localStorage["PokaPlayerVersion"]}(${debug})` : update)
     //重啟
     $("[data-restart]").click(() => {
         let r = confirm("確定要重新啟動嗎\n注意：若您未開啟 Docker 的自動重啟功能，您必須手動開啟 PokaPlayer");
@@ -105,6 +127,7 @@ async function showSettingsSystem() {
             mdui.snackbar('正在重新啟動', {
                 buttonText: '重新連接',
                 onButtonClick: () => window.location.reload(),
+                position: getSnackbarPosition()
             })
             axios.post('/restart')
         }
@@ -113,10 +136,10 @@ async function showSettingsSystem() {
     $("[data-upgrade=\"true\"]").click(() => {
         router.pause();
         mdui.dialog({
-            title: `${checkUpdate[0].tag_name} 更新日誌`,
-            content: `<div class="mdui-typo" style="min-height:150px">
+            title: `${checkNewVersion.version?checkNewVersion.version+' ':''}更新日誌`,
+            content: `<div class="mdui-typo">
                             <blockquote style="margin:0">
-                                ${new showdown.Converter().makeHtml(checkUpdate[0].body)}
+                                ${new showdown.Converter().makeHtml(checkNewVersion.changelog)}
                             </blockquote>
                         <hr>
                         </div>
@@ -139,6 +162,7 @@ async function showSettingsSystem() {
                             mdui.snackbar('伺服器重新啟動', {
                                 buttonText: '重新連接',
                                 onButtonClick: () => window.location.reload(),
+                                position: getSnackbarPosition()
                             })
                         } else if (update == "socket") {
                             socket.emit('update')
@@ -668,7 +692,6 @@ async function showSettingsAbout() {
     })
 
     function loadJS(js) {
-
         s = document.createElement('script');
         s.src = js
         document.getElementsByTagName('body')[0].appendChild(s);
