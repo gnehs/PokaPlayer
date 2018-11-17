@@ -1421,7 +1421,7 @@ async function songAction(songID, source) {
                             <div class="mdui-list-item-title">${userPlaylists[i].name}</div>
                             <div class="mdui-list-item-text">${moduleShowName[userPlaylists[i].source]}${exist?` / 該歌曲已存在，點擊來刪除`:``}</div>
                         </div>
-                        <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-grey-400">${exist?`remove_circle`:`playlist_add`}</i>
+                        <i class="mdui-list-item-icon mdui-icon ${exist?`eva eva-trash-2-outline`:`material-icons`} mdui-text-color-grey-400">${exist?``:`playlist_add`}</i>
                 </li>`).click(async () => {
                     $(`data-close`).click()
                     let result = await playlistOperation(userPlaylists[i].source, [song.id], userPlaylists[i].id)
