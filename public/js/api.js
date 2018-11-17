@@ -82,7 +82,7 @@ async function searchLrc(keyword) {
 async function canRating(moduleName) {
     let result;
     try {
-        result = await request(`/pokaapi/ratingSong/?moduleName=${encodeURIComponent(moduleName)}`)
+        result = (await axios(`/pokaapi/ratingSong/?moduleName=${encodeURIComponent(moduleName)}`)).data
     } catch (e) {
         result = false
     }
