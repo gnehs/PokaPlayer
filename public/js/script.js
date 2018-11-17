@@ -463,16 +463,16 @@ async function showSearch(keyword) {
     let html = `
     <div class="mdui-row">
         <div class="mdui-col-md-6 mdui-col-offset-md-3">
-            <div class="mdui-textfield">
-                <i class="mdui-icon material-icons">search</i>
-                <input class="mdui-textfield-input" 
+            <div class="search-box">
+                <input class="search-input" 
                        id="search" 
                        type="text" 
                        placeholder="搜尋" 
-                       value="${$('#search').val() || ''}" 
+                       value="${keyword|| ''}" 
                        required/>
-                <div class="mdui-textfield-error">尚未輸入關鍵字</div>
-                <div class="mdui-textfield-helper">輸入完後按下 Enter 開始搜尋音樂、專輯或演出者</div>
+                <button class="search-button mdui-text-color-theme">
+                    <i class="mdui-icon material-icons">search</i>
+                </button>
             </div>
         </div>
     </div>`
@@ -495,6 +495,10 @@ async function showSearch(keyword) {
     ]
     let noResult = `<div class="mdui-valign" style="height:150px"><p class="mdui-center">${noResultTexts[Math.floor(Math.random() * noResultTexts.length)]}</p></div>`
     if (keyword) {
+        // 先輸出搜尋中
+        let searching = `<div class="mdui-valign" style="height:150px"><p class="mdui-center">搜尋中...</p></div>`
+        $("#content").html(html + searching)
+
         let result = await request(`/pokaapi/search/?keyword=${keyword}`);
         let searchResults = template.parseSearch(result);
 
@@ -512,8 +516,10 @@ async function showSearch(keyword) {
     mdui.mutation()
     router.updatePageLinks()
 
+    $('.search-button').click(() => {
+        router.navigate("search/" + encodeURIComponent($("#search").val()));
+    })
     $("#search").change(async function () {
-        $("#search+.mdui-textfield-error+.mdui-textfield-helper").text("搜尋中...");
         router.navigate("search/" + encodeURIComponent($(this).val()));
     });
 }

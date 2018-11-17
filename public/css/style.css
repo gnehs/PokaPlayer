@@ -1027,3 +1027,34 @@ header.mdui-appbar.mdui-appbar-fixed {
     overflow: hidden;
     border-radius: 4px;
 }
+
+/* search-box */
+.search-box {
+    margin: 18px 0;
+    display: flex;
+    border: 1px solid #90909061;
+    border-radius: 2px;
+    overflow: hidden;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08);
+    transition: all .3s ease;
+}
+
+.search-box:hover {
+    border: 1px solid #9090909e;
+    box-shadow: 0 3px 8px 0 rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+.search-box>.search-input {
+    flex: 1;
+    outline: none;
+    border: 0;
+    border-radius: 2px;
+    padding: 12px 14px;
+}
+
+.search-box>.search-button {
+    outline: none;
+    border: 0;
+    border-radius: 0 2px 2px 0;
+    padding: 0 10px;
+}
