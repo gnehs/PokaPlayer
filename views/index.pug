@@ -28,29 +28,29 @@ html
         header.mdui-appbar.mdui-appbar-fixed
             .mdui-toolbar.mdui-color-theme
                 a.mdui-btn.mdui-btn-icon(mdui-drawer="{target: '#drawer', swipe: true}")
-                    i.mdui-icon.material-icons menu 
+                    i.mdui-icon.eva.eva-menu-outline
                 .mdui-typo-title PokaPlayer
                 .mdui-toolbar-spacer
         #drawer.mdui-drawer.mdui-appbar-with-toolbar
             .mdui-list
                 mixin link(name,link,icon)
                     a.mdui-list-item.mdui-ripple(href=link,data-navigo)&attributes(attributes)
-                        i.mdui-list-item-icon.mdui-icon.material-icons=icon
+                        i.mdui-list-item-icon.mdui-icon.eva(class=icon)
                         .mdui-list-item-content=name
-                +link("首頁","home","home")
-                +link("現正播放","now","play_circle_filled")
-                +link("歌詞","lrc","subtitles")
+                +link("首頁","home","eva-home-outline")
+                +link("現正播放","now","eva-play-circle-outline")
+                +link("歌詞","lrc","eva-text-outline")
                 .mdui-subheader 音樂庫
-                +link("搜尋","search","search")
-                +link("專輯","album","album")
-                +link("資料夾","folder","folder")
-                +link("演出者","artist","mic")
-                +link("作曲者","composer","music_note")
+                +link("搜尋","search","eva-search-outline")
+                +link("專輯","album","eva-radio-button-on-outline")
+                +link("資料夾","folder","eva-folder-outline")
+                +link("演出者","artist","eva-mic-outline")
+                +link("作曲者","composer","eva-music-outline")
                 .mdui-subheader 播放清單
-                +link("所有清單","playlist","playlist_play")
-                +link("隨機播放","random","shuffle")
+                +link("所有清單","playlist","eva-list-outline")
+                +link("隨機播放","random","eva-shuffle-2-outline")
                 .mdui-subheader 其他
-                +link("設定","settings","settings")
+                +link("設定","settings","eva-settings-outline")
                 //-.mdui-subheader 帳號
                 //-+link("登出","logout","account_circle")(href='/logout/')
         #header-wrapper
