@@ -90,18 +90,12 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 /* 評比 */
 
-#rating>button:hover+button>i,
-#rating>button:hover+button+button>i,
-#rating>button:hover+button+button+button>i,
-#rating>button:hover+button+button+button+button>i {
-    font-size: 0;
-}
 
 #rating>button:hover+button>i:before,
 #rating>button:hover+button+button>i:before,
 #rating>button:hover+button+button+button>i:before,
 #rating>button:hover+button+button+button+button>i:before {
-    content: "star_border";
+    content: "\ebb0";
 }
 
 

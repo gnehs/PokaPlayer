@@ -1346,7 +1346,7 @@ async function songAction(songID, source) {
             <div class="mdui-list-item-content">${isSongLiked?'取消收藏':'收藏'}</div>
         </li>
         <li class="mdui-list-item mdui-ripple" data-action="rating" ${iscanRating?``:`style="pointer-events: none; opacity: .5;"`}>
-            <i class="mdui-list-item-icon mdui-icon material-icons">star</i>
+            <i class="mdui-list-item-icon mdui-icon eva eva-star-outline"></i>
             <div class="mdui-list-item-content">評等</div>
         </li>
         <li class="mdui-list-item mdui-ripple" data-action="playlistAdd" ${userPlaylists.length>0?``:`style="pointer-events: none; opacity: .5;"`}>
@@ -1380,11 +1380,11 @@ async function songAction(songID, source) {
         $(`[data-title]`).text(`評等`)
         $(`[data-content]`).html(`
         <div id="rating" class="mdui-text-center">
-            <button class="mdui-btn mdui-btn-icon" data-rating="1"><i class="mdui-icon material-icons">star</i></button>
-            <button class="mdui-btn mdui-btn-icon" data-rating="2"><i class="mdui-icon material-icons">star</i></button>
-            <button class="mdui-btn mdui-btn-icon" data-rating="3"><i class="mdui-icon material-icons">star</i></button>
-            <button class="mdui-btn mdui-btn-icon" data-rating="4"><i class="mdui-icon material-icons">star</i></button>
-            <button class="mdui-btn mdui-btn-icon" data-rating="5"><i class="mdui-icon material-icons">star</i></button>
+            <button class="mdui-btn mdui-btn-icon" data-rating="1"><i class="mdui-icon eva eva-star"></i></button>
+            <button class="mdui-btn mdui-btn-icon" data-rating="2"><i class="mdui-icon eva eva-star"></i></button>
+            <button class="mdui-btn mdui-btn-icon" data-rating="3"><i class="mdui-icon eva eva-star"></i></button>
+            <button class="mdui-btn mdui-btn-icon" data-rating="4"><i class="mdui-icon eva eva-star"></i></button>
+            <button class="mdui-btn mdui-btn-icon" data-rating="5"><i class="mdui-icon eva eva-star"></i></button>
         </div>
         <div class="mdui-text-center">
             <p>為「${song.name}」評等</p>

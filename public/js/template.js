@@ -59,7 +59,7 @@ const template = {
     parseFolder: (folders, showBackButton = false) => {
         let html = `<ul class="mdui-list">`
         html += showBackButton ? `<li class="mdui-list-item mdui-ripple" onclick="history.go(-1)">
-            <i class="mdui-list-item-icon mdui-icon material-icons">arrow_back</i>
+            <i class="mdui-list-item-icon mdui-icon eva eva-arrow-ios-back-outline"></i>
             <div class="mdui-list-item-content">回上一頁</div>
         </li>` : ``
         for (i = 0; i < folders.length; i++) {
@@ -100,12 +100,12 @@ const template = {
                 <button class="mdui-btn mdui-btn-icon mdui-ripple add" 
                         ${addAction}
                         title="加入這首歌曲到現正播放">
-                    <i class="mdui-icon material-icons">add</i>
+                    <i class="mdui-icon eva eva-plus-outline"></i>
                 </button>
                 <button class="mdui-btn mdui-btn-icon mdui-ripple" 
                         ${songAction}
                         title="更多選項">
-                    <i class="mdui-icon material-icons">more_horiz</i>
+                    <i class="mdui-icon eva eva-more-horizotnal-outline"></i>
                 </button>
             </li></div>`
         }
