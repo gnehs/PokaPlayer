@@ -123,12 +123,30 @@ async function showSettingsSystem() {
     $("[data-restart]").click(() => {
         let r = confirm("確定要重新啟動嗎\n注意：若您未開啟 Docker 的自動重啟功能，您必須手動開啟 PokaPlayer");
         if (r) {
-            mdui.snackbar('正在重新啟動', {
-                buttonText: '重新連接',
-                onButtonClick: () => window.location.reload(),
+            mdui.snackbar('正在重新啟動...', {
                 position: getSnackbarPosition()
             })
             axios.post('/restart')
+            let pinging = setInterval(async () => {
+                let ping = (await axios.get('/ping')).data
+                if (ping == 'PONG') {
+                    clearInterval(pinging);
+                    mdui.dialog({
+                        title: '提示',
+                        content: '伺服器重新啟動完畢！',
+                        buttons: [{
+                                text: '取消'
+                            },
+                            {
+                                text: '重新連接',
+                                onClick: () => {
+                                    location.reload()
+                                }
+                            }
+                        ]
+                    });
+                }
+            }, 1000);
         }
     })
     //更新
@@ -184,10 +202,28 @@ async function showSettingsSystem() {
                             socket.on('restart', () => {
                                 socket.emit('restart')
                                 mdui.snackbar('伺服器正在重新啟動...', {
-                                    buttonText: '重新連接',
-                                    onButtonClick: () => window.location.reload(),
                                     position: getSnackbarPosition()
                                 })
+                                let pinging = setInterval(async () => {
+                                    let ping = (await axios.get('/ping')).data
+                                    if (ping == 'PONG') {
+                                        clearInterval(pinging);
+                                        mdui.dialog({
+                                            title: '提示',
+                                            content: '伺服器重新啟動完畢！',
+                                            buttons: [{
+                                                    text: '取消'
+                                                },
+                                                {
+                                                    text: '重新連接',
+                                                    onClick: () => {
+                                                        location.reload()
+                                                    }
+                                                }
+                                            ]
+                                        });
+                                    }
+                                }, 1000);
                             })
                             socket.on('err', data => mdui.snackbar('錯誤: ' + data, {
                                 timeout: 8000,
