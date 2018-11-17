@@ -471,7 +471,7 @@ async function showSearch(keyword) {
                        value="${keyword|| ''}" 
                        required/>
                 <button class="search-button mdui-text-color-theme">
-                    <i class="mdui-icon material-icons">search</i>
+                    <i class="mdui-icon eva eva-search-outline"></i>
                 </button>
             </div>
         </div>

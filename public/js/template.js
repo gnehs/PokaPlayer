@@ -124,7 +124,7 @@ const template = {
                <a class="card" 
                   title="${name}${artist ? '&#10;' + artist : ''}"
                   href="album/${album.source}/${encodeURIComponent(album.id)}" 
-                  data-source="${album.source}" 
+                  data-source="${moduleShowName[album.source]}" 
                   data-navigo>
                    <div class="image mdui-ripple" style="background-image:url('${img}')"></div>
                    <div class="title mdui-text-color-theme-text mdui-text-truncate">${name}</div>
