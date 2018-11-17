@@ -1240,7 +1240,7 @@ function addSong(songlist, songID = 0) {
 //- 取得 Snackbar 位置
 function getSnackbarPosition() {
     if ($(window).width() < 768)
-        return "left-top"
+        return "bottom"
     else
         return "left-bottom"
 }

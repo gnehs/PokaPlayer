@@ -642,12 +642,17 @@ header.mdui-appbar.mdui-appbar-fixed {
     #player {
         border-radius: 0;
         bottom: 0;
+        z-index: 7001;
     }
 
     #player .timer {
         font-size: 12px;
         letter-spacing: .04em;
         opacity: .87;
+    }
+
+    .mdui-snackbar-bottom {
+        bottom: 67px !important;
     }
 }
 
