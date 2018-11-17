@@ -1039,7 +1039,8 @@ header.mdui-appbar.mdui-appbar-fixed {
     transition: all .3s ease;
 }
 
-.search-box:hover {
+.search-box:hover,
+.search-box.focus {
     border: 1px solid #9090909e;
     box-shadow: 0 3px 8px 0 rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.08);
 }

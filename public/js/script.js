@@ -515,7 +515,12 @@ async function showSearch(keyword) {
     //初始化
     mdui.mutation()
     router.updatePageLinks()
-
+    $("input").focus(function () {
+        $("input").parent(".search-box").addClass('focus')
+    });
+    $("input").blur(function () {
+        $("input").parent(".search-box").removeClass('focus')
+    });
     $('.search-button').click(() => {
         router.navigate("search/" + encodeURIComponent($("#search").val()));
     })
