@@ -1,7 +1,7 @@
 //- 取得背景
 function getBackground() {
-    if (window.localStorage["randomImg"])
-        return window.localStorage["randomImg"]
+    if (localStorage["randomImg"])
+        return localStorage["randomImg"]
     else
         return "/og/og.png"
 }
@@ -64,13 +64,13 @@ async function getLrc(artist, title, id = false, source) {
         if (result.data.lyrics[0].lyric && result.data.lyrics[0].lyric.match(lyricRegex))
             return result.data.lyrics[0].lyric
     }
-    result = await axios.get(`/pokaapi/searchLyrics/?keyword=${encodeURIComponent(title+' '+artist)}`)
-    for (i = 0; i < (result.data.lyrics.length > 10 ? 10 : result.data.lyrics.length); i++)
-        if (result.data.lyrics[i]) {
-            let lrcTitle = result.data.lyrics[i].name.toLowerCase().replace(/\.|\*|\~|\&|。|，|\ |\-|\!|！|\(|\)/g, '')
+    result = await request(`/pokaapi/searchLyrics/?keyword=${encodeURIComponent(title+' '+artist)}`)
+    for (i = 0; i < (result.lyrics.length > 10 ? 10 : result.lyrics.length); i++)
+        if (result.lyrics[i]) {
+            let lrcTitle = result.lyrics[i].name.toLowerCase().replace(/\.|\*|\~|\&|。|，|\ |\-|\!|！|\(|\)/g, '')
             let songTitle = title.toLowerCase().replace(/\.|\*|\~|\&|。|，|\ |\-|\!|！|\(|\)/g, '')
-            if (lrcTitle == songTitle && result.data.lyrics[i].lyric.match(lyricRegex))
-                return result.data.lyrics[i].lyric
+            if (lrcTitle == songTitle && result.lyrics[i].lyric.match(lyricRegex))
+                return result.lyrics[i].lyric
         }
     return false
 }
@@ -82,7 +82,7 @@ async function searchLrc(keyword) {
 async function canRating(moduleName) {
     let result;
     try {
-        result = (await axios.get(`/pokaapi/ratingSong/?moduleName=${encodeURIComponent(moduleName)}`)).data
+        result = (await axios(`/pokaapi/ratingSong/?moduleName=${encodeURIComponent(moduleName)}`)).data
     } catch (e) {
         result = false
     }
@@ -105,7 +105,7 @@ async function ratingSong(moduleName, songId, rating) {
 async function getUserPlaylists(module) {
     let result
     try {
-        result = (await axios.get(`/pokaapi/getUserPlaylists/?moduleName=${encodeURIComponent(module)}`)).data
+        result = await request(`/pokaapi/getUserPlaylists/?moduleName=${encodeURIComponent(module)}`)
     } catch (e) {
         result = false
     }
@@ -116,7 +116,7 @@ async function playlistExist(moduleName, songIds, playlistId) {
     let result;
     // 確定存在
     try {
-        result = (await axios.get(`/pokaapi/playlistOperation/?moduleName=${encodeURIComponent(moduleName)}&songIds=${encodeURIComponent(JSON.stringify(songIds))}&playlistId=${encodeURIComponent(playlistId)}`)).data
+        result = await request(`/pokaapi/playlistOperation/?moduleName=${encodeURIComponent(moduleName)}&songIds=${encodeURIComponent(JSON.stringify(songIds))}&playlistId=${encodeURIComponent(playlistId)}`)
     } catch (e) {
         result = false
     }
@@ -167,13 +167,11 @@ async function canLike(module) {
 }
 async function isLiked(module, songId) {
     let result
-    //嘗試新增
     try {
         result = (await axios.post('/pokaapi/isLiked/', {
             moduleName: module,
             songId: songId
         })).data
-        console.log(result)
     } catch (e) {
         result = false
     }

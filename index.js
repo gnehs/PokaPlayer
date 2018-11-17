@@ -8,7 +8,10 @@ const git = require("simple-git/promise")(__dirname);
 const express = require("express");
 const FileStore = require("session-file-store")(require("express-session")); // session
 const session = require("express-session")({
-    store: new FileStore({ reapInterval: -1, logFn: void 0 }),
+    store: new FileStore({
+        reapInterval: -1,
+        logFn: void 0
+    }),
     secret: config ? config.PokaPlayer.sessionSecret : "no config.json",
     resave: false,
     saveUninitialized: true,
@@ -33,9 +36,13 @@ if (!config || config.PokaPlayer.debug)
 //
 app.set("views", __dirname + "/views");
 app.set("view engine", "pug");
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 app.use(helmet());
-app.use(helmet.hidePoweredBy({ setTo: 'PHP 4.2.0' }))
+app.use(helmet.hidePoweredBy({
+    setTo: 'PHP 4.2.0'
+}))
 app.use(session);
 io.use(
     sharedsession(session, {
@@ -80,22 +87,22 @@ server.listen(3000, () => {
 });
 
 //安裝頁面
-if (!config || config.PokaPlayer.debug) app.get("/install", (req, res) => res.render("install", { version: package.version }));
+if (!config || config.PokaPlayer.debug) app.get("/install", (req, res) => res.render("install", {
+    version: package.version
+}));
 
 // 隨機圖圖
 app.get("/og/og.png", (req, res) => {
-    var files = fs.readdirSync("./ogimage/").filter(function(i, n) {
-        if ((i.toString().indexOf(".png") > -1 || i.toString().indexOf(".jpg") > -1) && i.toString().indexOf("._") < 0)
-            return i;
-    });
+    let files = fs.readdirSync("./ogimage/").filter((i, n) => ((i.toString().indexOf(".png") > -1 || i.toString().indexOf(".jpg") > -1) && i.toString().indexOf("._") < 0));
     //og
-    var imgnum = Math.floor(Math.random() * files.length);
-    var img = __dirname + "/ogimage/" + files[imgnum];
+    let imgnum = Math.floor(Math.random() * files.length);
+    let img = __dirname + "/ogimage/" + files[imgnum];
 
     res.sendFile(img);
 });
 // 登入
-app.get("/login/", (req, res) => res.render("login"))
+app
+    .get("/login/", (req, res) => res.render("login"))
     .post("/login/", (req, res) => {
         req.session.pass = req.body["userPASS"];
         if (config.PokaPlayer.passwordSwitch && req.body["userPASS"] != config.PokaPlayer.password)
@@ -104,7 +111,7 @@ app.get("/login/", (req, res) => res.render("login"))
     })
     .get("/logout/", (req, res) => {
         // 登出
-        req.session.destroy();
+        req.session.pass = ''
         res.redirect("/");
     });
 
@@ -114,12 +121,14 @@ app.get("/ping", (req, res) => res.send("PONG"));
 // 沒設定檔給設定頁面，沒登入給登入頁
 app.use((req, res, next) => {
     if (!config) res.redirect("/install/");
-    else if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
+    else if (config.PokaPlayer.passwordSwitch && (req.session.pass != config.PokaPlayer.password))
         res.redirect("/login/");
     else next();
 });
 // 首頁
-app.get("/", (req, res) => res.render("index", { version: package.version }));
+app.get("/", (req, res) => res.render("index", {
+    version: package.version
+}));
 
 if (config.PokaPlayer.debug)
     app.get("/share", (req, res) => res.render("share"));
@@ -127,11 +136,11 @@ if (config.PokaPlayer.debug)
 io.on("connection", socket => {
     socket.emit("hello");
     // Accept a login event with user's data
-    socket.on("login", function(userdata) {
+    socket.on("login", function (userdata) {
         socket.handshake.session.userdata = userdata;
         socket.handshake.session.save();
     });
-    socket.on("logout", function(userdata) {
+    socket.on("logout", function (userdata) {
         if (socket.handshake.session.userdata) {
             delete socket.handshake.session.userdata;
             socket.handshake.session.save();
@@ -180,13 +189,12 @@ app.get("/upgrade", (req, res) => {
 
 // get info
 app.get("/info", (req, res) => res.json(package));
-app.get("/debug", async(req, res) =>
+app.get("/debug", async (req, res) =>
     res.send(
         config.PokaPlayer.debug ?
         (await git.raw(["rev-parse", "--short", "HEAD"])).slice(0, -1) :
         "false"
-    )
-);
+    ));
 
 app.post("/restart", (req, res) => {
     res.send("k");

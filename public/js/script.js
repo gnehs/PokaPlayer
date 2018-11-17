@@ -258,7 +258,7 @@ function updateBottomPlayer() {
     if (nowPlaying) {
         name = nowPlaying.name
         artist = nowPlaying.artist
-        img = window.localStorage["imgRes"] != "true" && ap.list.audios[ap.list.index].cover ? ap.list.audios[ap.list.index].cover : getBackground()
+        img = localStorage["imgRes"] != "true" && ap.list.audios[ap.list.index].cover ? ap.list.audios[ap.list.index].cover : getBackground()
         $('#player .song-info .name').text(name)
         $('#player .song-info .artist').text(artist)
         $('#player img').attr('src', img)
@@ -301,10 +301,10 @@ var loginFailureCount = 0
 
 function tryRelogin() {
     //如果有存到密碼或是嘗試次數少於 10 次就嘗試登入
-    if (window.localStorage["userPASS"] || loginFailureCount <= 10) {
+    if (localStorage["userPASS"] || loginFailureCount <= 10) {
         console.log("[Login] 正在嘗試登入")
         $.post("/login/", {
-            userPASS: window.localStorage["userPASS"]
+            userPASS: localStorage["userPASS"]
         }, data => {
             if (data == 'success') {
                 console.log("[Login] 登入成功")
@@ -313,10 +313,11 @@ function tryRelogin() {
                 console.error("[Login] 登入失敗")
                 mdui.snackbar({
                     message: 'Session 過期，請重新登入',
-                    timeout: 1000,
+                    timeout: 10 * 1000,
+                    buttonText: '登入',
+                    onButtonClick: () => document.location.href = "/login/",
                     position: getSnackbarPosition()
                 });
-                document.location.href = "/login/";
             }
         });
     } else if (loginFailureCount > 10) {
@@ -407,7 +408,7 @@ function changePlayMode(get) {
 }
 
 function pokaHeader(title, subtitle = '', image = false, hide = false, blur = true) {
-    let style = image && window.localStorage["imgRes"] == "false" ?
+    let style = image && localStorage["imgRes"] == "false" ?
         `background-image: url('${image.replace(/'/g, "\\'")}');` :
         `background-image: url('${getBackground().replace(/'/g, "\\'")}');`
 
@@ -423,7 +424,7 @@ function pokaHeader(title, subtitle = '', image = false, hide = false, blur = tr
     else
         $("#header-wrapper .bg2").removeClass('blur')
 
-    if (image && blur && window.localStorage["imgRes"] == "false")
+    if (image && blur && localStorage["imgRes"] == "false")
         $("#header-wrapper .bg").addClass('blur')
     else
         $("#header-wrapper .bg").removeClass('blur')
@@ -441,7 +442,7 @@ function pokaHeader(title, subtitle = '', image = false, hide = false, blur = tr
 async function showHome() {
     $('#content').attr('data-page', 'home')
     // 展示讀取中
-    pokaHeader("歡迎使用", `PokaPlayer ${window.localStorage["PokaPlayerVersion"] || ''}`)
+    pokaHeader("歡迎使用", `PokaPlayer ${localStorage["PokaPlayerVersion"] || ''}`)
     $("#content").html(template.getSpinner())
     mdui.mutation()
 
@@ -462,16 +463,17 @@ async function showSearch(keyword) {
     let html = `
     <div class="mdui-row">
         <div class="mdui-col-md-6 mdui-col-offset-md-3">
-            <div class="mdui-textfield">
-                <i class="mdui-icon material-icons">search</i>
-                <input class="mdui-textfield-input" 
+            <div class="search-box">
+                <input class="search-input" 
                        id="search" 
                        type="text" 
                        placeholder="搜尋" 
-                       value="${$('#search').val() || ''}" 
+                       value="${keyword|| ''}" 
+                       autocomplete="off"
                        required/>
-                <div class="mdui-textfield-error">尚未輸入關鍵字</div>
-                <div class="mdui-textfield-helper">輸入完後按下 Enter 開始搜尋音樂、專輯或演出者</div>
+                <button class="search-button mdui-text-color-theme">
+                    <i class="mdui-icon eva eva-search-outline"></i>
+                </button>
             </div>
         </div>
     </div>`
@@ -494,6 +496,10 @@ async function showSearch(keyword) {
     ]
     let noResult = `<div class="mdui-valign" style="height:150px"><p class="mdui-center">${noResultTexts[Math.floor(Math.random() * noResultTexts.length)]}</p></div>`
     if (keyword) {
+        // 先輸出搜尋中
+        let searching = `<div class="mdui-valign" style="height:150px"><p class="mdui-center">搜尋中...</p></div>`
+        $("#content").html(html + searching)
+
         let result = await request(`/pokaapi/search/?keyword=${keyword}`);
         let searchResults = template.parseSearch(result);
 
@@ -510,9 +516,16 @@ async function showSearch(keyword) {
     //初始化
     mdui.mutation()
     router.updatePageLinks()
-
+    $("input").focus(function () {
+        $("input").parent(".search-box").addClass('focus')
+    });
+    $("input").blur(function () {
+        $("input").parent(".search-box").removeClass('focus')
+    });
+    $('.search-button').click(() => {
+        router.navigate("search/" + encodeURIComponent($("#search").val()));
+    })
     $("#search").change(async function () {
-        $("#search+.mdui-textfield-error+.mdui-textfield-helper").text("搜尋中...");
         router.navigate("search/" + encodeURIComponent($(this).val()));
     });
 }
@@ -883,7 +896,7 @@ async function showNow() {
             title = song.name,
             artist = song.artist,
             album = song.album,
-            img = window.localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${ap.list.audios[i].cover || getBackground()}"/></div>`
+            img = localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${ap.list.audios[i].cover || getBackground()}"/></div>`
         html += `<li class="mdui-list-item mdui-ripple song ${focus}" >
             ${img}
             <div class="mdui-list-item-content songinfo" data-now-play-id="${i}">
@@ -905,7 +918,7 @@ async function showNow() {
         name = nowPlaying ? nowPlaying.name : "PokaPlayer",
         artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點擊播放鍵開始隨機播放",
         album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>",
-        img = (nowPlaying && window.localStorage["imgRes"] != "true" && nowPlaying.cover) ? nowPlaying.cover : getBackground(),
+        img = (nowPlaying && localStorage["imgRes"] != "true" && nowPlaying.cover) ? nowPlaying.cover : getBackground(),
         currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00",
         duration = ap.audio.currentTime ? secondToTime(ap.audio.duration) : "0:00",
         timer = currentTime + '/' + duration,
@@ -1023,7 +1036,7 @@ async function showNow() {
         let name = nowPlaying ? nowPlaying.name : "PokaPlayer"
         let artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點擊播放鍵開始隨機播放"
         let album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>"
-        let img = (nowPlaying && window.localStorage["imgRes"] != "true" && nowPlaying.cover) ? nowPlaying.cover : getBackground(); //一定會有圖片
+        let img = (nowPlaying && localStorage["imgRes"] != "true" && nowPlaying.cover) ? nowPlaying.cover : getBackground(); //一定會有圖片
         $('[data-player]>.mdui-card').attr('style', `background-image:url('${img.replace(/'/g, "\\'")}');`)
         $('[data-player]>.info .title').text(name)
         $('[data-player]>.info .artist').html(artist + album)
@@ -1158,7 +1171,7 @@ function playSongs(songs, song = false, clear = true) {
     let playlist = []
     for (i = 0; i < songs.length; i++) {
         let nowsong = songs[i],
-            src = nowsong.url + '&songRes=' + window.localStorage["musicRes"].toLowerCase(),
+            src = nowsong.url + '&songRes=' + localStorage["musicRes"].toLowerCase(),
             name = nowsong.name,
             artist = nowsong.artist,
             album = nowsong.album,
@@ -1191,7 +1204,7 @@ function addSong(songlist, songID = 0) {
     for (i = 0; i < songlist.length; i++) {
         let nowsong = songlist[i]
         if (nowsong.id == songID || songID == 0) {
-            let src = nowsong.url + '&songRes=' + window.localStorage["musicRes"].toLowerCase(),
+            let src = nowsong.url + '&songRes=' + localStorage["musicRes"].toLowerCase(),
                 name = nowsong.name,
                 artist = nowsong.artist,
                 album = nowsong.album,
@@ -1228,7 +1241,7 @@ function addSong(songlist, songID = 0) {
 //- 取得 Snackbar 位置
 function getSnackbarPosition() {
     if ($(window).width() < 768)
-        return "left-top"
+        return "bottom"
     else
         return "left-bottom"
 }
@@ -1345,7 +1358,7 @@ async function songAction(songID, source) {
             <div class="mdui-list-item-content">${isSongLiked?'取消收藏':'收藏'}</div>
         </li>
         <li class="mdui-list-item mdui-ripple" data-action="rating" ${iscanRating?``:`style="pointer-events: none; opacity: .5;"`}>
-            <i class="mdui-list-item-icon mdui-icon material-icons">star</i>
+            <i class="mdui-list-item-icon mdui-icon eva eva-star-outline"></i>
             <div class="mdui-list-item-content">評等</div>
         </li>
         <li class="mdui-list-item mdui-ripple" data-action="playlistAdd" ${userPlaylists.length>0?``:`style="pointer-events: none; opacity: .5;"`}>
@@ -1379,11 +1392,11 @@ async function songAction(songID, source) {
         $(`[data-title]`).text(`評等`)
         $(`[data-content]`).html(`
         <div id="rating" class="mdui-text-center">
-            <button class="mdui-btn mdui-btn-icon" data-rating="1"><i class="mdui-icon material-icons">star</i></button>
-            <button class="mdui-btn mdui-btn-icon" data-rating="2"><i class="mdui-icon material-icons">star</i></button>
-            <button class="mdui-btn mdui-btn-icon" data-rating="3"><i class="mdui-icon material-icons">star</i></button>
-            <button class="mdui-btn mdui-btn-icon" data-rating="4"><i class="mdui-icon material-icons">star</i></button>
-            <button class="mdui-btn mdui-btn-icon" data-rating="5"><i class="mdui-icon material-icons">star</i></button>
+            <button class="mdui-btn mdui-btn-icon" data-rating="1"><i class="mdui-icon eva eva-star"></i></button>
+            <button class="mdui-btn mdui-btn-icon" data-rating="2"><i class="mdui-icon eva eva-star"></i></button>
+            <button class="mdui-btn mdui-btn-icon" data-rating="3"><i class="mdui-icon eva eva-star"></i></button>
+            <button class="mdui-btn mdui-btn-icon" data-rating="4"><i class="mdui-icon eva eva-star"></i></button>
+            <button class="mdui-btn mdui-btn-icon" data-rating="5"><i class="mdui-icon eva eva-star"></i></button>
         </div>
         <div class="mdui-text-center">
             <p>為「${song.name}」評等</p>
@@ -1420,7 +1433,7 @@ async function songAction(songID, source) {
                             <div class="mdui-list-item-title">${userPlaylists[i].name}</div>
                             <div class="mdui-list-item-text">${moduleShowName[userPlaylists[i].source]}${exist?` / 該歌曲已存在，點擊來刪除`:``}</div>
                         </div>
-                        <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-grey-400">${exist?`remove_circle`:`playlist_add`}</i>
+                        <i class="mdui-list-item-icon mdui-icon ${exist?`eva eva-trash-2-outline`:`material-icons`} mdui-text-color-grey-400">${exist?``:`playlist_add`}</i>
                 </li>`).click(async () => {
                     $(`data-close`).click()
                     let result = await playlistOperation(userPlaylists[i].source, [song.id], userPlaylists[i].id)

@@ -19,3 +19,7 @@ body[color-theme="true"] .mdui-theme-layout-dark .mdui-appbar>[class*=mdui-color
 :root body[color-theme="true"] .mdui-theme-layout-dark .mdui-tab-indicator {
     background-color: var(--poka-theme-primary-text-color);
 }
+
+:root body[color-theme="true"] .mdui-text-color-theme {
+    color: var(--poka-theme-primary-color) !important;
+}

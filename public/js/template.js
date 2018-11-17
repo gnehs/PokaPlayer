@@ -59,7 +59,7 @@ const template = {
     parseFolder: (folders, showBackButton = false) => {
         let html = `<ul class="mdui-list">`
         html += showBackButton ? `<li class="mdui-list-item mdui-ripple" onclick="history.go(-1)">
-            <i class="mdui-list-item-icon mdui-icon material-icons">arrow_back</i>
+            <i class="mdui-list-item-icon mdui-icon eva eva-arrow-ios-back-outline"></i>
             <div class="mdui-list-item-content">回上一頁</div>
         </li>` : ``
         for (i = 0; i < folders.length; i++) {
@@ -83,7 +83,7 @@ const template = {
             let addAction = `onclick="addSong(songList,'${song.id}')"`
             let songAction = `onclick="songAction(\`${song.id}\`,\`${song.source}\`)"`
 
-            let img = window.localStorage["imgRes"] == "true" ? '' :
+            let img = localStorage["imgRes"] == "true" ? '' :
                 `<div class="mdui-list-item-avatar" ${clickAction}>
                     <img src="${song.cover || getBackground()}"/>
                 </div>`
@@ -100,12 +100,12 @@ const template = {
                 <button class="mdui-btn mdui-btn-icon mdui-ripple add" 
                         ${addAction}
                         title="加入這首歌曲到現正播放">
-                    <i class="mdui-icon material-icons">add</i>
+                    <i class="mdui-icon eva eva-plus-outline"></i>
                 </button>
                 <button class="mdui-btn mdui-btn-icon mdui-ripple" 
                         ${songAction}
                         title="更多選項">
-                    <i class="mdui-icon material-icons">more_horiz</i>
+                    <i class="mdui-icon eva eva-more-horizotnal-outline"></i>
                 </button>
             </li></div>`
         }
@@ -119,12 +119,12 @@ const template = {
             let album = albums[i]
             let name = album.name
             let artist = album.artist
-            let img = window.localStorage["imgRes"] == "true" ? window.localStorage["randomImg"] : album.cover.replace(/'/g, "\\'") || getBackground()
+            let img = localStorage["imgRes"] == "true" ? localStorage["randomImg"] : album.cover.replace(/'/g, "\\'") || getBackground()
             html += `
                <a class="card" 
                   title="${name}${artist ? '&#10;' + artist : ''}"
                   href="album/${album.source}/${encodeURIComponent(album.id)}" 
-                  data-source="${album.source}" 
+                  data-source="${moduleShowName[album.source]}" 
                   data-navigo>
                    <div class="image mdui-ripple" style="background-image:url('${img}')"></div>
                    <div class="title mdui-text-color-theme-text mdui-text-truncate">${name}</div>
@@ -139,7 +139,7 @@ const template = {
         for (i = 0; i < artists.length; i++) {
             let artist = artists[i]
             let name = artist.name ? artist.name : "未知"
-            let img = window.localStorage["imgRes"] == "true" ? getBackground() : artist.cover.replace("'", "\\'") || getBackground()
+            let img = localStorage["imgRes"] == "true" ? getBackground() : artist.cover.replace("'", "\\'") || getBackground()
             html += `
             <a class="card" 
                title="${name}"
@@ -158,7 +158,7 @@ const template = {
         for (i = 0; i < composers.length; i++) {
             let composer = composers[i]
             let name = composer.name ? composer.name : "未知"
-            let img = window.localStorage["imgRes"] == "true" ? getBackground() : composer.cover.replace("'", "\\'") || getBackground()
+            let img = localStorage["imgRes"] == "true" ? getBackground() : composer.cover.replace("'", "\\'") || getBackground()
             html += `
             <a class="card" 
                title="${name}"
@@ -177,8 +177,8 @@ const template = {
         let html = `<div class="poka cards">`
         for (i = 0; i < playlists.length; i++) {
             let playlist = playlists[i]
-            let img = playlist.image && window.localStorage["imgRes"] != "true" ? `style="background-image:url('${playlist.image}')"` : ``
-            let icon = playlist.image && window.localStorage["imgRes"] != "true" ? `` : `<i class="mdui-icon material-icons">playlist_play</i>`
+            let img = playlist.image && localStorage["imgRes"] != "true" ? `style="background-image:url('${playlist.image}')"` : ``
+            let icon = playlist.image && localStorage["imgRes"] != "true" ? `` : `<i class="mdui-icon material-icons">playlist_play</i>`
             let href = `playlist/${encodeURIComponent(playlist.source)}/${encodeURIComponent(playlist.id)}`
             if (playlist.type == 'folder') {
                 let randomLink = Math.random().toString(36).substring(8)
