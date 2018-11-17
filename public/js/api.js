@@ -167,13 +167,11 @@ async function canLike(module) {
 }
 async function isLiked(module, songId) {
     let result
-    //嘗試新增
     try {
         result = (await axios.post('/pokaapi/isLiked/', {
             moduleName: module,
             songId: songId
         })).data
-        console.log(result)
     } catch (e) {
         result = false
     }

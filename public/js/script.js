@@ -469,6 +469,7 @@ async function showSearch(keyword) {
                        type="text" 
                        placeholder="搜尋" 
                        value="${keyword|| ''}" 
+                       autocomplete="off"
                        required/>
                 <button class="search-button mdui-text-color-theme">
                     <i class="mdui-icon eva eva-search-outline"></i>
