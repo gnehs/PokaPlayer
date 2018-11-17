@@ -134,13 +134,14 @@ async function showSettingsSystem() {
                     mdui.dialog({
                         title: '提示',
                         content: '伺服器重新啟動完畢！',
+                        history: false,
                         buttons: [{
                                 text: '取消'
                             },
                             {
                                 text: '重新連接',
-                                onClick: () => {
-                                    location.reload()
+                                onClick: function (inst) {
+                                    window.location.reload()
                                 }
                             }
                         ]
@@ -211,13 +212,14 @@ async function showSettingsSystem() {
                                         mdui.dialog({
                                             title: '提示',
                                             content: '伺服器重新啟動完畢！',
+                                            history: false,
                                             buttons: [{
                                                     text: '取消'
                                                 },
                                                 {
                                                     text: '重新連接',
-                                                    onClick: () => {
-                                                        location.reload()
+                                                    onClick: function (inst) {
+                                                        window.location.reload()
                                                     }
                                                 }
                                             ]
