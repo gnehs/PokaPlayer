@@ -462,9 +462,13 @@ async function showSettingsCustomize() {
         $("[data-change-color] input").prop('checked', !$("[data-change-color] input").prop('checked'))
         localStorage["change-color"] = $("[data-change-color] input").prop('checked');
         $('body').attr('color-theme', $("[data-change-color] input").prop('checked'))
-        if ($("[data-change-color] input").prop('checked'))
+        if ($("[data-change-color] input").prop('checked')) {
             $("[data-change-color-lab]").removeAttr('style')
-        else
+            $("#colortheme").text(`:root {
+                --poka-theme-primary-color: ${localStorage["poka-theme-primary"]};
+                --poka-theme-primary-text-color: ${localStorage["poka-theme-primary-text"]};
+            }`)
+        } else
             $("[data-change-color-lab]").attr('style', 'pointer-events: none; opacity: .5;')
 
     });
