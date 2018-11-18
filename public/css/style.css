@@ -654,6 +654,10 @@ header.mdui-appbar.mdui-appbar-fixed {
     .mdui-snackbar-bottom {
         bottom: 67px !important;
     }
+
+    #drawer {
+        padding-bottom: 67px !important;
+    }
 }
 
 @media screen and (max-width: 512px) {
