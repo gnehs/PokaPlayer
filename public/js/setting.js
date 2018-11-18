@@ -474,33 +474,15 @@ async function showSettingsCustomize() {
     });
     // 主題
     $('[data-theme="mdui-theme-color"]').click(function () {
-        router.pause();
-        mdui.dialog({
-            title: '設定主題色',
-            content: `<ul class="mdui-list">
-            ${settingsItem("Light","","","",
-                            `onclick="localStorage['mdui-theme-color']='false'" mdui-dialog-close`)}
-            ${settingsItem("Dark","","","",
-                            `onclick="localStorage['mdui-theme-color']='true'" mdui-dialog-close`)}
-        </ul>`,
-            buttons: [{
-                text: '取消'
-            }],
-            onClose: () => {
-                $('[data-theme="mdui-theme-color"] .mdui-list-item-text').text(localStorage["mdui-theme-color"] == 'true' ? 'Dark' : 'Light')
-                if (localStorage["mdui-theme-color"] == "true")
-                    $('body').addClass("mdui-theme-layout-dark")
-                else
-                    $('body').removeClass("mdui-theme-layout-dark")
-                //設定顏色
-                let metaThemeColor = document.querySelector("meta[name=theme-color]");
-                metaThemeColor.setAttribute("content", $('header>div:first-child').css("background-color"));
-            },
-            onClosed: () => {
-                router.navigate('settings/customize');
-                router.resume();
-            }
-        });
+        localStorage["mdui-theme-color"] = !(localStorage["mdui-theme-color"] == "true")
+        $('[data-theme="mdui-theme-color"] .mdui-list-item-text').text(localStorage["mdui-theme-color"] == 'true' ? 'Dark' : 'Light')
+        if (localStorage["mdui-theme-color"] == "true")
+            $('body').addClass("mdui-theme-layout-dark")
+        else
+            $('body').removeClass("mdui-theme-layout-dark")
+        //設定顏色
+        let metaThemeColor = document.querySelector("meta[name=theme-color]");
+        metaThemeColor.setAttribute("content", $('header>div:first-child').css("background-color"));
     });
     $('[data-theme="mdui-theme-primary"],[data-theme="mdui-theme-accent"]').click(function () {
         let accent = $(this).attr('data-theme') == "mdui-theme-accent",
