@@ -201,9 +201,9 @@ app.post("/restart", (req, res) => {
     process.exit();
 });
 
-app.use((req, res, next) => {
-    res.status(404).redirect("/");
-});
+app.use((req, res, next) => res.render("index", {
+    version: package.version
+}));
 // 報錯處理
 process.on("uncaughtException", err => {
     if (config && config.PokaPlayer.debug) console.log(err);
