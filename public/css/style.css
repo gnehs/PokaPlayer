@@ -27,6 +27,12 @@ header.mdui-appbar,
 
 div.mdui-list-item-avatar {
     background-color: #FFF;
+    overflow: hidden;
+}
+
+div.mdui-list-item-avatar img {
+    min-height: 100%;
+    min-width: 100%;
 }
 
 header.mdui-appbar.mdui-appbar-fixed {
@@ -284,8 +290,8 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 .poka.cards .card:hover .image {
-    box-shadow: 0 10px 15px #0000004d;
     transform: translateY(-5px);
+    box-shadow: 0 10px 15px #0000004d;
 }
 
 .poka.cards .card .image i {
@@ -654,6 +660,10 @@ header.mdui-appbar.mdui-appbar-fixed {
     .mdui-snackbar-bottom {
         bottom: 67px !important;
     }
+
+    #drawer {
+        padding-bottom: 67px !important;
+    }
 }
 
 @media screen and (max-width: 512px) {
@@ -801,10 +811,18 @@ header.mdui-appbar.mdui-appbar-fixed {
         border-radius: 5px 5px 0 0;
     }
 
+    [data-player-container]>.mdui-list.songs.show::-webkit-scrollbar {
+        width: 0px;
+    }
+
     [data-player-container]>.mdui-list.songs.show+.mdui-overlay {
         visibility: visible;
         opacity: 1;
         z-index: 6000;
+    }
+
+    [data-player-container]>.mdui-list.songs .song {
+        margin: 3px;
     }
 }
 
@@ -1041,7 +1059,7 @@ header.mdui-appbar.mdui-appbar-fixed {
     border-radius: 2px;
     overflow: hidden;
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08);
-    transition: all .3s ease;
+    transition: all .2s ease;
 }
 
 .search-box:hover,
@@ -1063,4 +1081,9 @@ header.mdui-appbar.mdui-appbar-fixed {
     border: 0;
     border-radius: 0 2px 2px 0;
     padding: 0 10px;
+    opacity: .7;
+}
+
+.search-box.focus>.search-button {
+    opacity: 1;
 }
