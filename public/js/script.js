@@ -46,7 +46,7 @@ const nothingHere = () => {
 const lrc = new Lyrics(`[00:00.000]`);
 
 // 路由
-const router = new Navigo(null, true, '#/');
+const router = new Navigo();
 router
     .on({
         'search/:keyword': params => showSearch(params.keyword),
