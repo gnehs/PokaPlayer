@@ -805,10 +805,18 @@ header.mdui-appbar.mdui-appbar-fixed {
         border-radius: 5px 5px 0 0;
     }
 
+    [data-player-container]>.mdui-list.songs.show::-webkit-scrollbar {
+        width: 0px;
+    }
+
     [data-player-container]>.mdui-list.songs.show+.mdui-overlay {
         visibility: visible;
         opacity: 1;
         z-index: 6000;
+    }
+
+    [data-player-container]>.mdui-list.songs .song {
+        margin: 3px;
     }
 }
 
