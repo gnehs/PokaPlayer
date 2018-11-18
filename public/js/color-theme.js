@@ -1,11 +1,11 @@
 $(() => {
-    if (localStorage["change-color"] == "true") {
-        $("#colortheme").text(`:root {
-             --poka-theme-primary-color: ${localStorage["poka-theme-primary"]};
-             --poka-theme-primary-text-color: ${localStorage["poka-theme-primary-text"]};
-         }`)
+    $("#colortheme").text(`:root {
+        --poka-theme-primary-color: ${localStorage["poka-theme-primary"]};
+        --poka-theme-primary-text-color: ${localStorage["poka-theme-primary-text"]};
+    }`)
+    if (localStorage["change-color"] == "true")
         $('body').attr('color-theme', 'true')
-    }
+
     // 顏色設定
     $('body').addClass(`mdui-theme-primary-${localStorage["mdui-theme-primary"]}`)
     $('body').addClass(`mdui-theme-accent-${localStorage["mdui-theme-accent"]}`)
