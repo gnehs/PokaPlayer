@@ -72,15 +72,27 @@ async function checkUpdate() {
     }
 }
 //- 設定頁面用的範本
-var settingsItem = (title, text = '', icon = '', link = '', data = '', other = '', cssClass = '') => {
-    return `<li class="mdui-list-item mdui-ripple ${cssClass}" ${link?`onclick="router.navigate('${link}')"`:''} ${data}>
-    ${icon?`<i class="mdui-list-item-icon mdui-icon eva ${icon}"></i>`:''}
-    <!-- 有 text 才輸出 Title 跟 Text -->
-    ${text != '' ? `<div class="mdui-list-item-content">
-        <div class="mdui-list-item-title">${title}</div>
-        <div class="mdui-list-item-text">${text}</div>
-    </div>` : `<div class="mdui-list-item-content">${title}</div>`}
-    ${other}
+var settingsItem = (item) => {
+    /* settingsItem({
+        "title":"",
+        "text":"",
+        "icon":"",
+        "navigate":"",
+        "attribute":"",
+        "class":"",
+        "other":""
+    })
+    
+    
+    */
+    //有 text 才輸出 Title 跟 Text
+    return `<li class="mdui-list-item mdui-ripple ${item.class||''}" ${item.navigate?`onclick="router.navigate('${item.navigate}')"`:''} ${item.attribute}>
+    ${item.icon?`<i class="mdui-list-item-icon mdui-icon eva ${item.icon}"></i>`:''}
+    ${item.text ? `<div class="mdui-list-item-content">
+        <div class="mdui-list-item-title">${item.title}</div>
+        <div class="mdui-list-item-text">${item.text}</div>
+    </div>` : `<div class="mdui-list-item-content">${item.title}</div>`}
+    ${item.other?item.other:''}
     </li>`
 }
 //- 設定
@@ -89,10 +101,30 @@ async function showSettings() {
 
     pokaHeader('設定', "PokaPlayer " + localStorage["PokaPlayerVersion"])
     let settingItems = `<ul class="mdui-list">
-        ${settingsItem("網路和快取","流量節省、音質和快取設定","eva-globe-outline","settings/network")}
-        ${settingsItem("個人化","隨機圖片、主題配色、其他細節設定","eva-brush-outline","settings/customize")}
-        ${settingsItem("系統和更新","更新 PokaPlayer、重新啟動","eva-browser-outline","settings/system")}
-        ${settingsItem("關於","PokaPlayer 相關訊息、錯誤回報等","eva-info-outline","settings/about","data-about")}
+        ${settingsItem({
+            "title":"網路和快取",
+            "text":"流量節省、音質和快取設定",
+            "icon":"eva-globe-outline",
+            "navigate":"settings/network"
+        })}
+        ${settingsItem({
+            "title":"個人化",
+            "text":"隨機圖片、主題配色、其他細節設定",
+            "icon":"eva-brush-outline",
+            "navigate":"settings/customize"
+        })}
+        ${settingsItem({
+            "title":"系統和更新",
+            "text":"更新 PokaPlayer、重新啟動",
+            "icon":"eva-browser-outline",
+            "navigate":"settings/system"
+        })}
+        ${settingsItem({
+            "title":"關於",
+            "text":"PokaPlayer 相關訊息、錯誤回報等",
+            "icon":"eva-info-outline",
+            "navigate":"settings/about"
+        })}
     </ul>`
     $("#content").html(settingItems);
 }
@@ -100,12 +132,29 @@ async function showSettingsSystem() {
 
     pokaHeader('系統和更新', "設定")
     let settingItems = `<ul class="mdui-list">
-        ${settingsItem("返回","","eva-arrow-ios-back-outline","settings")}
+        ${settingsItem({
+            "title":"返回",
+            "icon":"eva-arrow-ios-back-outline",
+            "navigate":"settings"
+        })}
         <li class="mdui-subheader">帳號</li>
-        ${settingsItem("登出","","eva-person-outline","",`onclick="location.href='/logout'"`)}
+        ${settingsItem({
+            "title":"登出",
+            "icon":"eva-person-outline",
+            "attribute":`onclick="location.href='/logout'"`
+        })}
         <li class="mdui-subheader">系統</li>
-        ${settingsItem("更新","正在檢查更新...","eva-cloud-upload-outline","","data-upgrade")}
-        ${settingsItem("重新啟動","","eva-loader-outline","","data-restart")}
+        ${settingsItem({
+            "title":"更新",
+            "icon":"eva-cloud-upload-outline",
+            "text":"正在檢查更新...",
+            "attribute":"data-upgrade"
+        })}
+        ${settingsItem({
+            "title":"重新啟動",
+            "icon":"eva-loader-outline",
+            "attribute":"data-restart"
+        })}
     </ul>`
     $("#content").html(settingItems);
     //檢查更新
@@ -242,22 +291,43 @@ async function showSettingsNetwork() {
     $('#content').attr('data-page', 'settings')
     pokaHeader('網路和快取', "設定")
     let settingItems = `<ul class="mdui-list">
-        ${settingsItem("返回","","eva-arrow-ios-back-outline","settings")}
+        ${settingsItem({
+            "title":"返回",
+            "icon":"eva-arrow-ios-back-outline",
+            "navigate":"settings"
+        })}
         <li class="mdui-subheader">網路</li>
-        ${settingsItem("音質",localStorage["musicRes"],"eva-music-outline","","data-music-res")}
-        ${settingsItem("圖片流量節省",false,"eva-image-outline","","data-imgRes",
-        `<label class="mdui-switch">
-            <input type="checkbox" ${localStorage["imgRes"]=="true"?"checked":""}/>
-            <i class="mdui-switch-icon"></i>
-        </label>`)} `
+        ${settingsItem({
+            "title":"音質",
+            "icon":"eva-music-outline",
+            "text":localStorage["musicRes"],
+            "attribute":"data-music-res"
+        })}
+        ${settingsItem({
+            "title":"圖片流量節省",
+            "icon":"eva-image-outline",
+            "attribute":"data-imgRes",
+            "other":`<label class="mdui-switch">
+                        <input type="checkbox" ${localStorage["imgRes"]=="true"?"checked":""}/>
+                        <i class="mdui-switch-icon"></i>
+                    </label>`
+        })}`
     settingItems += window.electron ? `` : `
         <li class="mdui-subheader">快取</li>
-        ${settingsItem("快取 (service worker)",false,"eva-archive-outline","","data-pokaSW",
-        `<label class="mdui-switch">
-            <input type="checkbox" ${localStorage["pokaSW"]=="true"?"checked":""}/>
-            <i class="mdui-switch-icon"></i>
-        </label>`)} 
-        ${settingsItem("清除 Service Worker 快取","","eva-trash-2-outline","","data-clean")}`
+        ${settingsItem({
+            "title":"快取 (service worker)",
+            "icon":"eva-archive-outline",
+            "attribute":"data-pokaSW",
+            "other":`<label class="mdui-switch">
+                        <input type="checkbox" ${localStorage["pokaSW"]=="true"?"checked":""}/>
+                        <i class="mdui-switch-icon"></i>
+                    </label>`
+        })}
+        ${settingsItem({
+            "title":"清除 Service Worker 快取",
+            "icon":"eva-trash-2-outline",
+            "attribute":"data-clean"
+        })}`
     settingItems += `</ul>`
     $("#content").html(settingItems);
     // 音質設定
@@ -356,26 +426,63 @@ async function showSettingsCustomize() {
     $('#content').attr('data-page', 'settings')
     pokaHeader('個人化', "設定")
     let settingItems = `<ul class="mdui-list">
-        ${settingsItem("返回","","eva-arrow-ios-back-outline","settings")}
+        ${settingsItem({
+            "title":"返回",
+            "icon":"eva-arrow-ios-back-outline",
+            "navigate":"settings"
+        })}
         <li class="mdui-subheader">隨機圖片</li>
-        ${settingsItem("圖片來源",localStorage["randomImgName"],"eva-image-outline","","data-pic-source")}
-        ${settingsItem("自訂圖片來源",localStorage["randomImg"],"eva-link-outline","","data-pic-custom-link")}        
+        ${settingsItem({
+            "title":"圖片來源",
+            "text":localStorage["randomImgName"],
+            "icon":"eva-image-outline",
+            "attribute":"data-pic-source"
+        })}
+        ${settingsItem({
+            "title":"自訂圖片來源",
+            "text":localStorage["randomImg"],
+            "icon":"eva-link-outline",
+            "attribute":"data-pic-custom-link"
+        })}
         <li class="mdui-subheader">細節設定</li>
-        ${settingsItem("於卡片右上角顯示來源標籤",false,"eva-bookmark-outline","","data-pokaCardSource",
-        `<label class="mdui-switch">
-            <input type="checkbox" ${localStorage["pokaCardSource"]=="true"?"checked":""}/>
-            <i class="mdui-switch-icon"></i>
-        </label>`)} 
+        ${settingsItem({
+            "title":"於卡片右上角顯示來源標籤",
+            "icon":"eva-bookmark-outline",
+            "attribute":"data-pokaCardSource",
+            "other":`<label class="mdui-switch">
+                        <input type="checkbox" ${localStorage["pokaCardSource"]=="true"?"checked":""}/>
+                        <i class="mdui-switch-icon"></i>
+                    </label>`
+        })}
         <li class="mdui-subheader">主題</li>
-        ${settingsItem("主題色",localStorage["mdui-theme-color"]=='true'?'Dark':'Light',"eva-color-palette-outline","",`data-theme="mdui-theme-color"`)}
-        ${settingsItem("主色",localStorage["mdui-theme-primary"].replace("-"," "),"eva-color-palette-outline","",`data-theme="mdui-theme-primary"`)}
-        ${settingsItem("強調色",localStorage["mdui-theme-accent"].replace("-"," "),"eva-color-palette-outline","",`data-theme="mdui-theme-accent"`)}
+        ${settingsItem({
+            "title":"主題色",
+            "text":localStorage["mdui-theme-color"]=='true'?'Dark':'Light',
+            "icon":"eva-color-palette-outline",
+            "attribute":`data-theme="mdui-theme-color"`
+        })}
+        ${settingsItem({
+            "title":"主色",
+            "text":localStorage["mdui-theme-primary"].replace("-"," "),
+            "icon":"eva-color-palette-outline",
+            "attribute":`data-theme="mdui-theme-primary"`
+        })}
+        ${settingsItem({
+            "title":"強調色",
+            "text":localStorage["mdui-theme-accent"].replace("-"," "),
+            "icon":"eva-color-palette-outline",
+            "attribute":`data-theme="mdui-theme-accent"`
+        })}
         <li class="mdui-subheader">實驗性功能</li>
-        ${settingsItem("實驗性主色更換功能",false,"eva-bulb-outline","","data-change-color",
-        `<label class="mdui-switch">
-            <input type="checkbox" ${localStorage["change-color"]=="true"?"checked":""}/>
-            <i class="mdui-switch-icon"></i>
-        </label>`)} 
+        ${settingsItem({
+            "title":"實驗性主色更換功能",
+            "icon":"eva-bulb-outline",
+            "attribute":"data-change-color",
+            "other":`<label class="mdui-switch">
+                        <input type="checkbox" ${localStorage["change-color"]=="true"?"checked":""}/>
+                        <i class="mdui-switch-icon"></i>
+                    </label>`
+        })}
         </ul>
         <div class="mdui-row-xs-1 mdui-row-sm-2" data-change-color-lab ${localStorage["change-color"]=="true"?``:`style="pointer-events: none; opacity: .5;"`}>
             <div class="mdui-col">
@@ -677,18 +784,47 @@ async function showSettingsAbout() {
     $('#content').attr('data-page', 'settings')
     pokaHeader('設定', '關於')
     let settingItems = `<ul class="mdui-list">
-        ${settingsItem("返回","","eva-arrow-ios-back-outline","settings")}
+        ${settingsItem({
+            "title":"返回",
+            "icon":"eva-arrow-ios-back-outline",
+            "navigate":"settings"
+        })}
         <li class="mdui-subheader">關於</li>
-        ${settingsItem("PokaPlayer 版本",localStorage["PokaPlayerVersion"],"eva-info-outline","","data-version")}`
+        ${settingsItem({
+            "title":"PokaPlayer 版本",
+            "text":localStorage["PokaPlayerVersion"],
+            "icon":"eva-info-outline",
+            "attribute":`data-version`,
+            "other":`<i class="mdui-list-item-icon mdui-icon" data-count style="opacity: 0;">0</i>`
+        })}`
     settingItems += window.electron ?
-        settingsItem("PokaPlayer Electron 版本", `Pokaplayer-Electron: ${window.electronAppVersion} / Chrome: ${window.electronChromeVersion} / Electron: ${window.electronVersion}`, "eva-info-outline", '', 'data-poka-ele') :
-        ``
+        settingsItem({
+            "title": "PokaPlayer Electron 版本",
+            "text": `Pokaplayer-Electron: ${window.electronAppVersion} / Chrome: ${window.electronChromeVersion} / Electron: ${window.electronVersion}`,
+            "icon": "eva-info-outline",
+            "attribute": `data-poka-ele`,
+            "other": `<i class="mdui-list-item-icon mdui-icon" data-count style="opacity: 0;">0</i>`
+        }) : ``
     settingItems +=
-        `${settingsItem("開發者","載入中...","eva-people-outline","","data-dev")}
-    <li class="mdui-subheader">外部連結</li>
-    ${settingsItem("GitHub","前往 PokaPlayer 的 GitHub","eva-github-outline","",`onclick="window.open('https://github.com/gnehs/PokaPlayer')"`)}
-    ${settingsItem("錯誤回報","若有任何錯誤或是建議歡迎填寫，並協助我們變得更好","eva-alert-triangle-outline","",`onclick="window.open('https://github.com/gnehs/PokaPlayer/issues/new/choose')"`)}
-    `
+        `${settingsItem({
+                "title": "開發者",
+                "text": `載入中...`,
+                "icon": "eva-people-outline",
+                "attribute": `data-dev`
+        })}
+        <li class="mdui-subheader">外部連結</li>
+        ${settingsItem({
+            "title": "GitHub",
+            "text": `前往 PokaPlayer 的 GitHub`,
+            "icon": "eva-github-outline",
+            "attribute": `onclick="window.open('https://github.com/gnehs/PokaPlayer')"`
+        })}
+        ${settingsItem({
+            "title": "錯誤回報",
+            "text": `若有任何錯誤或是建議歡迎填寫，並協助我們變得更好`,
+            "icon": "eva-alert-triangle-outline",
+            "attribute": `onclick="window.open('https://github.com/gnehs/PokaPlayer/issues/new/choose')"`
+        })}`
     settingItems += `</ul>`
     $("#content").html(settingItems)
 
@@ -696,16 +832,26 @@ async function showSettingsAbout() {
     $("[data-version]").click(function () {
         let click = $(this).attr("data-click") ? Number($(this).attr("data-click")) + 1 : 1
         $(this).attr("data-click", click)
+        if (click > 0) {
+            $("[data-version] [data-count]").removeAttr('style')
+            $("[data-version] [data-count]").text(7 - click)
+        }
         if (click == 7) {
             $(this).attr("data-click", 0)
+            $("[data-version] [data-count]").text(":D")
             loadJS('https://anohito.tw/thisUnitIsAFlippinPlatelet/flippin_platelet.js')
         }
     })
     $("[data-poka-ele]").click(function () {
         let click = $(this).attr("data-click") ? Number($(this).attr("data-click")) + 1 : 1
         $(this).attr("data-click", click)
+        if (click > 0) {
+            $("[data-poka-ele] [data-count]").removeAttr('style')
+            $("[data-poka-ele] [data-count]").text(7 - click)
+        }
         if (click == 7) {
             $(this).attr("data-click", 0)
+            $("[data-poka-ele] [data-count]").text(":D")
             loadJS('https://gnehs.github.io/Sealed/negi/negi.js')
         }
     })
