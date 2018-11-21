@@ -9,8 +9,7 @@ const express = require("express");
 const FileStore = require("session-file-store")(require("express-session")); // session
 const session = require("express-session")({
     store: new FileStore({
-        reapInterval: -1,
-        logFn: void 0
+        reapInterval: -1
     }),
     secret: config ? config.PokaPlayer.sessionSecret : "no config.json",
     resave: true,

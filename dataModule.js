@@ -6,8 +6,7 @@ const router = require("express").Router();
 const FileStore = require("session-file-store")(require("express-session")); // session
 const session = require("express-session")({
     store: new FileStore({
-        reapInterval: -1,
-        logFn: void 0
+        reapInterval: -1
     }),
     secret: config.PokaPlayer.sessionSecret,
     resave: true,
