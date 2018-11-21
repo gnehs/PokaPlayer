@@ -13,7 +13,7 @@ const session = require("express-session")({
         logFn: void 0
     }),
     secret: config ? config.PokaPlayer.sessionSecret : "no config.json",
-    resave: false,
+    resave: true,
     saveUninitialized: true,
     cookie: {
         expires: new Date(Date.now() + 60 * 60 * 1000 * 24 * 7)
