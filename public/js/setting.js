@@ -82,8 +82,6 @@ var settingsItem = (item) => {
         "class":"",
         "other":""
     })
-    
-    
     */
     //有 text 才輸出 Title 跟 Text
     return `<li class="mdui-list-item mdui-ripple ${item.class||''}" ${item.navigate?`onclick="router.navigate('${item.navigate}')"`:''} ${item.attribute}>
@@ -170,46 +168,29 @@ async function showSettingsSystem() {
     $("[data-upgrade] .mdui-list-item-text").text(debug ? `DEV#${localStorage["PokaPlayerVersion"]}(${debug})` : update)
     //重啟
     $("[data-restart]").click(() => {
-        let r = confirm("確定要重新啟動嗎\n注意：若您未開啟 Docker 的自動重啟功能，您必須手動開啟 PokaPlayer");
-        if (r) {
+        mdui.confirm("注意：若您未開啟 Docker 的自動重啟功能，您必須手動開啟 PokaPlayer", "確定要重新啟動嗎", () => {
             mdui.snackbar('正在重新啟動...', {
                 position: getSnackbarPosition()
             })
             axios.post('/restart')
-            let pinging = setInterval(async () => {
-                let ping = (await axios.get('/ping')).data
-                if (ping == 'PONG') {
-                    clearInterval(pinging);
-                    mdui.dialog({
-                        title: '提示',
-                        content: '伺服器重新啟動完畢！',
-                        history: false,
-                        buttons: [{
-                                text: '取消'
-                            },
-                            {
-                                text: '重新連接',
-                                onClick: function (inst) {
-                                    window.location.reload()
-                                }
-                            }
-                        ]
-                    });
-                }
-            }, 1000);
-        }
+            pingServer()
+        }, false, {
+            confirmText: "重新啟動",
+            cancelText: "取消"
+        })
     })
     //更新
     $("[data-upgrade=\"true\"]").click(() => {
+        let content = `<div class="mdui-typo">
+                    ${new showdown.Converter().makeHtml(checkNewVersion.changelog)}
+                    <hr>
+                    注意：若您未開啟 Docker 自動重啟功能，您必須手動開啟 PokaPlayer`
+        if (debug)
+            content += `</br>若在開發機器上進行更新，<mark>可能導致 Git 爆炸</mark>`
+        content += `</div>`
         mdui.dialog({
             title: `${checkNewVersion.version?checkNewVersion.version+' ':''}更新日誌`,
-            content: `<div class="mdui-typo">
-                            <blockquote style="margin:0">
-                                ${new showdown.Converter().makeHtml(checkNewVersion.changelog)}
-                            </blockquote>
-                        <hr>
-                        </div>
-                        注意：若您未開啟 Docker 的自動重啟功能，您必須手動開啟 PokaPlayer`,
+            content: content,
             buttons: [{
                     text: '取消'
                 },
@@ -249,27 +230,7 @@ async function showSettingsSystem() {
                                 mdui.snackbar('伺服器正在重新啟動...', {
                                     position: getSnackbarPosition()
                                 })
-                                let pinging = setInterval(async () => {
-                                    let ping = (await axios.get('/ping')).data
-                                    if (ping == 'PONG') {
-                                        clearInterval(pinging);
-                                        mdui.dialog({
-                                            title: '提示',
-                                            content: '伺服器重新啟動完畢！',
-                                            history: false,
-                                            buttons: [{
-                                                    text: '取消'
-                                                },
-                                                {
-                                                    text: '重新連接',
-                                                    onClick: function (inst) {
-                                                        window.location.reload()
-                                                    }
-                                                }
-                                            ]
-                                        });
-                                    }
-                                }, 1000);
+                                pingServer()
                             })
                             socket.on('err', data => mdui.snackbar('錯誤: ' + data, {
                                 timeout: 8000,
@@ -281,6 +242,29 @@ async function showSettingsSystem() {
             ]
         });
     })
+}
+async function pingServer() {
+    let pinging = setInterval(async () => {
+        let ping = (await axios.get('/ping')).data
+        if (ping == 'PONG') {
+            clearInterval(pinging);
+            mdui.dialog({
+                title: '提示',
+                content: '伺服器重新啟動完畢！',
+                history: false,
+                buttons: [{
+                        text: '取消'
+                    },
+                    {
+                        text: '重新連接',
+                        onClick: function (inst) {
+                            window.location.reload()
+                        }
+                    }
+                ]
+            });
+        }
+    }, 1000);
 }
 async function showSettingsNetwork() {
     $('#content').attr('data-page', 'settings')
@@ -578,7 +562,7 @@ async function showSettingsCustomize() {
     });
     $('[data-theme="mdui-theme-primary"],[data-theme="mdui-theme-accent"]').click(function () {
         let accent = $(this).attr('data-theme') == "mdui-theme-accent",
-            option = `<br><div class="poka ten doubling cards" style="text-transform:capitalize;">`,
+            option = `<div class="poka color picker cards" style="text-transform:capitalize;">`,
             colors = ['red', 'pink', 'purple', 'deep-purple', 'indigo', 'blue', 'light-blue', 'cyan', 'teal', 'green', 'light-green', 'lime', 'yellow', 'amber', 'orange', 'deep-orange', 'brown', 'grey', 'blue-grey']
         for (i = 0; i < colors.length; i++) {
             if (i <= (colors.length - 3 - 1) && accent || !accent) {
@@ -594,8 +578,11 @@ async function showSettingsCustomize() {
             }
         }
         option += "</div>"
+        option += `<p style="padding-top:24px;">請選擇一個${accent ? `強調色` : `主色`}</p>`
+        if (localStorage["change-color"] == 'true' && !accent)
+            option += `<p>由於您已開啟實驗性主色更換功能，因此部分主色套用區域將被該功能覆蓋。</p>`
+
         mdui.dialog({
-            title: `設定${accent ? `強調色` : `主色`}`,
             content: option,
             buttons: [{
                 text: '確定'
