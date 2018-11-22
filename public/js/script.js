@@ -649,12 +649,12 @@ async function showFolder(moduleName, folderId = false) {
     }
 }
 async function showArtist(moduleName, artist = false) {
-    let data = moduleName != 'DSM' && artist ? request(`/pokaapi/artist/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(artist)}`) : undefined;
+    let data = moduleName != 'DSM' && artist ? await request(`/pokaapi/artist/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(artist)}`) : undefined;
     // 如果不是 DSM 的話去向模組取得該演出者的封面
     let cover = artist ? (moduleName == 'DSM' ?
         `/pokaapi/cover/?moduleName=${encodeURIComponent(moduleName)}&data=${encodeURIComponent(JSON.stringify({ "type": "artist", "info": artist == '未知' ? '' : artist }))}` :
         data.cover) : false
-    pokaHeader(artist ? moduleName == 'DSM' ? artist : data.name : "演出者", artist ? moduleShowName[moduleName] : "列出所有演出者", cover)
+    pokaHeader(artist ? (moduleName == 'DSM' ? artist : data.name) : "演出者", artist ? moduleShowName[moduleName] : "列出所有演出者", cover)
     $("#content").attr('data-page', 'artist')
     $("#content").html(template.getSpinner())
     mdui.mutation()
