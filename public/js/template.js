@@ -1,6 +1,6 @@
 const template = {
     getSpinner: () => `<div class="mdui-spinner mdui-spinner-colorful mdui-center" style="margin:50px 0"></div>`,
-    parseHome: data => {
+    parseHome(data) {
         let result = ``
         for (let i = 0; i < data.length; i++) {
             result += `
@@ -16,7 +16,7 @@ const template = {
         }
         return result
     },
-    parseSearch: data => {
+    parseSearch(data) {
         let tabsCount = 0
         let tab = `<div class="mdui-tab" mdui-tab>`
         let tabItem = (href, label, icon) => `<a href="#${href}" class="mdui-ripple">
@@ -63,7 +63,7 @@ const template = {
         tab += `</div>`
         return tabsCount > 1 ? (tab + r) : r
     },
-    parseFolder: (folders, showBackButton = false) => {
+    parseFolder(folders, showBackButton = false) {
         let html = `<ul class="mdui-list">`
         html += showBackButton ? `<li class="mdui-list-item mdui-ripple" onclick="history.go(-1)">
             <i class="mdui-list-item-icon mdui-icon eva eva-arrow-ios-back-outline"></i>
@@ -79,7 +79,7 @@ const template = {
         html += `</ul>`
         return html
     },
-    parseSongs: songs => {
+    parseSongs(songs) {
         songList = songs
         let html = `<div class="songs"><div class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-2 mdui-row-lg-3">`
         for (i = 0; i < songs.length; i++) {
@@ -120,7 +120,7 @@ const template = {
         return html
 
     },
-    parseAlbums: albums => {
+    parseAlbums(albums) {
         let html = `<div class="poka cards">`
         for (i = 0; i < albums.length; i++) {
             let album = albums[i]
@@ -141,7 +141,7 @@ const template = {
         html += "</div>"
         return html
     },
-    parseArtists: artists => {
+    parseArtists(artists) {
         let html = `<div class="poka cards">`
         for (i = 0; i < artists.length; i++) {
             let artist = artists[i]
@@ -160,7 +160,7 @@ const template = {
         html += '</div>'
         return html
     },
-    parseComposers: composers => {
+    parseComposers(composers) {
         let html = `<div class="poka cards">`
         for (i = 0; i < composers.length; i++) {
             let composer = composers[i]
@@ -179,7 +179,7 @@ const template = {
         html += '</div>'
         return html
     },
-    parsePlaylists: playlists => {
+    parsePlaylists(playlists) {
         let temporalPlaylist = sessionStorage.temporalPlaylist ? JSON.parse(sessionStorage.temporalPlaylist) : {}
         let html = `<div class="poka cards">`
         for (i = 0; i < playlists.length; i++) {
@@ -206,7 +206,7 @@ const template = {
         html += '</div>'
         return html
     },
-    infoHeader: (cover, name, artist) => {
+    infoHeader(cover, name, artist) {
         return `
         <div class="info-header">
             <div class="cover" 
