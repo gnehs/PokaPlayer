@@ -201,7 +201,6 @@ async function showSettingsSystem() {
     })
     //更新
     $("[data-upgrade=\"true\"]").click(() => {
-        router.pause();
         mdui.dialog({
             title: `${checkNewVersion.version?checkNewVersion.version+' ':''}更新日誌`,
             content: `<div class="mdui-typo">
@@ -211,10 +210,6 @@ async function showSettingsSystem() {
                         <hr>
                         </div>
                         注意：若您未開啟 Docker 的自動重啟功能，您必須手動開啟 PokaPlayer`,
-            onClosed: () => {
-                router.resume();
-                router.navigate('settings/system');
-            },
             buttons: [{
                     text: '取消'
                 },
@@ -332,7 +327,6 @@ async function showSettingsNetwork() {
     $("#content").html(settingItems);
     // 音質設定
     $("[data-music-res]").click(function () {
-        router.pause();
         mdui.dialog({
             title: '音質設定',
             content: `</br>
@@ -381,11 +375,7 @@ async function showSettingsNetwork() {
             buttons: [{
                 text: '取消'
             }],
-            onClose: () => $("[data-music-res] .mdui-list-item-text").text(localStorage["musicRes"]),
-            onClosed: () => {
-                router.resume();
-                router.navigate('settings/network');
-            }
+            onClose: () => $("[data-music-res] .mdui-list-item-text").text(localStorage["musicRes"])
         });
     });
     // 圖片流量節省
@@ -567,13 +557,12 @@ async function showSettingsCustomize() {
     //換色好朋友
     $("[data-change-color]").click(function () {
         $("[data-change-color] input").prop('checked', !$("[data-change-color] input").prop('checked'))
-        localStorage["change-color"] = $("[data-change-color] input").prop('checked');
+        localStorage["change-color"] = $("[data-change-color] input").prop('checked')
         $('body').attr('color-theme', $("[data-change-color] input").prop('checked'))
         if ($("[data-change-color] input").prop('checked'))
             $("[data-change-color-lab]").removeAttr('style')
         else
             $("[data-change-color-lab]").attr('style', 'pointer-events: none; opacity: .5;')
-
     });
     // 主題
     $('[data-theme="mdui-theme-color"]').click(function () {
@@ -605,17 +594,12 @@ async function showSettingsCustomize() {
             }
         }
         option += "</div>"
-        router.pause();
         mdui.dialog({
             title: `設定${accent ? `強調色` : `主色`}`,
             content: option,
             buttons: [{
                 text: '確定'
-            }],
-            onClosed: () => {
-                router.navigate('settings/customize');
-                router.resume();
-            }
+            }]
         });
         $('[data-color-type]').click(function () {
             let isAccent = $(this).attr('data-color-type') == "accent"
@@ -724,17 +708,12 @@ async function showSettingsCustomize() {
                 description: '雲圖床提供',
                 src: 'https://api.yuntuchuang.com/api/jianyue.php'
             }]
-        router.pause();
         mdui.dialog({
             title: '設定圖片來源',
             content: `<ul class="mdui-list">${imgsOption(imgs)}</ul>`,
             buttons: [{
                 text: '取消'
-            }],
-            onClosed: () => {
-                router.navigate('settings/customize');
-                router.resume();
-            }
+            }]
         });
         $('[data-img-src]').click(function () {
             let src = $(this).attr('data-img-src')
@@ -747,8 +726,6 @@ async function showSettingsCustomize() {
         })
     });
     $('[data-pic-custom-link]').click(function () {
-
-        router.pause();
         mdui.dialog({
             title: '請輸入圖片網址',
             content: `
@@ -763,7 +740,6 @@ async function showSettingsCustomize() {
                 bold: true,
                 onClick: () => {
                     let img = $('[data-imgurl]').val()
-                    console.log(img)
                     if (img != null) {
                         localStorage["randomImg"] = img
                         $('[data-pic-custom-link] .mdui-list-item-text').text(img)
@@ -772,11 +748,7 @@ async function showSettingsCustomize() {
                         pokaHeader('個人化', "設定", img, false, false)
                     }
                 }
-            }],
-            onClosed: () => {
-                router.navigate('settings/customize');
-                router.resume();
-            }
+            }]
         });
     })
 }
