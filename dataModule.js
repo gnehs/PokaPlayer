@@ -5,9 +5,11 @@ const playlist = fs.existsSync("./playlist.json") ? require("./playlist.json") :
 const router = require("express").Router();
 const FileStore = require("session-file-store")(require("express-session")); // session
 const session = require("express-session")({
-    store: new FileStore(),
+    store: new FileStore({
+        reapInterval: -1
+    }),
     secret: config.PokaPlayer.sessionSecret,
-    resave: false,
+    resave: true,
     saveUninitialized: true,
     cookie: {
         expires: new Date(Date.now() + 60 * 60 * 1000 * 24 * 7)

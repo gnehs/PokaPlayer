@@ -46,7 +46,7 @@ const nothingHere = () => {
 const lrc = new Lyrics(`[00:00.000]`);
 
 // 路由
-const router = new Navigo(null, true, '#/');
+const router = new Navigo('/');
 router
     .on({
         'search/:keyword': params => showSearch(params.keyword),
@@ -649,12 +649,12 @@ async function showFolder(moduleName, folderId = false) {
     }
 }
 async function showArtist(moduleName, artist = false) {
-    let data = moduleName != 'DSM' && artist ? request(`/pokaapi/artist/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(artist)}`) : undefined;
+    let data = moduleName != 'DSM' && artist ? await request(`/pokaapi/artist/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(artist)}`) : undefined;
     // 如果不是 DSM 的話去向模組取得該演出者的封面
     let cover = artist ? (moduleName == 'DSM' ?
         `/pokaapi/cover/?moduleName=${encodeURIComponent(moduleName)}&data=${encodeURIComponent(JSON.stringify({ "type": "artist", "info": artist == '未知' ? '' : artist }))}` :
         data.cover) : false
-    pokaHeader(artist ? moduleName == 'DSM' ? artist : data.name : "演出者", artist ? moduleShowName[moduleName] : "列出所有演出者", cover)
+    pokaHeader(artist ? (moduleName == 'DSM' ? artist : data.name) : "演出者", artist ? moduleShowName[moduleName] : "列出所有演出者", cover)
     $("#content").attr('data-page', 'artist')
     $("#content").html(template.getSpinner())
     mdui.mutation()
@@ -938,7 +938,7 @@ async function showNow() {
                 <button class="mdui-btn mdui-btn-icon mdui-ripple mdui-color-theme-accent play" onclick="ap.toggle()"><i class="mdui-icon material-icons">play_arrow</i></button>
                 <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="ap.skipForward()"><i class="mdui-icon material-icons">skip_next</i></button> 
                 <button class="mdui-btn mdui-btn-icon mdui-ripple lrc" onclick="router.navigate('lrc')"><i class="mdui-icon material-icons">subtitles</i></button>
-                <a href="#/now/songlist" class="mdui-btn mdui-btn-icon mdui-ripple playlist"><i class="mdui-icon material-icons">playlist_play</i></a>
+                <a href="#songlist" class="mdui-btn mdui-btn-icon mdui-ripple playlist"><i class="mdui-icon material-icons">playlist_play</i></a>
             </div>
             <div class="player-bar">
                 <label class="mdui-slider">
@@ -962,27 +962,25 @@ async function showNow() {
             $(this).html(`<i class="mdui-icon material-icons">${changePlayMode()}</i>`)
         })
     $("[data-player]>.info>.ctrl>.playlist").click(function () {
-        router.pause();
-        window.location.hash = '#/now/songlist'
+        window.location.hash = '#songlist'
         setTimeout(() => {
             $('.mdui-list.songs').addClass('show')
             $('.mdui-list.songs').scrollTop(72 * ap.list.index - 100)
         }, 50)
 
         function listenHash(e) {
-            if (e.oldURL.match(/now\/songlist$/)) {
+            if (e.oldURL.match(/songlist$/)) {
                 window.removeEventListener("hashchange", listenHash);
                 if (!e.newURL.match('mdui-dialog')) {
-                    router.navigate('#/now');
+                    window.location.hash = ''
                 }
                 $('.mdui-list.songs').removeClass('show')
-                router.resume();
             }
         }
         window.addEventListener("hashchange", listenHash);
     })
     $(`[data-player-container]>a.mdui-overlay`).click(function () {
-        window.location.hash = '#/now'
+        window.location.hash = ''
     })
 
     //初始化滑塊
@@ -1335,17 +1333,12 @@ async function songAction(songID, source) {
                 return songList[i]
     }
     song = song()
-    router.pause();
     mdui.dialog({
         title: '<div data-title>歌曲操作</div>',
         buttons: [{
             text: '取消'
         }],
-        content: `<div data-content>${template.getSpinner()}</div><data-close mdui-dialog-close></data-close>`,
-        onClosed: () => {
-            router.navigate(url);
-            router.resume();
-        }
+        content: `<div data-content>${template.getSpinner()}</div><data-close mdui-dialog-close></data-close>`
     });
     mdui.mutation();
     let userPlaylists = await getUserPlaylists(song.source)

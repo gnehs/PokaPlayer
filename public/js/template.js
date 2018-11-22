@@ -17,6 +17,7 @@ const template = {
         return result
     },
     parseSearch: data => {
+        let tabsCount = 0
         let tab = `<div class="mdui-tab" mdui-tab>`
         let tabItem = (href, label, icon) => `<a href="#${href}" class="mdui-ripple">
             <i class="mdui-icon">${icon}</i>
@@ -24,37 +25,43 @@ const template = {
         </a>`
         let r = ``;
         if (data.albums && data.albums.length > 0) {
+            tabsCount++
             let randomId = Math.random().toString(36).substring(8)
             tab += tabItem(randomId, '專輯', data.albums.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseAlbums(data.albums)}</div>`
         }
         if (data.artists && data.artists.length > 0) {
+            tabsCount++
             let randomId = Math.random().toString(36).substring(8)
             tab += tabItem(randomId, '演出者', data.artists.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseArtists(data.artists)}</div>`
         }
         if (data.composers && data.composers.length > 0) {
+            tabsCount++
             let randomId = Math.random().toString(36).substring(8)
             tab += tabItem(randomId, '作曲者', data.composers.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseComposers(data.composers)}</div>`
         }
         if (data.playlists && data.playlists.length > 0) {
+            tabsCount++
             let randomId = Math.random().toString(36).substring(8)
             tab += tabItem(randomId, '播放清單', data.playlists.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parsePlaylists(data.playlists)}</div>`
         }
         if (data.folders && data.folders.length > 0) {
+            tabsCount++
             let randomId = Math.random().toString(36).substring(8)
             tab += tabItem(randomId, '資料夾', data.folders.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseFolder(data.folders)}</div>`
         }
         if (data.songs && data.songs.length > 0) {
+            tabsCount++
             let randomId = Math.random().toString(36).substring(8)
             tab += tabItem(randomId, '歌曲', data.songs.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseSongs(data.songs)}</div>`
         }
         tab += `</div>`
-        return (tab + r)
+        return tabsCount > 1 ? (tab + r) : r
     },
     parseFolder: (folders, showBackButton = false) => {
         let html = `<ul class="mdui-list">`

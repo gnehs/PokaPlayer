@@ -9,11 +9,10 @@ const express = require("express");
 const FileStore = require("session-file-store")(require("express-session")); // session
 const session = require("express-session")({
     store: new FileStore({
-        reapInterval: -1,
-        logFn: void 0
+        reapInterval: -1
     }),
     secret: config ? config.PokaPlayer.sessionSecret : "no config.json",
-    resave: false,
+    resave: true,
     saveUninitialized: true,
     cookie: {
         expires: new Date(Date.now() + 60 * 60 * 1000 * 24 * 7)
@@ -201,9 +200,9 @@ app.post("/restart", (req, res) => {
     process.exit();
 });
 
-app.use((req, res, next) => {
-    res.status(404).redirect("/");
-});
+app.use((req, res, next) => res.render("index", {
+    version: package.version
+}));
 // 報錯處理
 process.on("uncaughtException", err => {
     if (config && config.PokaPlayer.debug) console.log(err);

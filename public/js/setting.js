@@ -82,8 +82,6 @@ var settingsItem = (item) => {
         "class":"",
         "other":""
     })
-    
-    
     */
     //有 text 才輸出 Title 跟 Text
     return `<li class="mdui-list-item mdui-ripple ${item.class||''}" ${item.navigate?`onclick="router.navigate('${item.navigate}')"`:''} ${item.attribute}>
@@ -170,51 +168,29 @@ async function showSettingsSystem() {
     $("[data-upgrade] .mdui-list-item-text").text(debug ? `DEV#${localStorage["PokaPlayerVersion"]}(${debug})` : update)
     //重啟
     $("[data-restart]").click(() => {
-        let r = confirm("確定要重新啟動嗎\n注意：若您未開啟 Docker 的自動重啟功能，您必須手動開啟 PokaPlayer");
-        if (r) {
+        mdui.confirm("注意：若您未開啟 Docker 的自動重啟功能，您必須手動開啟 PokaPlayer", "確定要重新啟動嗎", () => {
             mdui.snackbar('正在重新啟動...', {
                 position: getSnackbarPosition()
             })
             axios.post('/restart')
-            let pinging = setInterval(async () => {
-                let ping = (await axios.get('/ping')).data
-                if (ping == 'PONG') {
-                    clearInterval(pinging);
-                    mdui.dialog({
-                        title: '提示',
-                        content: '伺服器重新啟動完畢！',
-                        history: false,
-                        buttons: [{
-                                text: '取消'
-                            },
-                            {
-                                text: '重新連接',
-                                onClick: function (inst) {
-                                    window.location.reload()
-                                }
-                            }
-                        ]
-                    });
-                }
-            }, 1000);
-        }
+            pingServer()
+        }, false, {
+            confirmText: "重新啟動",
+            cancelText: "取消"
+        })
     })
     //更新
     $("[data-upgrade=\"true\"]").click(() => {
-        router.pause();
+        let content = `<div class="mdui-typo">
+                    ${new showdown.Converter().makeHtml(checkNewVersion.changelog)}
+                    <hr>
+                    注意：若您未開啟 Docker 自動重啟功能，您必須手動開啟 PokaPlayer`
+        if (debug)
+            content += `</br>若在開發機器上進行更新，<mark>可能導致 Git 爆炸</mark>`
+        content += `</div>`
         mdui.dialog({
             title: `${checkNewVersion.version?checkNewVersion.version+' ':''}更新日誌`,
-            content: `<div class="mdui-typo">
-                            <blockquote style="margin:0">
-                                ${new showdown.Converter().makeHtml(checkNewVersion.changelog)}
-                            </blockquote>
-                        <hr>
-                        </div>
-                        注意：若您未開啟 Docker 的自動重啟功能，您必須手動開啟 PokaPlayer`,
-            onClosed: () => {
-                router.resume();
-                router.navigate('settings/system');
-            },
+            content: content,
             buttons: [{
                     text: '取消'
                 },
@@ -254,27 +230,7 @@ async function showSettingsSystem() {
                                 mdui.snackbar('伺服器正在重新啟動...', {
                                     position: getSnackbarPosition()
                                 })
-                                let pinging = setInterval(async () => {
-                                    let ping = (await axios.get('/ping')).data
-                                    if (ping == 'PONG') {
-                                        clearInterval(pinging);
-                                        mdui.dialog({
-                                            title: '提示',
-                                            content: '伺服器重新啟動完畢！',
-                                            history: false,
-                                            buttons: [{
-                                                    text: '取消'
-                                                },
-                                                {
-                                                    text: '重新連接',
-                                                    onClick: function (inst) {
-                                                        window.location.reload()
-                                                    }
-                                                }
-                                            ]
-                                        });
-                                    }
-                                }, 1000);
+                                pingServer()
                             })
                             socket.on('err', data => mdui.snackbar('錯誤: ' + data, {
                                 timeout: 8000,
@@ -286,6 +242,29 @@ async function showSettingsSystem() {
             ]
         });
     })
+}
+async function pingServer() {
+    let pinging = setInterval(async () => {
+        let ping = (await axios.get('/ping')).data
+        if (ping == 'PONG') {
+            clearInterval(pinging);
+            mdui.dialog({
+                title: '提示',
+                content: '伺服器重新啟動完畢！',
+                history: false,
+                buttons: [{
+                        text: '取消'
+                    },
+                    {
+                        text: '重新連接',
+                        onClick: function (inst) {
+                            window.location.reload()
+                        }
+                    }
+                ]
+            });
+        }
+    }, 1000);
 }
 async function showSettingsNetwork() {
     $('#content').attr('data-page', 'settings')
@@ -332,7 +311,6 @@ async function showSettingsNetwork() {
     $("#content").html(settingItems);
     // 音質設定
     $("[data-music-res]").click(function () {
-        router.pause();
         mdui.dialog({
             title: '音質設定',
             content: `</br>
@@ -381,11 +359,7 @@ async function showSettingsNetwork() {
             buttons: [{
                 text: '取消'
             }],
-            onClose: () => $("[data-music-res] .mdui-list-item-text").text(localStorage["musicRes"]),
-            onClosed: () => {
-                router.resume();
-                router.navigate('settings/network');
-            }
+            onClose: () => $("[data-music-res] .mdui-list-item-text").text(localStorage["musicRes"])
         });
     });
     // 圖片流量節省
@@ -567,13 +541,12 @@ async function showSettingsCustomize() {
     //換色好朋友
     $("[data-change-color]").click(function () {
         $("[data-change-color] input").prop('checked', !$("[data-change-color] input").prop('checked'))
-        localStorage["change-color"] = $("[data-change-color] input").prop('checked');
+        localStorage["change-color"] = $("[data-change-color] input").prop('checked')
         $('body').attr('color-theme', $("[data-change-color] input").prop('checked'))
         if ($("[data-change-color] input").prop('checked'))
             $("[data-change-color-lab]").removeAttr('style')
         else
             $("[data-change-color-lab]").attr('style', 'pointer-events: none; opacity: .5;')
-
     });
     // 主題
     $('[data-theme="mdui-theme-color"]').click(function () {
@@ -589,7 +562,7 @@ async function showSettingsCustomize() {
     });
     $('[data-theme="mdui-theme-primary"],[data-theme="mdui-theme-accent"]').click(function () {
         let accent = $(this).attr('data-theme') == "mdui-theme-accent",
-            option = `<br><div class="poka ten doubling cards" style="text-transform:capitalize;">`,
+            option = `<div class="poka color picker cards" style="text-transform:capitalize;">`,
             colors = ['red', 'pink', 'purple', 'deep-purple', 'indigo', 'blue', 'light-blue', 'cyan', 'teal', 'green', 'light-green', 'lime', 'yellow', 'amber', 'orange', 'deep-orange', 'brown', 'grey', 'blue-grey']
         for (i = 0; i < colors.length; i++) {
             if (i <= (colors.length - 3 - 1) && accent || !accent) {
@@ -605,17 +578,15 @@ async function showSettingsCustomize() {
             }
         }
         option += "</div>"
-        router.pause();
+        option += `<p style="padding-top:24px;">請選擇一個${accent ? `強調色` : `主色`}</p>`
+        if (localStorage["change-color"] == 'true' && !accent)
+            option += `<p>由於您已開啟實驗性主色更換功能，因此部分主色套用區域將被該功能覆蓋。</p>`
+
         mdui.dialog({
-            title: `設定${accent ? `強調色` : `主色`}`,
             content: option,
             buttons: [{
                 text: '確定'
-            }],
-            onClosed: () => {
-                router.navigate('settings/customize');
-                router.resume();
-            }
+            }]
         });
         $('[data-color-type]').click(function () {
             let isAccent = $(this).attr('data-color-type') == "accent"
@@ -724,17 +695,12 @@ async function showSettingsCustomize() {
                 description: '雲圖床提供',
                 src: 'https://api.yuntuchuang.com/api/jianyue.php'
             }]
-        router.pause();
         mdui.dialog({
             title: '設定圖片來源',
             content: `<ul class="mdui-list">${imgsOption(imgs)}</ul>`,
             buttons: [{
                 text: '取消'
-            }],
-            onClosed: () => {
-                router.navigate('settings/customize');
-                router.resume();
-            }
+            }]
         });
         $('[data-img-src]').click(function () {
             let src = $(this).attr('data-img-src')
@@ -747,8 +713,6 @@ async function showSettingsCustomize() {
         })
     });
     $('[data-pic-custom-link]').click(function () {
-
-        router.pause();
         mdui.dialog({
             title: '請輸入圖片網址',
             content: `
@@ -763,7 +727,6 @@ async function showSettingsCustomize() {
                 bold: true,
                 onClick: () => {
                     let img = $('[data-imgurl]').val()
-                    console.log(img)
                     if (img != null) {
                         localStorage["randomImg"] = img
                         $('[data-pic-custom-link] .mdui-list-item-text').text(img)
@@ -772,11 +735,7 @@ async function showSettingsCustomize() {
                         pokaHeader('個人化', "設定", img, false, false)
                     }
                 }
-            }],
-            onClosed: () => {
-                router.navigate('settings/customize');
-                router.resume();
-            }
+            }]
         });
     })
 }
