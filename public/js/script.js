@@ -218,8 +218,9 @@ function setLrc(lrcResult) {
         lrc.load(`[00:00.000]無歌詞`)
     if ($("div[data-lrc]").length > 0) {
         let html = ``
-        for (i = 0; i < lrc.getLyrics().length; i++) {
-            let text = lrc.getLyrics()[i].text
+        for (let {
+                text
+            } of lrc.getLyrics()) {
             html += `<p>${text}</p>`
         }
         $("div[data-lrc=\"inner\"]").html(html)
@@ -1451,7 +1452,7 @@ async function songAction(songID, source) {
 $.fn.extend({
     animateCss: function (animationName, callback) {
         var animationEnd = (function (el) {
-            var animations = {
+            let animations = {
                 animation: 'animationend',
                 OAnimation: 'oAnimationEnd',
                 MozAnimation: 'mozAnimationEnd',
