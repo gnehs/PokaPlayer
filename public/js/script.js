@@ -1327,7 +1327,6 @@ async function showLrcChoose() {
 }
 //- 彈出歌曲操作窗窗
 async function songAction(songID, source) {
-    let url = window.location.hash
     let song = () => {
         for (i = 0; i < songList.length; i++)
             if (songList[i].id == songID)
