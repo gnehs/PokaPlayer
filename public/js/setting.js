@@ -72,25 +72,23 @@ async function checkUpdate() {
     }
 }
 //- 設定頁面用的範本
-var settingsItem = (item) => {
-    /* settingsItem({
-        "title":"",
-        "text":"",
-        "icon":"",
-        "navigate":"",
-        "attribute":"",
-        "class":"",
-        "other":""
-    })
-    */
+var settingsItem = ({
+    title,
+    text,
+    icon,
+    navigate,
+    attribute,
+    cssClass = '',
+    other = ''
+}) => {
     //有 text 才輸出 Title 跟 Text
-    return `<li class="mdui-list-item mdui-ripple ${item.class||''}" ${item.navigate?`onclick="router.navigate('${item.navigate}')"`:''} ${item.attribute}>
-    ${item.icon?`<i class="mdui-list-item-icon mdui-icon eva ${item.icon}"></i>`:''}
-    ${item.text ? `<div class="mdui-list-item-content">
-        <div class="mdui-list-item-title">${item.title}</div>
-        <div class="mdui-list-item-text">${item.text}</div>
-    </div>` : `<div class="mdui-list-item-content">${item.title}</div>`}
-    ${item.other?item.other:''}
+    return `<li class="mdui-list-item ${cssClass}" ${navigate?`onclick="router.navigate('${navigate}')"`:''} ${attribute}>
+    ${icon?`<i class="mdui-list-item-icon mdui-icon eva ${icon}"></i>`:''}
+    ${text ? `<div class="mdui-list-item-content">
+        <div class="mdui-list-item-title">${title}</div>
+        <div class="mdui-list-item-text">${text}</div>
+    </div>` : `<div class="mdui-list-item-content">${title}</div>`}
+    ${other}
     </li>`
 }
 //- 設定
@@ -573,16 +571,12 @@ async function showSettingsCustomize() {
                    data-color-type="${accent ? `accent` : `primary`}"
                    data-color="${color}">
                     <div class="image mdui-ripple mdui-color-${color}${accent?'-accent':''}"></div>
-                    <!--<div class="title mdui-text-color-theme-text">${color.replace("-"," ")}</div>-->
                 </a>`
             }
         }
         option += "</div>"
-        option += `<p style="padding-top:24px;">請選擇一個${accent ? `強調色` : `主色`}</p>`
-        if (localStorage["change-color"] == 'true' && !accent)
-            option += `<p>由於您已開啟實驗性主色更換功能，因此部分主色套用區域將被該功能覆蓋。</p>`
-
         mdui.dialog({
+            title: `請選擇一個${accent ? `強調色` : `主色`}`,
             content: option,
             buttons: [{
                 text: '確定'

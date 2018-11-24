@@ -34,7 +34,7 @@ html
         #drawer.mdui-drawer.mdui-appbar-with-toolbar
             .mdui-list
                 mixin link(name,link,icon)
-                    a.mdui-list-item.mdui-ripple(href=link,data-navigo)&attributes(attributes)
+                    a.mdui-list-item(href=link,data-navigo)&attributes(attributes)
                         i.mdui-list-item-icon.mdui-icon.eva(class=icon)
                         .mdui-list-item-content=name
                 +link("首頁","home","eva-home-outline")
@@ -63,7 +63,7 @@ html
         #aplayer
         #player
             .mdui-ripple
-                img(src="/img/PokaPlayer.png")
+                img(src="/img/PokaPlayerTransparent.png")
             .song-info.mdui-ripple
                 .name PokaPlayer
                 .artist 點擊播放鍵開始隨機播放
