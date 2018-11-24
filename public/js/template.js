@@ -134,7 +134,6 @@ const template = {
                 id,
                 source
             } of albums) {
-            let album = albums[i]
             let img = localStorage["imgRes"] == "true" ? localStorage["randomImg"] : cover.replace(/'/g, "\\'") || getBackground()
             html += `
                <a class="card" 
