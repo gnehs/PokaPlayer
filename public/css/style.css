@@ -38,6 +38,7 @@ div.mdui-list-item-avatar img {
 
 header.mdui-appbar.mdui-appbar-fixed {
     z-index: 5001;
+    transition: all .2s ease !important;
 }
 
 #content {

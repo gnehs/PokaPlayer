@@ -8,7 +8,7 @@ $(function () {
             onButtonClick: () => {
                 login(userPASS)
             },
-            timeout: 10 * 1000 //10s
+            timeout: 0
         });
     }
     $("#userPASS").keypress(function (event) {
@@ -36,6 +36,7 @@ function login(password) {
                 message: '登入成功',
                 timeout: 1000
             });
+            $('header').removeAttr('style')
             document.location.href = "/";
         } else mdui.snackbar({
             message: '登入失敗',
