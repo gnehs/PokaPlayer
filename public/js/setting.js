@@ -575,11 +575,8 @@ async function showSettingsCustomize() {
             }
         }
         option += "</div>"
-        option += `<p style="padding-top:24px;">請選擇一個${accent ? `強調色` : `主色`}</p>`
-        if (localStorage["change-color"] == 'true' && !accent)
-            option += `<p>由於您已開啟實驗性主色更換功能，因此部分主色套用區域將被該功能覆蓋。</p>`
-
         mdui.dialog({
+            title: `請選擇一個${accent ? `強調色` : `主色`}`,
             content: option,
             buttons: [{
                 text: '確定'

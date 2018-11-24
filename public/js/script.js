@@ -254,12 +254,14 @@ ap.on("pause", () => {
 })
 
 function updateBottomPlayer() {
-    let nowPlaying = ap.list.audios[ap.list.index],
-        name, artist, img
+    let nowPlaying = ap.list.audios[ap.list.index]
     if (nowPlaying) {
-        name = nowPlaying.name
-        artist = nowPlaying.artist
-        img = localStorage["imgRes"] != "true" && ap.list.audios[ap.list.index].cover ? ap.list.audios[ap.list.index].cover : getBackground()
+        let {
+            name,
+            artist,
+            cover
+        } = nowPlaying
+        let img = (localStorage["imgRes"] != "true" && cover) ? cover : getBackground()
         $('#player .song-info .name').text(name)
         $('#player .song-info .artist').text(artist)
         $('#player img').attr('src', img)
@@ -1200,22 +1202,24 @@ function playSongs(songs, song = false, clear = true) {
 function addSong(songlist, songID = 0) {
     let playlist = []
     let apList = ap.list.audios.length
-    for (i = 0; i < songlist.length; i++) {
-        let nowsong = songlist[i]
-        if (nowsong.id == songID || songID == 0) {
-            let src = nowsong.url + '&songRes=' + localStorage["musicRes"].toLowerCase(),
-                name = nowsong.name,
-                artist = nowsong.artist,
-                album = nowsong.album,
-                poster = nowsong.cover,
-                source = nowsong.source
+    for (let {
+            id,
+            name,
+            artist,
+            album,
+            cover: poster,
+            source,
+            url
+        } of songlist) {
+        if (id == songID || songID == 0) {
+            let src = url + '&songRes=' + localStorage["musicRes"].toLowerCase()
             playlist.push({
                 url: src,
                 cover: poster,
                 name: name,
                 artist: artist,
                 album: album,
-                id: nowsong.id,
+                id: id,
                 source: source
             })
         }

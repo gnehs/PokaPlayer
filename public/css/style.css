@@ -429,11 +429,11 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 .poka.color.picker.cards {
-    margin: -24px;
+    margin: 0 -24px;
 }
 
 .poka.color.picker.cards>.card {
-    --album-size: calc(16.66%);
+    --album-size: calc(14.285714%);
     margin: 0;
     padding: 0;
 }
@@ -449,11 +449,17 @@ header.mdui-appbar.mdui-appbar-fixed {
     box-shadow: inset 0 0 0 100em #00000015;
 }
 
+
 @media (max-width: 575.98px) {
     .poka.doubling.ten.cards .card {
         --album-size: calc(20% - 2em);
     }
+
+    .poka.color.picker.cards>.card {
+        --album-size: calc(20%);
+    }
 }
+
 
 #aplayer:not(.show) {
     visibility: hidden;
