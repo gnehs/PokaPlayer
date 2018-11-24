@@ -65,7 +65,7 @@ const template = {
     },
     parseFolder(folders, showBackButton = false) {
         let html = `<ul class="mdui-list">`
-        html += showBackButton ? `<li class="mdui-list-item mdui-ripple" onclick="history.go(-1)">
+        html += showBackButton ? `<li class="mdui-list-item" onclick="history.go(-1)">
             <i class="mdui-list-item-icon mdui-icon eva eva-arrow-ios-back-outline"></i>
             <div class="mdui-list-item-content">回上一頁</div>
         </li>` : ``
@@ -74,7 +74,7 @@ const template = {
                 id,
                 name
             } of folders) {
-            html += `<li class="mdui-list-item mdui-ripple" href="folder/${source}/${id}" data-navigo>
+            html += `<li class="mdui-list-item" href="folder/${source}/${id}" data-navigo>
                     <i class="mdui-list-item-icon mdui-icon material-icons">folder</i>
                     <div class="mdui-list-item-content">${name}</div>
                 </li>`
@@ -102,7 +102,7 @@ const template = {
                 </div>`
 
             html += `
-            <div class="mdui-col"><li class="mdui-list-item mdui-ripple">
+            <div class="mdui-col"><li class="mdui-list-item">
                 ${img}
                 <div class="mdui-list-item-content" 
                      ${clickAction}
@@ -110,12 +110,12 @@ const template = {
                     <div class="mdui-list-item-title mdui-list-item-one-line">${title}</div>
                     <div class="mdui-list-item-text mdui-list-item-one-line">${artist}</div>
                 </div>
-                <button class="mdui-btn mdui-btn-icon mdui-ripple add" 
+                <button class="mdui-btn mdui-btn-icon add" 
                         ${addAction}
                         title="加入這首歌曲到現正播放">
                     <i class="mdui-icon eva eva-plus-outline"></i>
                 </button>
-                <button class="mdui-btn mdui-btn-icon mdui-ripple" 
+                <button class="mdui-btn mdui-btn-icon" 
                         ${songAction}
                         title="更多選項">
                     <i class="mdui-icon eva eva-more-horizotnal-outline"></i>

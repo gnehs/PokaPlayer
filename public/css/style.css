@@ -111,9 +111,11 @@ header.mdui-appbar.mdui-appbar-fixed {
 
 .mdui-list-item {
     border-radius: 10px;
-    margin-top: 1px;
 }
 
+.mdui-list-item:active {
+    background-color: rgba(0, 0, 0, .2);
+}
 
 /* 設定頁面 */
 
