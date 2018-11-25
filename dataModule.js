@@ -787,7 +787,7 @@ router.use((req, res, next) => {
 });
 
 function showError(moduleName = false, error) {
-    console.log(`[DataModules]${moduleName ? `[${moduleName}]` : ''}發生了錯誤：（`);
+    console.log(`\x1b[31m%s\x1b[0m',[DataModules]${moduleName ? `[${moduleName}]` : ''}發生了錯誤：（`);
     console.error(error);
 }
 module.exports = router;

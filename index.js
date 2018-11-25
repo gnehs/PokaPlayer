@@ -78,11 +78,16 @@ app.use(express.static("public"));
 
 // 啟動囉
 server.listen(3000, () => {
-    console.log("[PokaPlayer]  URL: http://localhost:3000");
-    console.log(`[PokaPlayer] Time: ${moment().format("YYYY/MM/DD HH:mm:ss")}`);
-    if (config && config.PokaPlayer.debug) console.log("[PokaPlayer] Debug 模式已開啟");
-    if (!config)
-        console.log("[PokaPlayer] 未讀取到 config.json 請訪問 /install 或是使用 config-simple.json 來建立設定檔");
+    let TTTTTTTTTTTTTime = moment().format("YYYY/MM/DD HH:mm:ss")
+    console.log(`
+|￣￣￣￣￣￣￣￣￣￣￣￣|  ${config && config.PokaPlayer.debug?"\x1b[34m[info]\x1b[32mDebug 模式\x1b[0m":''}
+| PokaPlayer             |  ${!config?"\x1b[31m未讀取到 config.json，請訪問 /install\x1b[0m":''}
+| http://localhost:3000  |  ${!config?"\x1b[31m或是使用 config-simple.json 來建立設定檔\x1b[0m":''}
+| ${TTTTTTTTTTTTTime}    |  
+|＿＿＿＿＿＿＿＿＿＿＿＿|  
+    (\\__/) || 
+    (•ㅅ•) || 
+    / 　 づ`)
 });
 
 //安裝頁面
@@ -119,7 +124,8 @@ app.get("/ping", (req, res) => res.send("PONG"));
 
 // 沒設定檔給設定頁面，沒登入給登入頁
 app.use((req, res, next) => {
-    if (!config) res.redirect("/install/");
+    if (!config)
+        res.redirect("/install/");
     else if (config.PokaPlayer.passwordSwitch && (req.session.pass != config.PokaPlayer.password))
         res.redirect("/login/");
     else next();
