@@ -2,20 +2,16 @@
 $(function () {
     let userPASS = localStorage["userPASS"]
     if (userPASS && userPASS != "false") {
-        mdui.snackbar({
-            message: '偵測到已儲存的密碼',
-            buttonText: '登入',
-            onButtonClick: () => {
-                login(userPASS)
-            },
-            timeout: 0
-        });
+        $("#userPASS").val('userPASS')
     }
     $("#userPASS").keypress(function (event) {
         if (event.keyCode == 13) {
             check()
         }
     });
+    $("main>.mdui-center").addClass($("body").hasClass("mdui-theme-layout-dark") ? "mdui-color-black" : "mdui-color-white")
+    $("main").addClass('animated zoomIn')
+    $("main").attr('style', 'margin-top:25vh;')
 });
 
 function check() {
