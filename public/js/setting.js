@@ -53,15 +53,16 @@ $(async () => {
         position: getSnackbarPosition()
     })
 });
+// 版本比對
+function compareVersion(local, remote) {
+    local = local.split('.')
+    remote = remote.split('.')
+    //版本號加權對比
+    local = local[0] * 1000 * 1000 + local[1] * 1000 + local[2]
+    remote = remote[0] * 1000 * 1000 + remote[1] * 1000 + remote[2]
+    return remote > local
+}
 async function checkUpdate() {
-    let compareVersion = (local, remote) => {
-        local = local.split('.')
-        remote = remote.split('.')
-        //版本號加權對比
-        local = local[0] * 1000 * 1000 + local[1] * 1000 + local[2]
-        remote = remote[0] * 1000 * 1000 + remote[1] * 1000 + remote[2]
-        return remote > local
-    }
     let getInfo = await request('/info/');
     let checkUpdate = await request(`https://api.github.com/repos/gnehs/PokaPlayer/releases`);
     let nowversion = getInfo.version
@@ -69,6 +70,17 @@ async function checkUpdate() {
     return {
         version: compareVersion(nowversion, ghversion) ? ghversion : false,
         changelog: checkUpdate[0].body
+    }
+}
+async function checkPokaEleUpdate(version) {
+    let checkUpdate = await request(`https://api.github.com/repos/gnehs/PokaPlayer-electron/releases`);
+    let ghversion = checkUpdate[0].tag_name
+    if (compareVersion(version, ghversion) || !electronData) { //electronData 供舊版更新用
+        mdui.snackbar(`有新版 PokaPlayer-electron 可供更新：${ghversion}`, {
+            buttonText: '更新',
+            onButtonClick: () => window.open('https://github.com/gnehs/PokaPlayer-electron/releases/latest'),
+            position: getSnackbarPosition()
+        })
     }
 }
 //- 設定頁面用的範本
