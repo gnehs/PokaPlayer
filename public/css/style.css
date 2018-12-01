@@ -1064,6 +1064,16 @@ header.mdui-appbar.mdui-appbar-fixed {
 }
 
 /* color picker*/
+[data-change-color-lab] {
+    max-height: 620px;
+    transition: all .2s;
+    overflow: hidden;
+}
+
+[data-change-color-lab] .mdui-card {
+    box-shadow: none;
+}
+
 .pcr-button {
     display: none
 }
