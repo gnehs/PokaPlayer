@@ -558,7 +558,7 @@ async function showSettingsCustomize() {
         if ($("[data-change-color] input").prop('checked'))
             $("[data-change-color-lab]").removeAttr('style')
         else
-            $("[data-change-color-lab]").attr('style', 'pointer-events:none;opacity:.5;max-height:0;')
+            $("[data-change-color-lab]").attr('style', 'pointer-events:none;opacity:.5;filter:grayscale(100%);')
     });
     // 主題
     $('[data-theme="mdui-theme-color"]').click(function () {
