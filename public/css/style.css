@@ -620,6 +620,8 @@ header.mdui-appbar.mdui-appbar-fixed {
     margin-right: 3px;
     object-fit: cover;
     background-color: #FFF;
+    mask-image: linear-gradient(to right, black 60%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, black 60%, transparent 100%);
 }
 
 #player .song-info {
