@@ -46,7 +46,9 @@ $(async () => {
             .catch(err => console.log('Error!', err));
     }
     // 檢查更新
+    console.time('檢查更新');
     let checkVersion = (await checkUpdate()).version
+    console.timeEnd('檢查更新'); // 測時間
     if (checkVersion) mdui.snackbar(`有新版本可更新 ${checkVersion}`, {
         buttonText: '更新',
         onButtonClick: () => router.navigate("settings/system"),

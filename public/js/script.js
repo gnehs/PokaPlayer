@@ -305,12 +305,12 @@ var loginFailureCount = 0
 function tryRelogin() {
     //如果有存到密碼或是嘗試次數少於 10 次就嘗試登入
     if (localStorage["userPASS"] || loginFailureCount <= 10) {
-        console.log("[Login] 正在嘗試登入")
+        console.time('登入');
         $.post("/login/", {
             userPASS: localStorage["userPASS"]
         }, data => {
+            console.timeEnd('登入'); // 測時間
             if (data == 'success') {
-                console.log("[Login] 登入成功")
                 loginFailureCount = 0
             } else {
                 console.error("[Login] 登入失敗")
