@@ -38,6 +38,17 @@ app.set("view engine", "pug");
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+// SASS 好朋友
+if (config.PokaPlayer.debug) {
+    const sassMiddleware = require('node-sass-middleware');
+    app.use(sassMiddleware({
+        src: __dirname + '/sass',
+        dest: __dirname + '/public/css',
+        outputStyle: 'compressed',
+        indentedSyntax: true,
+        prefix: '/css'
+    }));
+}
 app.use(helmet());
 app.use(helmet.hidePoweredBy({
     setTo: 'PHP 4.2.0'
