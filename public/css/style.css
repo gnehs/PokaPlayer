@@ -1123,25 +1123,25 @@ body.login.mdui-theme-layout-dark main button[type='submit'] {
     margin: 18px 0;
     display: flex;
     border: 1px solid #90909061;
-    border-radius: 2px;
+    border-radius: 24px;
     overflow: hidden;
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08);
-    transition: all .2s ease;
+    transition: all .3s ease;
 }
 
 .search-box:hover,
 .search-box.focus {
-    border: 1px solid #9090909e;
-    box-shadow: 0 3px 8px 0 rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 6px 0 rgba(32, 33, 36, 0.28);
+    border: 1px solid #90909000;
 }
 
 .search-box>.search-input {
     flex: 1;
     outline: none;
     border: 0;
-    border-radius: 2px;
+    border-radius: 24px;
     padding: 12px 14px;
 }
+
 
 .search-box>.search-button {
     outline: none;
