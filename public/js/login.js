@@ -2,7 +2,7 @@
 $(function () {
     let userPASS = localStorage["userPASS"]
     if (userPASS && userPASS != "false") {
-        $("#userPASS").val('userPASS')
+        $("#userPASS").val(userPASS)
     }
     $("#userPASS").keypress(function (event) {
         if (event.keyCode == 13) {
