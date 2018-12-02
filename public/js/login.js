@@ -9,7 +9,6 @@ $(function () {
             check()
         }
     });
-    $("main>.mdui-center").addClass($("body").hasClass("mdui-theme-layout-dark") ? "mdui-color-black" : "mdui-color-white")
     $("main").addClass('animated zoomIn')
     $("main").attr('style', 'margin-top:25vh;')
 });
