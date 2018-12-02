@@ -29,6 +29,7 @@ function login(password) {
         if (data == 'success') {
             $('header').removeAttr('style')
             $("main").animateCss('zoomOut', function () {
+                $("main").remove()
                 document.location.href = "/";
             })
         } else mdui.snackbar({
