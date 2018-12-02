@@ -9,8 +9,8 @@ $(function () {
             check()
         }
     });
-    $("main").addClass('animated zoomIn')
     $("main").attr('style', 'margin-top:25vh;')
+    $("main").animateCss('zoomIn')
 });
 
 function check() {
@@ -27,12 +27,10 @@ function login(password) {
         userPASS: password
     }, data => {
         if (data == 'success') {
-            mdui.snackbar({
-                message: '登入成功',
-                timeout: 1000
-            });
             $('header').removeAttr('style')
-            document.location.href = "/";
+            $("main").animateCss('zoomOut', function () {
+                document.location.href = "/";
+            })
         } else mdui.snackbar({
             message: '登入失敗',
             timeout: 1000
