@@ -710,7 +710,6 @@ body.login.mdui-theme-layout-dark main button[type='submit'] {
     #player {
         border-radius: 0;
         bottom: 0;
-        z-index: 7001;
     }
 
     #player .timer {
@@ -721,10 +720,7 @@ body.login.mdui-theme-layout-dark main button[type='submit'] {
 
     .mdui-snackbar-bottom {
         bottom: 67px !important;
-    }
-
-    #drawer {
-        padding-bottom: 67px !important;
+        z-index: 1998;
     }
 }
 
