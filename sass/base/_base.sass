@@ -1,0 +1,93 @@
+/* Base */
+code
+    background-color: rgba(0, 0, 0, 0.06)
+    line-height: 1
+    padding: 3px 3px
+    border-radius: 3px
+    margin: 0 2px
+/* scrollbar fix for Windows */
+body
+    overflow-y: scroll
+    font-weight: normal !important
+    font-family: Roboto, "SF Pro TC", "SF Pro Text", "SF Pro Icons", "PingFang TC", "Helvetica Neue", "Helvetica", "Arial", "Noto Sans CJK TC", "Noto Sans TC", "Microsoft JhengHei", "Microsoft Yahei", wf_SegoeUI, "Segoe UI", Segoe, "Segoe WP", Tahoma, Verdana, Ubuntu, "Bitstream Vera Sans", "DejaVu Sans", Tahoma, 微軟正黑體, "LiHei Pro", "WenQuanYi Micro Hei", "Droid Sans Fallback", "AR PL UMing TW", "Helvetica Neue", "Hiragino Maru Gothic ProN", メイリオ, "ヒラギノ丸ゴ ProN W4", Meiryo, "Droid Sans", sans-serif
+
+/* Product Sans */
+#header-wrapper, #drawer, [data-page="settings"], header.mdui-appbar, .mdui-dialog
+    font-family: 'Product Sans', Roboto, "SF Pro TC", "SF Pro Text", "SF Pro Icons", "PingFang TC", "Helvetica Neue", "Helvetica", "Arial", "Noto Sans CJK TC", "Noto Sans TC", "Microsoft JhengHei", "Microsoft Yahei", wf_SegoeUI, "Segoe UI", Segoe, "Segoe WP", Tahoma, Verdana, Ubuntu, "Bitstream Vera Sans", "DejaVu Sans", Tahoma, 微軟正黑體, "LiHei Pro", "WenQuanYi Micro Hei", "Droid Sans Fallback", "AR PL UMing TW", "Helvetica Neue", "Hiragino Maru Gothic ProN", メイリオ, "ヒラギノ丸ゴ ProN W4", Meiryo, "Droid Sans", sans-serif
+
+/* fab fix */
+@media screen and (max-width: 767px)
+    .mdui-fab-wrapper
+        bottom: 84px
+    .mdui-fab
+        margin-bottom: 64px
+
+/* Rating */
+#rating>button:hover+button>i:before,
+#rating>button:hover+button+button>i:before,
+#rating>button:hover+button+button+button>i:before,
+#rating>button:hover+button+button+button+button>i:before 
+    content: "\ebb0"
+
+/* MDUI Appbar */
+header.mdui-appbar.mdui-appbar-fixed
+  z-index: 5001
+  transition: all .2s ease !important
+  
+/* MDUI Dialog */
+.mdui-dialog
+    border-radius: 12px
+    bottom: 0 !important
+    top: 0 !important
+    height: fit-content !important
+
+.mdui-dialog-content
+    height: fit-content !important
+    max-height: 60vh
+
+@media screen and (max-height: 512px)
+    .mdui-dialog-content
+        max-height: 40vh
+
+@media screen and (max-height: 256px)
+    .mdui-dialog-content
+        max-height: 20vh
+
+/* MDUI Button */
+.mdui-btn:not(.mdui-btn-icon)
+  border-radius: 8px
+
+/* MDUI List */
+.mdui-list-item
+    border-radius: 10px
+    &:active
+        background-color: rgba(0, 0, 0, 0.2)
+
+/* MDUI List avatar fix */
+div.mdui-list-item-avatar
+  background-color: #FFF
+  overflow: hidden
+  img
+    min-height: 100%
+    min-width: 100%
+    object-fit: cover
+
+/* 側邊欄 */
+@media screen and (min-width: 1024px)
+    #drawer
+        padding-right: 10px
+        .mdui-list-item
+            border-radius: 0 500em 500em 0
+
+@media screen and (max-width: 1023px)
+    #drawer .mdui-list-item
+        border-radius: 0
+
+/* Container */
+#content
+    padding-top: 32px
+    padding-bottom: 96px
+
+.mdui-container-fluid
+    padding-left: 0
+    padding-right: 0
