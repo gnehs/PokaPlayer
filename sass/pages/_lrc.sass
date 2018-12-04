@@ -1,0 +1,59 @@
+/* 歌詞頁籤
+
+[data-lrc] p
+    transition: all 0.5s cubic-bezier(0.77, 0, 0.18, 1), color 0.2s linear, opacity 0.2s linear
+    opacity: .5
+    min-height: 1em
+    transform: scale(0.95)
+    position: relative
+    &.mdui-text-color-theme-accent
+        opacity: 1
+        transform: scale(1)
+        font-weight: 700
+        &:not(:empty) + p
+        opacity: .85
+        transform: scale(0.98)
+    &.loading.mdui-text-color-theme-accent::after
+        content: ''
+        position: absolute
+        width: 5.5em
+        height: 2px
+        background: currentColor
+        margin: 0 auto
+        top: calc(1.5em + 3px)
+        left: 0
+        right: 0
+        animation-name: lrcloading
+        animation-duration: 2s
+        animation-iteration-count: infinite
+        transform-origin: 0% 0%
+
+@keyframes lrcloading
+    0%
+        transform: scaleX(0)
+        opacity: 0
+
+    90%
+        transform: scaleX(1)
+        opacity: 1
+
+    100%
+        transform: scaleX(1)
+        opacity: 0
+
+
+#content > [data-lrc]
+    padding-top: 80px
+    text-align: center
+    height: calc(100vh - 96px - 20px - 32px - 80px)
+    overflow: hidden
+    overflow-y: scroll
+    margin-bottom: -64px
+    mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)
+    > [data-lrc="inner"]
+        padding: 10vh 0
+    p
+        font-size: calc(12px + 1.2vmin)
+        line-height: 2em
+        margin: 0
