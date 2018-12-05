@@ -1,0 +1,105 @@
+#aplayer:not(.show)
+	visibility: hidden
+	height: 0
+	width: 0
+	position: fixed
+	z-index: 9999
+	opacity: 0
+
+/* 底部吸附播放器 */
+
+#player
+	width: 100vw
+	height: 67px
+	position: fixed
+	bottom: 5px
+	right: 0
+	left: 0
+	z-index: 1999
+	background: #fff
+	display: flex
+	width: 100%
+	box-sizing: border-box
+	align-items: center
+	border-radius: 10px
+	overflow: hidden
+	box-shadow: 0 3px 10px #0000004d
+	background-position: left bottom
+	background-repeat: no-repeat
+	background-size: 100% 3px
+	transform: translateY(0)
+	transition: transform 0.3s cubic-bezier(0.42, 0, 0.58, 1.79), width 0.3s ease, border-radius 0.3s ease, box-shadow 0.3s ease, opacity 0.35s linear
+	margin: 0 auto
+	padding-bottom: 3px
+
+.mdui-theme-layout-dark #player
+  	background-color: #303030
+
+#player
+	&.hide
+		transform: translateY(80px)
+		box-shadow: none
+		opacity: 0
+	.mdui-btn
+		width: 48px
+		height: 48px
+		margin: 8px 0
+	img
+		width: 64px
+		height: 64px
+		margin-top: 4px
+		margin-right: 3px
+		object-fit: cover
+		mask-image: linear-gradient(to right, black 80%, rgba(0,0,0,.2) 100%)
+		-webkit-mask-image: linear-gradient(to right, black 80%, rgba(0,0,0,.2) 100%)
+	.song-info
+		padding: 8px 0 8px 6px
+		flex: 1
+		.name, .artist
+			line-height: 24px
+			font-size: 16px
+			height: 24px
+			overflow: hidden
+			text-overflow: ellipsis
+			white-space: nowrap
+		.name
+			font-size: 15px
+			font-weight: 700
+		.artist
+			font-size: 14px
+	.right
+		display: flex
+		flex-wrap: wrap
+		align-items: center
+		.timer
+			font-size: 12px
+			letter-spacing: .04em
+			opacity: .87
+			padding: 0 2px
+		.ctrl
+			width: 144px
+			right: 0
+			top: 0
+			bottom: 0
+	.ctrl button
+		transition: none !important
+
+@media screen and (min-width: 768px)
+	#player
+		width: 512px
+
+@media screen and (max-width: 767px)
+	#player
+		border-radius: 0
+		bottom: 0
+		.timer
+			font-size: 12px
+			letter-spacing: .04em
+			opacity: .87
+	.mdui-snackbar-bottom
+		bottom: 67px !important
+		z-index: 1998
+
+@media screen and (max-width: 512px)
+	#player .timer
+		display: none

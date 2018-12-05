@@ -38,6 +38,17 @@ app.set("view engine", "pug");
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+// SASS 好朋友
+if (config.PokaPlayer.debug) {
+    const sassMiddleware = require('node-sass-middleware');
+    app.use(sassMiddleware({
+        src: __dirname + '/sass',
+        dest: __dirname + '/public/css',
+        outputStyle: 'compressed',
+        indentedSyntax: true,
+        prefix: '/css'
+    }));
+}
 app.use(helmet());
 app.use(helmet.hidePoweredBy({
     setTo: 'PHP 4.2.0'
@@ -106,7 +117,10 @@ app.get("/og/og.png", (req, res) => {
 });
 // 登入
 app
-    .get("/login/", (req, res) => res.render("login"))
+    .get("/login/", (req, res) =>
+        config.PokaPlayer.passwordSwitch && (req.session.pass != config.PokaPlayer.password) ?
+        res.render("login") :
+        res.redirect("/"))
     .post("/login/", (req, res) => {
         req.session.pass = req.body["userPASS"];
         if (config.PokaPlayer.passwordSwitch && req.body["userPASS"] != config.PokaPlayer.password)
@@ -116,7 +130,7 @@ app
     .get("/logout/", (req, res) => {
         // 登出
         req.session.pass = ''
-        res.redirect("/");
+        res.redirect("/")
     });
 
 // PONG

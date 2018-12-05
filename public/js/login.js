@@ -2,20 +2,15 @@
 $(function () {
     let userPASS = localStorage["userPASS"]
     if (userPASS && userPASS != "false") {
-        mdui.snackbar({
-            message: '偵測到已儲存的密碼',
-            buttonText: '登入',
-            onButtonClick: () => {
-                login(userPASS)
-            },
-            timeout: 0
-        });
+        $("#userPASS").val(userPASS)
     }
     $("#userPASS").keypress(function (event) {
         if (event.keyCode == 13) {
             check()
         }
     });
+    $("main").attr('style', 'margin-top:25vh;')
+    $("main").animateCss('zoomIn')
 });
 
 function check() {
@@ -32,12 +27,11 @@ function login(password) {
         userPASS: password
     }, data => {
         if (data == 'success') {
-            mdui.snackbar({
-                message: '登入成功',
-                timeout: 1000
-            });
             $('header').removeAttr('style')
-            document.location.href = "/";
+            $("main").animateCss('zoomOut', function () {
+                $("main").remove()
+                document.location.href = "/";
+            })
         } else mdui.snackbar({
             message: '登入失敗',
             timeout: 1000
