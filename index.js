@@ -43,7 +43,7 @@ if (config.PokaPlayer.debug) {
     const sassMiddleware = require('node-sass-middleware');
     app.use(sassMiddleware({
         src: __dirname + '/sass',
-        dest: __dirname + '/public/css',
+        dest: __dirname + '/public',
         outputStyle: 'compressed',
         indentedSyntax: true,
         prefix: '/css'
