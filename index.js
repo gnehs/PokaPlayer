@@ -43,7 +43,7 @@ if (config.PokaPlayer.debug) {
     const sassMiddleware = require('node-sass-middleware');
     app.use(sassMiddleware({
         src: __dirname + '/sass',
-        dest: __dirname + '/public/css',
+        dest: __dirname + '/public',
         outputStyle: 'compressed',
         indentedSyntax: true,
         prefix: '/css'
@@ -91,10 +91,10 @@ app.use(express.static("public"));
 server.listen(3000, () => {
     let TTTTTTTTTTTTTime = moment().format("YYYY/MM/DD HH:mm:ss")
     console.log(`
-|￣￣￣￣￣￣￣￣￣￣￣￣|  ${config && config.PokaPlayer.debug?"\x1b[34m[info]\x1b[32mDebug 模式\x1b[0m":''}
-| PokaPlayer             |  ${!config?"\x1b[31m未讀取到 config.json，請訪問 /install\x1b[0m":''}
-| http://localhost:3000  |  ${!config?"\x1b[31m或是使用 config-simple.json 來建立設定檔\x1b[0m":''}
-| ${TTTTTTTTTTTTTime}    |  
+|￣￣￣￣￣￣￣￣￣￣￣￣|  \x1b[34m[version]\x1b[32m ${package.version}
+| PokaPlayer             |  ${config && config.PokaPlayer.debug?"\x1b[34m[info]\x1b[32m Debug 模式\x1b[0m":''}
+| http://localhost:3000  |  ${!config?"\x1b[31m未讀取到 config.json，請訪問 /install\x1b[0m":''}
+| ${TTTTTTTTTTTTTime}    |  ${!config?"\x1b[31m或是使用 config-simple.json 來建立設定檔\x1b[0m":''}
 |＿＿＿＿＿＿＿＿＿＿＿＿|  
     (\\__/) || 
     (•ㅅ•) || 
