@@ -15,19 +15,23 @@ body
 #header-wrapper, #drawer, [data-page="settings"], header.mdui-appbar, .mdui-dialog
     font-family: 'Product Sans', Roboto, "SF Pro TC", "SF Pro Text", "SF Pro Icons", "PingFang TC", "Helvetica Neue", "Helvetica", "Arial", "Noto Sans CJK TC", "Noto Sans TC", "Microsoft JhengHei", "Microsoft Yahei", wf_SegoeUI, "Segoe UI", Segoe, "Segoe WP", Tahoma, Verdana, Ubuntu, "Bitstream Vera Sans", "DejaVu Sans", Tahoma, 微軟正黑體, "LiHei Pro", "WenQuanYi Micro Hei", "Droid Sans Fallback", "AR PL UMing TW", "Helvetica Neue", "Hiragino Maru Gothic ProN", メイリオ, "ヒラギノ丸ゴ ProN W4", Meiryo, "Droid Sans", sans-serif
 
-/* fab fix */
-@media screen and (max-width: 767px)
-    .mdui-fab-wrapper
-        bottom: 84px
-    .mdui-fab
-        margin-bottom: 64px
-
 /* Rating */
 #rating>button:hover+button>i:before,
 #rating>button:hover+button+button>i:before,
 #rating>button:hover+button+button+button>i:before,
 #rating>button:hover+button+button+button+button>i:before 
     content: "\ebb0"
+
+/* MDUI fab fix */
+@media screen and (max-width: 767px)
+    .mdui-fab-wrapper
+        bottom: 84px
+    .mdui-fab
+        margin-bottom: 64px
+
+/* MDUI range slider fix */
+.mdui-slider input[type="range"] 
+    left: 0
 
 /* MDUI Appbar */
 header.mdui-appbar.mdui-appbar-fixed

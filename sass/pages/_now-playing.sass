@@ -1,0 +1,188 @@
+.songs 
+    .song 
+        transition: all .3s;
+        transform: scaleY(1);
+        transform-origin: top;
+        will-change: transform, height, opacity;
+        &.del 
+            transform: scaleY(0);
+            height: 0;
+            max-height: 0;
+            min-height: 0;
+            opacity: 0;
+
+[data-player]
+    margin-top: 32px
+    >.mdui-card 
+        --main-size: calc(90vmin - 48px)
+        width: var(--main-size)
+        height: var(--main-size)
+        background-size: cover
+        background-position: center
+        background-color: #0000
+        border-radius: .8em
+        box-shadow: 0 5px 10px #0000002e
+        .mdui-card-media img 
+            min-height: 100%
+            min-height: 100%
+            height: auto
+            width: auto
+            object-fit: cover
+            background-color: #FFF
+    >.info 
+        margin-top: 10px
+        .title
+            color: rgba(0, 0, 0, .87)
+            font-size: 20px
+            font-weight: bold
+            line-height: 20px
+            min-height: 20px
+        .artist 
+            margin-top: 5px
+            font-size: 17.5px
+            color: rgba(0, 0, 0, .54)
+            min-height: calc(5px + 17.5px * 2)
+        .ctrl 
+            text-align: center
+            margin-top: 10px
+            .mdui-btn-icon 
+                width: 48px
+                height: 48px
+[data-audio-buffered]::before 
+    background-color: rgba(0, 0, 0, 0.25) !important
+    &.mdui-theme-layout-dark
+        background-color: rgba(255, 255, 255, 0.25) !important
+
+/* RWD */
+@media screen and (max-width: 554px) 
+    #content[data-page="now"] 
+        padding-top: 0
+        padding-bottom: 0
+    [data-player]
+        >.info .ctrl .lrc
+            display: none
+    [data-player-container]
+        transition: all .25s ease
+        >.mdui-list.songs
+            visibility: hidden;
+            max-height: calc(100vh - 200px)
+            overflow: hidden
+            transition-duration: .3s
+            background-color: white
+            position: fixed
+            bottom: 0
+            left: 0
+            right: 0
+            width: 100vw
+            z-index: 6001
+            transform: translateY(calc(100vh - 200px * -1))
+            transform-origin: bottom
+            .song 
+                margin: 3px
+            &.nosongs
+                top: auto
+                max-height: 40vh
+                &:after
+                    content: "無歌曲可供播放"
+                    text-align: center
+                    display: block
+                    line-height: 3em
+                    font-size: 1.25em
+                    color: #838383
+            &.show 
+                visibility: visible
+                transform: translateY(0)
+                overflow: scroll
+                border-radius: 5px 5px 0 0
+                &::-webkit-scrollbar 
+                    width: 0px
+                + .mdui-overlay 
+                    visibility: visible
+                    opacity: 1
+                    z-index: 6000
+    .mdui-theme-layout-dark [data-player-container]>.mdui-list.songs 
+        background-color: #303030
+        box-shadow: 0 5px 10px #000000e6
+
+@media screen and (min-width: 555px) 
+    [data-player]
+        margin-top: 32px
+        display: flex
+        flex-direction: row
+        flex-wrap: wrap
+        >.mdui-card 
+            --main-size: 200px;
+        >.info
+            margin-top: 10px
+            flex: 1
+            flex-direction: column
+            padding-left: 15px
+            display: flex
+            max-width: calc(100vw - 100px - 200px)
+            .ctrl .playlist 
+                display: none
+            >.grow 
+                flex-grow: 1
+        >.mdui-card, >.footer
+            display: flex
+
+/* 超大兩欄檢視模式 */
+@media screen and (min-width: 850px) and (min-height: 560px) 
+    [data-player-container]
+        display: flex
+        margin-bottom: -100px
+        >ul 
+            flex: 1
+            flex-direction: column
+            height: calc(100vh - 64px - 20px)
+            overflow-y: scroll
+            margin-bottom: -64px
+    [data-player]
+        margin-top: 32px
+        display: block
+        width: 320px
+        padding: 0 10px
+        >.info 
+            margin-top: 10px
+            padding-left: 0
+            display: block
+            text-align: center
+        >.mdui-card, >.footer 
+            display: block
+        >.mdui-card 
+            --main-size: 300px
+    [data-player]>.info>[data-lrc] 
+        display: none
+        /* 1390 *600*/
+            
+@media screen and (min-width: 850px) and (min-height: 750px)
+    [data-player]
+        >.info 
+            display: flex
+            max-width: 320px
+            height: calc(100vh - 64px - 350px)
+            >[data-lrc] 
+                margin: 5px 0
+                max-width: 320px
+                overflow-x: hidden
+                overflow-y: scroll
+                flex-grow: 1
+                display: block
+                min-height: 55px
+                padding-top: 10%
+                padding-bottom: 10%
+                position: relative
+                mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)
+                -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+                /* 1390 * 690*/ 
+                p 
+                    font-size: calc(8px + 1vmin)
+                [data-lrc="inner"] 
+                    padding: 20px 0
+@media screen and (max-width: 554px) 
+    [data-player]
+        >.mdui-card 
+            margin: 0 auto
+        >.info 
+            text-align: center
+    
