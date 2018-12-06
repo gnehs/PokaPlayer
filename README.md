@@ -17,15 +17,18 @@ PokaPlayer 是擅長播放音樂的新朋友！
 
 ## 開始使用
 
--  使用 Docker 映像來部署 (https://hub.docker.com/r/gnehs/pokaplayer/)
+-   使用 Docker 映像來部署 (https://hub.docker.com/r/gnehs/pokaplayer/)
     -   [Synology Docker 可參考此教學](https://github.com/gnehs/PokaPlayer/wiki/%E5%A6%82%E4%BD%95%E5%9C%A8-Synology-NAS-%E4%BD%BF%E7%94%A8-Docker-%E9%83%A8%E7%BD%B2-PokaPlayer)
--  或是使用 node.js 來手動啟動
-    1.   `npm i`
-    2.   `npm start`
+-   或是使用 node.js 來手動啟動
+```bash
+    npm install --production # 或是使用 `npm i` 來安裝所有組件來建立 Dev 環境
+    npm start # 啟動 Pokaplayer
+```
 
 ## 建議和提示
 
--   手機建議使用 Chrome，右上角 `...` 選「加到主畫面」可以有原生 APP 般的體驗
+-   手機建議使用 Chrome
+-   Chrome 右上角 `...` 選「加到主畫面」可以有原生 APP 般的體驗
 -   **DSM 強烈建議開一個只能播音樂的帳號**
 
 ## 支援的模組

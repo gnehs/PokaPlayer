@@ -574,7 +574,7 @@ async function showSettingsCustomize() {
     $("[data-buttonPlayerColorChange]").click(function () {
         $("[data-buttonPlayerColorChange] input").prop('checked', !$("[data-buttonPlayerColorChange] input").prop('checked'))
         localStorage["buttonPlayerColorChange"] = $("[data-buttonPlayerColorChange] input").prop('checked')
-        if (localStorage["buttonPlayerColorChange"] == "true") {
+        if (localStorage["buttonPlayerColorChange"] == "false") {
             $('#player').css("background-color", ``)
             $('#player').css("color", ``)
         }
