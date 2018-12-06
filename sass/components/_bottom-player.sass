@@ -8,6 +8,7 @@
 
 /* 底部吸附播放器 */
 
+
 #player
 	width: 100vw
 	height: 67px
@@ -28,14 +29,9 @@
 	background-repeat: no-repeat
 	background-size: 100% 3px
 	transform: translateY(0)
-	transition: transform 0.3s cubic-bezier(0.42, 0, 0.58, 1.79), width 0.3s ease, border-radius 0.3s ease, box-shadow 0.3s ease, opacity 0.35s linear
+	transition: all 0.3s ease,opacity 0.35s linear
 	margin: 0 auto
 	padding-bottom: 3px
-
-.mdui-theme-layout-dark #player
-  	background-color: #303030
-
-#player
 	&.hide
 		transform: translateY(80px)
 		box-shadow: none
@@ -83,6 +79,9 @@
 			bottom: 0
 	.ctrl button
 		transition: none !important
+
+.mdui-theme-layout-dark #player
+  	background-color: #303030
 
 @media screen and (min-width: 768px)
 	#player
