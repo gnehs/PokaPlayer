@@ -102,7 +102,10 @@ $(() => {
     $("#player>*:not(.right)").click(() => router.navigate("now"));
     // 初始化 MediaSession
     updateMediaSession()
-
+    //初始化底部播放器
+    if (localStorage["buttonPlayerColorChange"] == "true") {
+        $('#player .ctrl .play').removeClass('mdui-color-theme-accent')
+    }
     // 綁定鍵盤控制
     keyboardJS.bind('space', e => {
         if (e.target.tagName.toUpperCase() == 'INPUT') return;
@@ -269,7 +272,8 @@ function updateBottomPlayer() {
             let colorThief = new ColorThief()
             let color = colorThief.getColor($('#player img')[0]);
             $('#player').css("background-color", `rgb(${color[0]}, ${color[1]}, ${color[2]})`)
-            $('#player').css("color", `rgb(${255-color[0]}, ${255-color[1]}, ${255-color[2]})`)
+            $('#player').css("color", color[0] > 128 && color[1] > 128 && color[2] > 128 ? "#000" : "#FFF")
+            $('#player .ctrl .play').css("background-color", color[0] > 128 && color[1] > 128 && color[2] > 128 ? "#0000001c" : "#ffffff4a")
         }
     }
 }

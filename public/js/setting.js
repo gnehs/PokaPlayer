@@ -462,7 +462,7 @@ async function showSettingsCustomize() {
         })}
         <li class="mdui-subheader">實驗性功能</li>
         ${settingsItem({
-            "title":"底部播放器自動換色",
+            "title":"底部播放器根據歌曲封面換色",
             "icon":"eva-color-palette-outline",
             "attribute":"data-buttonPlayerColorChange",
             "other":`<label class="mdui-switch">
@@ -577,6 +577,9 @@ async function showSettingsCustomize() {
         if (localStorage["buttonPlayerColorChange"] == "false") {
             $('#player').css("background-color", ``)
             $('#player').css("color", ``)
+            $('#player .ctrl .play').addClass('mdui-color-theme-accent')
+        } else {
+            $('#player .ctrl .play').removeClass('mdui-color-theme-accent')
         }
     });
     // 主題
