@@ -48,9 +48,12 @@
             .mdui-btn-icon 
                 width: 48px
                 height: 48px
+                
 [data-audio-buffered]::before 
     background-color: rgba(0, 0, 0, 0.25) !important
-    &.mdui-theme-layout-dark
+
+.mdui-theme-layout-dark
+    [data-audio-buffered]::before 
         background-color: rgba(255, 255, 255, 0.25) !important
 
 /* RWD */
