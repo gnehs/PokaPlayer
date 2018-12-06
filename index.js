@@ -40,7 +40,6 @@ app.use(bodyParser.urlencoded({
 }));
 // SASS 好朋友
 if (config.PokaPlayer.debug) {
-    console.log('sass#')
     app.use(require('node-sass-middleware')({
         src: __dirname + '/sass',
         dest: __dirname + '/public/css',
@@ -148,9 +147,6 @@ app.use((req, res, next) => {
 app.get("/", (req, res) => res.render("index", {
     version: package.version
 }));
-
-if (config.PokaPlayer.debug)
-    app.get("/share", (req, res) => res.render("share"));
 
 io.on("connection", socket => {
     socket.emit("hello");

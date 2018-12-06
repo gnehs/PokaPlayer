@@ -265,6 +265,12 @@ function updateBottomPlayer() {
         $('#player .song-info .name').text(name)
         $('#player .song-info .artist').text(artist)
         $('#player img').attr('src', img)
+        if ($('#player img')[0] && localStorage["buttonPlayerColorChange"] == "true") {
+            let colorThief = new ColorThief()
+            let color = colorThief.getColor($('#player img')[0]);
+            $('#player').css("background-color", `rgb(${color[0]}, ${color[1]}, ${color[2]})`)
+            $('#player').css("color", `rgb(${255-color[0]}, ${255-color[1]}, ${255-color[2]})`)
+        }
     }
 }
 

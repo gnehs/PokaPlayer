@@ -5,6 +5,7 @@ $(async () => {
         "randomImg": "/og/og.png",
         "randomImgName": "預設圖庫",
         "imgRes": "false",
+        "buttonPlayerColorChange": "false", //底部播放器自動換色
         "pokaSW": "false", //serviceWorker
         "change-color": "false", // 實驗換色功能
         "pokaCardSource": "true",
@@ -461,6 +462,15 @@ async function showSettingsCustomize() {
         })}
         <li class="mdui-subheader">實驗性功能</li>
         ${settingsItem({
+            "title":"底部播放器自動換色",
+            "icon":"eva-color-palette-outline",
+            "attribute":"data-buttonPlayerColorChange",
+            "other":`<label class="mdui-switch">
+                        <input type="checkbox" ${localStorage["buttonPlayerColorChange"]=="true"?"checked":""}/>
+                        <i class="mdui-switch-icon"></i>
+                    </label>`
+        })}
+        ${settingsItem({
             "title":"實驗性主色更換功能",
             "icon":"eva-bulb-outline",
             "attribute":"data-change-color",
@@ -559,6 +569,15 @@ async function showSettingsCustomize() {
             $("[data-change-color-lab]").removeAttr('style')
         else
             $("[data-change-color-lab]").attr('style', 'pointer-events:none;opacity:.5;filter:grayscale(100%);')
+    });
+    //換色好朋友
+    $("[data-buttonPlayerColorChange]").click(function () {
+        $("[data-buttonPlayerColorChange] input").prop('checked', !$("[data-buttonPlayerColorChange] input").prop('checked'))
+        localStorage["buttonPlayerColorChange"] = $("[data-buttonPlayerColorChange] input").prop('checked')
+        if (localStorage["buttonPlayerColorChange"] == "true") {
+            $('#player').css("background-color", ``)
+            $('#player').css("color", ``)
+        }
     });
     // 主題
     $('[data-theme="mdui-theme-color"]').click(function () {
