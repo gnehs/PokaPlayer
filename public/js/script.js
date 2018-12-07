@@ -24,21 +24,73 @@ const nothingHere = () => {
         "尼是不是故意來找沒有資料的",
         "🙈沒資料",
         "找不到 那些美好",
-        "我 找不到 你形容的那種驕傲",
         "若您嘗試多次，請再次確認模組是否開啟",
-        "我找不到 我到不了 你所謂的將來的美好"
+        "沒有找到資料"
     ]
-    return `<div class="mdui-card" style="max-width:500px;margin:0 auto;">
-        <div class="mdui-card-media">
-            <img src="${getBackground()}"/>
+    let lyrics = [{
+        "lyrics": "逆風的方向更適合飛翔，我不怕千萬人阻擋，只怕自己投降",
+        "title": "倔強",
+        "artist": "五月天"
+    }, {
+        "lyrics": "有沒有那麼一個明天，重頭活一遍，讓我再次感受曾揮霍的昨天，無論生存或生活我都不浪費，不讓故事這麼的後悔",
+        "title": "如煙",
+        "artist": "五月天"
+    }, {
+        "lyrics": "期待一種永恆 ，即使傷痕 ，也奮不顧身，生命還沒有黃昏， 下一站， 你的第二人生",
+        "title": "第二人生",
+        "artist": "五月天"
+    }, {
+        "lyrics": "我好想好想飛，逃離這個瘋狂世界那麼多苦，那麼多累，那麼多，莫名的淚水",
+        "title": "瘋狂世界",
+        "artist": "五月天"
+    }, {
+        "lyrics": "我 找不到 你形容的那種驕傲",
+        "title": "找不到",
+        "artist": "楊丞琳"
+    }, {
+        "lyrics": "我找不到 我到不了 你所謂的將來的美好",
+        "title": "到不了",
+        "artist": "范瑋琪"
+    }, {
+        "lyrics": "等不到天黑 煙火不會太完美 回憶燒成灰 還是等不到結尾",
+        "title": "她說",
+        "artist": "林俊傑"
+    }, {
+        "lyrics": "お休み　素敵な夢を",
+        "tlyrics": "晚安，祝你有個好夢",
+        "title": "月の姫",
+        "artist": "HoneyWorks"
+    }, {
+        "lyrics": "You paint me a blue sky And go back and turn it to rain",
+        "tlyrics": "你畫給我一片藍天，回頭又綴滿了雨點",
+        "title": "Dear John",
+        "artist": "Taylor Swift"
+    }]
+    let randomNotFound = n[Math.floor(Math.random() * n.length)]
+    let randomLyrics = lyrics[Math.floor(Math.random() * lyrics.length)]
+    let footer;
+
+    if (randomLyrics.title && randomLyrics.artist)
+        footer = `${randomLyrics.artist} ——《${randomLyrics.title}》`
+    else if (randomLyrics.artist)
+        footer = randomLyrics.artist
+    else if (randomLyrics.title)
+        footer = `《${randomLyrics.title}》`
+    else
+        footer = ''
+
+    return `
+    <div class="mdui-typo mdui-text-center">
+        <div class="mdui-typo-display-2">
+        <i class="mdui-icon eva eva-alert-triangle-outline" style="transform: scale(3.2);"></i>
         </div>
-        <div class="mdui-card-primary">
-            <div class="mdui-card-primary-title">沒有找到資料</div>
-            <div class="mdui-card-primary-subtitle">${n[Math.floor(Math.random() * n.length)]}</div>
-        </div>
-        <div class="mdui-card-actions">
-            <button class="mdui-btn mdui-ripple" onclick="history.go(-1)">回上一頁</button>
-        </div>
+        <div class="mdui-typo-display-1">${randomNotFound}</div>
+        <button class="mdui-btn mdui-ripple mdui-btn-raised" onclick="history.go(-1)">回上一頁</button>
+        <hr/>
+        <div class="mdui-typo-headline">${randomLyrics.lyrics}</div>
+        ${randomLyrics.tlyrics?`
+        <div class="mdui-typo-headline" style="opacity: .65;">${randomLyrics.tlyrics}</div>`:""}
+        <footer>${footer}</footer>
     </div>`
 }
 
