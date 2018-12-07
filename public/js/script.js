@@ -230,24 +230,6 @@ function setLrc(lrcResult) {
     }
 }
 ap.on("timeupdate", () => {
-    $('#player button.play[onclick="ap.toggle()"] i').text("pause")
-    let currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00",
-        duration = ap.audio.currentTime ? secondToTime(ap.audio.duration) : "0:00",
-        timer = currentTime + '/' + duration,
-        audioBuffered = ap.audio.currentTime > 1 ? ap.audio.buffered.end(ap.audio.buffered.length - 1) / ap.audio.duration * 100 : 0,
-        cent = ap.audio.currentTime / ap.audio.duration * 100,
-        timelineColor = $('.mdui-color-theme-accent').css("background-color"),
-        timelineBufferedColor = $('body').hasClass("mdui-theme-layout-dark") ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.25)'
-    $('#player .right .timer').text(timer)
-    $('#player').attr('style', `background-image: 
-    linear-gradient(to right, 
-        ${timelineColor} 0%,
-        ${timelineColor} ${cent}%, 
-        ${timelineBufferedColor} ${cent + 0.01}%,
-        ${timelineBufferedColor} ${audioBuffered > 0 ? audioBuffered : cent + 0.01}%, 
-        transparent ${audioBuffered > 0 ? audioBuffered + 0.01 : cent + 0.01}%, 
-        transparent 100%
-    );`)
     updateMediaSession()
     updateBottomPlayer()
 })
@@ -264,6 +246,28 @@ function updateBottomPlayer() {
             artist,
             cover
         } = nowPlaying
+        // 暫停鈕
+        $('#player button.play[onclick="ap.toggle()"] i').text("pause")
+        let currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00",
+            duration = ap.audio.currentTime ? secondToTime(ap.audio.duration) : "0:00",
+            timer = currentTime + '/' + duration,
+            audioBuffered = ap.audio.currentTime > 1 ? ap.audio.buffered.end(ap.audio.buffered.length - 1) / ap.audio.duration * 100 : 0,
+            cent = ap.audio.currentTime / ap.audio.duration * 100,
+            timelineColor = $('.mdui-color-theme-accent').css("background-color") || `var(--poka-theme-primary-color)`,
+            timelineBufferedColor = $('body').hasClass("mdui-theme-layout-dark") ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.25)'
+        //更新時間
+        $('#player .right .timer').text(timer)
+        // 更新進度條
+        let playProcess = `background-image:
+        linear-gradient(to right,
+            ${timelineColor} 0%,
+            ${timelineColor} ${cent}%,
+            ${timelineBufferedColor} ${cent + 0.01}%,
+            ${timelineBufferedColor} ${audioBuffered > 0 ? audioBuffered : cent + 0.01}%,
+            transparent ${audioBuffered > 0 ? audioBuffered + 0.01 : cent + 0.01}%,
+            transparent 100%
+        );`
+
         let img = (localStorage["imgRes"] != "true" && cover) ? cover : getBackground()
         $('#player .song-info .name').text(name)
         $('#player .song-info .artist').text(artist)
@@ -271,9 +275,12 @@ function updateBottomPlayer() {
         if ($('#player img')[0] && localStorage["buttonPlayerColorChange"] == "true") {
             let colorThief = new ColorThief()
             let color = colorThief.getColor($('#player img')[0]);
-            $('#player').css("background-color", `rgb(${color[0]}, ${color[1]}, ${color[2]})`)
-            $('#player').css("color", color[0] > 128 && color[1] > 128 && color[2] > 128 ? "#000" : "#FFF")
+            let bgColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`
+            let txtColor = color[0] > 128 && color[1] > 128 && color[2] > 128 ? "#000" : "#FFF"
+            $('#player').attr('style', `background-color:${bgColor};color:${txtColor};` + playProcess)
             $('#player .ctrl .play').css("background-color", color[0] > 128 && color[1] > 128 && color[2] > 128 ? "#0000001c" : "#ffffff4a")
+        } else {
+            $('#player').attr('style', playProcess)
         }
     }
 }

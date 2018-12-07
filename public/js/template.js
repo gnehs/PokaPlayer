@@ -2,7 +2,8 @@ const template = {
     getSpinner: () => `<div class="mdui-spinner mdui-spinner-colorful mdui-center" style="margin:50px 0"></div>`,
     parseHome(data) {
         let result = ``
-        for (let i = 0; i < data.length; i++) {
+        for (let i in data) {
+            result += `<div data-source="${moduleShowName[data[i].source]}">`
             result += `
             <div class="mdui-typo">
                 <h1>
@@ -13,6 +14,7 @@ const template = {
             </div>`
             result += template.parseSearch(data[i])
             result += (i + 1 != data.length) ? `<div class="mdui-typo"><hr /></div>` : '' // 最後不加分隔線
+            result += `</div>`
         }
         return result
     },
@@ -74,7 +76,10 @@ const template = {
                 id,
                 name
             } of folders) {
-            html += `<li class="mdui-list-item" href="folder/${source}/${id}" data-navigo>
+            html += `<li class="mdui-list-item" 
+                         href="folder/${source}/${id}" 
+                         data-source="${moduleShowName[source]}" 
+                         data-navigo>
                     <i class="mdui-list-item-icon mdui-icon material-icons">folder</i>
                     <div class="mdui-list-item-content">${name}</div>
                 </li>`
@@ -102,7 +107,7 @@ const template = {
                 </div>`
 
             html += `
-            <div class="mdui-col"><li class="mdui-list-item">
+            <div class="mdui-col" data-source="${moduleShowName[source]}"><li class="mdui-list-item">
                 ${img}
                 <div class="mdui-list-item-content" 
                      ${clickAction}
