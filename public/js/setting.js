@@ -455,25 +455,25 @@ async function showSettingsCustomize() {
         ${settingsItem({
             "title":"主題色",
             "text":localStorage["mdui-theme-color"]=='true'?'Dark':'Light',
-            "icon":"eva-color-palette-outline",
+            "icon":localStorage["mdui-theme-color"]=='true'?'eva-moon-outline':'eva-sun-outline',
             "attribute":`data-theme="mdui-theme-color"`
         })}
         ${settingsItem({
             "title":"主色",
             "text":localStorage["mdui-theme-primary"].replace("-"," "),
-            "icon":"eva-color-palette-outline",
+            "icon":"eva-pantone-outline",
             "attribute":`data-theme="mdui-theme-primary"`
         })}
         ${settingsItem({
             "title":"強調色",
             "text":localStorage["mdui-theme-accent"].replace("-"," "),
-            "icon":"eva-color-palette-outline",
+            "icon":"eva-pantone-outline",
             "attribute":`data-theme="mdui-theme-accent"`
         })}
         <li class="mdui-subheader">實驗性功能</li>
         ${settingsItem({
             "title":"底部播放器根據歌曲封面換色",
-            "icon":"eva-color-palette-outline",
+            "icon":"eva-play-circle-outline",
             "attribute":"data-buttonPlayerColorChange",
             "other":`<label class="mdui-switch">
                         <input type="checkbox" ${localStorage["buttonPlayerColorChange"]=="true"?"checked":""}/>
@@ -482,7 +482,7 @@ async function showSettingsCustomize() {
         })}
         ${settingsItem({
             "title":"實驗性主色更換功能",
-            "icon":"eva-bulb-outline",
+            "icon":"eva-color-picker-outline",
             "attribute":"data-change-color",
             "other":`<label class="mdui-switch">
                         <input type="checkbox" ${localStorage["change-color"]=="true"?"checked":""}/>
@@ -601,6 +601,13 @@ async function showSettingsCustomize() {
     $('[data-theme="mdui-theme-color"]').click(function () {
         localStorage["mdui-theme-color"] = !(localStorage["mdui-theme-color"] == "true")
         $('[data-theme="mdui-theme-color"] .mdui-list-item-text').text(localStorage["mdui-theme-color"] == 'true' ? 'Dark' : 'Light')
+        if (localStorage["mdui-theme-color"] == 'true') { //啟用夜間模式
+            $('[data-theme="mdui-theme-color"] i').removeClass('eva-sun-outline')
+            $('[data-theme="mdui-theme-color"] i').addClass('eva-moon-outline')
+        } else {
+            $('[data-theme="mdui-theme-color"] i').removeClass('eva-moon-outline')
+            $('[data-theme="mdui-theme-color"] i').addClass('eva-sun-outline')
+        }
         if (localStorage["mdui-theme-color"] == "true")
             $('body').addClass("mdui-theme-layout-dark")
         else
