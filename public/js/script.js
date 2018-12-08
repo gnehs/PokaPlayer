@@ -728,12 +728,15 @@ async function showFolder(moduleName, folderId = false) {
     }
 }
 async function showArtist(moduleName, artist = false) {
-    let data = moduleName != 'DSM' && artist ? await request(`/pokaapi/artist/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(artist)}`) : undefined;
+    $("#content").attr('data-item', artist && moduleName ? `artist${artist}` : `artist`)
+
+    let data = (moduleName != 'DSM' && artist) ? await request(`/pokaapi/artist/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(artist)}`) : undefined;
     // 如果不是 DSM 的話去向模組取得該演出者的封面
     let cover = artist ? (moduleName == 'DSM' ?
         `/pokaapi/cover/?moduleName=${encodeURIComponent(moduleName)}&data=${encodeURIComponent(JSON.stringify({ "type": "artist", "info": artist == '未知' ? '' : artist }))}` :
         data.cover) : false
-    pokaHeader(artist ? (moduleName == 'DSM' ? artist : data.name) : "演出者", artist ? moduleShowName[moduleName] : "列出所有演出者", cover)
+    if ($("#content").attr('data-item') == artist && moduleName ? `artist${artist}` : `artist`)
+        pokaHeader(artist ? (moduleName == 'DSM' ? artist : data.name) : "演出者", artist ? moduleShowName[moduleName] : "列出所有演出者", cover)
     $("#content").attr('data-page', 'artist')
     $("#content").html(template.getSpinner())
     mdui.mutation()
@@ -786,8 +789,8 @@ async function showComposer(moduleName, composer) {
         $("#content").attr('data-item', `composer${composer}`)
         let result = await request(`/pokaapi/composerAlbums/?moduleName=${encodeURIComponent(moduleName)}&id=${composer == '未知' ? '' : encodeURIComponent(composer)}`),
             isComposerPinned = await isPinned(moduleName, 'composer', composer, composer)
-
-        pokaHeader(composer, moduleShowName[moduleName], cover)
+        if ($("#content").attr('data-item') == `composer${composer}`)
+            pokaHeader(composer, moduleShowName[moduleName], cover)
         let pinButton = ``
         if (isComposerPinned && isComposerPinned != 'disabled')
             pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="從首頁釘選移除該作曲者" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
@@ -878,7 +881,7 @@ async function showPlaylistSongs(moduleName, playlistId) {
 
     //抓資料
     let result = await request(`/pokaapi/playlistSongs/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(playlistId)}`)
-    if (result == null) {
+    if (result == null && $("#content").attr('data-item') == `playlist${playlistId}`) {
         pokaHeader('錯誤', '哎呀！找不到這個播放清單')
         $("#content").html(`
         <div class="mdui-valign" style="height:150px">
@@ -891,11 +894,9 @@ async function showPlaylistSongs(moduleName, playlistId) {
         </div>`)
         router.updatePageLinks()
         return
-    }
+    } else if (result == null) return
     let name = result.playlists[0].name
     let songs = template.parseSongs(result.songs)
-    pokaHeader(name, moduleShowName[result.playlists[0].source], result.playlists[0].image || false)
-
     let isPlaylistPinned = await isPinned(moduleName, 'playlist', playlistId, result.playlists[0].name)
     let pinButton = ``
     if (isPlaylistPinned && isPlaylistPinned != 'disabled')
@@ -922,6 +923,7 @@ async function showPlaylistSongs(moduleName, playlistId) {
     `
 
     if ($("#content").attr('data-item') == `playlist${playlistId}`) {
+        pokaHeader(name, moduleShowName[result.playlists[0].source], result.playlists[0].image || false)
         $("#content").html(result.songs.length > 0 ? songs + fab : nothingHere())
         $("[data-pinned]").click(async function () {
             let pinStatus = $(this).attr('data-pinned')
