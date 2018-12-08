@@ -433,7 +433,7 @@ async function showSettingsCustomize() {
         })}
         <li class="mdui-subheader">細節設定</li>
         ${settingsItem({
-            "title":"於卡片右上角顯示來源標籤",
+            "title":"顯示來源標籤",
             "icon":"eva-bookmark-outline",
             "attribute":"data-pokaCardSource",
             "other":`<label class="mdui-switch">

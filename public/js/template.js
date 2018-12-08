@@ -94,9 +94,10 @@ const template = {
                          data-source="${moduleShowName[source]}" 
                          data-navigo>
                     <i class="mdui-list-item-icon mdui-icon material-icons">folder</i>
-                    <div class="mdui-list-item-content">${name}</div>
-                    <div class="mdui-list-item-source">${moduleShowName[source]}</div>
-                </li>`
+                    <div class="mdui-list-item-content">${name}</div>`
+            if (localStorage["pokaCardSource"] == "true")
+                html += `<div class="mdui-list-item-source">${moduleShowName[source]}</div>`
+            html += `</li>`
         }
         html += `</ul>`
         return html
