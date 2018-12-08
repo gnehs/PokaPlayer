@@ -1,8 +1,20 @@
 const template = {
     getSpinner: () => `<div class="mdui-spinner mdui-spinner-colorful mdui-center" style="margin:50px 0"></div>`,
     parseHome(data) {
+        let filter = `<div class="mdui-text-right">`
+        let filterSource = {}
         let result = ``
         for (let i in data) {
+            /* 篩選器 */
+            if (!filterSource[data[i].source])
+                filter += `<button class="mdui-btn mdui-btn-raised mdui-color-theme-accent" 
+                                   data-filter="${moduleShowName[data[i].source]}"
+                                   style="margin-left:1px">
+                                   <i class="mdui-icon eva eva-funnel-outline"></i>
+                                   ${moduleShowName[data[i].source]}
+                           </button>`
+            filterSource[data[i].source] = true
+            /* HTML */
             result += `<div data-source="${moduleShowName[data[i].source]}">`
             result += `
             <div class="mdui-typo">
@@ -13,10 +25,11 @@ const template = {
                 </h1>
             </div>`
             result += template.parseSearch(data[i])
-            result += (i + 1 != data.length) ? `<div class="mdui-typo"><hr /></div>` : '' // 最後不加分隔線
+            result += (data[i] != data[data.length - 1]) ? `<div class="mdui-typo"><hr /></div>` : '' // 最後不加分隔線
             result += `</div>`
         }
-        return result
+        filter += `</div>`
+        return Object.keys(filterSource).length > 1 ? (filter + result) : result //篩選器項目大於一個才輸出篩選器
     },
     parseSearch(data) {
         let tabsCount = 0

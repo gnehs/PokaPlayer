@@ -526,6 +526,13 @@ async function showHome() {
         //初始化
         mdui.mutation()
         router.updatePageLinks()
+        //-篩選器
+        $('[data-filter]').click(function () {
+            let source = $(this).attr("data-filter")
+            $(this).hasClass("mdui-color-theme-accent") ? $(this).removeClass("mdui-color-theme-accent") : $(this).addClass("mdui-color-theme-accent")
+            let isFiltered = !$(this).hasClass("mdui-color-theme-accent")
+            $(`[data-source="${source}"]`).css('display', isFiltered ? 'none' : 'block')
+        })
     }
 }
 //- 搜尋
