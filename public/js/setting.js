@@ -10,6 +10,7 @@ $(async () => {
         "change-color": "false", // 實驗換色功能
         "pokaCardSource": "true",
         "PokaPlayerVersion": "",
+        "poka-filter": "true",
         "mdui-theme-primary": "indigo",
         "mdui-theme-accent": "pink",
         "poka-theme-primary": "#009688", // 實驗換色功能
@@ -441,6 +442,15 @@ async function showSettingsCustomize() {
                         <i class="mdui-switch-icon"></i>
                     </label>`
         })}
+        ${settingsItem({
+            "title":"顯示篩選器",
+            "icon":"eva-funnel-outline",
+            "attribute":"data-poka-filter",
+            "other":`<label class="mdui-switch">
+                        <input type="checkbox" ${localStorage["poka-filter"]=="true"?"checked":""}/>
+                        <i class="mdui-switch-icon"></i>
+                    </label>`
+        })}
         <li class="mdui-subheader">主題</li>
         ${settingsItem({
             "title":"主題色",
@@ -559,6 +569,11 @@ async function showSettingsCustomize() {
         $("[data-pokaCardSource] input").prop('checked', !$("[data-pokaCardSource] input").prop('checked'))
         localStorage["pokaCardSource"] = $("[data-pokaCardSource] input").prop('checked');
         $("#content").attr('data-sourcelabel', localStorage["pokaCardSource"])
+    });
+    // 卡片右上角的來源標籤
+    $("[data-poka-filter]").click(function () {
+        $("[data-poka-filter] input").prop('checked', !$("[data-poka-filter] input").prop('checked'))
+        localStorage["poka-filter"] = $("[data-poka-filter] input").prop('checked');
     });
     //換色好朋友
     $("[data-change-color]").click(function () {

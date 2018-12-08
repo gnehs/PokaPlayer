@@ -29,7 +29,8 @@ const template = {
             result += `</div>`
         }
         filter += `</div>`
-        return Object.keys(filterSource).length > 1 ? (filter + result) : result //篩選器項目大於一個才輸出篩選器
+        filter = Object.keys(filterSource).length > 1 && localStorage["poka-filter"] == "true" ? filter : ""
+        return filter + result //篩選器項目大於一個才輸出篩選器
     },
     parseSearch(data) {
         let tabsCount = 0
@@ -265,7 +266,8 @@ const template = {
         sessionStorage.temporalPlaylist = JSON.stringify(temporalPlaylist)
         html += '</div>'
         filter += `</div>`
-        return Object.keys(filterSource).length > 1 ? (filter + html) : html //篩選器項目大於一個才輸出篩選器
+        filter = Object.keys(filterSource).length > 1 && localStorage["poka-filter"] == "true" ? filter : "" //篩選器項目大於一個才輸出篩選器
+        return filter + html
     },
     infoHeader(cover, name, artist) {
         return `
