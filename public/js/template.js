@@ -216,6 +216,8 @@ const template = {
     },
     parsePlaylists(playlists) {
         let temporalPlaylist = sessionStorage.temporalPlaylist ? JSON.parse(sessionStorage.temporalPlaylist) : {}
+        let filter = `<div class="mdui-text-right" style="margin-bottom: 10px;">`
+        let filterSource = {}
         let html = `<div class="poka cards">`
         for (let playlist of playlists) {
             let {
@@ -225,6 +227,16 @@ const template = {
                 type,
                 name
             } = playlist
+            /* 篩選器 */
+            if (!filterSource[source])
+                filter += `<button class="mdui-btn mdui-btn-raised mdui-color-theme-accent" 
+                                   data-filter="${moduleShowName[source]}"
+                                   style="margin-left:1px">
+                                   <i class="mdui-icon eva eva-funnel-outline"></i>
+                                   ${moduleShowName[source]}
+                           </button>`
+            filterSource[source] = true
+            /* HTML */
             let img, icon
             if (image && localStorage["imgRes"] != "true") {
                 img = `style="background-image:url('${image}')"`
@@ -251,7 +263,8 @@ const template = {
         }
         sessionStorage.temporalPlaylist = JSON.stringify(temporalPlaylist)
         html += '</div>'
-        return html
+        filter += `</div>`
+        return Object.keys(filterSource).length > 1 ? (filter + html) : html //篩選器項目大於一個才輸出篩選器
     },
     infoHeader(cover, name, artist) {
         return `

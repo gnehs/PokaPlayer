@@ -510,6 +510,15 @@ function pokaHeader(title, subtitle = '', image = false, hide = false, blur = tr
         }, 400)
     }
 }
+//- 綁定 filter
+function bindFilter() {
+    $('[data-filter]').click(function () {
+        let source = $(this).attr("data-filter")
+        $(this).hasClass("mdui-color-theme-accent") ? $(this).removeClass("mdui-color-theme-accent") : $(this).addClass("mdui-color-theme-accent")
+        let isFiltered = !$(this).hasClass("mdui-color-theme-accent")
+        $(`[data-source="${source}"]`).css('display', isFiltered ? 'none' : 'block')
+    })
+}
 // 首頁
 async function showHome() {
     $('#content').attr('data-page', 'home')
@@ -527,12 +536,7 @@ async function showHome() {
         mdui.mutation()
         router.updatePageLinks()
         //-篩選器
-        $('[data-filter]').click(function () {
-            let source = $(this).attr("data-filter")
-            $(this).hasClass("mdui-color-theme-accent") ? $(this).removeClass("mdui-color-theme-accent") : $(this).addClass("mdui-color-theme-accent")
-            let isFiltered = !$(this).hasClass("mdui-color-theme-accent")
-            $(`[data-source="${source}"]`).css('display', isFiltered ? 'none' : 'block')
-        })
+        bindFilter()
     }
 }
 //- 搜尋
@@ -838,6 +842,8 @@ async function showPlaylist() {
     if ($("#content").attr('data-page') == 'playlist') {
         $("#content").html(result.playlists.length > 0 ? template.parsePlaylists(result.playlists) : nothingHere())
         router.updatePageLinks()
+        //-篩選器
+        bindFilter()
     }
 }
 //- 播放清單資料夾
