@@ -95,6 +95,7 @@ const template = {
                          data-navigo>
                     <i class="mdui-list-item-icon mdui-icon material-icons">folder</i>
                     <div class="mdui-list-item-content">${name}</div>
+                    <div class="mdui-list-item-source">${moduleShowName[source]}</div>
                 </li>`
         }
         html += `</ul>`
