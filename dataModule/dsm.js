@@ -131,7 +131,7 @@ async function onLoaded() {
     return await login();
 }
 async function login() {
-    console.log("[DataModules][DSM] 正在登入...");
+    //console.log("[DataModules][DSM] 正在登入...");
     if (!config.DSM.account && !config.DSM.password) {
         console.error("[DataModules][DSM] 登入失敗，未設定帳號密碼");
         return false;

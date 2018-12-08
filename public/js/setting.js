@@ -131,7 +131,7 @@ async function showSettings() {
             "navigate":"settings/system"
         })}
         ${settingsItem({
-            "title":"關於",
+            "title":"關於和幫助",
             "text":"PokaPlayer 相關訊息、錯誤回報等",
             "icon":"eva-info-outline",
             "navigate":"settings/about"
@@ -821,7 +821,7 @@ async function showSettingsAbout() {
     $("[data-version]").click(function () {
         let click = $(this).attr("data-click") ? Number($(this).attr("data-click")) + 1 : 1
         $(this).attr("data-click", click)
-        if (click > 0) {
+        if (click > 3) {
             $("[data-version] [data-count]").removeAttr('style')
             $("[data-version] [data-count]").text(7 - click)
         }
@@ -834,7 +834,7 @@ async function showSettingsAbout() {
     $("[data-poka-ele]").click(function () {
         let click = $(this).attr("data-click") ? Number($(this).attr("data-click")) + 1 : 1
         $(this).attr("data-click", click)
-        if (click > 0) {
+        if (click > 3) {
             $("[data-poka-ele] [data-count]").removeAttr('style')
             $("[data-poka-ele] [data-count]").text(7 - click)
         }

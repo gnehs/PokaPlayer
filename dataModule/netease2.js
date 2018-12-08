@@ -335,7 +335,7 @@ async function login(config) {
 
 async function onLoaded() {
     if (!config.enabled) return false;
-    console.log("[DataModules][Netease2] 正在登入...");
+    //console.log("[DataModules][Netease2] 正在登入...");
     return await fs.ensureFile(pin).then(async () => {
         if (config && config.login && (config.login.phone || config.login.email) && config.login.password) {
             let result = await login(config);
