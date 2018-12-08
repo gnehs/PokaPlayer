@@ -333,6 +333,11 @@ async function login(config) {
     return result;
 }
 
+//自動重新登入
+schedule.scheduleJob("'* */12 * * *'", async function() {
+    console.log("[DataModules][Netease2] 正在重新登入...");
+    await login(config);
+});
 async function onLoaded() {
     if (!config.enabled) return false;
     //console.log("[DataModules][Netease2] 正在登入...");
@@ -340,10 +345,6 @@ async function onLoaded() {
         if (config && config.login && (config.login.phone || config.login.email) && config.login.password) {
             let result = await login(config);
             if ((await result.code) == 200) {
-                schedule.scheduleJob("'* */12 * * *'", async function() {
-                    console.log("[DataModules][Netease2] 正在重新登入...");
-                    await login(config);
-                });
                 return true;
             } else {
                 console.log("[DataModules][Netease2] 登入失敗");

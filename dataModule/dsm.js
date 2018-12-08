@@ -123,11 +123,12 @@ function parseLyrics(lyrics) {
     }
     return r;
 }
+//自動重新登入
+schedule.scheduleJob("'* */12 * * *'", async function () {
+    console.log("[DataModules][DSM] 正在重新登入...");
+    login();
+});
 async function onLoaded() {
-    schedule.scheduleJob("'* */12 * * *'", async function () {
-        console.log("[DataModules][DSM] 正在重新登入...");
-        login();
-    });
     return await login();
 }
 async function login() {
