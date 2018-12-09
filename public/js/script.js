@@ -82,7 +82,7 @@ const nothingHere = () => {
     return `
     <div class="mdui-typo mdui-text-center">
         <div class="mdui-typo-display-2">
-        <i class="mdui-icon eva eva-alert-triangle-outline" style="transform: scale(3.2);"></i>
+            <i class="mdui-icon eva eva-alert-triangle-outline" style="transform: scale(3.2);"></i>
         </div>
         <div class="mdui-typo-display-1">${randomNotFound}</div>
         <button class="mdui-btn mdui-ripple mdui-btn-raised" onclick="history.go(-1)">回上一頁</button>
@@ -324,13 +324,18 @@ function updateBottomPlayer() {
         $('#player .song-info .name').text(name)
         $('#player .song-info .artist').text(artist)
         $('#player img').attr('src', img)
-        if ($('#player img')[0] && localStorage["buttonPlayerColorChange"] == "true") {
-            let colorThief = new ColorThief()
-            let color = colorThief.getColor($('#player img')[0]);
-            let bgColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`
-            let txtColor = color[0] > 128 && color[1] > 128 && color[2] > 128 ? "#000" : "#FFF"
-            $('#player').attr('style', `background-color:${bgColor};color:${txtColor};` + playProcess)
-            $('#player .ctrl .play').css("background-color", color[0] > 128 && color[1] > 128 && color[2] > 128 ? "#0000001c" : "#ffffff4a")
+        if ($('#player img')[0] && localStorage["buttonPlayerColorChange"] == "true" && localStorage["imgRes"] == "false") {
+            try {
+                let colorThief = new ColorThief()
+                let color = colorThief.getColor($('#player img')[0]);
+                let bgColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`
+                let txtColor = color[0] > 128 && color[1] > 128 && color[2] > 128 ? "#000" : "#FFF"
+                $('#player').attr('style', `background-color:${bgColor};color:${txtColor};` + playProcess)
+                $('#player .ctrl .play').css("background-color", color[0] > 128 && color[1] > 128 && color[2] > 128 ? "#0000001c" : "#ffffff4a")
+            } catch (e) {
+                $("body>canvas").remove()
+                $('#player').attr('style', playProcess)
+            }
         } else {
             $('#player').attr('style', playProcess)
         }
