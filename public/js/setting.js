@@ -10,6 +10,7 @@ $(async () => {
         "change-color": "false", // 實驗換色功能
         "pokaCardSource": "true",
         "PokaPlayerVersion": "",
+        "poka-filter": "true",
         "mdui-theme-primary": "indigo",
         "mdui-theme-accent": "pink",
         "poka-theme-primary": "#009688", // 實驗換色功能
@@ -131,7 +132,7 @@ async function showSettings() {
             "navigate":"settings/system"
         })}
         ${settingsItem({
-            "title":"關於",
+            "title":"關於和幫助",
             "text":"PokaPlayer 相關訊息、錯誤回報等",
             "icon":"eva-info-outline",
             "navigate":"settings/about"
@@ -277,7 +278,7 @@ async function pingServer() {
                 ]
             });
         }
-    }, 1000);
+    }, 2000);
 }
 async function showSettingsNetwork() {
     $('#content').attr('data-page', 'settings')
@@ -433,7 +434,7 @@ async function showSettingsCustomize() {
         })}
         <li class="mdui-subheader">細節設定</li>
         ${settingsItem({
-            "title":"於卡片右上角顯示來源標籤",
+            "title":"顯示來源標籤",
             "icon":"eva-bookmark-outline",
             "attribute":"data-pokaCardSource",
             "other":`<label class="mdui-switch">
@@ -441,29 +442,38 @@ async function showSettingsCustomize() {
                         <i class="mdui-switch-icon"></i>
                     </label>`
         })}
+        ${settingsItem({
+            "title":"顯示篩選器",
+            "icon":"eva-funnel-outline",
+            "attribute":"data-poka-filter",
+            "other":`<label class="mdui-switch">
+                        <input type="checkbox" ${localStorage["poka-filter"]=="true"?"checked":""}/>
+                        <i class="mdui-switch-icon"></i>
+                    </label>`
+        })}
         <li class="mdui-subheader">主題</li>
         ${settingsItem({
             "title":"主題色",
             "text":localStorage["mdui-theme-color"]=='true'?'Dark':'Light',
-            "icon":"eva-color-palette-outline",
+            "icon":localStorage["mdui-theme-color"]=='true'?'eva-moon-outline':'eva-sun-outline',
             "attribute":`data-theme="mdui-theme-color"`
         })}
         ${settingsItem({
             "title":"主色",
             "text":localStorage["mdui-theme-primary"].replace("-"," "),
-            "icon":"eva-color-palette-outline",
+            "icon":"eva-pantone-outline",
             "attribute":`data-theme="mdui-theme-primary"`
         })}
         ${settingsItem({
             "title":"強調色",
             "text":localStorage["mdui-theme-accent"].replace("-"," "),
-            "icon":"eva-color-palette-outline",
+            "icon":"eva-pantone-outline",
             "attribute":`data-theme="mdui-theme-accent"`
         })}
         <li class="mdui-subheader">實驗性功能</li>
         ${settingsItem({
             "title":"底部播放器根據歌曲封面換色",
-            "icon":"eva-color-palette-outline",
+            "icon":"eva-play-circle-outline",
             "attribute":"data-buttonPlayerColorChange",
             "other":`<label class="mdui-switch">
                         <input type="checkbox" ${localStorage["buttonPlayerColorChange"]=="true"?"checked":""}/>
@@ -472,7 +482,7 @@ async function showSettingsCustomize() {
         })}
         ${settingsItem({
             "title":"實驗性主色更換功能",
-            "icon":"eva-bulb-outline",
+            "icon":"eva-color-picker-outline",
             "attribute":"data-change-color",
             "other":`<label class="mdui-switch">
                         <input type="checkbox" ${localStorage["change-color"]=="true"?"checked":""}/>
@@ -560,6 +570,11 @@ async function showSettingsCustomize() {
         localStorage["pokaCardSource"] = $("[data-pokaCardSource] input").prop('checked');
         $("#content").attr('data-sourcelabel', localStorage["pokaCardSource"])
     });
+    // 卡片右上角的來源標籤
+    $("[data-poka-filter]").click(function () {
+        $("[data-poka-filter] input").prop('checked', !$("[data-poka-filter] input").prop('checked'))
+        localStorage["poka-filter"] = $("[data-poka-filter] input").prop('checked');
+    });
     //換色好朋友
     $("[data-change-color]").click(function () {
         $("[data-change-color] input").prop('checked', !$("[data-change-color] input").prop('checked'))
@@ -586,6 +601,13 @@ async function showSettingsCustomize() {
     $('[data-theme="mdui-theme-color"]').click(function () {
         localStorage["mdui-theme-color"] = !(localStorage["mdui-theme-color"] == "true")
         $('[data-theme="mdui-theme-color"] .mdui-list-item-text').text(localStorage["mdui-theme-color"] == 'true' ? 'Dark' : 'Light')
+        if (localStorage["mdui-theme-color"] == 'true') { //啟用夜間模式
+            $('[data-theme="mdui-theme-color"] i').removeClass('eva-sun-outline')
+            $('[data-theme="mdui-theme-color"] i').addClass('eva-moon-outline')
+        } else {
+            $('[data-theme="mdui-theme-color"] i').removeClass('eva-moon-outline')
+            $('[data-theme="mdui-theme-color"] i').addClass('eva-sun-outline')
+        }
         if (localStorage["mdui-theme-color"] == "true")
             $('body').addClass("mdui-theme-layout-dark")
         else
@@ -771,7 +793,7 @@ async function showSettingsCustomize() {
 }
 async function showSettingsAbout() {
     $('#content').attr('data-page', 'settings')
-    pokaHeader('設定', '關於')
+    pokaHeader('關於和幫助', '設定')
     let settingItems = `<ul class="mdui-list">
         ${settingsItem({
             "title":"返回",
@@ -821,7 +843,7 @@ async function showSettingsAbout() {
     $("[data-version]").click(function () {
         let click = $(this).attr("data-click") ? Number($(this).attr("data-click")) + 1 : 1
         $(this).attr("data-click", click)
-        if (click > 0) {
+        if (click > 3) {
             $("[data-version] [data-count]").removeAttr('style')
             $("[data-version] [data-count]").text(7 - click)
         }
@@ -834,7 +856,7 @@ async function showSettingsAbout() {
     $("[data-poka-ele]").click(function () {
         let click = $(this).attr("data-click") ? Number($(this).attr("data-click")) + 1 : 1
         $(this).attr("data-click", click)
-        if (click > 0) {
+        if (click > 3) {
             $("[data-poka-ele] [data-count]").removeAttr('style')
             $("[data-poka-ele] [data-count]").text(7 - click)
         }

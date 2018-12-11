@@ -1,8 +1,21 @@
 const template = {
     getSpinner: () => `<div class="mdui-spinner mdui-spinner-colorful mdui-center" style="margin:50px 0"></div>`,
     parseHome(data) {
+        let filter = `<div class="mdui-text-right">`
+        let filterSource = {}
         let result = ``
-        for (let i = 0; i < data.length; i++) {
+        for (let i in data) {
+            /* 篩選器 */
+            if (!filterSource[data[i].source])
+                filter += `<button class="mdui-btn mdui-btn-raised mdui-color-theme-accent" 
+                                   data-filter="${moduleShowName[data[i].source]}"
+                                   style="margin-left:1px">
+                                   <i class="mdui-icon eva eva-funnel-outline"></i>
+                                   ${moduleShowName[data[i].source]}
+                           </button>`
+            filterSource[data[i].source] = true
+            /* HTML */
+            result += `<div data-source="${moduleShowName[data[i].source]}">`
             result += `
             <div class="mdui-typo">
                 <h1>
@@ -12,9 +25,12 @@ const template = {
                 </h1>
             </div>`
             result += template.parseSearch(data[i])
-            result += (i + 1 != data.length) ? `<div class="mdui-typo"><hr /></div>` : '' // 最後不加分隔線
+            result += (data[i] != data[data.length - 1]) ? `<div class="mdui-typo"><hr /></div>` : '' // 最後不加分隔線
+            result += `</div>`
         }
-        return result
+        filter += `</div>`
+        filter = Object.keys(filterSource).length > 1 && localStorage["poka-filter"] == "true" ? filter : ""
+        return filter + result //篩選器項目大於一個才輸出篩選器
     },
     parseSearch(data) {
         let tabsCount = 0
@@ -74,10 +90,15 @@ const template = {
                 id,
                 name
             } of folders) {
-            html += `<li class="mdui-list-item" href="folder/${source}/${id}" data-navigo>
+            html += `<li class="mdui-list-item" 
+                         href="folder/${source}/${id}" 
+                         data-source="${moduleShowName[source]}" 
+                         data-navigo>
                     <i class="mdui-list-item-icon mdui-icon material-icons">folder</i>
-                    <div class="mdui-list-item-content">${name}</div>
-                </li>`
+                    <div class="mdui-list-item-content">${name}</div>`
+            if (localStorage["pokaCardSource"] == "true")
+                html += `<div class="mdui-list-item-source">${moduleShowName[source]}</div>`
+            html += `</li>`
         }
         html += `</ul>`
         return html
@@ -102,7 +123,7 @@ const template = {
                 </div>`
 
             html += `
-            <div class="mdui-col"><li class="mdui-list-item">
+            <div class="mdui-col" data-source="${moduleShowName[source]}"><li class="mdui-list-item">
                 ${img}
                 <div class="mdui-list-item-content" 
                      ${clickAction}
@@ -197,6 +218,8 @@ const template = {
     },
     parsePlaylists(playlists) {
         let temporalPlaylist = sessionStorage.temporalPlaylist ? JSON.parse(sessionStorage.temporalPlaylist) : {}
+        let filter = `<div class="mdui-text-right" style="margin-bottom: 10px;">`
+        let filterSource = {}
         let html = `<div class="poka cards">`
         for (let playlist of playlists) {
             let {
@@ -206,6 +229,16 @@ const template = {
                 type,
                 name
             } = playlist
+            /* 篩選器 */
+            if (!filterSource[source])
+                filter += `<button class="mdui-btn mdui-btn-raised mdui-color-theme-accent" 
+                                   data-filter="${moduleShowName[source]}"
+                                   style="margin-left:1px">
+                                   <i class="mdui-icon eva eva-funnel-outline"></i>
+                                   ${moduleShowName[source]}
+                           </button>`
+            filterSource[source] = true
+            /* HTML */
             let img, icon
             if (image && localStorage["imgRes"] != "true") {
                 img = `style="background-image:url('${image}')"`
@@ -232,7 +265,9 @@ const template = {
         }
         sessionStorage.temporalPlaylist = JSON.stringify(temporalPlaylist)
         html += '</div>'
-        return html
+        filter += `</div>`
+        filter = Object.keys(filterSource).length > 1 && localStorage["poka-filter"] == "true" ? filter : "" //篩選器項目大於一個才輸出篩選器
+        return filter + html
     },
     infoHeader(cover, name, artist) {
         return `

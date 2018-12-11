@@ -123,15 +123,16 @@ function parseLyrics(lyrics) {
     }
     return r;
 }
+//自動重新登入
+schedule.scheduleJob("'* */12 * * *'", async function () {
+    console.log("[DataModules][DSM] 正在重新登入...");
+    login();
+});
 async function onLoaded() {
-    schedule.scheduleJob("'* */12 * * *'", async function () {
-        console.log("[DataModules][DSM] 正在重新登入...");
-        login();
-    });
     return await login();
 }
 async function login() {
-    console.log("[DataModules][DSM] 正在登入...");
+    //console.log("[DataModules][DSM] 正在登入...");
     if (!config.DSM.account && !config.DSM.password) {
         console.error("[DataModules][DSM] 登入失敗，未設定帳號密碼");
         return false;

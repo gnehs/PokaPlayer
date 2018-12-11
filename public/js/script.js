@@ -24,21 +24,73 @@ const nothingHere = () => {
         "尼是不是故意來找沒有資料的",
         "🙈沒資料",
         "找不到 那些美好",
-        "我 找不到 你形容的那種驕傲",
         "若您嘗試多次，請再次確認模組是否開啟",
-        "我找不到 我到不了 你所謂的將來的美好"
+        "沒有找到資料"
     ]
-    return `<div class="mdui-card" style="max-width:500px;margin:0 auto;">
-        <div class="mdui-card-media">
-            <img src="${getBackground()}"/>
+    let lyrics = [{
+        "lyrics": "逆風的方向更適合飛翔，我不怕千萬人阻擋，只怕自己投降",
+        "title": "倔強",
+        "artist": "五月天"
+    }, {
+        "lyrics": "有沒有那麼一個明天，重頭活一遍，讓我再次感受曾揮霍的昨天，無論生存或生活我都不浪費，不讓故事這麼的後悔",
+        "title": "如煙",
+        "artist": "五月天"
+    }, {
+        "lyrics": "期待一種永恆，即使傷痕，也奮不顧身，生命還沒有黃昏，下一站，你的第二人生",
+        "title": "第二人生",
+        "artist": "五月天"
+    }, {
+        "lyrics": "我好想好想飛，逃離這個瘋狂世界那麼多苦，那麼多累，那麼多，莫名的淚水",
+        "title": "瘋狂世界",
+        "artist": "五月天"
+    }, {
+        "lyrics": "我 找不到 你形容的那種驕傲",
+        "title": "找不到",
+        "artist": "楊丞琳"
+    }, {
+        "lyrics": "我找不到 我到不了 你所謂的將來的美好",
+        "title": "到不了",
+        "artist": "范瑋琪"
+    }, {
+        "lyrics": "等不到天黑 煙火不會太完美 回憶燒成灰 還是等不到結尾",
+        "title": "她說",
+        "artist": "林俊傑"
+    }, {
+        "lyrics": "お休み　素敵な夢を",
+        "tlyrics": "晚安，祝你有個好夢",
+        "title": "月の姫",
+        "artist": "HoneyWorks"
+    }, {
+        "lyrics": "You paint me a blue sky And go back and turn it to rain",
+        "tlyrics": "你畫給我一片藍天，回頭又綴滿了雨點",
+        "title": "Dear John",
+        "artist": "Taylor Swift"
+    }]
+    let randomNotFound = n[Math.floor(Math.random() * n.length)]
+    let randomLyrics = lyrics[Math.floor(Math.random() * lyrics.length)]
+    let footer;
+
+    if (randomLyrics.title && randomLyrics.artist)
+        footer = `${randomLyrics.artist} ——《${randomLyrics.title}》`
+    else if (randomLyrics.artist)
+        footer = randomLyrics.artist
+    else if (randomLyrics.title)
+        footer = `《${randomLyrics.title}》`
+    else
+        footer = ''
+
+    return `
+    <div class="mdui-typo mdui-text-center">
+        <div class="mdui-typo-display-2">
+            <i class="mdui-icon eva eva-alert-triangle-outline" style="transform: scale(3.2);"></i>
         </div>
-        <div class="mdui-card-primary">
-            <div class="mdui-card-primary-title">沒有找到資料</div>
-            <div class="mdui-card-primary-subtitle">${n[Math.floor(Math.random() * n.length)]}</div>
-        </div>
-        <div class="mdui-card-actions">
-            <button class="mdui-btn mdui-ripple" onclick="history.go(-1)">回上一頁</button>
-        </div>
+        <div class="mdui-typo-display-1">${randomNotFound}</div>
+        <button class="mdui-btn mdui-ripple mdui-btn-raised" onclick="history.go(-1)">回上一頁</button>
+        <hr/>
+        <div class="mdui-typo-headline">${randomLyrics.lyrics}</div>
+        ${randomLyrics.tlyrics?`
+        <div class="mdui-typo-headline" style="opacity: .65;">${randomLyrics.tlyrics}</div>`:""}
+        <footer>${footer}</footer>
     </div>`
 }
 
@@ -230,24 +282,6 @@ function setLrc(lrcResult) {
     }
 }
 ap.on("timeupdate", () => {
-    $('#player button.play[onclick="ap.toggle()"] i').text("pause")
-    let currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00",
-        duration = ap.audio.currentTime ? secondToTime(ap.audio.duration) : "0:00",
-        timer = currentTime + '/' + duration,
-        audioBuffered = ap.audio.currentTime > 1 ? ap.audio.buffered.end(ap.audio.buffered.length - 1) / ap.audio.duration * 100 : 0,
-        cent = ap.audio.currentTime / ap.audio.duration * 100,
-        timelineColor = $('.mdui-color-theme-accent').css("background-color"),
-        timelineBufferedColor = $('body').hasClass("mdui-theme-layout-dark") ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.25)'
-    $('#player .right .timer').text(timer)
-    $('#player').attr('style', `background-image: 
-    linear-gradient(to right, 
-        ${timelineColor} 0%,
-        ${timelineColor} ${cent}%, 
-        ${timelineBufferedColor} ${cent + 0.01}%,
-        ${timelineBufferedColor} ${audioBuffered > 0 ? audioBuffered : cent + 0.01}%, 
-        transparent ${audioBuffered > 0 ? audioBuffered + 0.01 : cent + 0.01}%, 
-        transparent 100%
-    );`)
     updateMediaSession()
     updateBottomPlayer()
 })
@@ -264,16 +298,47 @@ function updateBottomPlayer() {
             artist,
             cover
         } = nowPlaying
+        // 暫停鈕
+        $('#player button.play[onclick="ap.toggle()"] i').text("pause")
+        let currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00",
+            duration = ap.audio.currentTime ? secondToTime(ap.audio.duration) : "0:00",
+            timer = currentTime + '/' + duration,
+            audioBuffered = ap.audio.currentTime > 1 ? ap.audio.buffered.end(ap.audio.buffered.length - 1) / ap.audio.duration * 100 : 0,
+            cent = ap.audio.currentTime / ap.audio.duration * 100,
+            timelineColor = $('.mdui-color-theme-accent').css("background-color") || `var(--poka-theme-primary-color)`,
+            timelineBufferedColor = $('body').hasClass("mdui-theme-layout-dark") ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.25)'
+        //更新時間
+        $('#player .right .timer').text(timer)
+        // 更新進度條
+        let playProcess = `background-image:
+        linear-gradient(to right,
+            ${timelineColor} 0%,
+            ${timelineColor} ${cent}%,
+            ${timelineBufferedColor} ${cent + 0.01}%,
+            ${timelineBufferedColor} ${audioBuffered > 0 ? audioBuffered : cent + 0.01}%,
+            transparent ${audioBuffered > 0 ? audioBuffered + 0.01 : cent + 0.01}%,
+            transparent 100%
+        );`
+
         let img = (localStorage["imgRes"] != "true" && cover) ? cover : getBackground()
         $('#player .song-info .name').text(name)
         $('#player .song-info .artist').text(artist)
         $('#player img').attr('src', img)
-        if ($('#player img')[0] && localStorage["buttonPlayerColorChange"] == "true") {
-            let colorThief = new ColorThief()
-            let color = colorThief.getColor($('#player img')[0]);
-            $('#player').css("background-color", `rgb(${color[0]}, ${color[1]}, ${color[2]})`)
-            $('#player').css("color", color[0] > 128 && color[1] > 128 && color[2] > 128 ? "#000" : "#FFF")
-            $('#player .ctrl .play').css("background-color", color[0] > 128 && color[1] > 128 && color[2] > 128 ? "#0000001c" : "#ffffff4a")
+        if ($('#player img')[0] && localStorage["buttonPlayerColorChange"] == "true" && localStorage["imgRes"] == "false") {
+            try {
+                let colorThief = new ColorThief()
+                let color = colorThief.getColor($('#player img')[0]);
+                let bgColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`
+                let isLightColor = color[0] > 128 && color[1] > 128 && color[2] > 128
+                let txtColor = isLightColor ? "#000" : "#FFF"
+                $('#player').attr('style', `background-color:${bgColor};color:${txtColor};` + playProcess)
+                $('#player .ctrl .play').css("background-color", isLightColor ? "#0000001c" : "#ffffff4a")
+            } catch (e) {
+                $("body>canvas").remove()
+                $('#player').attr('style', playProcess)
+            }
+        } else {
+            $('#player').attr('style', playProcess)
         }
     }
 }
@@ -451,6 +516,15 @@ function pokaHeader(title, subtitle = '', image = false, hide = false, blur = tr
         }, 400)
     }
 }
+//- 綁定 filter
+function bindFilter() {
+    $('[data-filter]').click(function () {
+        let source = $(this).attr("data-filter")
+        $(this).hasClass("mdui-color-theme-accent") ? $(this).removeClass("mdui-color-theme-accent") : $(this).addClass("mdui-color-theme-accent")
+        let isFiltered = !$(this).hasClass("mdui-color-theme-accent")
+        $(`[data-source="${source}"]`).css('display', isFiltered ? 'none' : 'block')
+    })
+}
 // 首頁
 async function showHome() {
     $('#content').attr('data-page', 'home')
@@ -467,6 +541,8 @@ async function showHome() {
         //初始化
         mdui.mutation()
         router.updatePageLinks()
+        //-篩選器
+        bindFilter()
     }
 }
 //- 搜尋
@@ -662,12 +738,15 @@ async function showFolder(moduleName, folderId = false) {
     }
 }
 async function showArtist(moduleName, artist = false) {
-    let data = moduleName != 'DSM' && artist ? await request(`/pokaapi/artist/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(artist)}`) : undefined;
+    $("#content").attr('data-item', artist && moduleName ? `artist${artist}` : `artist`)
+
+    let data = (moduleName != 'DSM' && artist) ? await request(`/pokaapi/artist/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(artist)}`) : undefined;
     // 如果不是 DSM 的話去向模組取得該演出者的封面
     let cover = artist ? (moduleName == 'DSM' ?
         `/pokaapi/cover/?moduleName=${encodeURIComponent(moduleName)}&data=${encodeURIComponent(JSON.stringify({ "type": "artist", "info": artist == '未知' ? '' : artist }))}` :
         data.cover) : false
-    pokaHeader(artist ? (moduleName == 'DSM' ? artist : data.name) : "演出者", artist ? moduleShowName[moduleName] : "列出所有演出者", cover)
+    if ($("#content").attr('data-item') == artist && moduleName ? `artist${artist}` : `artist`)
+        pokaHeader(artist ? (moduleName == 'DSM' ? artist : data.name) : "演出者", artist ? moduleShowName[moduleName] : "列出所有演出者", cover)
     $("#content").attr('data-page', 'artist')
     $("#content").html(template.getSpinner())
     mdui.mutation()
@@ -720,8 +799,8 @@ async function showComposer(moduleName, composer) {
         $("#content").attr('data-item', `composer${composer}`)
         let result = await request(`/pokaapi/composerAlbums/?moduleName=${encodeURIComponent(moduleName)}&id=${composer == '未知' ? '' : encodeURIComponent(composer)}`),
             isComposerPinned = await isPinned(moduleName, 'composer', composer, composer)
-
-        pokaHeader(composer, moduleShowName[moduleName], cover)
+        if ($("#content").attr('data-item') == `composer${composer}`)
+            pokaHeader(composer, moduleShowName[moduleName], cover)
         let pinButton = ``
         if (isComposerPinned && isComposerPinned != 'disabled')
             pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="從首頁釘選移除該作曲者" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
@@ -769,6 +848,8 @@ async function showPlaylist() {
     if ($("#content").attr('data-page') == 'playlist') {
         $("#content").html(result.playlists.length > 0 ? template.parsePlaylists(result.playlists) : nothingHere())
         router.updatePageLinks()
+        //-篩選器
+        bindFilter()
     }
 }
 //- 播放清單資料夾
@@ -812,7 +893,7 @@ async function showPlaylistSongs(moduleName, playlistId) {
 
     //抓資料
     let result = await request(`/pokaapi/playlistSongs/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(playlistId)}`)
-    if (result == null) {
+    if (result == null && $("#content").attr('data-item') == `playlist${playlistId}`) {
         pokaHeader('錯誤', '哎呀！找不到這個播放清單')
         $("#content").html(`
         <div class="mdui-valign" style="height:150px">
@@ -825,11 +906,9 @@ async function showPlaylistSongs(moduleName, playlistId) {
         </div>`)
         router.updatePageLinks()
         return
-    }
+    } else if (result == null) return
     let name = result.playlists[0].name
     let songs = template.parseSongs(result.songs)
-    pokaHeader(name, moduleShowName[result.playlists[0].source], result.playlists[0].image || false)
-
     let isPlaylistPinned = await isPinned(moduleName, 'playlist', playlistId, result.playlists[0].name)
     let pinButton = ``
     if (isPlaylistPinned && isPlaylistPinned != 'disabled')
@@ -856,6 +935,7 @@ async function showPlaylistSongs(moduleName, playlistId) {
     `
 
     if ($("#content").attr('data-item') == `playlist${playlistId}`) {
+        pokaHeader(name, moduleShowName[result.playlists[0].source], result.playlists[0].image || false)
         $("#content").html(result.songs.length > 0 ? songs + fab : nothingHere())
         $("[data-pinned]").click(async function () {
             let pinStatus = $(this).attr('data-pinned')
