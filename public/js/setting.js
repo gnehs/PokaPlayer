@@ -62,8 +62,8 @@ function compareVersion(local, remote) {
     local = local.split('.')
     remote = remote.split('.')
     //版本號加權對比
-    local = local[0] * 1000 * 1000 + local[1] * 1000 + local[2]
-    remote = remote[0] * 1000 * 1000 + remote[1] * 1000 + remote[2]
+    local = parseInt(local[0]) * 1000 * 1000 + parseInt(local[1]) * 1000 + parseInt(local[2])
+    remote = parseInt(remote[0]) * 1000 * 1000 + parseInt(remote[1]) * 1000 + parseInt(remote[2])
     return remote > local
 }
 async function checkUpdate() {
