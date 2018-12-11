@@ -329,9 +329,10 @@ function updateBottomPlayer() {
                 let colorThief = new ColorThief()
                 let color = colorThief.getColor($('#player img')[0]);
                 let bgColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`
-                let txtColor = color[0] > 128 && color[1] > 128 && color[2] > 128 ? "#000" : "#FFF"
+                let isLightColor = color[0] > 128 && color[1] > 128 && color[2] > 128
+                let txtColor = isLightColor ? "#000" : "#FFF"
                 $('#player').attr('style', `background-color:${bgColor};color:${txtColor};` + playProcess)
-                $('#player .ctrl .play').css("background-color", color[0] > 128 && color[1] > 128 && color[2] > 128 ? "#0000001c" : "#ffffff4a")
+                $('#player .ctrl .play').css("background-color", isLightColor ? "#0000001c" : "#ffffff4a")
             } catch (e) {
                 $("body>canvas").remove()
                 $('#player').attr('style', playProcess)

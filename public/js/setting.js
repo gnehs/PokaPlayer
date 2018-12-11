@@ -278,7 +278,7 @@ async function pingServer() {
                 ]
             });
         }
-    }, 1000);
+    }, 2000);
 }
 async function showSettingsNetwork() {
     $('#content').attr('data-page', 'settings')
@@ -793,7 +793,7 @@ async function showSettingsCustomize() {
 }
 async function showSettingsAbout() {
     $('#content').attr('data-page', 'settings')
-    pokaHeader('設定', '關於')
+    pokaHeader('關於和幫助', '設定')
     let settingItems = `<ul class="mdui-list">
         ${settingsItem({
             "title":"返回",
