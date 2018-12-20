@@ -1,4 +1,4 @@
-FROM mhart/alpine-node:10.11.0
+FROM mhart/alpine-node:latest
 
 WORKDIR /app
 # 安裝必要組件
