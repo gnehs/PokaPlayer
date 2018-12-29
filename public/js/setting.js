@@ -462,13 +462,13 @@ async function showSettingsCustomize() {
             "title":"主色",
             "text":localStorage["mdui-theme-primary"].replace("-"," "),
             "icon":"eva-pantone-outline",
-            "attribute":`data-theme="mdui-theme-primary"`
+            "attribute":`data-theme="mdui-theme-primary"  style="text-transform:capitalize;"`
         })}
         ${settingsItem({
             "title":"強調色",
             "text":localStorage["mdui-theme-accent"].replace("-"," "),
             "icon":"eva-pantone-outline",
-            "attribute":`data-theme="mdui-theme-accent"`
+            "attribute":`data-theme="mdui-theme-accent"  style="text-transform:capitalize;"`
         })}
         <li class="mdui-subheader">實驗性功能</li>
         ${settingsItem({
