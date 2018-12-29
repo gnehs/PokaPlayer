@@ -7,9 +7,8 @@ const template = {
         for (let i in data) {
             /* 篩選器 */
             if (!filterSource[data[i].source])
-                filter += `<button class="poka button active" 
-                                   data-filter="${moduleShowName[data[i].source]}"
-                                   style="margin-left:1px">
+                filter += `<button class="poka button toggle active" 
+                                   data-filter="${moduleShowName[data[i].source]}">
                                    <i class="mdui-icon eva eva-funnel-outline"></i>
                                    ${moduleShowName[data[i].source]}
                            </button>`
@@ -87,14 +86,13 @@ const template = {
         /* 篩選器 */
         let filter = `<div class="mdui-text-right">`
         for (let item of sources)
-            filter += `<button class="poka button active" 
-                                data-filter="${moduleShowName[item]}"
-                                style="margin-left:1px">
+            filter += `<button class="poka button toggle active" 
+                                data-filter="${moduleShowName[item]}">
                                 <i class="mdui-icon eva eva-funnel-outline"></i>
                                 ${moduleShowName[item]}
                             </button>`
         filter += `</div>`
-        if (1 >= [...sources].length || home) filter = ``
+        if (1 >= [...sources].length || home || localStorage["poka-filter"] != "true") filter = ``
         return tabsCount > 1 ? (filter + tab + r) : (filter + r)
     },
     parseFolder(folders, showBackButton = false) {
@@ -249,9 +247,8 @@ const template = {
             } = playlist
             /* 篩選器 */
             if (!filterSource[source])
-                filter += `<button class="poka button active" 
-                                   data-filter="${moduleShowName[source]}"
-                                   style="margin-left:1px">
+                filter += `<button class="poka button toggle active" 
+                                   data-filter="${moduleShowName[source]}">
                                    <i class="mdui-icon eva eva-funnel-outline"></i>
                                    ${moduleShowName[source]}
                            </button>`

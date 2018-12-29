@@ -27,13 +27,25 @@
 	transition: all .2s cubic-bezier(.4,0,.2,1),box-shadow .2s cubic-bezier(.4,0,1,1)
 	will-change: box-shadow
 	-webkit-user-drag: none
+	&.transparent
+		background-color: transparent
+	&.icon
+		min-width: 2.57em
 	&+.poka.button
-		margin-left: 1px
-	&.active
-		box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.1)
+		margin-left: 2px
+	&.toggle
+		box-shadow: inset 0 0 0px 3px rgba(0, 0, 0, 0.2)
+		&:not(.active)
+			opacity: .9
+			background-color: transparent
+			color: inherit
 	&:hover
 		opacity: .87
 	&:active
 		opacity: .76
+.mdui-theme-layout-dark .poka.button
+	&.toggle
+		box-shadow: inset 0 0 0px 3px rgba(255, 255, 255, 0.2)
+
    
 		
