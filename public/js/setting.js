@@ -627,7 +627,8 @@ async function showSettingsCustomize() {
                 <a class="card" 
                    title="${color.replace("-"," ")}"
                    data-color-type="${accent ? `accent` : `primary`}"
-                   data-color="${color}">
+                   data-color="${color}"
+                   mdui-dialog-close>
                     <div class="image mdui-ripple mdui-color-${color}${accent?'-accent':''}"></div>
                 </a>`
             }
@@ -637,7 +638,7 @@ async function showSettingsCustomize() {
             title: `請選擇一個${accent ? `強調色` : `主色`}`,
             content: option,
             buttons: [{
-                text: '確定'
+                text: '取消'
             }]
         });
         $('[data-color-type]').click(function () {
@@ -650,7 +651,7 @@ async function showSettingsCustomize() {
                     $('body').removeClass(classes[i])
                 }
             }
-            $('[data-theme="mdui-theme-primary"] .mdui-list-item-text').text(color)
+            $(`[data-theme="mdui-theme-${isAccent?'accent':'primary'}"] .mdui-list-item-text`).text(color)
             $('body').addClass(`mdui-theme-${isAccent?'accent':'primary'}-${color}`)
             localStorage[`mdui-theme-${isAccent?'accent':'primary'}`] = color
             if (!isAccent) {
