@@ -502,8 +502,7 @@ function bindFilter() {
     $('[data-filter]').click(function () {
         let source = $(this).attr("data-filter")
         $(this).hasClass("active") ? $(this).removeClass("active") : $(this).addClass("active")
-        let isFiltered = !$(this).hasClass("active")
-        $(`[data-source="${source}"]`).css('display', isFiltered ? 'none' : 'block')
+        $(this).hasClass("active") ? $(`[data-source="${source}"]`).css('display', '') : $(`[data-source="${source}"]`).css('display', 'none')
     })
 }
 // 首頁
