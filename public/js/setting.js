@@ -507,7 +507,7 @@ async function showSettingsCustomize() {
     $("#content").html(settingItems);
     let primaryColor = new Pickr({
         el: '.theme-primary-color-picker',
-        default: localStorage["poka-theme-primary"] || "#009688",
+        default: localStorage["poka-theme-primary"].toUpperCase() || "#009688",
         showAlways: true,
         components: {
             preview: true,
@@ -532,7 +532,7 @@ async function showSettingsCustomize() {
     });
     let primaryTextColor = new Pickr({
         el: '.theme-primary-text-color-picker',
-        default: localStorage["poka-theme-primary-text"] || "#FFF",
+        default: localStorage["poka-theme-primary-text"].toUpperCase() || "#FFF",
         showAlways: true,
         components: {
             preview: true,
