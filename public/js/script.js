@@ -501,8 +501,8 @@ function pokaHeader(title, subtitle = '', image = false, hide = false, blur = tr
 function bindFilter() {
     $('[data-filter]').click(function () {
         let source = $(this).attr("data-filter")
-        $(this).hasClass("mdui-color-theme-accent") ? $(this).removeClass("mdui-color-theme-accent") : $(this).addClass("mdui-color-theme-accent")
-        let isFiltered = !$(this).hasClass("mdui-color-theme-accent")
+        $(this).hasClass("active") ? $(this).removeClass("active") : $(this).addClass("active")
+        let isFiltered = !$(this).hasClass("active")
         $(`[data-source="${source}"]`).css('display', isFiltered ? 'none' : 'block')
     })
 }

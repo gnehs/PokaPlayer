@@ -7,7 +7,7 @@ const template = {
         for (let i in data) {
             /* 篩選器 */
             if (!filterSource[data[i].source])
-                filter += `<button class="mdui-btn mdui-btn-raised mdui-color-theme-accent" 
+                filter += `<button class="poka button active" 
                                    data-filter="${moduleShowName[data[i].source]}"
                                    style="margin-left:1px">
                                    <i class="mdui-icon eva eva-funnel-outline"></i>
@@ -87,7 +87,7 @@ const template = {
         /* 篩選器 */
         let filter = `<div class="mdui-text-right">`
         for (let item of sources)
-            filter += `<button class="mdui-btn mdui-btn-raised mdui-color-theme-accent" 
+            filter += `<button class="poka button active" 
                                 data-filter="${moduleShowName[item]}"
                                 style="margin-left:1px">
                                 <i class="mdui-icon eva eva-funnel-outline"></i>
@@ -249,7 +249,7 @@ const template = {
             } = playlist
             /* 篩選器 */
             if (!filterSource[source])
-                filter += `<button class="mdui-btn mdui-btn-raised mdui-color-theme-accent" 
+                filter += `<button class="poka button active" 
                                    data-filter="${moduleShowName[source]}"
                                    style="margin-left:1px">
                                    <i class="mdui-icon eva eva-funnel-outline"></i>
