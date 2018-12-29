@@ -598,6 +598,8 @@ async function showSearch(keyword) {
         if ($("#content").attr('data-page') == 'search') {
             $("#content").html(html + searchResults)
             mdui.mutation()
+            //-篩選器
+            bindFilter()
         }
     } else
         $("#content").html(html)

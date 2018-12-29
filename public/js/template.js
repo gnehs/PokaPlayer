@@ -24,7 +24,7 @@ const template = {
                     <small>${data[i].description?`${moduleShowName[data[i].source]} / ${data[i].description}`:''}</small>
                 </h1>
             </div>`
-            result += template.parseSearch(data[i])
+            result += template.parseSearch(data[i], true)
             result += (data[i] != data[data.length - 1]) ? `<div class="mdui-typo"><hr /></div>` : '' // 最後不加分隔線
             result += `</div>`
         }
@@ -32,7 +32,8 @@ const template = {
         filter = Object.keys(filterSource).length > 1 && localStorage["poka-filter"] == "true" ? filter : ""
         return filter + result //篩選器項目大於一個才輸出篩選器
     },
-    parseSearch(data) {
+    parseSearch(data, home = false) {
+        let sources = new Set()
         let tabsCount = 0
         let tab = `<div class="mdui-tab" mdui-tab>`
         let tabItem = (href, label, icon) => `<a href="#${href}" class="mdui-ripple">
@@ -41,43 +42,60 @@ const template = {
         </a>`
         let r = ``;
         if (data.albums && data.albums.length > 0) {
+            data.albums.map(bibi => sources.add(bibi.source))
             tabsCount++
             let randomId = Math.random().toString(36).substring(8)
             tab += tabItem(randomId, '專輯', data.albums.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseAlbums(data.albums)}</div>`
         }
         if (data.artists && data.artists.length > 0) {
+            data.artists.map(bibi => sources.add(bibi.source))
             tabsCount++
             let randomId = Math.random().toString(36).substring(8)
             tab += tabItem(randomId, '演出者', data.artists.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseArtists(data.artists)}</div>`
         }
         if (data.composers && data.composers.length > 0) {
+            data.composers.map(bibi => sources.add(bibi.source))
             tabsCount++
             let randomId = Math.random().toString(36).substring(8)
             tab += tabItem(randomId, '作曲者', data.composers.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseComposers(data.composers)}</div>`
         }
         if (data.playlists && data.playlists.length > 0) {
+            data.playlists.map(bibi => sources.add(bibi.source))
             tabsCount++
             let randomId = Math.random().toString(36).substring(8)
             tab += tabItem(randomId, '播放清單', data.playlists.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parsePlaylists(data.playlists)}</div>`
         }
         if (data.folders && data.folders.length > 0) {
+            data.folders.map(bibi => sources.add(bibi.source))
             tabsCount++
             let randomId = Math.random().toString(36).substring(8)
             tab += tabItem(randomId, '資料夾', data.folders.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseFolder(data.folders)}</div>`
         }
         if (data.songs && data.songs.length > 0) {
+            data.songs.map(bibi => sources.add(bibi.source))
             tabsCount++
             let randomId = Math.random().toString(36).substring(8)
             tab += tabItem(randomId, '歌曲', data.songs.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseSongs(data.songs)}</div>`
         }
         tab += `</div>`
-        return tabsCount > 1 ? (tab + r) : r
+        /* 篩選器 */
+        let filter = `<div class="mdui-text-right">`
+        for (let item of sources)
+            filter += `<button class="mdui-btn mdui-btn-raised mdui-color-theme-accent" 
+                                data-filter="${moduleShowName[item]}"
+                                style="margin-left:1px">
+                                <i class="mdui-icon eva eva-funnel-outline"></i>
+                                ${moduleShowName[item]}
+                            </button>`
+        filter += `</div>`
+        if (1 >= [...sources].length || home) filter = ``
+        return tabsCount > 1 ? (filter + tab + r) : (filter + r)
     },
     parseFolder(folders, showBackButton = false) {
         let html = `<ul class="mdui-list">`
