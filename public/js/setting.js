@@ -413,15 +413,14 @@ async function showSettingsCustomize() {
     // TODO: 自訂 CSS
     $('#content').attr('data-page', 'settings')
     pokaHeader('個人化', "設定")
-    let colorSelector = (themecolor, textcolor, text = "A") => {
-        let active = themecolor == localStorage["poka-theme-primary"] && textcolor == localStorage["poka-theme-primary-text"]
-        return `<div class="colorSelector ${active?"active":""}" 
+    let colorSelector = (themecolor, textcolor, text = "A") =>
+        `<div class="colorSelector" 
             style="background-color: ${themecolor};color: ${textcolor}" 
             data-bg="${themecolor}" 
             data-text="${textcolor}">
             ${text}
         </div>`
-    }
+
     let settingItems = `<div class="mdui-list">
         ${settingsItem({
             "title":"返回",
@@ -469,20 +468,20 @@ async function showSettingsCustomize() {
         })}
         </div>
         <div id="theme-color">
-            ${colorSelector("#03A9F4","#FFF")}
-            ${colorSelector("#00BCD4","#FFF")}
-            ${colorSelector("#009688","#FFF")}
-            ${colorSelector("#4CAF50","#FFF")}
-            ${colorSelector("#8BC34A","#FFF")}
-            ${colorSelector("#CDDC39","#FFF")}
-            ${colorSelector("#FFEE58","#000")}
-            ${colorSelector("#FFCA28","#FFF")}
-            ${colorSelector("#FFA726","#FFF")}
-            ${colorSelector("#FF5722","#FFF")}
-            ${colorSelector("#795548","#FFF")}
-            ${colorSelector("#9E9E9E","#FFF")}
-            ${colorSelector("#607D8B","#FFF")}
-            ${colorSelector("#000000","#FFF")}
+            ${colorSelector("#03A9F4","#FFFFFF")}
+            ${colorSelector("#00BCD4","#FFFFFF")}
+            ${colorSelector("#009688","#FFFFFF")}
+            ${colorSelector("#4CAF50","#FFFFFF")}
+            ${colorSelector("#8BC34A","#FFFFFF")}
+            ${colorSelector("#CDDC39","#FFFFFF")}
+            ${colorSelector("#FFEE58","#000000")}
+            ${colorSelector("#FFCA28","#FFFFFF")}
+            ${colorSelector("#FFA726","#FFFFFF")}
+            ${colorSelector("#FF5722","#FFFFFF")}
+            ${colorSelector("#795548","#FFFFFF")}
+            ${colorSelector("#9E9E9E","#FFFFFF")}
+            ${colorSelector("#607D8B","#FFFFFF")}
+            ${colorSelector("#000000","#FFFFFF")}
         </div>
         <div class="mdui-row-xs-1 mdui-row-sm-2" data-change-color-lab ${localStorage["change-color"]=="true"?``:`style="pointer-events: none; opacity: .5;"`}>
             <div class="mdui-col">
@@ -523,12 +522,12 @@ async function showSettingsCustomize() {
         },
         onChange(hsva, instance) {
             $("#colortheme").text(`:root {
-                --poka-theme-primary-color: ${hsva.toRGBA().toString()};
+                --poka-theme-primary-color: ${hsva.toHEX().toString()};
                 --poka-theme-primary-text-color: ${localStorage["poka-theme-primary-text"]};
             }`)
-            localStorage["poka-theme-primary"] = hsva.toRGBA().toString()
+            localStorage["poka-theme-primary"] = hsva.toHEX().toString()
             // 設定狀態欄顏色
-            $("meta[name=theme-color]").attr("content", hsva.toRGBA().toString());
+            $("meta[name=theme-color]").attr("content", hsva.toHEX().toString());
             //移除預設好的主題啟用狀態
             $("#theme-color>.colorSelector").removeClass("active")
         }
@@ -549,13 +548,18 @@ async function showSettingsCustomize() {
             hsva.toRGBA().toString()
             $("#colortheme").text(`:root {
                 --poka-theme-primary-color: ${localStorage["poka-theme-primary"]};
-                --poka-theme-primary-text-color: ${hsva.toRGBA().toString()};
+                --poka-theme-primary-text-color: ${hsva.toHEX().toString()};
             }`)
-            localStorage["poka-theme-primary-text"] = hsva.toRGBA().toString()
+            localStorage["poka-theme-primary-text"] = hsva.toHEX().toString()
             //移除預設好的主題啟用狀態
             $("#theme-color>.colorSelector").removeClass("active")
         }
     });
+    $("#theme-color>.colorSelector").each(function () {
+        console.log($(this).attr("data-bg") == localStorage["poka-theme-primary"])
+        let active = $(this).attr("data-bg") == localStorage["poka-theme-primary"] && $(this).attr("data-text") == localStorage["poka-theme-primary-text"]
+        if (active) $(this).addClass("active")
+    })
     $("#theme-color>.colorSelector").click(function () {
         let colorSelectorPrimary = $(this).attr("data-bg")
         let colorSelectorPrimaryText = $(this).attr("data-text")
