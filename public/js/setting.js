@@ -5,9 +5,7 @@ $(async () => {
         "randomImg": "/og/og.png",
         "randomImgName": "預設圖庫",
         "imgRes": "false",
-        "buttonPlayerColorChange": "false", //底部播放器自動換色
         "pokaSW": "false", //serviceWorker
-        "change-color": "false", // 實驗換色功能
         "pokaCardSource": "true",
         "PokaPlayerVersion": "",
         "poka-filter": "true",
@@ -62,8 +60,8 @@ function compareVersion(local, remote) {
     local = local.split('.')
     remote = remote.split('.')
     //版本號加權對比
-    local = local[0] * 1000 * 1000 + local[1] * 1000 + local[2]
-    remote = remote[0] * 1000 * 1000 + remote[1] * 1000 + remote[2]
+    local = parseInt(local[0]) * 1000 * 1000 + parseInt(local[1]) * 1000 + parseInt(local[2])
+    remote = parseInt(remote[0]) * 1000 * 1000 + parseInt(remote[1]) * 1000 + parseInt(remote[2])
     return remote > local
 }
 async function checkUpdate() {
@@ -98,21 +96,21 @@ var settingsItem = ({
     other = ''
 }) => {
     //有 text 才輸出 Title 跟 Text
-    return `<li class="mdui-list-item ${cssClass}" ${navigate?`onclick="router.navigate('${navigate}')"`:''} ${attribute}>
+    return `<div class="mdui-list-item ${cssClass}" ${navigate?`onclick="router.navigate('${navigate}')"`:''} ${attribute}>
     ${icon?`<i class="mdui-list-item-icon mdui-icon eva ${icon}"></i>`:''}
     ${text ? `<div class="mdui-list-item-content">
         <div class="mdui-list-item-title">${title}</div>
         <div class="mdui-list-item-text">${text}</div>
     </div>` : `<div class="mdui-list-item-content">${title}</div>`}
     ${other}
-    </li>`
+    </div>`
 }
 //- 設定
 async function showSettings() {
     $('#content').attr('data-page', 'settings')
 
     pokaHeader('設定', "PokaPlayer " + localStorage["PokaPlayerVersion"])
-    let settingItems = `<ul class="mdui-list">
+    let settingItems = `<div class="mdui-list">
         ${settingsItem({
             "title":"網路和快取",
             "text":"流量節省、音質和快取設定",
@@ -137,25 +135,25 @@ async function showSettings() {
             "icon":"eva-info-outline",
             "navigate":"settings/about"
         })}
-    </ul>`
+    </div>`
     $("#content").html(settingItems);
 }
 async function showSettingsSystem() {
 
     pokaHeader('系統和更新', "設定")
-    let settingItems = `<ul class="mdui-list">
+    let settingItems = `<div class="mdui-list">
         ${settingsItem({
             "title":"返回",
             "icon":"eva-arrow-ios-back-outline",
             "navigate":"settings"
         })}
-        <li class="mdui-subheader">帳號</li>
+        <div class="mdui-subheader">帳號</div>
         ${settingsItem({
             "title":"登出",
             "icon":"eva-person-outline",
             "attribute":`onclick="location.href='/logout'"`
         })}
-        <li class="mdui-subheader">系統</li>
+        <div class="mdui-subheader">系統</div>
         ${settingsItem({
             "title":"更新",
             "icon":"eva-cloud-upload-outline",
@@ -167,7 +165,7 @@ async function showSettingsSystem() {
             "icon":"eva-loader-outline",
             "attribute":"data-restart"
         })}
-    </ul>`
+    </div>`
     $("#content").html(settingItems);
     //檢查更新
     let debug = await request('/debug/')
@@ -283,13 +281,13 @@ async function pingServer() {
 async function showSettingsNetwork() {
     $('#content').attr('data-page', 'settings')
     pokaHeader('網路和快取', "設定")
-    let settingItems = `<ul class="mdui-list">
+    let settingItems = `<div class="mdui-list">
         ${settingsItem({
             "title":"返回",
             "icon":"eva-arrow-ios-back-outline",
             "navigate":"settings"
         })}
-        <li class="mdui-subheader">網路</li>
+        <div class="mdui-subheader">網路</div>
         ${settingsItem({
             "title":"音質",
             "icon":"eva-music-outline",
@@ -306,7 +304,7 @@ async function showSettingsNetwork() {
                     </label>`
         })}`
     settingItems += window.electron ? `` : `
-        <li class="mdui-subheader">快取</li>
+        <div class="mdui-subheader">快取</div>
         ${settingsItem({
             "title":"快取 (service worker)",
             "icon":"eva-archive-outline",
@@ -321,9 +319,10 @@ async function showSettingsNetwork() {
             "icon":"eva-trash-2-outline",
             "attribute":"data-clean"
         })}`
-    settingItems += `</ul>`
+    settingItems += `</div>`
     $("#content").html(settingItems);
     // 音質設定
+    // TODO: 音質設定可立即生效
     $("[data-music-res]").click(function () {
         mdui.dialog({
             title: '音質設定',
@@ -411,15 +410,24 @@ async function showSettingsNetwork() {
     })
 }
 async function showSettingsCustomize() {
+    // TODO: 自訂 CSS
     $('#content').attr('data-page', 'settings')
     pokaHeader('個人化', "設定")
-    let settingItems = `<ul class="mdui-list">
+    let colorSelector = (themecolor, textcolor, text = "A") =>
+        `<div class="colorSelector" 
+            style="background-color: ${themecolor};color: ${textcolor}" 
+            data-bg="${themecolor}" 
+            data-text="${textcolor}">
+            ${text}
+        </div>`
+
+    let settingItems = `<div class="mdui-list">
         ${settingsItem({
             "title":"返回",
             "icon":"eva-arrow-ios-back-outline",
             "navigate":"settings"
         })}
-        <li class="mdui-subheader">隨機圖片</li>
+        <div class="mdui-subheader">隨機圖片</div>
         ${settingsItem({
             "title":"圖片來源",
             "text":localStorage["randomImgName"],
@@ -432,7 +440,7 @@ async function showSettingsCustomize() {
             "icon":"eva-link-outline",
             "attribute":"data-pic-custom-link"
         })}
-        <li class="mdui-subheader">細節設定</li>
+        <div class="mdui-subheader">細節設定</div>
         ${settingsItem({
             "title":"顯示來源標籤",
             "icon":"eva-bookmark-outline",
@@ -451,45 +459,30 @@ async function showSettingsCustomize() {
                         <i class="mdui-switch-icon"></i>
                     </label>`
         })}
-        <li class="mdui-subheader">主題</li>
+        <div class="mdui-subheader">主題</div>
         ${settingsItem({
             "title":"主題色",
             "text":localStorage["mdui-theme-color"]=='true'?'Dark':'Light',
             "icon":localStorage["mdui-theme-color"]=='true'?'eva-moon-outline':'eva-sun-outline',
             "attribute":`data-theme="mdui-theme-color"`
         })}
-        ${settingsItem({
-            "title":"主色",
-            "text":localStorage["mdui-theme-primary"].replace("-"," "),
-            "icon":"eva-pantone-outline",
-            "attribute":`data-theme="mdui-theme-primary"`
-        })}
-        ${settingsItem({
-            "title":"強調色",
-            "text":localStorage["mdui-theme-accent"].replace("-"," "),
-            "icon":"eva-pantone-outline",
-            "attribute":`data-theme="mdui-theme-accent"`
-        })}
-        <li class="mdui-subheader">實驗性功能</li>
-        ${settingsItem({
-            "title":"底部播放器根據歌曲封面換色",
-            "icon":"eva-play-circle-outline",
-            "attribute":"data-buttonPlayerColorChange",
-            "other":`<label class="mdui-switch">
-                        <input type="checkbox" ${localStorage["buttonPlayerColorChange"]=="true"?"checked":""}/>
-                        <i class="mdui-switch-icon"></i>
-                    </label>`
-        })}
-        ${settingsItem({
-            "title":"實驗性主色更換功能",
-            "icon":"eva-color-picker-outline",
-            "attribute":"data-change-color",
-            "other":`<label class="mdui-switch">
-                        <input type="checkbox" ${localStorage["change-color"]=="true"?"checked":""}/>
-                        <i class="mdui-switch-icon"></i>
-                    </label>`
-        })}
-        </ul>
+        </div>
+        <div id="theme-color">
+            ${colorSelector("#03A9F4","#FFFFFF")}
+            ${colorSelector("#00BCD4","#FFFFFF")}
+            ${colorSelector("#009688","#FFFFFF")}
+            ${colorSelector("#4CAF50","#FFFFFF")}
+            ${colorSelector("#8BC34A","#FFFFFF")}
+            ${colorSelector("#CDDC39","#FFFFFF")}
+            ${colorSelector("#FFEE58","#000000")}
+            ${colorSelector("#FFCA28","#FFFFFF")}
+            ${colorSelector("#FFA726","#FFFFFF")}
+            ${colorSelector("#FF5722","#FFFFFF")}
+            ${colorSelector("#795548","#FFFFFF")}
+            ${colorSelector("#9E9E9E","#FFFFFF")}
+            ${colorSelector("#607D8B","#FFFFFF")}
+            ${colorSelector("#000000","#FFFFFF")}
+        </div>
         <div class="mdui-row-xs-1 mdui-row-sm-2" data-change-color-lab ${localStorage["change-color"]=="true"?``:`style="pointer-events: none; opacity: .5;"`}>
             <div class="mdui-col">
                 <div class="mdui-card">
@@ -517,41 +510,35 @@ async function showSettingsCustomize() {
     $("#content").html(settingItems);
     let primaryColor = new Pickr({
         el: '.theme-primary-color-picker',
-        default: localStorage["poka-theme-primary"] || "#009688",
+        default: localStorage["poka-theme-primary"].toUpperCase() || "#009688",
         showAlways: true,
         components: {
             preview: true,
-            opacity: true,
             hue: true,
             interaction: {
-                hex: true,
-                rgba: true,
-                hsva: true,
                 input: true
             }
         },
         onChange(hsva, instance) {
             $("#colortheme").text(`:root {
-                --poka-theme-primary-color: ${hsva.toRGBA().toString()};
+                --poka-theme-primary-color: ${hsva.toHEX().toString()};
                 --poka-theme-primary-text-color: ${localStorage["poka-theme-primary-text"]};
             }`)
-            localStorage["poka-theme-primary"] = hsva.toRGBA().toString()
+            localStorage["poka-theme-primary"] = hsva.toHEX().toString()
             // 設定狀態欄顏色
-            $("meta[name=theme-color]").attr("content", hsva.toRGBA().toString());
+            $("meta[name=theme-color]").attr("content", hsva.toHEX().toString());
+            //移除預設好的主題啟用狀態
+            $("#theme-color>.colorSelector").removeClass("active")
         }
     });
     let primaryTextColor = new Pickr({
         el: '.theme-primary-text-color-picker',
-        default: localStorage["poka-theme-primary-text"] || "#FFF",
+        default: localStorage["poka-theme-primary-text"].toUpperCase() || "#FFF",
         showAlways: true,
         components: {
             preview: true,
-            opacity: true,
             hue: true,
             interaction: {
-                hex: true,
-                rgba: true,
-                hsva: true,
                 input: true
             }
         },
@@ -559,11 +546,35 @@ async function showSettingsCustomize() {
             hsva.toRGBA().toString()
             $("#colortheme").text(`:root {
                 --poka-theme-primary-color: ${localStorage["poka-theme-primary"]};
-                --poka-theme-primary-text-color: ${hsva.toRGBA().toString()};
+                --poka-theme-primary-text-color: ${hsva.toHEX().toString()};
             }`)
-            localStorage["poka-theme-primary-text"] = hsva.toRGBA().toString()
+            localStorage["poka-theme-primary-text"] = hsva.toHEX().toString()
+            //移除預設好的主題啟用狀態
+            $("#theme-color>.colorSelector").removeClass("active")
         }
     });
+    $("#theme-color>.colorSelector").each(function () {
+        console.log($(this).attr("data-bg") == localStorage["poka-theme-primary"])
+        let active = $(this).attr("data-bg") == localStorage["poka-theme-primary"] && $(this).attr("data-text") == localStorage["poka-theme-primary-text"]
+        if (active) $(this).addClass("active")
+    })
+    $("#theme-color>.colorSelector").click(function () {
+        let colorSelectorPrimary = $(this).attr("data-bg")
+        let colorSelectorPrimaryText = $(this).attr("data-text")
+        localStorage["poka-theme-primary"] = colorSelectorPrimary
+        localStorage["poka-theme-primary-text"] = colorSelectorPrimaryText
+
+        primaryColor.setColor(colorSelectorPrimary)
+        primaryTextColor.setColor(colorSelectorPrimaryText)
+
+        $("#theme-color>.colorSelector").removeClass("active")
+        $(this).addClass("active")
+
+        $("#colortheme").text(`:root {
+            --poka-theme-primary-color: ${localStorage["poka-theme-primary"]};
+            --poka-theme-primary-text-color: ${localStorage["poka-theme-primary-text"]};
+        }`)
+    })
     // 卡片右上角的來源標籤
     $("[data-pokaCardSource]").click(function () {
         $("[data-pokaCardSource] input").prop('checked', !$("[data-pokaCardSource] input").prop('checked'))
@@ -585,18 +596,6 @@ async function showSettingsCustomize() {
         else
             $("[data-change-color-lab]").attr('style', 'pointer-events:none;opacity:.5;filter:grayscale(100%);')
     });
-    //換色好朋友
-    $("[data-buttonPlayerColorChange]").click(function () {
-        $("[data-buttonPlayerColorChange] input").prop('checked', !$("[data-buttonPlayerColorChange] input").prop('checked'))
-        localStorage["buttonPlayerColorChange"] = $("[data-buttonPlayerColorChange] input").prop('checked')
-        if (localStorage["buttonPlayerColorChange"] == "false") {
-            $('#player').css("background-color", ``)
-            $('#player').css("color", ``)
-            $('#player .ctrl .play').addClass('mdui-color-theme-accent')
-        } else {
-            $('#player .ctrl .play').removeClass('mdui-color-theme-accent')
-        }
-    });
     // 主題
     $('[data-theme="mdui-theme-color"]').click(function () {
         localStorage["mdui-theme-color"] = !(localStorage["mdui-theme-color"] == "true")
@@ -615,50 +614,6 @@ async function showSettingsCustomize() {
         //設定顏色
         let metaThemeColor = document.querySelector("meta[name=theme-color]");
         metaThemeColor.setAttribute("content", $('header>div:first-child').css("background-color"));
-    });
-    $('[data-theme="mdui-theme-primary"],[data-theme="mdui-theme-accent"]').click(function () {
-        let accent = $(this).attr('data-theme') == "mdui-theme-accent",
-            option = `<div class="poka color picker cards" style="text-transform:capitalize;">`,
-            colors = ['red', 'pink', 'purple', 'deep-purple', 'indigo', 'blue', 'light-blue', 'cyan', 'teal', 'green', 'light-green', 'lime', 'yellow', 'amber', 'orange', 'deep-orange', 'brown', 'grey', 'blue-grey']
-        for (i = 0; i < colors.length; i++) {
-            if (i <= (colors.length - 3 - 1) && accent || !accent) {
-                let color = colors[i]
-                option += `
-                <a class="card" 
-                   title="${color.replace("-"," ")}"
-                   data-color-type="${accent ? `accent` : `primary`}"
-                   data-color="${color}">
-                    <div class="image mdui-ripple mdui-color-${color}${accent?'-accent':''}"></div>
-                </a>`
-            }
-        }
-        option += "</div>"
-        mdui.dialog({
-            title: `請選擇一個${accent ? `強調色` : `主色`}`,
-            content: option,
-            buttons: [{
-                text: '確定'
-            }]
-        });
-        $('[data-color-type]').click(function () {
-            let isAccent = $(this).attr('data-color-type') == "accent"
-            let color = $(this).attr('data-color')
-            let classStr = $('body').attr('class');
-            let classes = classStr.split(' ');
-            for (i = 0, len = classes.length; i < len; i++) {
-                if (classes[i].indexOf(`mdui-theme-${isAccent?'accent':'primary'}-`) === 0) {
-                    $('body').removeClass(classes[i])
-                }
-            }
-            $('[data-theme="mdui-theme-primary"] .mdui-list-item-text').text(color)
-            $('body').addClass(`mdui-theme-${isAccent?'accent':'primary'}-${color}`)
-            localStorage[`mdui-theme-${isAccent?'accent':'primary'}`] = color
-            if (!isAccent) {
-                //設定顏色
-                let metaThemeColor = document.querySelector("meta[name=theme-color]");
-                metaThemeColor.setAttribute("content", $('header>div:first-child').css("background-color"));
-            }
-        })
     });
     // 隨機圖片
     $('[data-pic-source]').click(function () {
@@ -749,7 +704,7 @@ async function showSettingsCustomize() {
             }]
         mdui.dialog({
             title: '設定圖片來源',
-            content: `<ul class="mdui-list">${imgsOption(imgs)}</ul>`,
+            content: `<div class="mdui-list">${imgsOption(imgs)}</div>`,
             buttons: [{
                 text: '取消'
             }]
@@ -794,13 +749,13 @@ async function showSettingsCustomize() {
 async function showSettingsAbout() {
     $('#content').attr('data-page', 'settings')
     pokaHeader('關於和幫助', '設定')
-    let settingItems = `<ul class="mdui-list">
+    let settingItems = `<div class="mdui-list">
         ${settingsItem({
             "title":"返回",
             "icon":"eva-arrow-ios-back-outline",
             "navigate":"settings"
         })}
-        <li class="mdui-subheader">關於</li>
+        <div class="mdui-subheader">關於</div>
         ${settingsItem({
             "title":"PokaPlayer 版本",
             "text":localStorage["PokaPlayerVersion"],
@@ -808,10 +763,10 @@ async function showSettingsAbout() {
             "attribute":`data-version`,
             "other":`<i class="mdui-list-item-icon mdui-icon" data-count style="opacity: 0;">0</i>`
         })}`
-    settingItems += window.electron ?
+    settingItems += electronData ?
         settingsItem({
             "title": "PokaPlayer Electron 版本",
-            "text": `Pokaplayer-Electron: ${window.electronAppVersion} / Chrome: ${window.electronChromeVersion} / Electron: ${window.electronVersion}`,
+            "text": `Pokaplayer-Electron: ${electronData.appVersion} / Chrome: ${electronData.chromeVersion} / Electron: ${electronData.electronVersion}`,
             "icon": "eva-info-outline",
             "attribute": `data-poka-ele`,
             "other": `<i class="mdui-list-item-icon mdui-icon" data-count style="opacity: 0;">0</i>`
@@ -823,7 +778,7 @@ async function showSettingsAbout() {
                 "icon": "eva-people-outline",
                 "attribute": `data-dev`
         })}
-        <li class="mdui-subheader">外部連結</li>
+        <div class="mdui-subheader">外部連結</div>
         ${settingsItem({
             "title": "GitHub",
             "text": `前往 PokaPlayer 的 GitHub`,
@@ -836,7 +791,7 @@ async function showSettingsAbout() {
             "icon": "eva-alert-triangle-outline",
             "attribute": `onclick="window.open('https://github.com/gnehs/PokaPlayer/issues/new/choose')"`
         })}`
-    settingItems += `</ul>`
+    settingItems += `</div>`
     $("#content").html(settingItems)
 
     // 點七次的彩蛋蛋

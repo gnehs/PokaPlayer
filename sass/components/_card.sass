@@ -3,14 +3,14 @@
 	flex-wrap: wrap
 	margin: -0.875em -1em
 	.card
-		--album-size: calc(16.6% - 1em)
+		--size: calc(16.6% - 1em)
 		height: 0
-		width: var(--album-size)
+		width: var(--size)
 		font-size: 10px
 		margin: .4em .5em
 		background-position: center
 		background-size: cover
-		padding-bottom: var(--album-size)
+		padding-bottom: var(--size)
 		padding: .475em .5em
 		display: block
 		height: auto
@@ -104,15 +104,15 @@
 		&:nth-child(14n+14) .image
 			background-color: #9E9E9E
 	&.three.cards .card
-		--album-size: calc(33.3% - 2em)
+		--size: calc(33.3% - 2em)
 	&.four.cards .card
-		--album-size: calc(25% - 2em)
+		--size: calc(25% - 2em)
 	&.ten.cards .card
-		--album-size: calc(10% - 2em)
+		--size: calc(10% - 2em)
 	&.color.picker.cards
 		margin: 0 -24px
 		> .card
-			--album-size: 14.285714%
+			--size: 14.285714%
 			margin: 0
 			padding: 0
 			> .image
@@ -126,32 +126,32 @@
 @media (max-width: 575.98px)
 	.poka
 		&.cards .card
-			--album-size: calc(50% - 2em)
+			--size: calc(50% - 2em)
 			font-size: 9px
 		&.doubling.four.cards .card
-			--album-size: calc(50% - 2em)
+			--size: calc(50% - 2em)
 
 @media (min-width: 576px) and (max-width: 767.98px)
 	.poka.cards .card
-		--album-size: calc(33.3% - 2em)
+		--size: calc(33.3% - 2em)
 		.image i
 			font-size: 5em
 
 @media (min-width: 768px) and (max-width: 991.98px)
 	.poka.cards .card
-		--album-size: calc(25% - 2em)
+		--size: calc(25% - 2em)
 
 @media (min-width: 992px) and (max-width: 1199.98px)
 	.poka.cards .card
-		--album-size: calc(20% - 2em)
+		--size: calc(20% - 2em)
 
 @media (min-width: 1200px)
 	.poka.cards .card
-		--album-size: calc(16.6% - 2em)
+		--size: calc(16.6% - 2em)
 
 @media (max-width: 575.98px)
 	.poka
 		&.doubling.ten.cards .card
-	 		--album-size: calc(20% - 2em)
+	 		--size: calc(20% - 2em)
 		&.color.picker.cards > .card
-		  	--album-size: calc(20%)
+		  	--size: calc(20%)

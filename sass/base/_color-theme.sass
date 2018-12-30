@@ -1,16 +1,36 @@
-\:root body[color-theme="true"] .mdui-color-theme,body[color-theme="true"] .mdui-theme-layout-dark .mdui-appbar > [class*=mdui-color-]:not(.mdui-color-transparent)
-	color: var(--poka-theme-primary-text-color) !important
-	background-color: var(--poka-theme-primary-color) !important
-
-\:root body[color-theme="true"]
+\:root body
+	.mdui-color-theme,
+	.mdui-theme-layout-dark .mdui-appbar > [class*=mdui-color-]:not(.mdui-color-transparent),
+	.pcr-app .pcr-interaction .pcr-type.active
+		color: var(--poka-theme-primary-text-color) !important
+		background-color: var(--poka-theme-primary-color) !important
+	.mdui-text-color-primary
+		color: var(--poka-theme-primary-color)
 	.mdui-tab .mdui-tab-active
 		color: var(--poka-theme-primary-color)
+	.mdui-switch input[type=checkbox]:checked
+		&+.mdui-switch-icon
+			background-color: var(--poka-theme-primary-color)
+			box-shadow: inset 0 0 0 20px rgba(255, 255, 255, 0.5)
+		&+.mdui-switch-icon:before
+			background-color: var(--poka-theme-primary-color)
+			box-shadow: inset 0 0 0 20px rgba(255, 255, 255, 0.25)
+	.mdui-slider-fill:before,
+	.mdui-slider-thumb,
 	.mdui-tab-indicator
 		background-color: var(--poka-theme-primary-color)
+	.mdui-slider-thumb
+		border: 2px solid var(--poka-theme-primary-color)
 	.mdui-theme-layout-dark
 		.mdui-tab .mdui-tab-active
-		color: var(--poka-theme-primary-text-color)
+			color: var(--poka-theme-primary-text-color)
 		.mdui-tab-indicator
-		background-color: var(--poka-theme-primary-text-color)
+			background-color: var(--poka-theme-primary-text-color)
 	.mdui-text-color-theme
 		color: var(--poka-theme-primary-color) !important
+		
+	&:not(.mdui-theme-layout-dark)
+		#drawer
+			.mdui-list-item
+				&.mdui-list-item-active
+					color: var(--poka-theme-primary-color) !important

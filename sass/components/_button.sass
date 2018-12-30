@@ -1,0 +1,51 @@
+.poka.button
+	color: var(--poka-theme-primary-text-color,#448aff)
+	background-color: var(--poka-theme-primary-color,#fff)
+	position: relative
+	display: inline-block
+	min-width: 6.28em
+	height: 2.57em
+	box-sizing: border-box
+	padding: 0 16px
+	margin: 0
+	overflow: hidden
+	font-size: 1em
+	line-height: 2.57em
+	text-align: center
+	text-decoration: none
+	letter-spacing: .04em
+	white-space: nowrap
+	vertical-align: middle
+	-ms-touch-action: manipulation
+	touch-action: manipulation
+	cursor: pointer
+	zoom: 1
+	user-select: none
+	border: none
+	border-radius: .5714em
+	outline: 0
+	transition: all .2s cubic-bezier(.4,0,.2,1),box-shadow .2s cubic-bezier(.4,0,1,1)
+	will-change: box-shadow
+	-webkit-user-drag: none
+	&.transparent
+		background-color: transparent
+	&.icon
+		min-width: 2.57em
+	&+.poka.button
+		margin-left: 2px
+	&.toggle
+		box-shadow: inset 0 0 0px 3px rgba(0, 0, 0, 0.2)
+		&:not(.active)
+			opacity: .9
+			background-color: transparent
+			color: inherit
+	&:hover
+		opacity: .87
+	&:active
+		opacity: .76
+.mdui-theme-layout-dark .poka.button
+	&.toggle
+		box-shadow: inset 0 0 0px 3px rgba(255, 255, 255, 0.2)
+
+   
+		

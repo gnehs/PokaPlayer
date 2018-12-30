@@ -154,10 +154,6 @@ $(() => {
     $("#player>*:not(.right)").click(() => router.navigate("now"));
     // 初始化 MediaSession
     updateMediaSession()
-    //初始化底部播放器
-    if (localStorage["buttonPlayerColorChange"] == "true") {
-        $('#player .ctrl .play').removeClass('mdui-color-theme-accent')
-    }
     // 綁定鍵盤控制
     keyboardJS.bind('space', e => {
         if (e.target.tagName.toUpperCase() == 'INPUT') return;
@@ -305,7 +301,7 @@ function updateBottomPlayer() {
             timer = currentTime + '/' + duration,
             audioBuffered = ap.audio.currentTime > 1 ? ap.audio.buffered.end(ap.audio.buffered.length - 1) / ap.audio.duration * 100 : 0,
             cent = ap.audio.currentTime / ap.audio.duration * 100,
-            timelineColor = $('.mdui-color-theme-accent').css("background-color") || `var(--poka-theme-primary-color)`,
+            timelineColor = $('.mdui-color-theme').css("background-color") || `var(--poka-theme-primary-color)`,
             timelineBufferedColor = $('body').hasClass("mdui-theme-layout-dark") ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.25)'
         //更新時間
         $('#player .right .timer').text(timer)
@@ -319,27 +315,12 @@ function updateBottomPlayer() {
             transparent ${audioBuffered > 0 ? audioBuffered + 0.01 : cent + 0.01}%,
             transparent 100%
         );`
-
         let img = (localStorage["imgRes"] != "true" && cover) ? cover : getBackground()
+
         $('#player .song-info .name').text(name)
         $('#player .song-info .artist').text(artist)
         $('#player img').attr('src', img)
-        if ($('#player img')[0] && localStorage["buttonPlayerColorChange"] == "true" && localStorage["imgRes"] == "false") {
-            try {
-                let colorThief = new ColorThief()
-                let color = colorThief.getColor($('#player img')[0]);
-                let bgColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`
-                let isLightColor = color[0] > 128 && color[1] > 128 && color[2] > 128
-                let txtColor = isLightColor ? "#000" : "#FFF"
-                $('#player').attr('style', `background-color:${bgColor};color:${txtColor};` + playProcess)
-                $('#player .ctrl .play').css("background-color", isLightColor ? "#0000001c" : "#ffffff4a")
-            } catch (e) {
-                $("body>canvas").remove()
-                $('#player').attr('style', playProcess)
-            }
-        } else {
-            $('#player').attr('style', playProcess)
-        }
+        $('#player').attr('style', playProcess)
     }
 }
 
@@ -520,9 +501,8 @@ function pokaHeader(title, subtitle = '', image = false, hide = false, blur = tr
 function bindFilter() {
     $('[data-filter]').click(function () {
         let source = $(this).attr("data-filter")
-        $(this).hasClass("mdui-color-theme-accent") ? $(this).removeClass("mdui-color-theme-accent") : $(this).addClass("mdui-color-theme-accent")
-        let isFiltered = !$(this).hasClass("mdui-color-theme-accent")
-        $(`[data-source="${source}"]`).css('display', isFiltered ? 'none' : 'block')
+        $(this).hasClass("active") ? $(this).removeClass("active") : $(this).addClass("active")
+        $(this).hasClass("active") ? $(`[data-source="${source}"]`).css('display', '') : $(`[data-source="${source}"]`).css('display', 'none')
     })
 }
 // 首頁
@@ -598,6 +578,8 @@ async function showSearch(keyword) {
         if ($("#content").attr('data-page') == 'search') {
             $("#content").html(html + searchResults)
             mdui.mutation()
+            //-篩選器
+            bindFilter()
         }
     } else
         $("#content").html(html)
@@ -865,7 +847,7 @@ async function showPlaylistFolder(playlistId) {
         <div class="mdui-valign" style="height:150px">
             <p class="mdui-center">
             <a href="playlist" 
-               class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent" 
+               class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme" 
                data-navigo>回播放清單總覽頁面
             </a>
             </p>
@@ -899,7 +881,7 @@ async function showPlaylistSongs(moduleName, playlistId) {
         <div class="mdui-valign" style="height:150px">
             <p class="mdui-center">
             <a href="playlist" 
-               class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent" 
+               class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme" 
                data-navigo>回播放清單總覽頁面
             </a>
             </p>
@@ -912,12 +894,12 @@ async function showPlaylistSongs(moduleName, playlistId) {
     let isPlaylistPinned = await isPinned(moduleName, 'playlist', playlistId, result.playlists[0].name)
     let pinButton = ``
     if (isPlaylistPinned && isPlaylistPinned != 'disabled')
-        pinButton = `<button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-theme-accent" title="從首頁釘選移除此播放清單" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
+        pinButton = `<button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-theme" title="從首頁釘選移除此播放清單" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
     else if (isPlaylistPinned != 'disabled')
-        pinButton = `<button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-theme-accent" title="加入此播放清單到首頁釘選" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
+        pinButton = `<button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-theme" title="加入此播放清單到首頁釘選" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
     let fab = `
     <div class="mdui-fab-wrapper" mdui-fab="{trigger: 'hover'}">
-      <button class="mdui-fab mdui-ripple mdui-color-theme-accent">
+      <button class="mdui-fab mdui-ripple mdui-color-theme">
         <!-- 預設 icon -->
         <i class="mdui-icon material-icons">arrow_drop_up</i>
         <!-- 選單出現時的 icon -->
@@ -925,7 +907,7 @@ async function showPlaylistSongs(moduleName, playlistId) {
       </button>
       <div class="mdui-fab-dial">
         ${pinButton}
-        <button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-theme-accent" 
+        <button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-theme" 
                 title="加入此播放清單所有歌曲到現正播放" 
                 onclick="addSong(songList)">
             <i class="mdui-icon material-icons">playlist_add</i>
@@ -1020,7 +1002,7 @@ async function showNow() {
         <div class="mdui-card" style="background-image:url('${img.replace(/'/g, "\\'")}');">
         </div>
         <div class="info">
-            <div class="title  mdui-text-truncate mdui-text-color-theme-accent">${name}</div>
+            <div class="title  mdui-text-truncate mdui-text-color-theme">${name}</div>
             <div class="artist mdui-text-truncate mdui-text-color-theme-text">${artist + album}</div>
             <div data-lrc>
                 <div data-lrc="inner"></div>
@@ -1028,7 +1010,7 @@ async function showNow() {
             <div class="ctrl">
                 <button class="mdui-btn mdui-btn-icon mdui-ripple random"><i class="mdui-icon material-icons"></i></button>
                 <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="ap.skipBack()"><i class="mdui-icon material-icons">skip_previous</i></button>
-                <button class="mdui-btn mdui-btn-icon mdui-ripple mdui-color-theme-accent play" onclick="ap.toggle()"><i class="mdui-icon material-icons">play_arrow</i></button>
+                <button class="mdui-btn mdui-btn-icon mdui-ripple mdui-color-theme play" onclick="ap.toggle()"><i class="mdui-icon material-icons">play_arrow</i></button>
                 <button class="mdui-btn mdui-btn-icon mdui-ripple" onclick="ap.skipForward()"><i class="mdui-icon material-icons">skip_next</i></button> 
                 <button class="mdui-btn mdui-btn-icon mdui-ripple lrc" onclick="router.navigate('lrc')"><i class="mdui-icon material-icons">subtitles</i></button>
                 <a href="#songlist" class="mdui-btn mdui-btn-icon mdui-ripple playlist"><i class="mdui-icon material-icons">playlist_play</i></a>
@@ -1100,8 +1082,8 @@ async function showNow() {
         $('div[data-lrc="inner"]').html(html)
         let nowLrc = lrc.select(ap.audio.currentTime)
         if (nowLrc > -1) {
-            $('[data-player] div[data-lrc="inner"] p').eq(nowLrc).addClass('mdui-text-color-theme-accent')
-            let sh = $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].offsetTop - $('[data-player] .info>div[data-lrc]').height() / 2 - $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].clientHeight
+            $('[data-player] div[data-lrc="inner"] p').eq(nowLrc).addClass('mdui-text-color-theme')
+            let sh = $('div[data-lrc="inner"] p.mdui-text-color-theme')[0].offsetTop - $('[data-player] .info>div[data-lrc]').height() / 2 - $('div[data-lrc="inner"] p.mdui-text-color-theme')[0].clientHeight
             $('[data-player] .info>div[data-lrc]').scrollTop(sh);
         }
     }
@@ -1162,12 +1144,12 @@ async function showNow() {
         // 歌詞亮亮
         if ($(window).width() > 850 && $(window).height() > 750) {
             let nowLrc = lrc.select(ap.audio.currentTime)
-            let before = $('[data-player] div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0]
+            let before = $('[data-player] div[data-lrc="inner"] p.mdui-text-color-theme')[0]
             let after = $('[data-player] div[data-lrc="inner"] p').eq(nowLrc)[0]
             if (before != after && nowLrc > -1) {
-                $('[data-player] div[data-lrc="inner"] p').removeClass('mdui-text-color-theme-accent')
-                $('[data-player] div[data-lrc="inner"] p').eq(nowLrc).addClass('mdui-text-color-theme-accent')
-                let sh = $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].offsetTop - $('[data-player] .info>div[data-lrc]').height() / 2 - $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].clientHeight
+                $('[data-player] div[data-lrc="inner"] p').removeClass('mdui-text-color-theme')
+                $('[data-player] div[data-lrc="inner"] p').eq(nowLrc).addClass('mdui-text-color-theme')
+                let sh = $('div[data-lrc="inner"] p.mdui-text-color-theme')[0].offsetTop - $('[data-player] .info>div[data-lrc]').height() / 2 - $('div[data-lrc="inner"] p.mdui-text-color-theme')[0].clientHeight
                 $('[data-player] .info>div[data-lrc]')
                     .clearQueue()
                     .animate({
@@ -1230,20 +1212,20 @@ function showLrc() {
         $("#content>div[data-lrc]>[data-lrc=\"inner\"]").html(html)
         let nowLrc = lrc.select(ap.audio.currentTime)
         if (nowLrc > -1) {
-            $('#content>div[data-lrc]>div[data-lrc="inner"] p').eq(nowLrc).addClass('mdui-text-color-theme-accent')
-            let top = $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].offsetTop - $('div[data-lrc]').height() / 2 - $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].clientHeight * 2
+            $('#content>div[data-lrc]>div[data-lrc="inner"] p').eq(nowLrc).addClass('mdui-text-color-theme')
+            let top = $('div[data-lrc="inner"] p.mdui-text-color-theme')[0].offsetTop - $('div[data-lrc]').height() / 2 - $('div[data-lrc="inner"] p.mdui-text-color-theme')[0].clientHeight * 2
             $('#content>div[data-lrc]').scrollTop(top);
         }
     }
     ap.on("timeupdate", () => {
         // 歌詞亮亮
         let nowLrc = lrc.select(ap.audio.currentTime)
-        let before = $('#content>div[data-lrc]>div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0]
+        let before = $('#content>div[data-lrc]>div[data-lrc="inner"] p.mdui-text-color-theme')[0]
         let after = $('#content>div[data-lrc]>div[data-lrc="inner"] p').eq(nowLrc)[0]
         if (before != after && nowLrc > -1) {
-            $('#content>div[data-lrc]>div[data-lrc="inner"] p').removeClass('mdui-text-color-theme-accent')
-            $('#content>div[data-lrc]>div[data-lrc="inner"] p').eq(nowLrc).addClass('mdui-text-color-theme-accent')
-            let top = $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].offsetTop - $('div[data-lrc]').height() / 2 - $('div[data-lrc="inner"] p.mdui-text-color-theme-accent')[0].clientHeight * 2
+            $('#content>div[data-lrc]>div[data-lrc="inner"] p').removeClass('mdui-text-color-theme')
+            $('#content>div[data-lrc]>div[data-lrc="inner"] p').eq(nowLrc).addClass('mdui-text-color-theme')
+            let top = $('div[data-lrc="inner"] p.mdui-text-color-theme')[0].offsetTop - $('div[data-lrc]').height() / 2 - $('div[data-lrc="inner"] p.mdui-text-color-theme')[0].clientHeight * 2
             $('#content>div[data-lrc]')
                 .clearQueue()
                 .animate({
