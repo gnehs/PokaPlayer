@@ -514,7 +514,6 @@ async function showSettingsCustomize() {
         showAlways: true,
         components: {
             preview: true,
-            opacity: true,
             hue: true,
             interaction: {
                 input: true
@@ -538,7 +537,6 @@ async function showSettingsCustomize() {
         showAlways: true,
         components: {
             preview: true,
-            opacity: true,
             hue: true,
             interaction: {
                 input: true
