@@ -586,16 +586,6 @@ async function showSettingsCustomize() {
         $("[data-poka-filter] input").prop('checked', !$("[data-poka-filter] input").prop('checked'))
         localStorage["poka-filter"] = $("[data-poka-filter] input").prop('checked');
     });
-    //換色好朋友
-    $("[data-change-color]").click(function () {
-        $("[data-change-color] input").prop('checked', !$("[data-change-color] input").prop('checked'))
-        localStorage["change-color"] = $("[data-change-color] input").prop('checked')
-        $('body').attr('color-theme', $("[data-change-color] input").prop('checked'))
-        if ($("[data-change-color] input").prop('checked'))
-            $("[data-change-color-lab]").removeAttr('style')
-        else
-            $("[data-change-color-lab]").attr('style', 'pointer-events:none;opacity:.5;filter:grayscale(100%);')
-    });
     // 主題
     $('[data-theme="mdui-theme-color"]').click(function () {
         localStorage["mdui-theme-color"] = !(localStorage["mdui-theme-color"] == "true")
