@@ -8,6 +8,8 @@
 [![Docker Build Status](https://img.shields.io/docker/build/gnehs/pokaplayer.svg)](https://hub.docker.com/r/gnehs/pokaplayer/)
 
 
+![image](https://github.com/gnehs/PokaPlayer/blob/master/public/img/PokaPlayerTransparent.png?raw=true)
+
 # PokaPlayer
 PokaPlayer 是擅長播放音樂的新朋友！
 

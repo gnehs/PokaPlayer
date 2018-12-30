@@ -77,7 +77,7 @@ async function checkUpdate() {
 async function checkPokaEleUpdate(version) {
     let checkUpdate = await request(`https://api.github.com/repos/gnehs/PokaPlayer-electron/releases`);
     let ghversion = checkUpdate[0].tag_name
-    if (compareVersion(version, ghversion) || !electronData) { //electronData 供舊版更新用
+    if (compareVersion(version, ghversion) || !window.electronData) { //electronData 供舊版更新用
         mdui.snackbar(`有新版 PokaPlayer-electron 可供更新：${ghversion}`, {
             buttonText: '更新',
             onButtonClick: () => window.open('https://github.com/gnehs/PokaPlayer-electron/releases/latest'),
@@ -483,7 +483,7 @@ async function showSettingsCustomize() {
             ${colorSelector("#607D8B","#FFFFFF")}
             ${colorSelector("#000000","#FFFFFF")}
         </div>
-        <div class="mdui-row-xs-1 mdui-row-sm-2" data-change-color-lab ${localStorage["change-color"]=="true"?``:`style="pointer-events: none; opacity: .5;"`}>
+        <div class="mdui-row-xs-1 mdui-row-sm-2" data-change-color-lab>
             <div class="mdui-col">
                 <div class="mdui-card">
                     <div class="mdui-card-media">
@@ -553,8 +553,8 @@ async function showSettingsCustomize() {
             $("#theme-color>.colorSelector").removeClass("active")
         }
     });
+    /* 預設選好的主題色 */
     $("#theme-color>.colorSelector").each(function () {
-        console.log($(this).attr("data-bg") == localStorage["poka-theme-primary"])
         let active = $(this).attr("data-bg") == localStorage["poka-theme-primary"] && $(this).attr("data-text") == localStorage["poka-theme-primary-text"]
         if (active) $(this).addClass("active")
     })
@@ -585,16 +585,6 @@ async function showSettingsCustomize() {
     $("[data-poka-filter]").click(function () {
         $("[data-poka-filter] input").prop('checked', !$("[data-poka-filter] input").prop('checked'))
         localStorage["poka-filter"] = $("[data-poka-filter] input").prop('checked');
-    });
-    //換色好朋友
-    $("[data-change-color]").click(function () {
-        $("[data-change-color] input").prop('checked', !$("[data-change-color] input").prop('checked'))
-        localStorage["change-color"] = $("[data-change-color] input").prop('checked')
-        $('body').attr('color-theme', $("[data-change-color] input").prop('checked'))
-        if ($("[data-change-color] input").prop('checked'))
-            $("[data-change-color-lab]").removeAttr('style')
-        else
-            $("[data-change-color-lab]").attr('style', 'pointer-events:none;opacity:.5;filter:grayscale(100%);')
     });
     // 主題
     $('[data-theme="mdui-theme-color"]').click(function () {
@@ -763,7 +753,7 @@ async function showSettingsAbout() {
             "attribute":`data-version`,
             "other":`<i class="mdui-list-item-icon mdui-icon" data-count style="opacity: 0;">0</i>`
         })}`
-    settingItems += electronData ?
+    settingItems += window.electronData ?
         settingsItem({
             "title": "PokaPlayer Electron 版本",
             "text": `Pokaplayer-Electron: ${electronData.appVersion} / Chrome: ${electronData.chromeVersion} / Electron: ${electronData.electronVersion}`,
