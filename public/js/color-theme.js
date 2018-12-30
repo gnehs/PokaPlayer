@@ -3,12 +3,9 @@ $(() => {
         --poka-theme-primary-color: ${localStorage["poka-theme-primary"]};
         --poka-theme-primary-text-color: ${localStorage["poka-theme-primary-text"]};
     }`)
-    if (localStorage["change-color"] == "true")
-        $('body').attr('color-theme', 'true')
 
     // 顏色設定
     $('body').addClass(`mdui-theme-primary-${localStorage["mdui-theme-primary"]}`)
-    $('body').addClass(`mdui-theme-accent-${localStorage["mdui-theme-accent"]}`)
     if (localStorage["mdui-theme-color"] == "true")
         $('body').addClass("mdui-theme-layout-dark")
 

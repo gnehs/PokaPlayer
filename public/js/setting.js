@@ -6,7 +6,6 @@ $(async () => {
         "randomImgName": "預設圖庫",
         "imgRes": "false",
         "pokaSW": "false", //serviceWorker
-        "change-color": "false", // 實驗換色功能
         "pokaCardSource": "true",
         "PokaPlayerVersion": "",
         "poka-filter": "true",
@@ -323,6 +322,7 @@ async function showSettingsNetwork() {
     settingItems += `</ul>`
     $("#content").html(settingItems);
     // 音質設定
+    // TODO: 音質設定可立即生效
     $("[data-music-res]").click(function () {
         mdui.dialog({
             title: '音質設定',
@@ -410,6 +410,7 @@ async function showSettingsNetwork() {
     })
 }
 async function showSettingsCustomize() {
+    // TODO: 自訂 CSS
     $('#content').attr('data-page', 'settings')
     pokaHeader('個人化', "設定")
     let settingItems = `<ul class="mdui-list">
@@ -456,28 +457,6 @@ async function showSettingsCustomize() {
             "text":localStorage["mdui-theme-color"]=='true'?'Dark':'Light',
             "icon":localStorage["mdui-theme-color"]=='true'?'eva-moon-outline':'eva-sun-outline',
             "attribute":`data-theme="mdui-theme-color"`
-        })}
-        ${settingsItem({
-            "title":"主色",
-            "text":localStorage["mdui-theme-primary"].replace("-"," "),
-            "icon":"eva-pantone-outline",
-            "attribute":`data-theme="mdui-theme-primary"  style="text-transform:capitalize;"`
-        })}
-        ${settingsItem({
-            "title":"強調色",
-            "text":localStorage["mdui-theme-accent"].replace("-"," "),
-            "icon":"eva-pantone-outline",
-            "attribute":`data-theme="mdui-theme-accent"  style="text-transform:capitalize;"`
-        })}
-        <li class="mdui-subheader">實驗性功能</li>
-        ${settingsItem({
-            "title":"實驗性主色更換功能",
-            "icon":"eva-color-picker-outline",
-            "attribute":"data-change-color",
-            "other":`<label class="mdui-switch">
-                        <input type="checkbox" ${localStorage["change-color"]=="true"?"checked":""}/>
-                        <i class="mdui-switch-icon"></i>
-                    </label>`
         })}
         </ul>
         <div class="mdui-row-xs-1 mdui-row-sm-2" data-change-color-lab ${localStorage["change-color"]=="true"?``:`style="pointer-events: none; opacity: .5;"`}>
