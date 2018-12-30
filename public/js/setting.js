@@ -557,8 +557,6 @@ async function showSettingsCustomize() {
         }
     });
     $("#theme-color>.colorSelector").click(function () {
-        $("#theme-color>.colorSelector").removeClass("active")
-        $(this).addClass("active")
         let colorSelectorPrimary = $(this).attr("data-bg")
         let colorSelectorPrimaryText = $(this).attr("data-text")
         localStorage["poka-theme-primary"] = colorSelectorPrimary
@@ -566,6 +564,10 @@ async function showSettingsCustomize() {
 
         primaryColor.setColor(colorSelectorPrimary)
         primaryTextColor.setColor(colorSelectorPrimaryText)
+
+        $("#theme-color>.colorSelector").removeClass("active")
+        $(this).addClass("active")
+
         $("#colortheme").text(`:root {
             --poka-theme-primary-color: ${localStorage["poka-theme-primary"]};
             --poka-theme-primary-text-color: ${localStorage["poka-theme-primary-text"]};
