@@ -1,6 +1,6 @@
 {
     "name": "pokaplayer",
-    "version": "0.15.10",
+    "version": "0.16.0",
     "description": "",
     "main": "index.js",
     "scripts": {
