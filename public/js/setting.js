@@ -483,7 +483,7 @@ async function showSettingsCustomize() {
             ${colorSelector("#607D8B","#FFFFFF")}
             ${colorSelector("#000000","#FFFFFF")}
         </div>
-        <div class="mdui-row-xs-1 mdui-row-sm-2" data-change-color-lab ${localStorage["change-color"]=="true"?``:`style="pointer-events: none; opacity: .5;"`}>
+        <div class="mdui-row-xs-1 mdui-row-sm-2" data-change-color-lab>
             <div class="mdui-col">
                 <div class="mdui-card">
                     <div class="mdui-card-media">
