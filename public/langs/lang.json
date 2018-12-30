@@ -1,0 +1,11 @@
+{
+    "langs": [{
+        "code": "zh-TW",
+        "name": "中文（台灣）",
+        "contributions": [{
+            "name": "gnehs",
+            "link": "https://github.com/gnehs"
+        }],
+        "src": "/langs/zh-TW.json"
+    }]
+}
