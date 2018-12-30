@@ -77,7 +77,7 @@ async function checkUpdate() {
 async function checkPokaEleUpdate(version) {
     let checkUpdate = await request(`https://api.github.com/repos/gnehs/PokaPlayer-electron/releases`);
     let ghversion = checkUpdate[0].tag_name
-    if (compareVersion(version, ghversion) || !electronData) { //electronData 供舊版更新用
+    if (compareVersion(version, ghversion) || !window.electronData) { //electronData 供舊版更新用
         mdui.snackbar(`有新版 PokaPlayer-electron 可供更新：${ghversion}`, {
             buttonText: '更新',
             onButtonClick: () => window.open('https://github.com/gnehs/PokaPlayer-electron/releases/latest'),
@@ -553,8 +553,8 @@ async function showSettingsCustomize() {
             $("#theme-color>.colorSelector").removeClass("active")
         }
     });
+    /* 預設選好的主題色 */
     $("#theme-color>.colorSelector").each(function () {
-        console.log($(this).attr("data-bg") == localStorage["poka-theme-primary"])
         let active = $(this).attr("data-bg") == localStorage["poka-theme-primary"] && $(this).attr("data-text") == localStorage["poka-theme-primary-text"]
         if (active) $(this).addClass("active")
     })
@@ -753,7 +753,7 @@ async function showSettingsAbout() {
             "attribute":`data-version`,
             "other":`<i class="mdui-list-item-icon mdui-icon" data-count style="opacity: 0;">0</i>`
         })}`
-    settingItems += electronData ?
+    settingItems += window.electronData ?
         settingsItem({
             "title": "PokaPlayer Electron 版本",
             "text": `Pokaplayer-Electron: ${electronData.appVersion} / Chrome: ${electronData.chromeVersion} / Electron: ${electronData.electronVersion}`,
