@@ -1,0 +1,33 @@
+.poka.list
+    .item
+        display: flex
+        line-height: 1.5em
+        color: inherit
+        text-decoration: none    
+        align-items: center
+        letter-spacing: .01785714em
+        padding: 0.66em 0 0.66em 1em
+        &:hover
+            background-color: rgba(101, 99, 99, 0.08)
+        &.active
+            background-color: var(--poka-theme-primary-color)
+            color: var(--poka-theme-primary-text-color)
+        i     
+            font-size: 1.2em
+            margin-right: 1em
+    .divider
+        font-size: .85em
+        border-top: 1px solid rgba(0, 0, 0, 0.2)
+        margin: .533rem .66rem 
+        opacity: .7
+        body.theme-dark &
+            border-top: 1px solid rgba(255, 255, 255, 0.2)
+        &:not(:empty)
+            padding-top: .4rem
+            padding-left: .4rem
+@media screen and (min-width: 1024px)
+    .poka.list
+        &.left.drawer .item
+            border-radius: 0 500em 500em 0
+        &.right.drawer .item
+            border-radius: 500em 0 0 500em
