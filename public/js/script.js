@@ -134,9 +134,9 @@ router
         },
         after: params => {
             $('#drawer a')
-                .removeClass('mdui-color-theme mdui-list-item-active')
+                .removeClass('active')
             $(`#drawer a[href="${$('#content').attr('data-page')}"]`)
-                .addClass('mdui-color-theme mdui-list-item-active')
+                .addClass('active')
         }
     })
 
@@ -145,7 +145,7 @@ $(() => {
     // 在進入網頁時嘗試登入
     tryRelogin()
 
-    $(`#drawer a[href="${$("#content").attr("data-page")}"]`).addClass("mdui-list-item-active mdui-color-theme");
+    $(`#drawer a[href="${$("#content").attr("data-page")}"]`).addClass("active");
     $(`#drawer a`).click(function () {
         if ($(window).width() < 1024) {
             new mdui.Drawer("#drawer").close();

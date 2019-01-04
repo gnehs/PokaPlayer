@@ -598,9 +598,9 @@ async function showSettingsCustomize() {
             $('[data-theme="mdui-theme-color"] i').addClass('eva-sun-outline')
         }
         if (localStorage["mdui-theme-color"] == "true")
-            $('body').addClass("mdui-theme-layout-dark")
+            $('body').addClass("mdui-theme-layout-dark theme-dark")
         else
-            $('body').removeClass("mdui-theme-layout-dark")
+            $('body').removeClass("mdui-theme-layout-dark theme-dark")
         //設定顏色
         let metaThemeColor = document.querySelector("meta[name=theme-color]");
         metaThemeColor.setAttribute("content", $('header>div:first-child').css("background-color"));
