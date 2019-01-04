@@ -39,7 +39,7 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 // SASS 好朋友
-if (config.PokaPlayer.debug) {
+if (config && config.PokaPlayer.debug) {
     app.use(require('node-sass-middleware')({
         src: __dirname + '/sass',
         dest: __dirname + '/public/css',
