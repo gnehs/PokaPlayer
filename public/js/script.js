@@ -1004,7 +1004,7 @@ async function showNow() {
 
     let nowPlaying = ap.list.audios[ap.list.index],
         name = nowPlaying ? nowPlaying.name : "PokaPlayer",
-        artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點擊播放鍵開始隨機播放",
+        artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點選播放鍵開始隨機播放",
         album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>",
         img = (nowPlaying && localStorage["imgRes"] != "true" && nowPlaying.cover) ? nowPlaying.cover : getBackground(),
         currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00",
@@ -1120,7 +1120,7 @@ async function showNow() {
         $('[data-player] button.play[onclick="ap.toggle()"] i').text("pause")
         let nowPlaying = ap.list.audios[ap.list.index]
         let name = nowPlaying ? nowPlaying.name : "PokaPlayer"
-        let artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點擊播放鍵開始隨機播放"
+        let artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點選播放鍵開始隨機播放"
         let album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>"
         let img = (nowPlaying && localStorage["imgRes"] != "true" && nowPlaying.cover) ? nowPlaying.cover : getBackground(); //一定會有圖片
         $('[data-player]>.mdui-card').attr('style', `background-image:url('${img.replace(/'/g, "\\'")}');`)
@@ -1513,7 +1513,7 @@ async function songAction(songID, source) {
                         ${icon}
                         <div class="mdui-list-item-content">
                             <div class="mdui-list-item-title">${userPlaylists[i].name}</div>
-                            <div class="mdui-list-item-text">${moduleShowName[userPlaylists[i].source]}${exist?` / 該歌曲已存在，點擊來刪除`:``}</div>
+                            <div class="mdui-list-item-text">${moduleShowName[userPlaylists[i].source]}${exist?` / 該歌曲已存在，點選來刪除`:``}</div>
                         </div>
                         <i class="mdui-list-item-icon mdui-icon ${exist?`eva eva-trash-2-outline`:`material-icons`} mdui-text-color-grey-400">${exist?``:`playlist_add`}</i>
                 </li>`).click(async () => {
