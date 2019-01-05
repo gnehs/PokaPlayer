@@ -41,8 +41,9 @@ app.use(bodyParser.urlencoded({
 // SASS 好朋友
 if (config && config.PokaPlayer.debug) {
     app.use(require('node-sass-middleware')({
-        src: __dirname + '/sass',
+        src: __dirname + '/public/sass',
         dest: __dirname + '/public/css',
+        sourceMap: __dirname + '/public/css/pokaplayer.map',
         outputStyle: 'compressed',
         indentedSyntax: true,
         prefix: '/css'

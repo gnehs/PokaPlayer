@@ -95,9 +95,10 @@
 			font-size: 12px
 			letter-spacing: .04em
 			opacity: .87
-	.mdui-snackbar-bottom
-		bottom: 67px !important
-		z-index: 1998
+	body:not(.login)
+		.mdui-snackbar-bottom
+			bottom: 67px !important
+			z-index: 1998
 
 @media screen and (max-width: 512px)
 	#player .timer

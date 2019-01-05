@@ -11,6 +11,7 @@ $(function () {
     });
     $("main").attr('style', 'margin-top:25vh;')
     $("main").animateCss('zoomIn')
+    $(`input[id="userPASS"]`).focus()
 });
 
 function check() {

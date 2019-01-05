@@ -2,7 +2,7 @@ doctype html
 html
     head
         title PokaPlayer
-        meta(name='viewport', content='width=device-width, initial-scale=1.0')       
+        meta(name='viewport', content='width=device-width, initial-scale=1.0, user-scalable=no')       
         link(href='//cdnjs.cloudflare.com/ajax/libs/mdui/0.4.2/css/mdui.min.css',rel='stylesheet')
         link(href='//cdn.jsdelivr.net/npm/pickr-widget/dist/pickr.min.css',rel='stylesheet')
         link(href='//daneden.github.io/animate.css/animate.min.css',rel='stylesheet')
@@ -46,10 +46,8 @@ html
                 +link("資料夾","folder","eva-folder-outline")
                 +link("演出者","artist","eva-mic-outline")
                 +link("作曲者","composer","eva-music-outline")
-                .divider 播放清單
-                +link("所有清單","playlist","eva-list-outline")
-                +link("隨機播放","random","eva-shuffle-2-outline")
-                .divider 其他
+                +link("播放清單","playlist","eva-list-outline")
+                .divider
                 +link("設定","settings","eva-settings-2-outline")
         #header-wrapper
             .bg2
@@ -76,6 +74,7 @@ html
                         i.mdui-icon.material-icons skip_next
         script(src='//cdnjs.cloudflare.com/ajax/libs/aplayer/1.10.1/APlayer.min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js')
+        script(src='/js/nprogress.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/showdown/1.8.6/showdown.min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/keyboardjs/2.4.1/keyboard.min.js')

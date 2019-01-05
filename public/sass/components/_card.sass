@@ -2,6 +2,7 @@
 	display: flex
 	flex-wrap: wrap
 	margin: -0.875em -1em
+	width: 100%
 	.card
 		--size: calc(16.6% - 1em)
 		height: 0
@@ -66,6 +67,10 @@
 			bottom: 0
 			left: 0
 			position: absolute
+			&::before
+				font-size: 1em
+				width: auto
+				height: auto
 		.title
 			font-size: 1.8em
 			padding-top: 5px

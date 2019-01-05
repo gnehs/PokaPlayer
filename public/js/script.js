@@ -111,10 +111,10 @@ router
         'artist': showArtist,
         'composer/:source/:composer': params => showComposer(params.source, params.composer),
         'composer': showComposer,
+        'playlist/Poka/random': showRandom,
         'playlist/:source/:playlistID': params => showPlaylistSongs(params.source, params.playlistID),
         'playlistFolder/:playlistID': params => showPlaylistFolder(params.playlistID),
         'playlist': showPlaylist,
-        'random': showRandom,
         'now*': showNow,
         'lrc': showLrc,
         'settings': showSettings,
@@ -133,6 +133,7 @@ router
             done()
         },
         after: params => {
+            $('html, body').scrollTop(0);
             $('#drawer a')
                 .removeClass('active')
             $(`#drawer a[href="${$('#content').attr('data-page')}"]`)
@@ -140,6 +141,7 @@ router
         }
     })
 
+loadProgressBar()
 // 初始化網頁
 $(() => {
     // 在進入網頁時嘗試登入
@@ -301,8 +303,8 @@ function updateBottomPlayer() {
             timer = currentTime + '/' + duration,
             audioBuffered = ap.audio.currentTime > 1 ? ap.audio.buffered.end(ap.audio.buffered.length - 1) / ap.audio.duration * 100 : 0,
             cent = ap.audio.currentTime / ap.audio.duration * 100,
-            timelineColor = $('.mdui-color-theme').css("background-color") || `var(--poka-theme-primary-color)`,
-            timelineBufferedColor = $('body').hasClass("mdui-theme-layout-dark") ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.25)'
+            timelineColor = `var(--poka-theme-primary-color)`,
+            timelineBufferedColor = $('body').hasClass("theme-dark") ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.25)'
         //更新時間
         $('#player .right .timer').text(timer)
         // 更新進度條
@@ -310,9 +312,9 @@ function updateBottomPlayer() {
         linear-gradient(to right,
             ${timelineColor} 0%,
             ${timelineColor} ${cent}%,
-            ${timelineBufferedColor} ${cent + 0.01}%,
-            ${timelineBufferedColor} ${audioBuffered > 0 ? audioBuffered : cent + 0.01}%,
-            transparent ${audioBuffered > 0 ? audioBuffered + 0.01 : cent + 0.01}%,
+            ${timelineBufferedColor} ${cent}%,
+            ${timelineBufferedColor} ${audioBuffered > 0 ? audioBuffered : cent}%,
+            transparent ${audioBuffered > 0 ? audioBuffered : cent}%,
             transparent 100%
         );`
         let img = (localStorage["imgRes"] != "true" && cover) ? cover : getBackground()
@@ -510,8 +512,12 @@ async function showHome() {
     $('#content').attr('data-page', 'home')
     // 展示讀取中
     pokaHeader("歡迎使用", `PokaPlayer ${localStorage["PokaPlayerVersion"] || ''}`)
-    $("#content").html(template.getSpinner())
-    mdui.mutation()
+
+    let placehoader = (localStorage["poka-filter"] == "true" ? template.getPlacehoader('filter') : "") +
+        template.getPlacehoader("header") +
+        template.getPlacehoader()
+    $("#content").html(placehoader)
+
 
     let result = await request(`/pokaapi/home`)
 
@@ -566,8 +572,10 @@ async function showSearch(keyword) {
     let noResult = `<div class="mdui-valign" style="height:150px"><p class="mdui-center">${noResultTexts[Math.floor(Math.random() * noResultTexts.length)]}</p></div>`
     if (keyword) {
         // 先輸出搜尋中
-        let searching = `<div class="mdui-valign" style="height:150px"><p class="mdui-center">搜尋中...</p></div>`
-        $("#content").html(html + searching)
+        let placehoader = (localStorage["poka-filter"] == "true" ? template.getPlacehoader('filter') : "") +
+            template.getPlacehoader('tab') +
+            template.getPlacehoader()
+        $("#content").html(html + placehoader)
 
         let result = await request(`/pokaapi/search/?keyword=${keyword}`);
         let searchResults = template.parseSearch(result);
@@ -605,8 +613,7 @@ async function showAlbum() {
     // 展示讀取中
     pokaHeader("專輯", "列出所有專輯")
     $('#content').attr('data-page', 'album')
-    $("#content").html(template.getSpinner())
-    mdui.mutation()
+    $("#content").html(template.getPlacehoader())
     let result = await request('/pokaapi/albums')
     let html = template.parseAlbums(result.albums)
     if ($("#content").attr('data-page') == 'album') {
@@ -702,8 +709,7 @@ async function showFolder(moduleName, folderId = false) {
     $("#content").attr('data-item', 'folder' + folderId)
     // 展示讀取中
     pokaHeader("資料夾", "檢視資料夾的項目")
-    $("#content").html(template.getSpinner())
-    mdui.mutation()
+    $("#content").html(template.getPlacehoader('list'))
 
     let url;
     if (folderId) {
@@ -730,8 +736,7 @@ async function showArtist(moduleName, artist = false) {
     if ($("#content").attr('data-item') == artist && moduleName ? `artist${artist}` : `artist`)
         pokaHeader(artist ? (moduleName == 'DSM' ? artist : data.name) : "演出者", artist ? moduleShowName[moduleName] : "列出所有演出者", cover)
     $("#content").attr('data-page', 'artist')
-    $("#content").html(template.getSpinner())
-    mdui.mutation()
+    $("#content").html(template.getPlacehoader())
     if (artist && moduleName) {
         $("#content").attr('data-item', `artist${artist}`)
         let result = await request(`/pokaapi/artistAlbums/?moduleName=${encodeURIComponent(moduleName)}&id=${artist == '未知' ? '' : encodeURIComponent(artist)}`),
@@ -774,8 +779,7 @@ async function showArtist(moduleName, artist = false) {
 async function showComposer(moduleName, composer) {
     let cover = `/pokaapi/cover/?moduleName=${encodeURIComponent(moduleName)}&data=${encodeURIComponent(JSON.stringify({ "type": "composer", "info": composer == '未知' ? '' : composer }))}`
     $("#content").attr('data-page', 'composer')
-    $("#content").html(template.getSpinner())
-    mdui.mutation()
+    $("#content").html(template.getPlacehoader())
     if (composer && moduleName) {
         pokaHeader(composer, '讀取中...', cover)
         $("#content").attr('data-item', `composer${composer}`)
@@ -823,10 +827,18 @@ async function showComposer(moduleName, composer) {
 async function showPlaylist() {
     // 展示讀取中
     pokaHeader("所有清單", '播放清單')
-    $("#content").html(template.getSpinner())
+
+    let placehoader = (localStorage["poka-filter"] == "true" ? template.getPlacehoader('filter') : "") +
+        template.getPlacehoader()
+    $("#content").html(placehoader)
     $('#content').attr('data-page', 'playlist')
-    mdui.mutation()
     let result = await request(`/pokaapi/playlists`)
+    // 插入隨機播放清單
+    result.playlists.unshift({
+        id: "random",
+        name: "隨機播放",
+        source: "Poka"
+    })
     if ($("#content").attr('data-page') == 'playlist') {
         $("#content").html(result.playlists.length > 0 ? template.parsePlaylists(result.playlists) : nothingHere())
         router.updatePageLinks()
@@ -941,9 +953,10 @@ async function showPlaylistSongs(moduleName, playlistId) {
 //- 隨機播放
 async function showRandom() {
     // 展示讀取中
-    pokaHeader("隨機播放", '隨機取出曲目')
+    pokaHeader("隨機播放", '播放清單')
     $("#content").html(template.getSpinner())
-    $('#content').attr('data-page', 'random')
+    $('#content').attr('data-page', 'playlist')
+    $("#content").attr('data-item', `playlistrandom`)
     mdui.mutation()
     let result = await request(`/pokaapi/randomSongs`)
     let fab = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" 
@@ -951,7 +964,7 @@ async function showRandom() {
                        onclick="addSong(songList)">
                        <i class="mdui-icon material-icons">playlist_add</i>
                 </button>`
-    if ($("#content").attr('data-page') == 'random')
+    if ($("#content").attr('data-page') == 'playlist' && $("#content").attr('data-item') == `playlistrandom`)
         $("#content").html(result.songs.length > 0 ? template.parseSongs(result.songs) + fab : nothingHere())
 }
 async function playRandom() {
