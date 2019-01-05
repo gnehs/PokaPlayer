@@ -71,7 +71,7 @@ const template = {
                     <div class="mdui-tab-indicator" style="left: 0px; width: 112px;"></div>
                 </div>`
             case "filter":
-                return `<div class="mdui-text-right placeholder">
+                return `<div class="mdui-text-right placeholder" style="margin-bottom: 10px;">
                             <button class="poka button toggle active"><i class="mdui-icon eva eva-funnel-outline"></i> ${randomLabel()}</button>
                             <button class="poka button toggle active"><i class="mdui-icon eva eva-funnel-outline"></i> ${randomLabel()}</button>
                         </div>`
