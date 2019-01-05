@@ -4,15 +4,15 @@
 .placeholder
     font-family: 'blokk'
     pointer-events: none
-    animation: placeholder 5s linear infinite
+    animation: placeholder 20s linear infinite
     mask-image: linear-gradient(to right,rgba(0,0,0,.2) 0%,rgba(0,0,0,.4) 50%,rgba(0,0,0,.2) 100%)
     -webkit-mask-image: linear-gradient(to right,rgba(0,0,0,.2) 30%,rgba(0,0,0,.4) 50%,rgba(0,0,0,.2) 70%)
     mask-size: 100vw 100%
     filter: grayscale(1)
 @keyframes placeholder 
-    0%,20%
+    from
         mask-position: -200vw 0
         -webkit-mask-position: -200vw 0
-    80%,100%
-        mask-position: 100vw 0
-        -webkit-mask-position: 100vw 0
+    to
+        mask-position: 1200vw 0
+        -webkit-mask-position: 1200vw 0
