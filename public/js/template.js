@@ -267,12 +267,16 @@ const template = {
             if (image && localStorage["imgRes"] != "true") {
                 img = `style="background-image:url('${image}')"`
                 icon = ``
+            } else if (id == "random") {
+                img = ``
+                icon = `<i class="mdui-icon eva eva-shuffle"></i>`
             } else {
                 img = ``
-                icon = `<i class="mdui-icon material-icons">playlist_play</i>`
+                icon = `<i class="mdui-icon eva eva-play-circle"></i>`
             }
             let href = `playlist/${encodeURIComponent(source)}/${encodeURIComponent(id)}`
             if (type == 'folder') {
+                if (img == "") icon = `<i class="mdui-icon eva eva-folder"></i>`
                 let randomLink = Math.random().toString(36).substring(8)
                 href = `playlistFolder/${id}-${randomLink}`
                 temporalPlaylist[`${id}-${randomLink}`] = playlist
