@@ -1,5 +1,87 @@
 const template = {
     getSpinner: () => `<div class="mdui-spinner mdui-spinner-colorful mdui-center" style="margin:50px 0"></div>`,
+    getPlacehoader(style = 'card') {
+        let randomText = () => {
+            let texts = [
+                "dhhfhdhdhf dhd",
+                "ryy ryryhry",
+                "ryryryryryr gkkhlhl",
+                "dgdgdgg dgdd",
+                "fjfdjxhd ssst",
+            ]
+            return texts[Math.floor(Math.random() * texts.length)]
+        }
+        let randomLabel = () => {
+            let texts = [
+                "dgd",
+                "fjsst",
+                "hfhjyw5",
+                "hgjfjggg",
+                "hgjfjhggg",
+                "dhfdjfdtwk",
+            ]
+            return texts[Math.floor(Math.random() * texts.length)]
+        }
+        switch (style) {
+            case "card":
+                let r = `<div class="poka cards placeholder">`
+                for (i = 0; i < 30; i++)
+                    r += `<a class="card" 
+                        title="${randomText()}"
+                        data-source="POKA" 
+                        data-navigo>
+                        <div class="image mdui-ripple"><i class="mdui-icon eva eva-play-circle"></i></div>
+                        <div class="title mdui-text-color-theme-text mdui-text-truncate">${randomLabel()}</div>
+                        <div class="subtitle mdui-text-color-theme-text mdui-text-truncate">${randomText()}</div>
+                    </a>`
+                r += `</div>`
+                return r
+            case "list":
+                let html = `<div class="mdui-list placeholder">`
+                for (i = 0; i < 30; i++) {
+                    html += `<div class="mdui-list-item" 
+                         data-source="${randomText()}" 
+                         data-navigo>
+                            <i class="mdui-list-item-icon mdui-icon material-icons">folder</i>
+                            <div class="mdui-list-item-content">${randomText()}</div>`
+                    if (localStorage["pokaCardSource"] == "true")
+                        html += `<div class="mdui-list-item-source">poka</div>`
+                    html += `</div>`
+                }
+                html += `</div>`
+                return html
+            case "tab":
+                return `<div class="mdui-tab placeholder" mdui-tab="" style="margin-bottom: 10px;">
+                    <a class="mdui-ripple mdui-tab-active">
+                        <i class="mdui-icon">30</i>
+                        <label>${randomLabel()}</label>
+                    </a>
+                    <a class="mdui-ripple">
+                        <i class="mdui-icon">19</i>
+                        <label>${randomLabel()}</label>
+                    </a>
+                    <a class="mdui-ripple">
+                        <i class="mdui-icon">30</i>
+                        <label>${randomLabel()}</label>
+                    </a>
+                    <a class="mdui-ripple">
+                        <i class="mdui-icon">30</i>
+                        <label>${randomLabel()}</label>
+                    </a>
+                    <div class="mdui-tab-indicator" style="left: 0px; width: 112px;"></div>
+                </div>`
+            case "filter":
+                return `<div class="mdui-text-right placeholder">
+                            <button class="poka button toggle active"><i class="mdui-icon eva eva-funnel-outline"></i> ${randomLabel()}</button>
+                            <button class="poka button toggle active"><i class="mdui-icon eva eva-funnel-outline"></i> ${randomLabel()}</button>
+                        </div>`
+            case "header":
+                return `<div class="mdui-typo placeholder">
+                            <h1><strong>${randomText()}</strong><br><small>${randomLabel()} ${randomText()}</small></h1>
+                        </div>`
+
+        }
+    },
     parseHome(data) {
         let filter = `<div class="mdui-text-right">`
         let filterSource = {}
