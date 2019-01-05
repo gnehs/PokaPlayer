@@ -111,10 +111,10 @@ router
         'artist': showArtist,
         'composer/:source/:composer': params => showComposer(params.source, params.composer),
         'composer': showComposer,
+        'playlist/Poka/random': showRandom,
         'playlist/:source/:playlistID': params => showPlaylistSongs(params.source, params.playlistID),
         'playlistFolder/:playlistID': params => showPlaylistFolder(params.playlistID),
         'playlist': showPlaylist,
-        'random': showRandom,
         'now*': showNow,
         'lrc': showLrc,
         'settings': showSettings,
@@ -827,6 +827,12 @@ async function showPlaylist() {
     $('#content').attr('data-page', 'playlist')
     mdui.mutation()
     let result = await request(`/pokaapi/playlists`)
+    // 插入隨機播放清單
+    result.playlists.unshift({
+        id: "random",
+        name: "隨機播放",
+        source: "Poka"
+    })
     if ($("#content").attr('data-page') == 'playlist') {
         $("#content").html(result.playlists.length > 0 ? template.parsePlaylists(result.playlists) : nothingHere())
         router.updatePageLinks()
@@ -941,9 +947,10 @@ async function showPlaylistSongs(moduleName, playlistId) {
 //- 隨機播放
 async function showRandom() {
     // 展示讀取中
-    pokaHeader("隨機播放", '隨機取出曲目')
+    pokaHeader("隨機播放", '播放清單')
     $("#content").html(template.getSpinner())
-    $('#content').attr('data-page', 'random')
+    $('#content').attr('data-page', 'playlist')
+    $("#content").attr('data-item', `playlistrandom`)
     mdui.mutation()
     let result = await request(`/pokaapi/randomSongs`)
     let fab = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" 
@@ -951,7 +958,7 @@ async function showRandom() {
                        onclick="addSong(songList)">
                        <i class="mdui-icon material-icons">playlist_add</i>
                 </button>`
-    if ($("#content").attr('data-page') == 'random')
+    if ($("#content").attr('data-page') == 'playlist' && $("#content").attr('data-item') == `playlistrandom`)
         $("#content").html(result.songs.length > 0 ? template.parseSongs(result.songs) + fab : nothingHere())
 }
 async function playRandom() {
