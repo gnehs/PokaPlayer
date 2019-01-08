@@ -1,6 +1,18 @@
 // 初始化設定值
 $(async () => {
     let defaultSetting = {
+        /*"pokaSetting": JSON.stringify({
+            "audioQuality": localStorage["musicRes"] || "High", //音質
+            "randomImgSource": localStorage["randomImg"] || "/og/og.png",
+            "randomImgName": localStorage["randomImgName"] || "預設圖庫",
+            "imageDataSaving": localStorage["imgRes"] || "false",
+            "serviceWorkerEnabled": localStorage["pokaSW"] || "false",
+            "showCardSource": localStorage["pokaCardSource"] || "true",
+            "version": "",
+            "filterEnabled": localStorage["poka-filter"] || "true",
+            "themeColor": localStorage["poka-theme-primary"] || "#009688",
+            "themeTextColor": localStorage["poka-theme-primary-text"] || "#FFF",
+        }),*/
         "musicRes": "High", //音質
         "randomImg": "/og/og.png",
         "randomImgName": "預設圖庫",
@@ -28,30 +40,29 @@ $(async () => {
             $("#header-wrapper .title .subtitle").text(`PokaPlayer ${version}`)
     localStorage["PokaPlayerVersion"] = version;
 
+    // debug
+    sessionStorage.debug = await request('/debug/')
+
     //serviceWorker
     if ('serviceWorker' in navigator && localStorage["pokaSW"] == "true") {
         navigator.serviceWorker
             .register('/sw.js', {
                 scope: '/'
             })
-            .then(reg => {
-                if (version != localStorage["PokaPlayerVersion"]) reg.update()
-            })
+            .then(reg => version != localStorage["PokaPlayerVersion"] ? reg.update() : void(0))
             .catch(err => console.log('Error!', err));
     } else {
         navigator.serviceWorker
-            .getRegistration("/").then(reg => {
-                reg ? reg.unregister() : void(0)
-            })
+            .getRegistration("/").then(reg => reg ? reg.unregister() : void(0))
             .catch(err => console.log('Error!', err));
     }
     // 檢查更新
     console.time('檢查更新');
-    let checkVersion = (await checkUpdate()).version
+    let checkVersion = (await checkUpdate())
     console.timeEnd('檢查更新'); // 測時間
-    if (checkVersion) mdui.snackbar(`有新版本可更新 ${checkVersion}`, {
+    if (checkVersion.version) mdui.snackbar(`有新版本可更新 ${checkVersion.version}`, {
         buttonText: '更新',
-        onButtonClick: () => router.navigate("settings/system"),
+        onButtonClick: () => showUpdateDialog(checkVersion),
         position: getSnackbarPosition()
     })
 });
@@ -139,7 +150,6 @@ async function showSettings() {
     $("#content").html(settingItems);
 }
 async function showSettingsSystem() {
-
     pokaHeader('系統和更新', "設定")
     let settingItems = `<div class="mdui-list">
         ${settingsItem({
@@ -192,68 +202,69 @@ async function showSettingsSystem() {
         })
     })
     //更新
-    $("[data-upgrade=\"true\"]").click(() => {
-        let content = `<div class="mdui-typo">
-                    ${new showdown.Converter().makeHtml(checkNewVersion.changelog)}
-                    <hr>
-                    注意：若您未開啟 Docker 自動重啟功能，您必須手動開啟 PokaPlayer`
-        if (debug)
-            content += `</br>若在開發機器上進行更新，<mark>可能導致 Git 爆炸</mark>`
-        content += `</div>`
-        mdui.dialog({
-            title: `${checkNewVersion.version?checkNewVersion.version+' ':''}更新日誌`,
-            content: content,
-            buttons: [{
-                    text: '取消'
-                },
-                {
-                    text: '更新',
-                    onClick: async inst => {
-                        mdui.snackbar('正在更新...', {
+    $("[data-upgrade=\"true\"]").click(() => showUpdateDialog(checkNewVersion))
+}
+async function showUpdateDialog(checkNewVersion, debug = sessionStorage.debug) {
+    let content = `<div class="mdui-typo">
+    ${new showdown.Converter().makeHtml(checkNewVersion.changelog)}
+    <hr>
+    注意：若您未開啟 Docker 自動重啟功能，您必須手動開啟 PokaPlayer`
+    if (debug)
+        content += `</br>若在開發機器上進行更新，<mark>可能導致 Git 爆炸</mark>`
+    content += `</div>`
+    mdui.dialog({
+        title: `${checkNewVersion.version?checkNewVersion.version+' ':''}更新日誌`,
+        content: content,
+        buttons: [{
+                text: '取消'
+            },
+            {
+                text: '更新',
+                onClick: async inst => {
+                    mdui.snackbar('正在更新...', {
+                        position: getSnackbarPosition()
+                    });
+                    let update = await request('/upgrade/')
+                    if (update == "upgrade") {
+                        mdui.snackbar('伺服器重新啟動', {
+                            buttonText: '重新連接',
+                            onButtonClick: () => window.location.reload(),
                             position: getSnackbarPosition()
-                        });
-                        let update = await request('/upgrade/')
-                        if (update == "upgrade") {
-                            mdui.snackbar('伺服器重新啟動', {
-                                buttonText: '重新連接',
-                                onButtonClick: () => window.location.reload(),
+                        })
+                    } else if (update == "socket") {
+                        socket.emit('update')
+                        socket.on('Permission Denied Desu', () => mdui.snackbar('Permission Denied', {
+                            timeout: 3000,
+                            position: getSnackbarPosition()
+                        }))
+                        socket.on('init', () => mdui.snackbar('正在初始化...', {
+                            timeout: 3000,
+                            position: getSnackbarPosition()
+                        }))
+                        socket.on('git', data => mdui.snackbar({
+                            fetch: '初始化完成',
+                            reset: '更新檔下載完成',
+                            api: 'API 更新完成'
+                        } [data], {
+                            timeout: 3000,
+                            position: getSnackbarPosition()
+                        }))
+                        socket.on('restart', () => {
+                            socket.emit('restart')
+                            mdui.snackbar('伺服器正在重新啟動...', {
                                 position: getSnackbarPosition()
                             })
-                        } else if (update == "socket") {
-                            socket.emit('update')
-                            socket.on('Permission Denied Desu', () => mdui.snackbar('Permission Denied', {
-                                timeout: 3000,
-                                position: getSnackbarPosition()
-                            }))
-                            socket.on('init', () => mdui.snackbar('正在初始化...', {
-                                timeout: 3000,
-                                position: getSnackbarPosition()
-                            }))
-                            socket.on('git', data => mdui.snackbar({
-                                fetch: '初始化完成',
-                                reset: '更新檔下載完成',
-                                api: 'API 更新完成'
-                            } [data], {
-                                timeout: 3000,
-                                position: getSnackbarPosition()
-                            }))
-                            socket.on('restart', () => {
-                                socket.emit('restart')
-                                mdui.snackbar('伺服器正在重新啟動...', {
-                                    position: getSnackbarPosition()
-                                })
-                                pingServer()
-                            })
-                            socket.on('err', data => mdui.snackbar('錯誤: ' + data, {
-                                timeout: 8000,
-                                position: getSnackbarPosition()
-                            }))
-                        }
+                            pingServer()
+                        })
+                        socket.on('err', data => mdui.snackbar('錯誤: ' + data, {
+                            timeout: 8000,
+                            position: getSnackbarPosition()
+                        }))
                     }
                 }
-            ]
-        });
-    })
+            }
+        ]
+    });
 }
 async function pingServer() {
     let pinging = setInterval(async () => {

@@ -9,6 +9,9 @@
     -webkit-mask-image: linear-gradient(to right,rgba(0,0,0,.2) 30%,rgba(0,0,0,.4) 50%,rgba(0,0,0,.2) 70%)
     mask-size: 100vw 100%
     filter: grayscale(1)
+    &.fade
+        animation: placeholder 2s ease infinite
+        opacity: .4
 @keyframes placeholder 
     from
         mask-position: -200vw 0
@@ -16,3 +19,7 @@
     to
         mask-position: 1200vw 0
         -webkit-mask-position: 1200vw 0
+
+@keyframes placeholder-fade
+    50%
+        opacity: .2

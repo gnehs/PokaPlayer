@@ -876,6 +876,8 @@ async function showPlaylistFolder(playlistId) {
 }
 //- 播放清單歌曲
 async function showPlaylistSongs(moduleName, playlistId) {
+    //修正 Electron 會出錯
+    if (moduleName == "Poka" && playlistId == "random") return showRandom()
     //如果從首頁按進去
     $("#content").attr('data-page', `playlist`)
     $("#content").attr('data-item', `playlist${playlistId}`)
