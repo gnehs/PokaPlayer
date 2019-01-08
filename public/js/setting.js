@@ -1,18 +1,18 @@
 // 初始化設定值
 $(async () => {
     let defaultSetting = {
-        /* "pokaSetting": JSON.stringify({
-             "audioQuality": "High", //音質
-             "randomImgSource": "/og/og.png",
-             "randomImgName": "預設圖庫",
-             "imageDataSaving": "false",
-             "serviceWorkerEnabled": "false",
-             "showCardSource": "true",
-             "version": "",
-             "filterEnabled": "true",
-             "themeColor": "#009688",
-             "themeTextColor": "#FFF",
-         }),*/
+        /*"pokaSetting": JSON.stringify({
+            "audioQuality": localStorage["musicRes"] || "High", //音質
+            "randomImgSource": localStorage["randomImg"] || "/og/og.png",
+            "randomImgName": localStorage["randomImgName"] || "預設圖庫",
+            "imageDataSaving": localStorage["imgRes"] || "false",
+            "serviceWorkerEnabled": localStorage["pokaSW"] || "false",
+            "showCardSource": localStorage["pokaCardSource"] || "true",
+            "version": "",
+            "filterEnabled": localStorage["poka-filter"] || "true",
+            "themeColor": localStorage["poka-theme-primary"] || "#009688",
+            "themeTextColor": localStorage["poka-theme-primary-text"] || "#FFF",
+        }),*/
         "musicRes": "High", //音質
         "randomImg": "/og/og.png",
         "randomImgName": "預設圖庫",
@@ -49,15 +49,11 @@ $(async () => {
             .register('/sw.js', {
                 scope: '/'
             })
-            .then(reg => {
-                if (version != localStorage["PokaPlayerVersion"]) reg.update()
-            })
+            .then(reg => version != localStorage["PokaPlayerVersion"] ? reg.update() : void(0))
             .catch(err => console.log('Error!', err));
     } else {
         navigator.serviceWorker
-            .getRegistration("/").then(reg => {
-                reg ? reg.unregister() : void(0)
-            })
+            .getRegistration("/").then(reg => reg ? reg.unregister() : void(0))
             .catch(err => console.log('Error!', err));
     }
     // 檢查更新
@@ -154,7 +150,6 @@ async function showSettings() {
     $("#content").html(settingItems);
 }
 async function showSettingsSystem() {
-
     pokaHeader('系統和更新', "設定")
     let settingItems = `<div class="mdui-list">
         ${settingsItem({
@@ -210,7 +205,6 @@ async function showSettingsSystem() {
     $("[data-upgrade=\"true\"]").click(() => showUpdateDialog(checkNewVersion))
 }
 async function showUpdateDialog(checkNewVersion, debug = sessionStorage.debug) {
-    console.log(checkNewVersion)
     let content = `<div class="mdui-typo">
     ${new showdown.Converter().makeHtml(checkNewVersion.changelog)}
     <hr>
