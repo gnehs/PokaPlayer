@@ -122,6 +122,7 @@ router
         'settings/customize': showSettingsCustomize,
         'settings/system': showSettingsSystem,
         'settings/about': showSettingsAbout,
+        'settings/lang': showSettingsLang,
         '*': showHome
     })
     .resolve()
@@ -511,7 +512,9 @@ function bindFilter() {
 async function showHome() {
     $('#content').attr('data-page', 'home')
     // 展示讀取中
-    pokaHeader("歡迎使用", `PokaPlayer ${localStorage["PokaPlayerVersion"] || ''}`)
+    pokaHeader(lang("header_welcome"), lang("header_version").render({
+        version: localStorage["PokaPlayerVersion"] || ''
+    }))
 
     let placehoader = (localStorage["poka-filter"] == "true" ? template.getPlacehoader('filter') : "") +
         template.getPlacehoader("header") +

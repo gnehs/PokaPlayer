@@ -20,6 +20,8 @@ $(async () => {
         "pokaSW": "false", //serviceWorker
         "pokaCardSource": "true",
         "PokaPlayerVersion": "",
+        "pokaLang": "zh-TW",
+        "pokaLangData": "{}",
         "poka-filter": "true",
         "mdui-theme-primary": "indigo",
         "mdui-theme-accent": "pink",
@@ -120,58 +122,92 @@ var settingsItem = ({
 async function showSettings() {
     $('#content').attr('data-page', 'settings')
 
-    pokaHeader('設定', "PokaPlayer " + localStorage["PokaPlayerVersion"])
+    pokaHeader(lang("settings"), "PokaPlayer " + localStorage["PokaPlayerVersion"])
     let settingItems = `<div class="mdui-list">
         ${settingsItem({
-            "title":"網路和快取",
-            "text":"流量節省、音質和快取設定",
-            "icon":"eva-globe-outline",
+            "title":lang("settings_NetworkAndCache"),
+            "text":lang("settings_NetworkAndCache_description"),
+            "icon":"eva-wifi-outline",
             "navigate":"settings/network"
         })}
         ${settingsItem({
-            "title":"個人化",
-            "text":"隨機圖片、主題配色、其他細節設定",
+            "title":lang("settings_customize"),
+            "text":lang("settings_customize_description"),
             "icon":"eva-brush-outline",
             "navigate":"settings/customize"
         })}
         ${settingsItem({
-            "title":"系統和更新",
-            "text":"更新 PokaPlayer、重新啟動",
+            "title":lang("settings_lang"),
+            "text":lang("settings_lang_description"),
+            "icon":"eva-globe-outline",
+            "navigate":"settings/lang"
+        })}
+        ${settingsItem({
+            "title":lang("settings_systemAndUpdate"),
+            "text":lang("settings_systemAndUpdate_description"),
             "icon":"eva-browser-outline",
             "navigate":"settings/system"
         })}
         ${settingsItem({
-            "title":"關於和幫助",
-            "text":"PokaPlayer 相關訊息、錯誤回報等",
+            "title":lang("settings_aboutAndHelp"),
+            "text":lang("settings_aboutAndHelp_description"),
             "icon":"eva-info-outline",
             "navigate":"settings/about"
         })}
     </div>`
     $("#content").html(settingItems);
 }
+async function showSettingsLang() {
+    pokaHeader(lang("settings_lang"), lang("settings"))
+    $("#content").html(template.getSpinner())
+    mdui.mutation()
+    let langData = (await getLangs())
+    let settingItems = `<div class="mdui-list">`
+    settingItems += settingsItem({
+        "title": lang("back"),
+        "icon": "eva-arrow-ios-back-outline",
+        "navigate": "settings"
+    })
+    for (item of Object.keys(langData)) {
+        settingItems += settingsItem({
+            "title": langData[item].name,
+            "icon": "eva-globe-outline",
+            "attribute": `poka-lang="${item}"`,
+            "other": `<i class="checkmark mdui-list-item-icon mdui-icon eva ${item == localStorage.pokaLang ? "eva-checkmark-outline":""}"></i>`
+        })
+    }
+    settingItems += `</div>`
+    $("#content").html(settingItems)
+    $(`#content [poka-lang]`).click(async function () {
+        let langCode = $(this).attr('poka-lang')
+        $(`[poka-lang] i.checkmark`).removeClass('eva-checkmark-outline')
+        $(this).children(`i.checkmark`).addClass('eva-checkmark-outline')
+        await setLang(langCode)
+    })
+}
 async function showSettingsSystem() {
-    pokaHeader('系統和更新', "設定")
+    pokaHeader(lang("settings_systemAndUpdate"), lang("settings"))
     let settingItems = `<div class="mdui-list">
         ${settingsItem({
-            "title":"返回",
+            "title":lang("back"),
             "icon":"eva-arrow-ios-back-outline",
             "navigate":"settings"
         })}
-        <div class="mdui-subheader">帳號</div>
+        <div class="mdui-subheader">${lang("settings_account")}</div>
         ${settingsItem({
-            "title":"登出",
+            "title":lang("settings_logout"),
             "icon":"eva-person-outline",
             "attribute":`onclick="location.href='/logout'"`
         })}
-        <div class="mdui-subheader">系統</div>
+        <div class="mdui-subheader">${lang("settings_system")}</div>
         ${settingsItem({
-            "title":"更新",
+            "title":lang("settings_update"),
             "icon":"eva-cloud-upload-outline",
-            "text":"正在檢查更新...",
+            "text":lang("settings_update_checking4updates"),
             "attribute":"data-upgrade"
         })}
         ${settingsItem({
-            "title":"重新啟動",
+            "title":lang("settings_restart"),
             "icon":"eva-loader-outline",
             "attribute":"data-restart"
         })}
@@ -180,25 +216,29 @@ async function showSettingsSystem() {
     //檢查更新
     let debug = await request('/debug/')
     let checkNewVersion = await checkUpdate()
-    let update = checkNewVersion.version ? `更新到 ${checkNewVersion.version}` : `您的 PokaPlayer 已是最新版本`
+    let update = checkNewVersion.version ? lang("settings_update_update2").render({
+        version: checkNewVersion.version
+    }) : lang("settings_update_latestVersion")
     if (debug) {
         $("[data-upgrade]").attr('data-upgrade', true)
     } else if (checkNewVersion.version) {
         $("[data-upgrade]").attr('data-upgrade', true)
-        pokaHeader('系統和更新', `可更新至 ${checkNewVersion.version}`)
+        pokaHeader('系統和更新', lang("settings_update_canUpdate2").render({
+            version: checkNewVersion.version
+        }))
     }
     $("[data-upgrade] .mdui-list-item-text").text(debug ? `DEV#${localStorage["PokaPlayerVersion"]}(${debug})` : update)
     //重啟
     $("[data-restart]").click(() => {
-        mdui.confirm("注意：若您未開啟 Docker 的自動重啟功能，您必須手動開啟 PokaPlayer", "確定要重新啟動嗎", () => {
-            mdui.snackbar('正在重新啟動...', {
+        mdui.confirm(lang("settings_updateDialog_note"), lang("settings_restartDialog_title"), () => {
+            mdui.snackbar(lang("settings_restarting"), {
                 position: getSnackbarPosition()
             })
             axios.post('/restart')
             pingServer()
         }, false, {
-            confirmText: "重新啟動",
-            cancelText: "取消"
+            confirmText: lang("settings_restart"),
+            cancelText: lang("cancel")
         })
     })
     //更新
@@ -207,27 +247,28 @@ async function showSettingsSystem() {
 async function showUpdateDialog(checkNewVersion, debug = sessionStorage.debug) {
     let content = `<div class="mdui-typo">
     ${new showdown.Converter().makeHtml(checkNewVersion.changelog)}
-    <hr>
-    注意：若您未開啟 Docker 自動重啟功能，您必須手動開啟 PokaPlayer`
+    <hr>` + lang("settings_updateDialog_note")
     if (debug)
-        content += `</br>若在開發機器上進行更新，<mark>可能導致 Git 爆炸</mark>`
+        content += `</br>` + lang("settings_updateDialog_note_dev")
     content += `</div>`
     mdui.dialog({
-        title: `${checkNewVersion.version?checkNewVersion.version+' ':''}更新日誌`,
+        title: lang("settings_updateDialog_title").render({
+            version: checkNewVersion.version || ""
+        }),
         content: content,
         buttons: [{
-                text: '取消'
+                text: lang("cancel")
             },
             {
-                text: '更新',
+                text: lang("settings_update"),
                 onClick: async inst => {
-                    mdui.snackbar('正在更新...', {
+                    mdui.snackbar(lang("settings_update_updating"), {
                         position: getSnackbarPosition()
                     });
                     let update = await request('/upgrade/')
                     if (update == "upgrade") {
-                        mdui.snackbar('伺服器重新啟動', {
-                            buttonText: '重新連接',
+                        mdui.snackbar(lang("settings_update_srvRestart"), {
+                            buttonText: lang("settings_update_reconnect"),
                             onButtonClick: () => window.location.reload(),
                             position: getSnackbarPosition()
                         })
@@ -237,26 +278,26 @@ async function showUpdateDialog(checkNewVersion, debug = sessionStorage.debug) {
                             timeout: 3000,
                             position: getSnackbarPosition()
                         }))
-                        socket.on('init', () => mdui.snackbar('正在初始化...', {
+                        socket.on('init', () => mdui.snackbar(lang("settings_update_initializing"), {
                             timeout: 3000,
                             position: getSnackbarPosition()
                         }))
                         socket.on('git', data => mdui.snackbar({
-                            fetch: '初始化完成',
-                            reset: '更新檔下載完成',
-                            api: 'API 更新完成'
+                            fetch: lang("settings_update_git_fetch"),
+                            reset: lang("settings_update_git_reset"),
+                            api: lang("settings_update_git_api")
                         } [data], {
                             timeout: 3000,
                             position: getSnackbarPosition()
                         }))
                         socket.on('restart', () => {
                             socket.emit('restart')
-                            mdui.snackbar('伺服器正在重新啟動...', {
+                            mdui.snackbar(lang("settings_restarting"), {
                                 position: getSnackbarPosition()
                             })
                             pingServer()
                         })
-                        socket.on('err', data => mdui.snackbar('錯誤: ' + data, {
+                        socket.on('err', data => mdui.snackbar('err: ' + data, {
                             timeout: 8000,
                             position: getSnackbarPosition()
                         }))
@@ -266,7 +307,8 @@ async function showUpdateDialog(checkNewVersion, debug = sessionStorage.debug) {
         ]
     });
 }
-async function pingServer() {
+
+function pingServer() {
     let pinging = setInterval(async () => {
         let ping = (await axios.get('/ping')).data
         if (ping == 'PONG') {
@@ -291,10 +333,10 @@ async function pingServer() {
 }
 async function showSettingsNetwork() {
     $('#content').attr('data-page', 'settings')
-    pokaHeader('網路和快取', "設定")
+    pokaHeader(lang("settings_NetworkAndCache"), lang("settings"))
     let settingItems = `<div class="mdui-list">
         ${settingsItem({
-            "title":"返回",
+            "title":lang("back"),
             "icon":"eva-arrow-ios-back-outline",
             "navigate":"settings"
         })}
@@ -423,7 +465,7 @@ async function showSettingsNetwork() {
 async function showSettingsCustomize() {
     // TODO: 自訂 CSS
     $('#content').attr('data-page', 'settings')
-    pokaHeader('個人化', "設定")
+    pokaHeader(lang("settings_customize"), lang("settings"))
     let colorSelector = (themecolor, textcolor, text = "A") =>
         `<div class="colorSelector" 
             style="background-color: ${themecolor};color: ${textcolor}" 
@@ -434,7 +476,7 @@ async function showSettingsCustomize() {
 
     let settingItems = `<div class="mdui-list">
         ${settingsItem({
-            "title":"返回",
+            "title":lang("back"),
             "icon":"eva-arrow-ios-back-outline",
             "navigate":"settings"
         })}
@@ -715,7 +757,7 @@ async function showSettingsCustomize() {
             let name = $(this).children('.title').text()
             localStorage["randomImg"] = src
             localStorage["randomImgName"] = name
-            pokaHeader('個人化', "設定", src, false, false)
+            pokaHeader(lang("settings_customize"), lang("settings"), src, false, false)
             $('[data-pic-source] .mdui-list-item-text').text(name)
             $('[data-pic-custom-link] .mdui-list-item-text').text(src)
         })
@@ -740,7 +782,7 @@ async function showSettingsCustomize() {
                         $('[data-pic-custom-link] .mdui-list-item-text').text(img)
                         $('[data-pic-source] .mdui-list-item-text').text("自訂")
                         localStorage["randomImgName"] = "自訂"
-                        pokaHeader('個人化', "設定", img, false, false)
+                        pokaHeader(lang("settings_customize"), lang("settings"), img, false, false)
                     }
                 }
             }]
@@ -749,16 +791,16 @@ async function showSettingsCustomize() {
 }
 async function showSettingsAbout() {
     $('#content').attr('data-page', 'settings')
-    pokaHeader('關於和幫助', '設定')
+    pokaHeader(lang("settings_aboutAndHelp"), lang("settings"))
     let settingItems = `<div class="mdui-list">
         ${settingsItem({
-            "title":"返回",
+            "title":lang("back"),
             "icon":"eva-arrow-ios-back-outline",
             "navigate":"settings"
         })}
-        <div class="mdui-subheader">關於</div>
+        <div class="mdui-subheader">${lang("settings_about")}</div>
         ${settingsItem({
-            "title":"PokaPlayer 版本",
+            "title":lang("settings_about_version"),
             "text":localStorage["PokaPlayerVersion"],
             "icon":"eva-info-outline",
             "attribute":`data-version`,
@@ -766,7 +808,7 @@ async function showSettingsAbout() {
         })}`
     settingItems += window.electronData ?
         settingsItem({
-            "title": "PokaPlayer Electron 版本",
+            "title": lang("settings_about_electronVersion"),
             "text": `Pokaplayer-Electron: ${electronData.appVersion} / Chrome: ${electronData.chromeVersion} / Electron: ${electronData.electronVersion}`,
             "icon": "eva-info-outline",
             "attribute": `data-poka-ele`,
@@ -774,21 +816,19 @@ async function showSettingsAbout() {
         }) : ``
     settingItems +=
         `${settingsItem({
-                "title": "開發者",
-                "text": `載入中...`,
+                "title": lang("settings_about_developer"),
+                "text": lang("loading"),
                 "icon": "eva-people-outline",
                 "attribute": `data-dev`
         })}
-        <div class="mdui-subheader">外部連結</div>
+        <div class="mdui-subheader">${lang("settings_about_externalLink")}</div>
         ${settingsItem({
             "title": "GitHub",
-            "text": `前往 PokaPlayer 的 GitHub`,
             "icon": "eva-github-outline",
             "attribute": `onclick="window.open('https://github.com/gnehs/PokaPlayer')"`
         })}
         ${settingsItem({
-            "title": "錯誤回報",
-            "text": `若有任何錯誤或是建議歡迎填寫，並協助我們變得更好`,
+            "title": lang("settings_about_errorEeport"),
             "icon": "eva-alert-triangle-outline",
             "attribute": `onclick="window.open('https://github.com/gnehs/PokaPlayer/issues/new/choose')"`
         })}`

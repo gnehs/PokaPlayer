@@ -2,25 +2,13 @@ const template = {
     getSpinner: () => `<div class="mdui-spinner mdui-spinner-colorful mdui-center" style="margin:50px 0"></div>`,
     getPlacehoader(style = 'card') {
         let randomText = () => {
-            let texts = [
-                "dhhfhdhdhf dhd",
-                "ryy ryryhry",
-                "ryryryryryr gkkhlhl",
-                "dgdgdgg dgdd",
-                "fjfdjxhd ssst",
-            ]
-            return texts[Math.floor(Math.random() * texts.length)]
+            let randomA = Math.floor(Math.random() * 10)
+            let randomB = Math.floor(Math.random() * 21) + 10
+            return "loadinging loading loooooading loadinggggg".slice(randomA, randomB)
         }
         let randomLabel = () => {
-            let texts = [
-                "dgd",
-                "fjsst",
-                "hfhjyw5",
-                "hgjfjggg",
-                "hgjfjhggg",
-                "dhfdjfdtwk",
-            ]
-            return texts[Math.floor(Math.random() * texts.length)]
+            let random = Math.floor(Math.random() * 7) + 3
+            return "loadinging".slice(0, random)
         }
         switch (style) {
             case "card":
