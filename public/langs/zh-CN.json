@@ -34,7 +34,7 @@
 
     "songAction_title": "歌曲操作",
     "songAction_like": "收藏",
-    "songAction_like_success": "已收藏「{{name}}",
+    "songAction_like_success": "已收藏「{{name}}」",
     "songAction_like_failed": "收藏或取消收藏「{{name}}」时发生了错误",
     "songAction_unlike": "取消收藏",
     "songAction_unlike_success": "已取消收藏「{{name}}」",
@@ -109,7 +109,7 @@
     "settings_systemAndUpdate_description": "更新 PokaPlayer、重新启动",
     "settings_aboutAndHelp": "关于和帮助",
     "settings_aboutAndHelp_description": "PokaPlayer 相关讯息、错误回报等",
-    "settings_about": "About",
+    "settings_about": "关于",
     "settings_about_version": "PokaPlayer 版本",
     "settings_about_electronVersion": "PokaPlayer Electron 版本",
     "settings_about_developer": "开发者",
