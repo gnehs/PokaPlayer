@@ -155,12 +155,12 @@ async function showSettingsLang() {
         "navigate": "settings"
     })
     for (item of Object.keys(langData)) {
-        settingItems += settingsItem({
-            "title": langData[item].name,
-            "icon": "eva-globe-outline",
-            "attribute": `poka-lang="${item}"`,
-            "other": `<i class="checkmark mdui-list-item-icon mdui-icon eva ${item == localStorage.pokaLang ? "eva-checkmark-outline":""}"></i>`
-        })
+        settingItems +=
+            `<div class="mdui-list-item" poka-lang="${item}">
+            <i class="mdui-list-item-icon mdui-icon" style="color:#000">${langData[item].flag}</i>
+            <div class="mdui-list-item-content"> ${langData[item].name}</div>
+            <i class="checkmark mdui-list-item-icon mdui-icon eva ${item == localStorage.pokaLang ? "eva-checkmark-outline":""}"></i>
+        </div>`
     }
     settingItems += `</div>`
     $("#content").html(settingItems)

@@ -109,7 +109,7 @@
 	"settings_systemAndUpdate_description": "更新 PokaPlayer、重新啟動",
 	"settings_aboutAndHelp": "關於和幫助",
 	"settings_aboutAndHelp_description": "PokaPlayer 相關訊息、錯誤回報等",
-	"settings_about": "About",
+	"settings_about": "關於",
 	"settings_about_version": "PokaPlayer 版本",
 	"settings_about_electronVersion": "PokaPlayer Electron 版本",
 	"settings_about_developer": "開發者",
