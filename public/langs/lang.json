@@ -1,18 +1,14 @@
 {
 	"zh-TW": {
 		"name": "中文（台灣）",
-		"contributions": [{
-			"name": "gnehs",
-			"link": "https://github.com/gnehs"
-		}],
 		"src": "/langs/zh-TW.json"
+	},
+	"zh-CN": {
+		"name": "中文（中国）",
+		"src": "/langs/zh-CN.json"
 	},
 	"en-US": {
 		"name": "English (US)",
-		"contributions": [{
-			"name": "gnehs",
-			"link": "https://github.com/gnehs"
-		}],
 		"src": "/langs/en-US.json"
 	}
 }

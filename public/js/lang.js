@@ -2,8 +2,8 @@ String.prototype.render = function (context) {
     return this.replace(/{{(.*?)}}/g, (match, key) => context[key.trim()]);
 };
 window.onload = async () => {
-    $("#player .song-info .artist").text(lang("nowplaying_clickPlayRandom"))
     setDrawerLang()
+    $("#player .song-info .artist").text(lang("nowplaying_clickPlayRandom"))
     console.log(`[Lang] ${localStorage["pokaLang"]}`)
     await updateLang()
 }
