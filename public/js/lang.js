@@ -3,12 +3,14 @@ String.prototype.render = function (context) {
 };
 window.onload = async () => {
     setDrawerLang()
+    $("#player .song-info .artist").text(lang("nowplaying_clickPlayRandom"))
     console.log(`[Lang] ${localStorage["pokaLang"]}`)
     await updateLang()
 }
 
+
 function lang(code) {
-    return JSON.parse(localStorage["pokaLangData"])[code] || JSON.parse(localStorage["pokaLangDataEn"])[code] || "🌚🌚😢🌚🌚"
+    return JSON.parse(localStorage["pokaLangData"])[code] || JSON.parse(localStorage["pokaLangDataEn"])[code] || ""
 }
 async function setLang(code) {
     let langData = await getLangs()
@@ -28,8 +30,13 @@ async function setLang(code) {
 }
 
 async function updateLang() {
+    let langinitialization = localStorage["pokaLangData"] == `{}`
     localStorage["pokaLangData"] = JSON.stringify(await getLang(localStorage["pokaLang"]))
     localStorage["pokaLangDataEn"] = JSON.stringify(await getLang('en-US'))
+    if (langinitialization) {
+        console.log(langinitialization);
+        location.reload();
+    }
 }
 
 async function getLangs() {
