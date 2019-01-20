@@ -1,6 +1,6 @@
 const moduleShowName = {
-    DSM: "DSM",
-    Netease2: "網易雲音樂"
+    DSM: lang("moduleShowName_DSM"),
+    Netease2: lang("moduleShowName_Netease")
 };
 // 初始化播放器
 const ap = new APlayer({
@@ -27,70 +27,15 @@ const nothingHere = () => {
         "若您嘗試多次，請再次確認模組是否開啟",
         "沒有找到資料"
     ]
-    let lyrics = [{
-        "lyrics": "逆風的方向更適合飛翔，我不怕千萬人阻擋，只怕自己投降",
-        "title": "倔強",
-        "artist": "五月天"
-    }, {
-        "lyrics": "有沒有那麼一個明天，重頭活一遍，讓我再次感受曾揮霍的昨天，無論生存或生活我都不浪費，不讓故事這麼的後悔",
-        "title": "如煙",
-        "artist": "五月天"
-    }, {
-        "lyrics": "期待一種永恆，即使傷痕，也奮不顧身，生命還沒有黃昏，下一站，你的第二人生",
-        "title": "第二人生",
-        "artist": "五月天"
-    }, {
-        "lyrics": "我好想好想飛，逃離這個瘋狂世界那麼多苦，那麼多累，那麼多，莫名的淚水",
-        "title": "瘋狂世界",
-        "artist": "五月天"
-    }, {
-        "lyrics": "我 找不到 你形容的那種驕傲",
-        "title": "找不到",
-        "artist": "楊丞琳"
-    }, {
-        "lyrics": "我找不到 我到不了 你所謂的將來的美好",
-        "title": "到不了",
-        "artist": "范瑋琪"
-    }, {
-        "lyrics": "等不到天黑 煙火不會太完美 回憶燒成灰 還是等不到結尾",
-        "title": "她說",
-        "artist": "林俊傑"
-    }, {
-        "lyrics": "お休み　素敵な夢を",
-        "tlyrics": "晚安，祝你有個好夢",
-        "title": "月の姫",
-        "artist": "HoneyWorks"
-    }, {
-        "lyrics": "You paint me a blue sky And go back and turn it to rain",
-        "tlyrics": "你畫給我一片藍天，回頭又綴滿了雨點",
-        "title": "Dear John",
-        "artist": "Taylor Swift"
-    }]
-    let randomNotFound = n[Math.floor(Math.random() * n.length)]
-    let randomLyrics = lyrics[Math.floor(Math.random() * lyrics.length)]
-    let footer;
-
-    if (randomLyrics.title && randomLyrics.artist)
-        footer = `${randomLyrics.artist} ——《${randomLyrics.title}》`
-    else if (randomLyrics.artist)
-        footer = randomLyrics.artist
-    else if (randomLyrics.title)
-        footer = `《${randomLyrics.title}》`
-    else
-        footer = ''
-
+    let randomNotFound = localStorage.pokaLang == "zh-TW" ? n[Math.floor(Math.random() * n.length)] : lang("nothingFound")
     return `
     <div class="mdui-typo mdui-text-center">
         <div class="mdui-typo-display-2">
             <i class="mdui-icon eva eva-alert-triangle-outline" style="transform: scale(3.2);"></i>
         </div>
         <div class="mdui-typo-display-1">${randomNotFound}</div>
-        <button class="mdui-btn mdui-ripple mdui-btn-raised" onclick="history.go(-1)">回上一頁</button>
+        <button class="mdui-btn mdui-ripple mdui-btn-raised" onclick="history.go(-1)">${lang("back")}</button>
         <hr/>
-        <div class="mdui-typo-headline">${randomLyrics.lyrics}</div>
-        ${randomLyrics.tlyrics?`
-        <div class="mdui-typo-headline" style="opacity: .65;">${randomLyrics.tlyrics}</div>`:""}
-        <footer>${footer}</footer>
     </div>`
 }
 
@@ -233,8 +178,8 @@ socket.on("hello", () => {
     socket.emit('login')
 });
 ap.on("listswitch", async () => {
-    lrc.load(`[00:00.000]歌詞讀取中`)
-    $("div[data-lrc=\"inner\"]").html(`<p class="loading">歌詞讀取中</p>`)
+    lrc.load(`[00:00.000]${lang("loading")}`)
+    $("div[data-lrc=\"inner\"]").html(`<p class="loading">${lang("loading")}</p>`)
 })
 ap.on("play", async () => {
     //沒歌就隨機播放
@@ -362,30 +307,30 @@ function updateMediaSession() {
 var loginFailureCount = 0
 
 function tryRelogin() {
-    //如果有存到密碼或是嘗試次數少於 10 次就嘗試登入
-    if (localStorage["userPASS"] || loginFailureCount <= 10) {
-        console.time('登入');
+    //如果有存到密碼&&嘗試次數少於 10 次就嘗試登入
+    if (localStorage["userPASS"] && loginFailureCount <= 10) {
+        console.time('Login');
         $.post("/login/", {
             userPASS: localStorage["userPASS"]
         }, data => {
-            console.timeEnd('登入'); // 測時間
+            console.timeEnd('Login'); // 測時間
             if (data == 'success') {
                 loginFailureCount = 0
             } else {
-                console.error("[Login] 登入失敗")
+                console.error("[Login] Login failed")
                 mdui.snackbar({
-                    message: 'Session 過期，請重新登入',
+                    message: lang("sessionExpired"),
                     timeout: 10 * 1000,
-                    buttonText: '登入',
+                    buttonText: lang("login"),
                     onButtonClick: () => document.location.href = "/login/",
                     position: getSnackbarPosition()
                 });
             }
         });
     } else if (loginFailureCount > 10) {
-        console.log("[Login] 登入失敗超過十次，已放棄")
+        console.log("[Login] Login failed more than ten times, abandoned")
         mdui.snackbar({
-            message: '發生了未知錯誤',
+            message: lang("requestError"),
             timeout: 1000,
             position: getSnackbarPosition()
         });
@@ -572,7 +517,8 @@ async function showSearch(keyword) {
         '飛鴿傳書也找不到，咕咕咕',
         '我們把搜尋結果拿去餵魚了'
     ]
-    let noResult = `<div class="mdui-valign" style="height:150px"><p class="mdui-center">${noResultTexts[Math.floor(Math.random() * noResultTexts.length)]}</p></div>`
+    noResultTexts = localStorage.pokaLang == "zh-TW" ? noResultTexts[Math.floor(Math.random() * noResultTexts.length)] : lang("nothingFound")
+    let noResult = `<div class="mdui-valign" style="height:150px"><p class="mdui-center">${noResultTexts}</p></div>`
     if (keyword) {
         // 先輸出搜尋中
         let placehoader = (localStorage["poka-filter"] == "true" ? template.getPlacehoader('filter') : "") +
@@ -663,19 +609,19 @@ async function showAlbumSongs(albumSource, albumID) {
         if (isAlbumPinned)
             actions += `
                 <button class="mdui-btn mdui-btn-icon mdui-ripple" 
-                        title="從首頁釘選移除此專輯" data-pinned="true">
+                        title="${lang("unpin_album")}" data-pinned="true">
                     <i class="mdui-icon material-icons">turned_in</i>
                 </button>`
     else
         actions += `
             <button class="mdui-btn mdui-btn-icon mdui-ripple" 
-                    title="加入此專輯到首頁釘選" data-pinned="false">
+                    title="${lang("pin_album")}" data-pinned="false">
                 <i class="mdui-icon material-icons">turned_in_not</i>
             </button>`
     actions += `
             <button class="mdui-btn mdui-btn-icon mdui-ripple" 
                     onclick="addSong(songList)" 
-                    title="將此頁面歌曲全部加入到現正播放">
+                    title="${lang("add2nowPlaying")}">
                 <i class="mdui-icon material-icons">playlist_add</i>
             </button>`
 
@@ -685,7 +631,9 @@ async function showAlbumSongs(albumSource, albumID) {
     if ($("#content").attr('data-page') == `album` && $("#content").attr('data-item') == `album${albumID}`) {
         $("#content").html(result.songs.length > 0 ? albumInfo + html : nothingHere()).animateCss('fadeIn faster')
         pokaHeader('', '', cover)
-        $("#content .info-header .time").html(`${result.songs.length} 首歌曲`)
+        $("#content .info-header .time").html(lang("album_total").render({
+            songs: result.songs.length
+        }))
         $("#content .info-header .actions").html(actions)
 
         $("[data-pinned]").click(async function () {
@@ -693,13 +641,13 @@ async function showAlbumSongs(albumSource, albumID) {
             if (pinStatus == "true") {
                 if (await unPin(albumSource, 'album', albumID, name) == true) {
                     $(this).attr("data-pinned", false)
-                    $(this).attr("title", "加入此專輯到首頁釘選")
+                    $(this).attr("title", lang("pin_album"))
                     $(this).children("i").text('turned_in_not')
                 }
             } else {
                 if (await addPin(albumSource, 'album', albumID, name) == true) {
                     $(this).attr("data-pinned", true)
-                    $(this).attr("title", "從首頁釘選移除此專輯")
+                    $(this).attr("title", lang("unpin_album"))
                     $(this).children("i").text('turned_in')
                 }
             }
@@ -737,7 +685,7 @@ async function showArtist(moduleName, artist = false) {
         `/pokaapi/cover/?moduleName=${encodeURIComponent(moduleName)}&data=${encodeURIComponent(JSON.stringify({ "type": "artist", "info": artist == '未知' ? '' : artist }))}` :
         data.cover) : false
     if ($("#content").attr('data-item') == artist && moduleName ? `artist${artist}` : `artist`)
-        pokaHeader(artist ? (moduleName == 'DSM' ? artist : data.name) : "演出者", artist ? moduleShowName[moduleName] : "列出所有演出者", cover)
+        pokaHeader(artist ? (moduleName == 'DSM' ? artist : data.name) : lang("artist"), artist ? moduleShowName[moduleName] : "", cover)
     $("#content").attr('data-page', 'artist')
     $("#content").html(template.getPlacehoader())
     if (artist && moduleName) {
@@ -746,9 +694,9 @@ async function showArtist(moduleName, artist = false) {
             isArtistPinned = await isPinned(moduleName, 'artist', artist, artist)
         let pinButton = ``
         if (isArtistPinned && isArtistPinned != 'disabled')
-            pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="從首頁釘選移除該演出者" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
+            pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="${lang("unpin_artist")}" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
         else if (isArtistPinned != 'disabled')
-            pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="加入該演出者到首頁釘選" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
+            pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="${lang("pin_artist")}" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
         let albumHTML = template.parseAlbums(result.albums)
         if ($("#content").attr('data-item') == `artist${artist}`) {
             $("#content").html(result.albums.length > 0 ? albumHTML + pinButton : nothingHere())
@@ -757,13 +705,13 @@ async function showArtist(moduleName, artist = false) {
                 if (pinStatus == "true") {
                     if (await unPin(moduleName, 'artist', artist, moduleName == 'DSM' ? artist : data.name) == true) {
                         $(this).attr("data-pinned", false)
-                        $(this).attr("title", "加入該演出者到首頁釘選")
+                        $(this).attr("title", lang("pin_artist"))
                         $(this).children("i").text('turned_in_not')
                     }
                 } else {
                     if (await addPin(moduleName, 'artist', artist, moduleName == 'DSM' ? artist : data.name) == true) {
                         $(this).attr("data-pinned", true)
-                        $(this).attr("title", "從首頁釘選移除該演出者")
+                        $(this).attr("title", lang("unpin_artist"))
                         $(this).children("i").text('turned_in')
                     }
                 }
@@ -792,9 +740,9 @@ async function showComposer(moduleName, composer) {
             pokaHeader(composer, moduleShowName[moduleName], cover)
         let pinButton = ``
         if (isComposerPinned && isComposerPinned != 'disabled')
-            pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="從首頁釘選移除該作曲者" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
+            pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="${lang("unpin_composer")}" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
         else if (isComposerPinned != 'disabled')
-            pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="加入該作曲者到首頁釘選" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
+            pinButton = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" title="${lang("pin_composer")}" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
         let albumHTML = template.parseAlbums(result.albums)
         if ($("#content").attr('data-item') == `composer${composer}`) {
             $("#content").html(result.albums.length > 0 ? albumHTML + pinButton : nothingHere())
@@ -803,20 +751,20 @@ async function showComposer(moduleName, composer) {
                 if (pinStatus == "true") {
                     if (await unPin(moduleName, 'composer', composer, composer) == true) {
                         $(this).attr("data-pinned", false)
-                        $(this).attr("title", "加入該作曲者到首頁釘選")
+                        $(this).attr("title", lang("pin_composer"))
                         $(this).children("i").text('turned_in_not')
                     }
                 } else {
                     if (await addPin(moduleName, 'composer', composer, composer) == true) {
                         $(this).attr("data-pinned", true)
-                        $(this).attr("title", "從首頁釘選移除該作曲者")
+                        $(this).attr("title", lang("unpin_composer"))
                         $(this).children("i").text('turned_in')
                     }
                 }
             })
         }
     } else {
-        pokaHeader("作曲者", "列出所有作曲者")
+        pokaHeader(lang("composer"))
         //請求資料囉
         let result = await request(`/pokaapi/composers`),
             composersHTML = template.parseComposers(result.composers)
@@ -829,7 +777,7 @@ async function showComposer(moduleName, composer) {
 //- 播放清單
 async function showPlaylist() {
     // 展示讀取中
-    pokaHeader("所有清單", '播放清單')
+    pokaHeader(lang("playlist"))
 
     let placehoader = (localStorage["poka-filter"] == "true" ? template.getPlacehoader('filter') : "") +
         template.getPlacehoader()
@@ -839,7 +787,7 @@ async function showPlaylist() {
     // 插入隨機播放清單
     result.playlists.unshift({
         id: "random",
-        name: "隨機播放",
+        name: lang("playlist_random"),
         source: "Poka"
     })
     if ($("#content").attr('data-page') == 'playlist') {
@@ -857,16 +805,8 @@ async function showPlaylistFolder(playlistId) {
     let data = JSON.parse(sessionStorage.temporalPlaylist)
 
     if (!data[playlistId]) {
-        pokaHeader('錯誤', '哎呀！找不到這個播放清單')
-        $("#content").html(`
-        <div class="mdui-valign" style="height:150px">
-            <p class="mdui-center">
-            <a href="playlist" 
-               class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme" 
-               data-navigo>回播放清單總覽頁面
-            </a>
-            </p>
-        </div>`)
+        pokaHeader('', '')
+        $("#content").html(nothingHere())
     } else {
         let playlist = data[playlistId]
         let playlistName = playlist.name
@@ -886,24 +826,15 @@ async function showPlaylistSongs(moduleName, playlistId) {
     $("#content").attr('data-item', `playlist${playlistId}`)
 
     // 展示讀取中
-    pokaHeader(lang("loading"), "播放清單")
+    pokaHeader(lang("loading"), lang("playlist"))
     $("#content").html(template.getSpinner())
     mdui.mutation()
 
     //抓資料
     let result = await request(`/pokaapi/playlistSongs/?moduleName=${encodeURIComponent(moduleName)}&id=${encodeURIComponent(playlistId)}`)
     if (result == null && $("#content").attr('data-item') == `playlist${playlistId}`) {
-        pokaHeader('錯誤', '哎呀！找不到這個播放清單')
-        $("#content").html(`
-        <div class="mdui-valign" style="height:150px">
-            <p class="mdui-center">
-            <a href="playlist" 
-               class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme" 
-               data-navigo>回播放清單總覽頁面
-            </a>
-            </p>
-        </div>`)
-        router.updatePageLinks()
+        pokaHeader('', '')
+        $("#content").html(nothingHere())
         return
     } else if (result == null) return
     let name = result.playlists[0].name
@@ -911,9 +842,9 @@ async function showPlaylistSongs(moduleName, playlistId) {
     let isPlaylistPinned = await isPinned(moduleName, 'playlist', playlistId, result.playlists[0].name)
     let pinButton = ``
     if (isPlaylistPinned && isPlaylistPinned != 'disabled')
-        pinButton = `<button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-theme" title="從首頁釘選移除此播放清單" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
+        pinButton = `<button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-theme" title="${lang("unpin_playlist")}" data-pinned="true"><i class="mdui-icon material-icons">turned_in</i></button>`
     else if (isPlaylistPinned != 'disabled')
-        pinButton = `<button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-theme" title="加入此播放清單到首頁釘選" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
+        pinButton = `<button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-theme" title="${lang("pin_playlist")}" data-pinned="false"><i class="mdui-icon material-icons">turned_in_not</i></button>`
     let fab = `
     <div class="mdui-fab-wrapper" mdui-fab="{trigger: 'hover'}">
       <button class="mdui-fab mdui-ripple mdui-color-theme">
@@ -925,7 +856,7 @@ async function showPlaylistSongs(moduleName, playlistId) {
       <div class="mdui-fab-dial">
         ${pinButton}
         <button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-theme" 
-                title="加入此播放清單所有歌曲到現正播放" 
+                title="${lang("add2nowPlaying")}" 
                 onclick="addSong(songList)">
             <i class="mdui-icon material-icons">playlist_add</i>
         </button>
@@ -941,13 +872,13 @@ async function showPlaylistSongs(moduleName, playlistId) {
             if (pinStatus == "true") {
                 if (await unPin(moduleName, 'playlist', playlistId, result.playlists[0].name) == true) {
                     $(this).attr("data-pinned", false)
-                    $(this).attr("title", "加入此播放清單到首頁釘選")
+                    $(this).attr("title", lang("pin_playlist"))
                     $(this).children("i").text('turned_in_not')
                 }
             } else {
                 if (await addPin(moduleName, 'playlist', playlistId, result.playlists[0].name) == true) {
                     $(this).attr("data-pinned", true)
-                    $(this).attr("title", "從首頁釘選移除此播放清單")
+                    $(this).attr("title", lang("unpin_playlist"))
                     $(this).children("i").text('turned_in')
                 }
             }
@@ -958,14 +889,14 @@ async function showPlaylistSongs(moduleName, playlistId) {
 //- 隨機播放
 async function showRandom() {
     // 展示讀取中
-    pokaHeader("隨機播放", '播放清單')
+    pokaHeader(lang("playlist_random"), lang("playlist"))
     $("#content").html(template.getSpinner())
     $('#content').attr('data-page', 'playlist')
     $("#content").attr('data-item', `playlistrandom`)
     mdui.mutation()
     let result = await request(`/pokaapi/randomSongs`)
     let fab = `<button class="mdui-fab mdui-color-theme mdui-fab-fixed mdui-ripple" 
-                       title="加入此播放清單所有歌曲到現正播放" 
+                       title="${lang("add2nowPlaying")}" 
                        onclick="addSong(songList)">
                        <i class="mdui-icon material-icons">playlist_add</i>
                 </button>`
@@ -1009,7 +940,7 @@ async function showNow() {
 
     let nowPlaying = ap.list.audios[ap.list.index],
         name = nowPlaying ? nowPlaying.name : "PokaPlayer",
-        artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點選播放鍵開始隨機播放",
+        artist = nowPlaying ? (nowPlaying.artist || "N/A") : lang("nowplaying_clickPlayRandom"),
         album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>",
         img = (nowPlaying && localStorage["imgRes"] != "true" && nowPlaying.cover) ? nowPlaying.cover : getBackground(),
         currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00",
@@ -1092,7 +1023,7 @@ async function showNow() {
         let html = ``
         for (i = 0; i < lrc.getLyrics().length; i++) {
             let text = lrc.getLyrics()[i].text
-            if (text == "歌詞讀取中")
+            if (text == lang("loading"))
                 html += `<p class="loading">${text}</p>`
             else
                 html += `<p>${text}</p>`
@@ -1125,7 +1056,7 @@ async function showNow() {
         $('[data-player] button.play[onclick="ap.toggle()"] i').text("pause")
         let nowPlaying = ap.list.audios[ap.list.index]
         let name = nowPlaying ? nowPlaying.name : "PokaPlayer"
-        let artist = nowPlaying ? nowPlaying.artist || "未知的歌手" : "點選播放鍵開始隨機播放"
+        let artist = nowPlaying ? (nowPlaying.artist || "N/A") : lang("nowplaying_clickPlayRandom")
         let album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>"
         let img = (nowPlaying && localStorage["imgRes"] != "true" && nowPlaying.cover) ? nowPlaying.cover : getBackground(); //一定會有圖片
         $('[data-player]>.mdui-card').attr('style', `background-image:url('${img.replace(/'/g, "\\'")}');`)
@@ -1141,7 +1072,7 @@ async function showNow() {
             let html = ``
             for (i = 0; i < lrc.getLyrics().length; i++) {
                 let text = lrc.getLyrics()[i].text
-                if (text == "歌詞讀取中")
+                if (text == lang("loading"))
                     html += `<p class="loading">${text}</p>`
                 else
                     html += `<p>${text}</p>`
@@ -1222,7 +1153,7 @@ function showLrc() {
         let html = ``
         for (i = 0; i < lrc.getLyrics().length; i++) {
             let text = lrc.getLyrics()[i].text
-            if (text == "歌詞讀取中")
+            if (text == lang("loading"))
                 html += `<p class="loading">${text}</p>`
             else
                 html += `<p>${text}</p>`
@@ -1316,13 +1247,17 @@ function addSong(songlist, songID = 0) {
     }
     if (songID == 0) {
         mdui.snackbar({
-            message: `已添加 ${songlist.length} 首歌`,
+            message: lang("addSong_total").render({
+                total: songlist.length
+            }),
             timeout: 400,
             position: getSnackbarPosition()
         });
     } else {
         mdui.snackbar({
-            message: `已添加 ${playlist[0].name}`,
+            message: lang("addSong_name").render({
+                name: playlist[0].name
+            }),
             timeout: 400,
             position: getSnackbarPosition()
         });
@@ -1352,19 +1287,19 @@ async function showLrcChoose() {
                         <input class="mdui-textfield-input" 
                             id="searchLrc" 
                             type="text" 
-                            placeholder="搜尋歌詞" 
+                            placeholder="${lang("lrc_search")}" 
                             value="${keyword}" 
                             required/>
-                        <div class="mdui-textfield-error">尚未輸入關鍵字</div>
-                        <div class="mdui-textfield-helper">輸入完後按下 Enter 開始搜尋歌詞</div>
+                        <div class="mdui-textfield-error">${lang("lrc_noKeyword")}</div>
+                        <div class="mdui-textfield-helper">${lang("lrc_enter2search")}</div>
                     </div>
                 </div>
             </div>
         <ul class="mdui-list">`;
         r += `<li class="mdui-list-item mdui-ripple" data-lrc-id="no">
                     <div class="mdui-list-item-content">
-                        <div class="mdui-list-item-title mdui-list-item-one-line">不載入歌詞</div>
-                        <div class="mdui-list-item-text mdui-list-item-one-line">點選清除目前的歌詞</div>
+                        <div class="mdui-list-item-title mdui-list-item-one-line">${lang("lrc_notLoad")}</div>
+                        <div class="mdui-list-item-text mdui-list-item-one-line">${lang("lrc_notLoad_description")}</div>
                     </div>
                 </li>`
         if (lyrics && lyrics.length > 0) {
@@ -1382,16 +1317,16 @@ async function showLrcChoose() {
         return r
     }
     mdui.dialog({
-        title: '歌詞選擇',
+        title: lang("lrc"),
         content: `<div lrc-choose style="min-height:400px">${list()}</div>
             <div class="mdui-dialog-actions">
-                <button class="mdui-btn mdui-ripple" mdui-dialog-confirm data-lrc-done>完成</button>
+                <button class="mdui-btn mdui-ripple" mdui-dialog-confirm data-lrc-done>${lang("ok")}</button>
             </div>`,
         history: false
     });
     //初始化
     $("input#searchLrc").attr('value', `${name} ${artist}`)
-    $("input#searchLrc + * + .mdui-textfield-helper").text('搜尋中...')
+    $("input#searchLrc + * + .mdui-textfield-helper").text(lang("loading"))
     mdui.mutation();
 
     async function search(keyword) {
@@ -1403,7 +1338,7 @@ async function showLrcChoose() {
         $("[data-lrc-id]").click(async function () {
             let lrcid = $(this).attr('data-lrc-id')
             var text = $(this).children().children('.mdui-list-item-text').text()
-            $(this).children().children('.mdui-list-item-text').text('歌詞載入中...')
+            $(this).children().children('.mdui-list-item-text').text(lang("loading"))
             if (lrcid != "no") {
                 setLrc(searchResult[lrcid].lyric)
             } else {
@@ -1413,7 +1348,7 @@ async function showLrcChoose() {
             $('[data-lrc-done]').click()
         })
         $("input#searchLrc").change(function () {
-            $("input#searchLrc + * + .mdui-textfield-helper").text('搜尋中...')
+            $("input#searchLrc + * + .mdui-textfield-helper").text(lang("loading"))
             search($(this).val())
         })
     }
@@ -1428,7 +1363,7 @@ async function songAction(songID, source) {
     }
     song = song()
     mdui.dialog({
-        title: '<div data-title>歌曲操作</div>',
+        title: `<div data-title>${lang("songAction_title")}</div>`,
         buttons: [{
             text: lang("cancel")
         }],
@@ -1442,15 +1377,15 @@ async function songAction(songID, source) {
     let actions = `<ul class="mdui-list">
         <li class="mdui-list-item mdui-ripple" mdui-dialog-close data-action="like" ${songCanLike?``:`style="pointer-events: none; opacity: .5;"`}>
             <i class="mdui-list-item-icon mdui-icon material-icons">${isSongLiked?'turned_in':'turned_in_not'}</i>
-            <div class="mdui-list-item-content">${isSongLiked?'取消收藏':'收藏'}</div>
+            <div class="mdui-list-item-content">${lang(isSongLiked?'songAction_unlike':'songAction_like')}</div>
         </li>
         <li class="mdui-list-item mdui-ripple" data-action="rating" ${iscanRating?``:`style="pointer-events: none; opacity: .5;"`}>
             <i class="mdui-list-item-icon mdui-icon eva eva-star-outline"></i>
-            <div class="mdui-list-item-content">評等</div>
+            <div class="mdui-list-item-content">${lang("songAction_rating")}</div>
         </li>
         <li class="mdui-list-item mdui-ripple" data-action="playlistAdd" ${userPlaylists.length>0?``:`style="pointer-events: none; opacity: .5;"`}>
             <i class="mdui-list-item-icon mdui-icon material-icons">playlist_add</i>
-            <div class="mdui-list-item-content">加入到播放清單</div>
+            <div class="mdui-list-item-content">${lang("songAction_add2playlist")}</div>
         </li>
     </ul>`
     $(`[data-content]`).html(actions)
@@ -1460,13 +1395,13 @@ async function songAction(songID, source) {
         let result = isSongLiked ? await disLike(song.source, song.id) : await like(song.source, song.id)
         let message
         if (result && result.code == 200) {
-            if (isSongLiked) {
-                message = `已取消收藏「${song.name}」`
-            } else {
-                message = `已收藏「${song.name}」`
-            }
+            message = lang(isSongLiked ? `songAction_unlike_success` : `songAction_like_success`).render({
+                name: song.name
+            })
         } else {
-            message = `收藏或取消收藏「${song.name}」時發生了錯誤`
+            message = lang(isSongLiked ? `songAction_unlike_failed` : `songAction_like_failed`).render({
+                name: song.name
+            })
         }
 
         mdui.snackbar({
@@ -1476,7 +1411,7 @@ async function songAction(songID, source) {
         })
     })
     $(`[data-action="rating"]`).click(() => {
-        $(`[data-title]`).text(`評等`)
+        $(`[data-title]`).text(lang("songAction_rating"))
         $(`[data-content]`).html(`
         <div id="rating" class="mdui-text-center">
             <button class="mdui-btn mdui-btn-icon" data-rating="1"><i class="mdui-icon eva eva-star"></i></button>
@@ -1486,8 +1421,8 @@ async function songAction(songID, source) {
             <button class="mdui-btn mdui-btn-icon" data-rating="5"><i class="mdui-icon eva eva-star"></i></button>
         </div>
         <div class="mdui-text-center">
-            <p>為「${song.name}」評等</p>
-            <button class="mdui-btn mdui-btn-raised mdui-text-center" data-rating="0">清除評等</button>
+            <p>${lang("songAction_rating4song").render({name:song.name})}</p>
+            <button class="mdui-btn mdui-btn-raised mdui-text-center" data-rating="0">${lang("songAction_rating0")}</button>
         </div>
         `)
         $(`[data-content]`).animateCss('fadeIn faster')
@@ -1495,7 +1430,7 @@ async function songAction(songID, source) {
             $(`data-close`).click()
             let star = $(this).attr('data-rating')
             let rating = await ratingSong(song.source, song.id, star)
-            let msg = rating ? `為「${song.name}」${star==0 ? `清除評等` : `評等 ${star} 星`}成功！` : `為「${song.name}」評等失敗！`
+            let msg = leng(`songAction_rating${star==0?"0":""}_${rating?"success":"failed"}`)
             mdui.snackbar({
                 message: msg,
                 timeout: 500,
@@ -1504,7 +1439,7 @@ async function songAction(songID, source) {
         })
     })
     $(`[data-action="playlistAdd"]`).click(async function () {
-        $(`[data-title]`).text(`加入到播放清單`)
+        $(`[data-title]`).text(lang("songAction_add2playlist"))
         $(`[data-content]`).html(template.getSpinner())
         mdui.mutation();
         let content;
@@ -1518,16 +1453,24 @@ async function songAction(songID, source) {
                         ${icon}
                         <div class="mdui-list-item-content">
                             <div class="mdui-list-item-title">${userPlaylists[i].name}</div>
-                            <div class="mdui-list-item-text">${moduleShowName[userPlaylists[i].source]}${exist?` / 該歌曲已存在，點選來刪除`:``}</div>
+                            <div class="mdui-list-item-text">${lang(`songAction_add2playlist_song${exist?``:`Not`}Exist`).render({source:moduleShowName[userPlaylists[i].source]})}</div>
                         </div>
                         <i class="mdui-list-item-icon mdui-icon ${exist?`eva eva-trash-2-outline`:`material-icons`} mdui-text-color-grey-400">${exist?``:`playlist_add`}</i>
                 </li>`).click(async () => {
                     $(`data-close`).click()
                     let result = await playlistOperation(userPlaylists[i].source, [song.id], userPlaylists[i].id)
                     let message
-                    if (!result.result) message = `處理 ${song.name} 時發生了錯誤`
-                    if (result.exist == 404) message = `已將 ${song.name} 加入到 ${userPlaylists[i].name}`
-                    if (result.exist == 200) message = `已將 ${song.name} 從 ${userPlaylists[i].name} 刪除`
+                    if (!result.result) message = lang("songAction_add2playlist_failed").render({
+                        name: song.name
+                    })
+                    if (result.exist == 404) message = lang("songAction_add2playlist_add_success").render({
+                        name: song.name,
+                        playlist: userPlaylists[i].name
+                    })
+                    if (result.exist == 200) message = lang("songAction_add2playlist_remove_success").render({
+                        name: song.name,
+                        playlist: userPlaylists[i].name
+                    })
                     mdui.snackbar({
                         message: message,
                         timeout: 500,

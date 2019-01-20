@@ -115,42 +115,42 @@ const template = {
             data.albums.map(bibi => sources.add(bibi.source))
             tabsCount++
             let randomId = Math.random().toString(36).substring(8)
-            tab += tabItem(randomId, '專輯', data.albums.length)
+            tab += tabItem(randomId, lang("album"), data.albums.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseAlbums(data.albums)}</div>`
         }
         if (data.artists && data.artists.length > 0) {
             data.artists.map(bibi => sources.add(bibi.source))
             tabsCount++
             let randomId = Math.random().toString(36).substring(8)
-            tab += tabItem(randomId, '演出者', data.artists.length)
+            tab += tabItem(randomId, lang("artist"), data.artists.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseArtists(data.artists)}</div>`
         }
         if (data.composers && data.composers.length > 0) {
             data.composers.map(bibi => sources.add(bibi.source))
             tabsCount++
             let randomId = Math.random().toString(36).substring(8)
-            tab += tabItem(randomId, '作曲者', data.composers.length)
+            tab += tabItem(randomId, lang("composer"), data.composers.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseComposers(data.composers)}</div>`
         }
         if (data.playlists && data.playlists.length > 0) {
             data.playlists.map(bibi => sources.add(bibi.source))
             tabsCount++
             let randomId = Math.random().toString(36).substring(8)
-            tab += tabItem(randomId, '播放清單', data.playlists.length)
+            tab += tabItem(randomId, lang("playlist"), data.playlists.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parsePlaylists(data.playlists)}</div>`
         }
         if (data.folders && data.folders.length > 0) {
             data.folders.map(bibi => sources.add(bibi.source))
             tabsCount++
             let randomId = Math.random().toString(36).substring(8)
-            tab += tabItem(randomId, '資料夾', data.folders.length)
+            tab += tabItem(randomId, lang("folder"), data.folders.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseFolder(data.folders)}</div>`
         }
         if (data.songs && data.songs.length > 0) {
             data.songs.map(bibi => sources.add(bibi.source))
             tabsCount++
             let randomId = Math.random().toString(36).substring(8)
-            tab += tabItem(randomId, '歌曲', data.songs.length)
+            tab += tabItem(randomId, lang("song"), data.songs.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseSongs(data.songs)}</div>`
         }
         tab += `</div>`
@@ -172,7 +172,7 @@ const template = {
         let html = `<ul class="mdui-list">`
         html += showBackButton ? `<li class="mdui-list-item" onclick="history.go(-1)">
             <i class="mdui-list-item-icon mdui-icon eva eva-arrow-ios-back-outline"></i>
-            <div class="mdui-list-item-content">回上一頁</div>
+            <div class="mdui-list-item-content">${lang("back")}</div>
         </li>` : ``
         for (let {
                 source,
@@ -225,12 +225,12 @@ const template = {
                 </div>
                 <button class="mdui-btn mdui-btn-icon add" 
                         ${addAction}
-                        title="加入這首歌曲到現正播放">
+                        title="${lang("songAction_add2playlist")}">
                     <i class="mdui-icon eva eva-plus-outline"></i>
                 </button>
                 <button class="mdui-btn mdui-btn-icon" 
                         ${songAction}
-                        title="更多選項">
+                        title="${lang("songAction_title")}">
                     <i class="mdui-icon eva eva-more-horizotnal-outline"></i>
                 </button>
             </li></div>`

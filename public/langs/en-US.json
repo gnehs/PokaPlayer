@@ -1,5 +1,5 @@
 {
-	"loading": "loading...",
+	"loading": "Loading...",
 	"header_welcome": "Welcome",
 	"header_version": "PokaPlayer {{version}}",
 
@@ -10,6 +10,7 @@
 	"album": "Album",
 	"folder": "Folder",
 	"artist": "Artist",
+	"song": "Song",
 	"composer": "Composer",
 	"playlist": "Playlist",
 	"settings": "Settings",
@@ -17,8 +18,62 @@
 	"ok": "OK",
 	"cancel": "cancel",
 	"back": "Back",
+	"login": "login",
+	"nothingFound": "Nothing Found",
+	"requestError": "Request error, please try again",
 
-	"nowplaying_clickPlayRandom": "Click the play button to start random play.",
+	"nowplaying_clickPlayRandom": "Click the play button to start random play",
+
+	"playlist_random": "Random",
+
+	"lrc_search": "Search for lyrics",
+	"lrc_noKeyword": "No keywords have been entered yet",
+	"lrc_enter2search": "After typing, press Enter to start searching for lyrics",
+	"lrc_notLoad": "不載入歌詞",
+	"lrc_notLoad_description": "點選清除目前的歌詞",
+
+	"songAction_title": "歌曲操作",
+	"songAction_like": "收藏",
+	"songAction_like_success": "已收藏\"{{name}}\"",
+	"songAction_like_failed": "收藏或取消收藏\"{{name}}\"時發生了錯誤",
+	"songAction_unlike": "取消收藏",
+	"songAction_unlike_success": "已取消收藏\"{{name}}\"",
+	"songAction_unlike_failed": "取消收藏\"{{name}}\"時發生了錯誤",
+	"songAction_rating": "Rating",
+	"songAction_rating0": "Clear rating",
+	"songAction_rating4song": "Rating for \"{{name}}\"",
+	"songAction_rating_success": "為\"{{name}}\"評等 {{star}} 星成功！",
+	"songAction_rating_failed": "為\"{{name}}\"評等 {{star}} 星失敗。",
+	"songAction_rating0_success": "{{name}} Clear rating success!",
+	"songAction_rating0_failed": "Failed to clear the rating for {{name}}.",
+	"songAction_add2playlist": "Add to playlist",
+	"songAction_add2playlist_songNotExist": "{{source}}",
+	"songAction_add2playlist_songExist": "{{source}} / The song already exists, click to delete",
+	"songAction_add2playlist_failed": "An error occurred while processing {{name}}",
+	"songAction_add2playlist_add_success": "{{name}} has been added to {{playlist}}",
+	"songAction_add2playlist_remove_success": "{{name}} has been removed from {{playlist}}",
+
+	"album_total": "{{songs}} songs",
+
+	"addSong_total": "Added {{total}} songs",
+	"addSong_name": "Added {{name}}",
+
+	"moduleShowName_Netease": "Netease",
+	"moduleShowName_DSM": "DSM",
+
+	"sessionExpired": "Session expired, please log in again",
+
+	"add2nowPlaying": "將此頁歌曲加入到現正播放",
+	"pin_failed": "Failed to pin",
+	"unpin_failed": "Failed to unpin",
+	"pin_album": "Pin this album",
+	"unpin_album": "Unpin this album",
+	"pin_artist": "Pin the artist",
+	"unpin_artist": "Unpin the artist",
+	"pin_composer": "Pin the composer",
+	"unpin_composer": "Unpin the composer",
+	"pin_playlist": "Pin this playlist",
+	"unpin_playlist": "Unpin this playlist",
 
 	"settings_network": "Network",
 	"settings_network_description": "Traffic saving, sound quality",
