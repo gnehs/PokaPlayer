@@ -1,14 +1,17 @@
 {
 	"zh-TW": {
 		"name": "中文（台灣）",
+		"flag": "🇹🇼",
 		"src": "/langs/zh-TW.json"
 	},
 	"zh-CN": {
 		"name": "中文（中国）",
+		"flag": "🇨🇳",
 		"src": "/langs/zh-CN.json"
 	},
 	"en-US": {
 		"name": "English (US)",
+		"flag": "🇺🇸",
 		"src": "/langs/en-US.json"
 	}
 }
