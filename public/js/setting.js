@@ -110,8 +110,8 @@ async function showSettings() {
     pokaHeader(lang("settings"), "PokaPlayer " + localStorage["PokaPlayerVersion"])
     let settingItems = `<div class="mdui-list">
         ${settingsItem({
-            "title":lang("settings_NetworkAndCache"),
-            "text":lang("settings_NetworkAndCache_description"),
+            "title":lang("settings_network"),
+            "text":lang("settings_network_description"),
             "icon":"eva-wifi-outline",
             "navigate":"settings/network"
         })}
@@ -303,7 +303,7 @@ function pingServer() {
                 content: '伺服器重新啟動完畢！',
                 history: false,
                 buttons: [{
-                        text: '取消'
+                        text: lang("cancel")
                     },
                     {
                         text: '重新連接',
@@ -318,22 +318,22 @@ function pingServer() {
 }
 async function showSettingsNetwork() {
     $('#content').attr('data-page', 'settings')
-    pokaHeader(lang("settings_NetworkAndCache"), lang("settings"))
+    pokaHeader(lang("settings_network"), lang("settings"))
     let settingItems = `<div class="mdui-list">
         ${settingsItem({
             "title":lang("back"),
             "icon":"eva-arrow-ios-back-outline",
             "navigate":"settings"
         })}
-        <div class="mdui-subheader">網路</div>
+        <div class="mdui-subheader">${lang("settings_network")}</div>
         ${settingsItem({
-            "title":"音質",
+            "title":lang("settings_network_soundQuality"),
             "icon":"eva-music-outline",
             "text":localStorage["musicRes"],
             "attribute":"data-music-res"
         })}
         ${settingsItem({
-            "title":"圖片流量節省",
+            "title":lang("settings_network_imageDataSaver"),
             "icon":"eva-image-outline",
             "attribute":"data-imgRes",
             "other":`<label class="mdui-switch">
@@ -347,52 +347,44 @@ async function showSettingsNetwork() {
     // TODO: 音質設定可立即生效
     $("[data-music-res]").click(function () {
         mdui.dialog({
-            title: '音質設定',
+            title: lang("settings_network_soundQuality"),
             content: `</br>
             <div class="poka four doubling cards">
                 <div class="card" 
-                    title="低音質"
+                    title="${lang("settings_network_soundQuality_Low")}"
                     onclick="localStorage['musicRes']='Low'"
                     mdui-dialog-close>
                     <div class="image mdui-ripple"><i class="mdui-icon">Low</i></div>
-                    <div class="title mdui-text-color-theme-text">Low</div>
-                    <div class="subtitle mdui-text-color-theme-text">
-                        低音質，128K，跟 YouTube 差不多的爛音質，在網路夭壽慢的情況下請選擇此選項
-                    </div>
+                    <div class="title mdui-text-color-theme-text">${lang("settings_network_soundQuality_Low")}</div>
+                    <div class="subtitle mdui-text-color-theme-text">${lang("settings_network_soundQuality_Low_description")}</div>
             </div>
                 <div class="card" 
-                    title="中等音質"
+                    title="${lang("settings_network_soundQuality_Med")}"
                     onclick="localStorage['musicRes']='Medium'"
                     mdui-dialog-close>
                     <div class="image mdui-ripple"><i class="mdui-icon">Med</i></div>
-                    <div class="title mdui-text-color-theme-text">Medium</div>
-                    <div class="subtitle mdui-text-color-theme-text">
-                        中等音質，音質只比 YouTube 好那麼一點點，可在 3G 網路下流暢的串流
-                    </div>
+                    <div class="title mdui-text-color-theme-text">${lang("settings_network_soundQuality_Med")}</div>
+                    <div class="subtitle mdui-text-color-theme-text">${lang("settings_network_soundQuality_Med_description")}</div>
             </div>
                 <div class="card" 
-                    title="高音質"
+                    title="${lang("settings_network_soundQuality_High")}"
                     onclick="localStorage['musicRes']='High'"
                     mdui-dialog-close>
                     <div class="image mdui-ripple"><i class="mdui-icon">High</i></div>
-                    <div class="title mdui-text-color-theme-text">High</div>
-                    <div class="subtitle mdui-text-color-theme-text">
-                        高音質，音質較原始音質略差，可在 4G 網路下流暢的串流
-                    </div>
+                    <div class="title mdui-text-color-theme-text">${lang("settings_network_soundQuality_High")}</div>
+                    <div class="subtitle mdui-text-color-theme-text">${lang("settings_network_soundQuality_High_description")}</div>
             </div>
                 <div class="card" 
-                    title="原始音質"
+                    title="${lang("settings_network_soundQuality_Ori")}"
                     onclick="localStorage['musicRes']='Original'"
                     mdui-dialog-close>
                     <div class="image mdui-ripple"><i class="mdui-icon">Ori</i></div>
-                    <div class="title mdui-text-color-theme-text">Original</div>
-                    <div class="subtitle mdui-text-color-theme-text">
-                        原始音質，在網路狀況許可下，建議選擇此選項聆聽高音質音樂
-                    </div>
+                    <div class="title mdui-text-color-theme-text">${lang("settings_network_soundQuality_Ori")}</div>
+                    <div class="subtitle mdui-text-color-theme-text">${lang("settings_network_soundQuality_Ori_description")}</div>
             </div>
             </div>`,
             buttons: [{
-                text: '取消'
+                text: lang("cancel")
             }],
             onClose: () => $("[data-music-res] .mdui-list-item-text").text(localStorage["musicRes"])
         });
@@ -401,15 +393,6 @@ async function showSettingsNetwork() {
     $("[data-imgRes]").click(function () {
         $("[data-imgRes] input").prop('checked', !$("[data-imgRes] input").prop('checked'))
         localStorage["imgRes"] = $("[data-imgRes] input").prop('checked');
-    });
-    // 快取清理
-    $("[data-clean]").click(() => {
-        caches.delete('PokaPlayer')
-        mdui.snackbar({
-            message: "清理完畢",
-            timeout: 400,
-            position: getSnackbarPosition()
-        });
     })
 }
 async function showSettingsCustomize() {
@@ -430,22 +413,22 @@ async function showSettingsCustomize() {
             "icon":"eva-arrow-ios-back-outline",
             "navigate":"settings"
         })}
-        <div class="mdui-subheader">隨機圖片</div>
+        <div class="mdui-subheader">${lang("settings_customize_randomImage")}</div>
         ${settingsItem({
-            "title":"圖片來源",
+            "title":lang("settings_customize_randomImageSource"),
             "text":localStorage["randomImgName"],
             "icon":"eva-image-outline",
             "attribute":"data-pic-source"
         })}
         ${settingsItem({
-            "title":"自訂圖片來源",
+            "title":lang("settings_customize_customRandomImageSource"),
             "text":localStorage["randomImg"],
             "icon":"eva-link-outline",
             "attribute":"data-pic-custom-link"
         })}
-        <div class="mdui-subheader">細節設定</div>
+        <div class="mdui-subheader">${lang("settings_customize_detail")}</div>
         ${settingsItem({
-            "title":"顯示來源標籤",
+            "title":lang("settings_customize_sourceTag"),
             "icon":"eva-bookmark-outline",
             "attribute":"data-pokaCardSource",
             "other":`<label class="mdui-switch">
@@ -454,7 +437,7 @@ async function showSettingsCustomize() {
                     </label>`
         })}
         ${settingsItem({
-            "title":"顯示篩選器",
+            "title":lang("settings_customize_filter"),
             "icon":"eva-funnel-outline",
             "attribute":"data-poka-filter",
             "other":`<label class="mdui-switch">
@@ -462,9 +445,9 @@ async function showSettingsCustomize() {
                         <i class="mdui-switch-icon"></i>
                     </label>`
         })}
-        <div class="mdui-subheader">主題</div>
+        <div class="mdui-subheader">${lang("settings_customize_theme")}</div>
         ${settingsItem({
-            "title":"主題色",
+            "title":lang("settings_customize_themeColor"),
             "text":localStorage["mdui-theme-color"]=='true'?'Dark':'Light',
             "icon":localStorage["mdui-theme-color"]=='true'?'eva-moon-outline':'eva-sun-outline',
             "attribute":`data-theme="mdui-theme-color"`
@@ -493,8 +476,8 @@ async function showSettingsCustomize() {
                         <div class='theme-primary-color-picker'></div>
                     </div>
                     <div class="mdui-card-primary">
-                        <div class="mdui-card-primary-title">主色</div>
-                        <div class="mdui-card-primary-subtitle">在此選取您喜愛的顏色</div>
+                        <div class="mdui-card-primary-title">${lang("settings_customize_primaryColor")}</div>
+                        <div class="mdui-card-primary-subtitle">${lang("settings_customize_primaryColor_description")}</div>
                     </div>
                 </div>
             </div>
@@ -504,8 +487,8 @@ async function showSettingsCustomize() {
                         <div class='theme-primary-text-color-picker'></div>
                     </div>
                     <div class="mdui-card-primary">
-                        <div class="mdui-card-primary-title">主要文字色</div>
-                        <div class="mdui-card-primary-subtitle">搭配主色的文字顏色</div>
+                        <div class="mdui-card-primary-title">${lang("settings_customize_primaryTextColor")}</div>
+                        <div class="mdui-card-primary-subtitle">${lang("settings_customize_primaryTextColor_description")}</div>
                     </div>
                 </div>
             </div>
@@ -696,10 +679,10 @@ async function showSettingsCustomize() {
                 src: 'https://api.yuntuchuang.com/api/jianyue.php'
             }]
         mdui.dialog({
-            title: '設定圖片來源',
+            title: lang("settings_customize_randomImageSource"),
             content: `<div class="mdui-list">${imgsOption(imgs)}</div>`,
             buttons: [{
-                text: '取消'
+                text: lang("cancel")
             }]
         });
         $('[data-img-src]').click(function () {
@@ -714,24 +697,24 @@ async function showSettingsCustomize() {
     });
     $('[data-pic-custom-link]').click(function () {
         mdui.dialog({
-            title: '請輸入圖片網址',
+            title: lang("settings_customize_customRandomImageSource"),
             content: `
             <div class="mdui-textfield">
-                <label class="mdui-textfield-label">圖片網址</label>
+                <label class="mdui-textfield-label">${lang("settings_customize_imageUrl")}</label>
                 <input class="mdui-textfield-input" type="text" value="https://images2.imgbox.com/99/e2/knJdNcns_o.jpg" data-imgurl/>
             </div>`,
             buttons: [{
-                text: '取消'
+                text: lang("cancel")
             }, {
-                text: '確定',
+                text: lang("ok"),
                 bold: true,
                 onClick: () => {
                     let img = $('[data-imgurl]').val()
                     if (img != null) {
                         localStorage["randomImg"] = img
                         $('[data-pic-custom-link] .mdui-list-item-text').text(img)
-                        $('[data-pic-source] .mdui-list-item-text').text("自訂")
-                        localStorage["randomImgName"] = "自訂"
+                        $('[data-pic-source] .mdui-list-item-text').text(lang("settings_customize_custom"))
+                        localStorage["randomImgName"] = lang("settings_customize_custom")
                         pokaHeader(lang("settings_customize"), lang("settings"), img, false, false)
                     }
                 }
