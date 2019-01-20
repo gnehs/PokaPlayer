@@ -122,6 +122,7 @@ router
         'settings/customize': showSettingsCustomize,
         'settings/system': showSettingsSystem,
         'settings/about': showSettingsAbout,
+        'settings/lang': showSettingsLang,
         '*': showHome
     })
     .resolve()
@@ -511,7 +512,9 @@ function bindFilter() {
 async function showHome() {
     $('#content').attr('data-page', 'home')
     // 展示讀取中
-    pokaHeader("歡迎使用", `PokaPlayer ${localStorage["PokaPlayerVersion"] || ''}`)
+    pokaHeader(lang("header_welcome"), lang("header_version").render({
+        version: localStorage["PokaPlayerVersion"] || ''
+    }))
 
     let placehoader = (localStorage["poka-filter"] == "true" ? template.getPlacehoader('filter') : "") +
         template.getPlacehoader("header") +
@@ -542,7 +545,7 @@ async function showSearch(keyword) {
                 <input class="search-input" 
                        id="search" 
                        type="text" 
-                       placeholder="搜尋" 
+                       placeholder="${lang("search")}" 
                        value="${keyword|| ''}" 
                        autocomplete="off"
                        required/>
@@ -611,7 +614,7 @@ async function showSearch(keyword) {
 //- 列出專輯
 async function showAlbum() {
     // 展示讀取中
-    pokaHeader("專輯", "列出所有專輯")
+    pokaHeader(lang("album"))
     $('#content').attr('data-page', 'album')
     $("#content").html(template.getPlacehoader())
     let result = await request('/pokaapi/albums')
@@ -708,7 +711,7 @@ async function showFolder(moduleName, folderId = false) {
     $("#content").attr('data-page', 'folder')
     $("#content").attr('data-item', 'folder' + folderId)
     // 展示讀取中
-    pokaHeader("資料夾", "檢視資料夾的項目")
+    pokaHeader(lang("folder"))
     $("#content").html(template.getPlacehoader('list'))
 
     let url;
@@ -781,7 +784,7 @@ async function showComposer(moduleName, composer) {
     $("#content").attr('data-page', 'composer')
     $("#content").html(template.getPlacehoader())
     if (composer && moduleName) {
-        pokaHeader(composer, '讀取中...', cover)
+        pokaHeader(composer, lang("loading"), cover)
         $("#content").attr('data-item', `composer${composer}`)
         let result = await request(`/pokaapi/composerAlbums/?moduleName=${encodeURIComponent(moduleName)}&id=${composer == '未知' ? '' : encodeURIComponent(composer)}`),
             isComposerPinned = await isPinned(moduleName, 'composer', composer, composer)
@@ -883,7 +886,7 @@ async function showPlaylistSongs(moduleName, playlistId) {
     $("#content").attr('data-item', `playlist${playlistId}`)
 
     // 展示讀取中
-    pokaHeader("讀取中...", "播放清單")
+    pokaHeader(lang("loading"), "播放清單")
     $("#content").html(template.getSpinner())
     mdui.mutation()
 
@@ -1427,7 +1430,7 @@ async function songAction(songID, source) {
     mdui.dialog({
         title: '<div data-title>歌曲操作</div>',
         buttons: [{
-            text: '取消'
+            text: lang("cancel")
         }],
         content: `<div data-content>${template.getSpinner()}</div><data-close mdui-dialog-close></data-close>`
     });
