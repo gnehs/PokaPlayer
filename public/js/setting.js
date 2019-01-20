@@ -6,7 +6,6 @@ $(async () => {
             "randomImgSource": localStorage["randomImg"] || "/og/og.png",
             "randomImgName": localStorage["randomImgName"] || "預設圖庫",
             "imageDataSaving": localStorage["imgRes"] || "false",
-            "serviceWorkerEnabled": localStorage["pokaSW"] || "false",
             "showCardSource": localStorage["pokaCardSource"] || "true",
             "version": "",
             "filterEnabled": localStorage["poka-filter"] || "true",
@@ -17,7 +16,6 @@ $(async () => {
         "randomImg": "/og/og.png",
         "randomImgName": "預設圖庫",
         "imgRes": "false",
-        "pokaSW": "false", //serviceWorker
         "pokaCardSource": "true",
         "PokaPlayerVersion": "",
         "pokaLang": "zh-TW",
@@ -45,19 +43,6 @@ $(async () => {
     // debug
     sessionStorage.debug = await request('/debug/')
 
-    //serviceWorker
-    if ('serviceWorker' in navigator && localStorage["pokaSW"] == "true") {
-        navigator.serviceWorker
-            .register('/sw.js', {
-                scope: '/'
-            })
-            .then(reg => version != localStorage["PokaPlayerVersion"] ? reg.update() : void(0))
-            .catch(err => console.log('Error!', err));
-    } else {
-        navigator.serviceWorker
-            .getRegistration("/").then(reg => reg ? reg.unregister() : void(0))
-            .catch(err => console.log('Error!', err));
-    }
     // 檢查更新
     console.time('檢查更新');
     let checkVersion = (await checkUpdate())
@@ -355,24 +340,8 @@ async function showSettingsNetwork() {
                         <input type="checkbox" ${localStorage["imgRes"]=="true"?"checked":""}/>
                         <i class="mdui-switch-icon"></i>
                     </label>`
-        })}`
-    settingItems += window.electron ? `` : `
-        <div class="mdui-subheader">快取</div>
-        ${settingsItem({
-            "title":"快取 (service worker)",
-            "icon":"eva-archive-outline",
-            "attribute":"data-pokaSW",
-            "other":`<label class="mdui-switch">
-                        <input type="checkbox" ${localStorage["pokaSW"]=="true"?"checked":""}/>
-                        <i class="mdui-switch-icon"></i>
-                    </label>`
         })}
-        ${settingsItem({
-            "title":"清除 Service Worker 快取",
-            "icon":"eva-trash-2-outline",
-            "attribute":"data-clean"
-        })}`
-    settingItems += `</div>`
+        </div>`
     $("#content").html(settingItems);
     // 音質設定
     // TODO: 音質設定可立即生效
@@ -432,25 +401,6 @@ async function showSettingsNetwork() {
     $("[data-imgRes]").click(function () {
         $("[data-imgRes] input").prop('checked', !$("[data-imgRes] input").prop('checked'))
         localStorage["imgRes"] = $("[data-imgRes] input").prop('checked');
-    });
-    // 快取開關
-    $("[data-pokaSW]").click(function () {
-        $("[data-pokaSW] input").prop('checked', !$("[data-pokaSW] input").prop('checked'))
-        localStorage["pokaSW"] = $("[data-pokaSW] input").prop('checked');
-        if ($("[data-pokaSW] input").prop('checked'))
-            navigator.serviceWorker
-            .register('/sw.js', {
-                scope: '/'
-            })
-            .then(reg => reg.update())
-            .catch(err => console.log('Error!', err));
-        else
-            navigator.serviceWorker
-            .getRegistration("/").then(reg => {
-                reg.unregister();
-                caches.delete('PokaPlayer')
-            })
-            .catch(err => console.log('Error!', err));
     });
     // 快取清理
     $("[data-clean]").click(() => {
