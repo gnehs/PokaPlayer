@@ -34,7 +34,7 @@
 
 	"songAction_title": "歌曲操作",
 	"songAction_like": "收藏",
-	"songAction_like_success": "已收藏「{{name}}",
+	"songAction_like_success": "已收藏「{{name}}」",
 	"songAction_like_failed": "收藏或取消收藏「{{name}}」時發生了錯誤",
 	"songAction_unlike": "取消收藏",
 	"songAction_unlike_success": "已取消收藏「{{name}}」",
