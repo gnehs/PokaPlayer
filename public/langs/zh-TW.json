@@ -22,7 +22,11 @@
 	"nothingFound": "找不到",
 	"requestError": "請求失敗，請再試一次",
 
-	"nowplaying_clickPlayRandom": "點擊播放按鈕來隨機播放",
+	"home_recentAlbums": "最近加入的專輯",
+	"home_pins": "釘選",
+	"home_netease": "網易雲音樂",
+
+	"nowplaying_clickPlayRandom": "點選播放按鈕來隨機播放",
 
 	"playlist_random": "隨機播放",
 

@@ -73,6 +73,8 @@ const template = {
         let result = ``
         for (let i in data) {
             let showName = moduleShowName[data[i].source] || data[i].source
+            let title = data[i].title
+            if (lang(title) != "") title = lang(title)
             /* 篩選器 */
             if (!filterSource[data[i].source])
                 filter += `<button class="poka button toggle active" 
@@ -83,7 +85,7 @@ const template = {
             filterSource[data[i].source] = true
             /* HTML */
             result += `<div data-source="${showName}">`
-            result += `<div class="mdui-typo"><h1>${data[i].title} <small>${showName}</small></h1></div>`
+            result += `<div class="mdui-typo"><h1>${title} <small>${showName}</small></h1></div>`
             result += template.parseSearch(data[i], true)
             result += (data[i] != data[data.length - 1]) ? `<div class="mdui-typo"><hr /></div>` : '' // 最後不加分隔線
             result += `</div>`
