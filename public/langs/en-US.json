@@ -58,7 +58,7 @@
 	"addSong_total": "{{total}} songs added",
 	"addSong_name": "Added {{name}}",
 
-	"moduleShowName_Netease": "Netease Cloud Music",
+	"moduleShowName_Netease": "Netease",
 	"moduleShowName_DSM": "DSM",
 
 	"sessionExpired": "Session expired, please log in again.",
@@ -107,7 +107,7 @@
 	"settings_lang_description": "Set your PokaPlayer language",
 	"settings_systemAndUpdate": "System & update",
 	"settings_systemAndUpdate_description": "Update PokaPlayer, restart",
-	"settings_aboutAndHelp": "About software",
+	"settings_aboutAndHelp": "About PokaPlayer",
 	"settings_aboutAndHelp_description": "Version, feedback",
 	"settings_about": "About",
 	"settings_about_version": "PokaPlayer Version",

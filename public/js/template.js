@@ -65,7 +65,7 @@ const template = {
                         </div>`
             case "header":
                 return `<div class="mdui-typo placeholder">
-                            <h1><strong>${randomText()}</strong><br><small>${randomLabel()} ${randomText()}</small></h1>
+                            <h1>${randomLabel()} <small>${randomLabel()}</small></h1>
                         </div>`
 
         }
@@ -86,14 +86,7 @@ const template = {
             filterSource[data[i].source] = true
             /* HTML */
             result += `<div data-source="${showName}">`
-            result += `
-            <div class="mdui-typo">
-                <h1>
-                    <strong>${data[i].title}</strong>
-                    </br>
-                    <small>${data[i].description?`${showName} / ${data[i].description}`:''}</small>
-                </h1>
-            </div>`
+            result += `<div class="mdui-typo"><h1>${data[i].title} <small>${showName}</small></h1></div>`
             result += template.parseSearch(data[i], true)
             result += (data[i] != data[data.length - 1]) ? `<div class="mdui-typo"><hr /></div>` : '' // 最後不加分隔線
             result += `</div>`
