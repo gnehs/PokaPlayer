@@ -17,12 +17,20 @@ async function setLang(code) {
     if (langData[code]) {
         console.log(`[Lang] set as ${code}`)
         localStorage["pokaLang"] = code
+
+        //偵測看看隨機播放的字有沒有改掉
+        let player_random = $("#player .song-info .artist").text() == lang("nowplaying_clickPlayRandom")
+
         await updateLang()
         setDrawerLang()
         // 隨便更新下語言設定頁面的 Header
         if (location.pathname == "/settings/lang") {
             pokaHeader(lang("settings_lang"), lang("settings"))
             $(`[onclick="router.navigate('settings')"] .mdui-list-item-content`).text(lang("back"))
+        }
+        // 底部播放器隨機播放文字
+        if (player_random) {
+            $("#player .song-info .artist").text(lang("nowplaying_clickPlayRandom"))
         }
     } else {
         console.error(`[Lang] No such language`)
