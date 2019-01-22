@@ -22,7 +22,11 @@
 	"nothingFound": "Not found",
 	"requestError": "Request error, please try again",
 
-	"nowplaying_clickPlayRandom": "Click Play to Shuffle",
+	"home_recentAlbums": "Recently Added",
+	"home_pins": "Pins",
+	"home_netease": "Netease",
+
+	"nowplaying_clickPlayRandom": "Click the play button to shuffle",
 
 	"playlist_random": "Shuffle Play",
 
@@ -61,19 +65,19 @@
 	"moduleShowName_Netease": "Netease",
 	"moduleShowName_DSM": "DSM",
 
-	"sessionExpired": "Session expired, please log in again.",
+	"sessionExpired": "Session expired, please log in again",
 
-	"add2nowPlaying": "Add this page to queue",
+	"add2nowPlaying": "Add this list to queue",
 	"pin_failed": "Failed to pin",
 	"unpin_failed": "Failed to unpin",
-	"pin_album": "Pin this album",
-	"unpin_album": "Unpin this album",
-	"pin_artist": "Pin this artist",
-	"unpin_artist": "Unpin this artist",
-	"pin_composer": "Pin this composer",
-	"unpin_composer": "Unpin this composer",
-	"pin_playlist": "Pin this playlist",
-	"unpin_playlist": "Unpin this playlist",
+	"pin_album": "Pin album",
+	"unpin_album": "Unpin album",
+	"pin_artist": "Pin artist",
+	"unpin_artist": "Unpin artist",
+	"pin_composer": "Pin composer",
+	"unpin_composer": "Unpin composer",
+	"pin_playlist": "Pin playlist",
+	"unpin_playlist": "Unpin playlist",
 
 	"settings_network": "Network",
 	"settings_network_description": "Data saver, Music quality",
@@ -87,7 +91,7 @@
 	"settings_network_soundQuality_High_description": "Able to stream smoothly under 4G/LTE network",
 	"settings_network_soundQuality_Ori_description": "Uncompressed audio, only use when the internet is fast",
 	"settings_network_imageDataSaver": "Data saver",
-	"settings_customize": "Personalization",
+	"settings_customize": "Customizations",
 	"settings_customize_description": "Random background, theme color, details",
 	"settings_customize_randomImage": "Random background",
 	"settings_customize_randomImageSource": "Image source",

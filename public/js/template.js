@@ -6,10 +6,7 @@ const template = {
             let randomB = Math.floor(Math.random() * 21) + 10
             return "loadinging loading loooooading loadinggggg".slice(randomA, randomB)
         }
-        let randomLabel = () => {
-            let random = Math.floor(Math.random() * 7) + 3
-            return "loadinging".slice(0, random)
-        }
+        let randomLabel = () => "loadinging".slice(0, Math.floor(Math.random() * 7) + 3)
         switch (style) {
             case "card":
                 let r = `<div class="poka cards placeholder">`
