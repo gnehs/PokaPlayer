@@ -611,73 +611,49 @@ async function showSettingsCustomize() {
                 return option
             },
             imgs = [{
-                name: '預設圖庫',
-                description: 'PokaPlayer 內建的圖庫',
+                name: lang('settings_customize_randomImage_default'),
+                description: lang('settings_customize_randomImage_default_description'),
                 src: '/og/og.png'
             }, {
-                name: '隨機精美圖片',
-                description: 'yingjoy.cn 提供',
-                src: 'https://api.yingjoy.cn/pic/?t=random&w=1920'
-            }, {
                 name: 'LoremFlickr',
-                description: 'loremflickr.com 提供',
+                description: 'loremflickr.com',
                 src: 'https://loremflickr.com/1920/1080'
             }, {
-                name: 'Bing 每日圖片',
-                description: 'yingjoy.cn 提供',
-                src: 'https://api.yingjoy.cn/pic/?t=bing&w=1920'
-            }, {
-                name: 'Bing 每日圖片',
-                description: 'area.sinaapp.com 提供',
-                src: 'https://area.sinaapp.com/bingImg/'
-            }, {
-                name: 'Bing 每日圖片',
-                description: '阿星 Plus 提供',
-                src: 'https://api.meowv.com/bing'
-            }, {
-                name: 'Bing 隨機圖片',
-                description: 'uploadbeta.com 提供',
-                src: 'https://uploadbeta.com/api/pictures/random/?key=BingEverydayWallpaperPicture'
-            }, {
                 name: 'Picsum Photos',
-                description: 'picsum.photos 提供',
+                description: 'picsum.photos',
                 src: 'https://picsum.photos/1920/1080/?random'
             }, {
-                name: 'The Dog API',
-                description: 'GIF 格式，thedogapi.com 提供',
+                name: lang('settings_customize_randomImage_bing'),
+                description: 'yingjoy.cn',
+                src: 'https://api.yingjoy.cn/pic/?t=bing&w=1920'
+            }, {
+                name: lang('settings_customize_randomImage_bing'),
+                description: 'area.sinaapp.com',
+                src: 'https://area.sinaapp.com/bingImg/'
+            }, {
+                name: lang('settings_customize_randomImage_bing'),
+                description: 'meowv.com',
+                src: 'https://api.meowv.com/bing'
+            }, {
+                name: 'The Dog API (GIF)',
+                description: 'thedogapi.com',
                 src: 'https://api.thedogapi.com/v1/images/search?format=src&mime_types=image/gif'
             }, {
-                name: 'The Dog API',
-                description: 'PNG 格式，thedogapi.com 提供',
+                name: 'The Dog API (PNG)',
+                description: 'thedogapi.com',
                 src: 'https://api.thedogapi.com/v1/images/search?format=src&mime_types=image/png'
             }, {
-                name: 'The Cat API',
-                description: 'GIF 格式，thecatapi.com 提供',
+                name: 'The Cat API (GIF)',
+                description: 'thecatapi.com',
                 src: 'https://thecatapi.com/api/images/get?format=src&type=gif'
             }, {
-                name: 'The Cat API',
-                description: 'PNG 格式，thecatapi.com 提供',
+                name: 'The Cat API (PNG)',
+                description: 'thecatapi.com',
                 src: 'https://thecatapi.com/api/images/get?format=src&type=png'
             }, {
                 name: 'Unsplash Source',
-                description: 'source.unsplash.com 提供',
+                description: 'source.unsplash.com',
                 src: 'https://source.unsplash.com/random'
-            }, {
-                name: '隨機二次元圖片',
-                description: '清風博客提供',
-                src: 'https://api.3ewl.cc/acg/img.php'
-            }, {
-                name: '隨機二次元背景',
-                description: '雲圖床提供',
-                src: 'https://api.yuntuchuang.com/api/acg.php'
-            }, {
-                name: '隨機遊戲背景',
-                description: '雲圖床提供',
-                src: 'https://api.yuntuchuang.com/api/youxi.php'
-            }, {
-                name: '隨機簡約背景',
-                description: '雲圖床提供',
-                src: 'https://api.yuntuchuang.com/api/jianyue.php'
             }]
         mdui.dialog({
             title: lang("settings_customize_randomImageSource"),
