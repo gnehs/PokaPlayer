@@ -2,13 +2,10 @@
     "PokaPlayer": {
         "password": "CUSTOM_PASSWORD_HERE",
         "passwordSwitch": true,
+        "adminPassword": "CUSTOM_ADMIN_PASSWORD_HERE",
         "sessionSecret": "hello!!",
         "instantUpgradeProcess": false,
         "debug": false
-    },
-    "share": {
-        "secret": "abcd123",
-        "issuer": "PokaPlayer"
     },
     "DSM": {
         "enabled": true,
@@ -18,16 +15,9 @@
         "account": "YOUR_ACCOUNT",
         "password": "YOUR_PASSWORD"
     },
-    "auth": {
-        "jwtPassword": "test",
-        "jwtIss": "PokaPlayer",
-        "jwtExpirePeriod": 600,
-        "userFilesDir": "./users",
-        "dbType": "fs"
-    },
     "Netease2": {
         "enabled": true,
-        "server": "YOUR_NeteaseCloudMusicApi_SERVER",
+        "server": "http://YOUR_NeteaseCloudMusicApi_SERVER",
         "isPremium": true,
         "topPlaylist": {
             "enabled": true,
@@ -39,7 +29,7 @@
         "login": {
             "phone": null,
             "email": null,
-            "password": null
+            "password": "YOUR_PASSWORD"
         },
         "dailyRecommendSongs": {
             "enabled": true,
