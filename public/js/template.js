@@ -2,26 +2,11 @@ const template = {
     getSpinner: () => `<div class="mdui-spinner mdui-spinner-colorful mdui-center" style="margin:50px 0"></div>`,
     getPlacehoader(style = 'card') {
         let randomText = () => {
-            let texts = [
-                "dhhfhdhdhf dhd",
-                "ryy ryryhry",
-                "ryryryryryr gkkhlhl",
-                "dgdgdgg dgdd",
-                "fjfdjxhd ssst",
-            ]
-            return texts[Math.floor(Math.random() * texts.length)]
+            let randomA = Math.floor(Math.random() * 10)
+            let randomB = Math.floor(Math.random() * 21) + 10
+            return "loadinging loading loooooading loadinggggg".slice(randomA, randomB)
         }
-        let randomLabel = () => {
-            let texts = [
-                "dgd",
-                "fjsst",
-                "hfhjyw5",
-                "hgjfjggg",
-                "hgjfjhggg",
-                "dhfdjfdtwk",
-            ]
-            return texts[Math.floor(Math.random() * texts.length)]
-        }
+        let randomLabel = () => "loadinging".slice(0, Math.floor(Math.random() * 7) + 3)
         switch (style) {
             case "card":
                 let r = `<div class="poka cards placeholder">`
@@ -44,7 +29,7 @@ const template = {
                          data-navigo>
                             <i class="mdui-list-item-icon mdui-icon material-icons">folder</i>
                             <div class="mdui-list-item-content">${randomText()}</div>`
-                    if (localStorage["pokaCardSource"] == "true")
+                    if (_setting(`showCardSource`))
                         html += `<div class="mdui-list-item-source">poka</div>`
                     html += `</div>`
                 }
@@ -77,7 +62,7 @@ const template = {
                         </div>`
             case "header":
                 return `<div class="mdui-typo placeholder">
-                            <h1><strong>${randomText()}</strong><br><small>${randomLabel()} ${randomText()}</small></h1>
+                            <h1>${randomLabel()} <small>${randomLabel()}</small></h1>
                         </div>`
 
         }
@@ -88,6 +73,8 @@ const template = {
         let result = ``
         for (let i in data) {
             let showName = moduleShowName[data[i].source] || data[i].source
+            let title = data[i].title
+            if (lang(title) != "") title = lang(title)
             /* 篩選器 */
             if (!filterSource[data[i].source])
                 filter += `<button class="poka button toggle active" 
@@ -98,20 +85,13 @@ const template = {
             filterSource[data[i].source] = true
             /* HTML */
             result += `<div data-source="${showName}">`
-            result += `
-            <div class="mdui-typo">
-                <h1>
-                    <strong>${data[i].title}</strong>
-                    </br>
-                    <small>${data[i].description?`${showName} / ${data[i].description}`:''}</small>
-                </h1>
-            </div>`
+            result += `<div class="mdui-typo"><h1>${title} <small>${showName}</small></h1></div>`
             result += template.parseSearch(data[i], true)
             result += (data[i] != data[data.length - 1]) ? `<div class="mdui-typo"><hr /></div>` : '' // 最後不加分隔線
             result += `</div>`
         }
         filter += `</div>`
-        filter = Object.keys(filterSource).length > 1 && localStorage["poka-filter"] == "true" ? filter : ""
+        filter = Object.keys(filterSource).length > 1 && _setting(`filterEnabled`) ? filter : ""
         return filter + result //篩選器項目大於一個才輸出篩選器
     },
     parseSearch(data, home = false) {
@@ -127,42 +107,42 @@ const template = {
             data.albums.map(bibi => sources.add(bibi.source))
             tabsCount++
             let randomId = Math.random().toString(36).substring(8)
-            tab += tabItem(randomId, '專輯', data.albums.length)
+            tab += tabItem(randomId, lang("album"), data.albums.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseAlbums(data.albums)}</div>`
         }
         if (data.artists && data.artists.length > 0) {
             data.artists.map(bibi => sources.add(bibi.source))
             tabsCount++
             let randomId = Math.random().toString(36).substring(8)
-            tab += tabItem(randomId, '演出者', data.artists.length)
+            tab += tabItem(randomId, lang("artist"), data.artists.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseArtists(data.artists)}</div>`
         }
         if (data.composers && data.composers.length > 0) {
             data.composers.map(bibi => sources.add(bibi.source))
             tabsCount++
             let randomId = Math.random().toString(36).substring(8)
-            tab += tabItem(randomId, '作曲者', data.composers.length)
+            tab += tabItem(randomId, lang("composer"), data.composers.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseComposers(data.composers)}</div>`
         }
         if (data.playlists && data.playlists.length > 0) {
             data.playlists.map(bibi => sources.add(bibi.source))
             tabsCount++
             let randomId = Math.random().toString(36).substring(8)
-            tab += tabItem(randomId, '播放清單', data.playlists.length)
+            tab += tabItem(randomId, lang("playlist"), data.playlists.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parsePlaylists(data.playlists)}</div>`
         }
         if (data.folders && data.folders.length > 0) {
             data.folders.map(bibi => sources.add(bibi.source))
             tabsCount++
             let randomId = Math.random().toString(36).substring(8)
-            tab += tabItem(randomId, '資料夾', data.folders.length)
+            tab += tabItem(randomId, lang("folder"), data.folders.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseFolder(data.folders)}</div>`
         }
         if (data.songs && data.songs.length > 0) {
             data.songs.map(bibi => sources.add(bibi.source))
             tabsCount++
             let randomId = Math.random().toString(36).substring(8)
-            tab += tabItem(randomId, '歌曲', data.songs.length)
+            tab += tabItem(randomId, lang("song"), data.songs.length)
             r += `<div id="${randomId}" class="mdui-p-a-2">${template.parseSongs(data.songs)}</div>`
         }
         tab += `</div>`
@@ -177,14 +157,14 @@ const template = {
                             </button>`
         }
         filter += `</div>`
-        if (1 >= [...sources].length || home || localStorage["poka-filter"] != "true") filter = ``
+        if (1 >= [...sources].length || home || !_setting(`filterEnabled`)) filter = ``
         return tabsCount > 1 ? (filter + tab + r) : (filter + r)
     },
     parseFolder(folders, showBackButton = false) {
         let html = `<ul class="mdui-list">`
         html += showBackButton ? `<li class="mdui-list-item" onclick="history.go(-1)">
             <i class="mdui-list-item-icon mdui-icon eva eva-arrow-ios-back-outline"></i>
-            <div class="mdui-list-item-content">回上一頁</div>
+            <div class="mdui-list-item-content">${lang("back")}</div>
         </li>` : ``
         for (let {
                 source,
@@ -198,7 +178,7 @@ const template = {
                          data-navigo>
                     <i class="mdui-list-item-icon mdui-icon material-icons">folder</i>
                     <div class="mdui-list-item-content">${name}</div>`
-            if (localStorage["pokaCardSource"] == "true")
+            if (_setting(`showCardSource`))
                 html += `<div class="mdui-list-item-source">${showName}</div>`
             html += `</li>`
         }
@@ -221,7 +201,7 @@ const template = {
             let addAction = `onclick="addSong(songList,'${id}')"`
             let songAction = `onclick="songAction(\`${id}\`,\`${source}\`)"`
 
-            let img = localStorage["imgRes"] == "true" ? '' :
+            let img = _setting(`imageDataSaving`) ? '' :
                 `<div class="mdui-list-item-avatar" ${clickAction}>
                     <img src="${cover || getBackground()}"/>
                 </div>`
@@ -237,12 +217,12 @@ const template = {
                 </div>
                 <button class="mdui-btn mdui-btn-icon add" 
                         ${addAction}
-                        title="加入這首歌曲到現正播放">
+                        title="${lang("songAction_add2playlist")}">
                     <i class="mdui-icon eva eva-plus-outline"></i>
                 </button>
                 <button class="mdui-btn mdui-btn-icon" 
                         ${songAction}
-                        title="更多選項">
+                        title="${lang("songAction_title")}">
                     <i class="mdui-icon eva eva-more-horizotnal-outline"></i>
                 </button>
             </li></div>`
@@ -259,7 +239,7 @@ const template = {
                 id,
                 source
             } of albums) {
-            let img = localStorage["imgRes"] == "true" ? localStorage["randomImg"] : cover.replace(/'/g, "\\'") || getBackground()
+            let img = _setting(`imageDataSaving`) ? _setting(`randomImgSource`) : cover.replace(/'/g, "\\'") || getBackground()
             html += `
                <a class="card" 
                   title="${name}${artist ? '&#10;' + artist : ''}"
@@ -283,7 +263,7 @@ const template = {
                 id
             } of artists) {
             name = name ? name : '未知'
-            let img = localStorage["imgRes"] == "true" ? getBackground() : cover.replace("'", "\\'") || getBackground()
+            let img = _setting(`imageDataSaving`) ? getBackground() : cover.replace("'", "\\'") || getBackground()
             html += `
             <a class="card" 
                title="${name}"
@@ -306,7 +286,7 @@ const template = {
                 id
             } of composers) {
             name = name ? name : "未知"
-            let img = localStorage["imgRes"] == "true" ? getBackground() : cover.replace("'", "\\'") || getBackground()
+            let img = _setting(`imageDataSaving`) ? getBackground() : cover.replace("'", "\\'") || getBackground()
             html += `
             <a class="card" 
                title="${name}"
@@ -346,7 +326,7 @@ const template = {
             /* HTML */
             let img, icon
             let showName = moduleShowName[source] || source
-            if (image && localStorage["imgRes"] != "true") {
+            if (image && !_setting(`imageDataSaving`)) {
                 img = `style="background-image:url('${image}')"`
                 icon = ``
             } else if (id == "random") {
@@ -376,7 +356,7 @@ const template = {
         sessionStorage.temporalPlaylist = JSON.stringify(temporalPlaylist)
         html += '</div>'
         filter += `</div>`
-        filter = Object.keys(filterSource).length > 1 && localStorage["poka-filter"] == "true" ? filter : "" //篩選器項目大於一個才輸出篩選器
+        filter = Object.keys(filterSource).length > 1 && _setting(`filterEnabled`) ? filter : "" //篩選器項目大於一個才輸出篩選器
         return filter + html
     },
     infoHeader(cover, name, artist) {

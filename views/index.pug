@@ -37,18 +37,18 @@ html
                         i.eva(class=icon)
                         .content
                             =name
-                +link("首頁","home","eva-home-outline")
-                +link("現正播放","now","eva-play-circle-outline")
-                +link("歌詞","lrc","eva-text-outline")
-                .divider 音樂庫
-                +link("搜尋","search","eva-search-outline")
-                +link("專輯","album","eva-radio-button-on-outline")
-                +link("資料夾","folder","eva-folder-outline")
-                +link("演出者","artist","eva-mic-outline")
-                +link("作曲者","composer","eva-music-outline")
-                +link("播放清單","playlist","eva-list-outline")
+                +link("Home","home","eva-home-outline")
+                +link("Now Playing","now","eva-play-circle-outline")
+                +link("Lyric","lrc","eva-text-outline")
                 .divider
-                +link("設定","settings","eva-settings-2-outline")
+                +link("Search","search","eva-search-outline")
+                +link("Album","album","eva-radio-button-on-outline")
+                +link("Folder","folder","eva-folder-outline")
+                +link("Artist","artist","eva-mic-outline")
+                +link("Composer","composer","eva-music-outline")
+                +link("Playlist","playlist","eva-list-outline")
+                .divider
+                +link("Settings","settings","eva-settings-2-outline")
         #header-wrapper
             .bg2
             .bg
@@ -62,7 +62,7 @@ html
                 img(src="/img/PokaPlayerTransparent.png")
             .song-info.mdui-ripple
                 .name PokaPlayer
-                .artist 點擊播放鍵開始隨機播放
+                .artist Click the play button to shuffle
             .right
                 .timer
                 .ctrl
@@ -79,13 +79,14 @@ html
         script(src='//cdnjs.cloudflare.com/ajax/libs/showdown/1.8.6/showdown.min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/keyboardjs/2.4.1/keyboard.min.js')
         script(src='//cdn.jsdelivr.net/npm/pickr-widget/dist/pickr.min.js')
-        script(src='/js/animate-css.js')
         script(src='/socket.io/socket.io.js')
+        script(src='/js/animate-css.js')
         script(src='/js/navigo.min.js')
         script(src='/js/lyrics.min.js')
         script(src='/js/base64.js')
         script(src='/js/template.js?'+version)
         script(src='/js/api.js?'+version)
         script(src='/js/setting.js?'+version)
+        script(src='/js/lang.js?'+version)
         script(src='/js/script.js?'+version)
         script(src='/js/color-theme.js?'+version)

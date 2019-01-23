@@ -215,9 +215,8 @@ async function getHome() {
             value: 0
         }
     ]);
-    let home = {
-        title: '釘選',
-        description: '釘選在首頁的項目',
+    let pins = {
+        title: 'home_pins',
         source: "DSM",
         artists: [],
         composers: [],
@@ -231,7 +230,7 @@ async function getHome() {
         switch (type) {
             case "artist":
                 //演出者
-                home.artists.push({
+                pins.artists.push({
                     name: pin.name,
                     source: "DSM",
                     cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(
@@ -242,7 +241,7 @@ async function getHome() {
                 break;
             case "composer":
                 //作曲者
-                home.composers.push({
+                pins.composers.push({
                     name: pin.name,
                     source: "DSM",
                     cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(
@@ -253,7 +252,7 @@ async function getHome() {
                 break;
             case "folder":
                 //資料夾
-                home.folders.push({
+                pins.folders.push({
                     name: pin.name,
                     source: "DSM",
                     id: pin.criteria.folder,
@@ -264,7 +263,7 @@ async function getHome() {
                 break;
             case "playlist":
                 //播放清單
-                home.playlists.push({
+                pins.playlists.push({
                     name: pin.name,
                     source: "DSM",
                     id: pin.criteria.playlist
@@ -285,7 +284,7 @@ async function getHome() {
                             info: coverInfo
                         })
                     );
-                home.albums.push({
+                pins.albums.push({
                     name: pin.name,
                     artist: pin.criteria.artist || pin.criteria.album_artist || "",
                     year: 0,
@@ -298,10 +297,9 @@ async function getHome() {
     }
     let r = []
     let latestAlbum = await getAlbums(20, "time", "desc")
-    latestAlbum.title = "最近加入的專輯"
-    latestAlbum.description = "Audio Station 裡最新的專輯"
+    latestAlbum.title = "home_recentAlbums"
     latestAlbum.source = "DSM"
-    r.push(home)
+    r.push(pins)
     if (latestAlbum.albums.length > 0) r.push(latestAlbum)
     return r
 }

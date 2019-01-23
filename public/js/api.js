@@ -1,7 +1,7 @@
 //- 取得背景
 function getBackground() {
-    if (localStorage["randomImg"])
-        return localStorage["randomImg"]
+    if (_setting(`randomImgSource`))
+        return _setting(`randomImgSource`)
     else
         return "/og/og.png"
 }
@@ -14,7 +14,7 @@ async function request(url) {
         result = null
         console.log(e)
         mdui.snackbar({
-            message: `哎呀！請求出錯了，請再試一次看看：（`,
+            message: lang("requestError"),
             timeout: 400,
             position: getSnackbarPosition()
         });
@@ -30,7 +30,7 @@ async function addPin(source, type, id, name) {
     let result = (await axios.post(`/pokaapi/addPin/?moduleName=${source}&type=${type}&id=${id}&name=${name}`)).data
     if (result != true)
         mdui.snackbar({
-            message: `釘選失敗`,
+            message: lang("pin_failed"),
             timeout: 400,
             position: getSnackbarPosition()
         })
@@ -44,7 +44,7 @@ async function unPin(source, type, id, name) {
     let result = (await axios.post(`/pokaapi/unPin/?moduleName=${source}&type=${type}&id=${id}&name=${name}`)).data
     if (result != true)
         mdui.snackbar({
-            message: `取消釘選失敗`,
+            message: lang("unpin_failed"),
             timeout: 400,
             position: getSnackbarPosition()
         })

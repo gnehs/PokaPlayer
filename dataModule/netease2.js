@@ -1054,8 +1054,7 @@ async function getHome() {
 
     return [
         {
-            title: "網易雲音樂",
-            description: "來自網易雲的推薦及釘選項目",
+            title: "home_netease",
             source: "Netease2",
             playlists: r.concat(
                 ...(await resolveTopPlaylistStack(topPlaylistStack)),
