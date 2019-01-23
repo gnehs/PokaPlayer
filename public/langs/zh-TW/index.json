@@ -3,6 +3,14 @@
 	"header_welcome": "歡迎使用",
 	"header_version": "PokaPlayer {{version}}",
 
+	"checkUpdate_poka": "有新版本可供更新：{{version}}",
+	"checkUpdate_pokaEle": "有新版本 PokaPlayer-electron 可供更新：{{version}}",
+	"checkUpdate_button": "更新",
+
+	"pingServer_title": "提示",
+	"pingServer_content": "伺服器重新啟動完畢！",
+	"pingServer_reconnect": "重新連接",
+
 	"home": "首頁",
 	"nowplaying": "現正播放",
 	"lrc": "歌詞",
@@ -35,6 +43,7 @@
 	"lrc_enter2search": "輸入完後按下 Enter 開始搜尋歌詞",
 	"lrc_notLoad": "不載入歌詞",
 	"lrc_notLoad_description": "點選清除目前的歌詞",
+	"lrc_noLyrics": "無歌詞",
 
 	"songAction_title": "歌曲操作",
 	"songAction_like": "收藏",

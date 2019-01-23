@@ -18,8 +18,10 @@ $(async () => {
     console.time('檢查更新');
     let checkVersion = (await checkUpdate())
     console.timeEnd('檢查更新'); // 測時間
-    if (checkVersion.version) mdui.snackbar(`有新版本可更新 ${checkVersion.version}`, {
-        buttonText: '更新',
+    if (checkVersion.version) mdui.snackbar(lang(`checkUpdate_poka`).render({
+        version: checkVersion.version
+    }), {
+        buttonText: lang(`checkUpdate_button`),
         onButtonClick: () => showUpdateDialog(checkVersion),
         position: getSnackbarPosition()
     })
@@ -77,8 +79,10 @@ async function checkPokaEleUpdate(version) {
     let checkUpdate = await request(`https://api.github.com/repos/gnehs/PokaPlayer-electron/releases`);
     let ghversion = checkUpdate[0].tag_name
     if (compareVersion(version, ghversion) || !window.electronData) { //electronData 供舊版更新用
-        mdui.snackbar(`有新版 PokaPlayer-electron 可供更新：${ghversion}`, {
-            buttonText: '更新',
+        mdui.snackbar(lang(`checkUpdate_pokaEle`).render({
+            version: ghversion
+        }), {
+            buttonText: lang(`checkUpdate_button`),
             onButtonClick: () => window.open('https://github.com/gnehs/PokaPlayer-electron/releases/latest'),
             position: getSnackbarPosition()
         })
@@ -300,14 +304,14 @@ function pingServer() {
         if (ping == 'PONG') {
             clearInterval(pinging);
             mdui.dialog({
-                title: '提示',
-                content: '伺服器重新啟動完畢！',
+                title: lang(`pingServer_title`),
+                content: lang(`pingServer_content`),
                 history: false,
                 buttons: [{
                         text: lang("cancel")
                     },
                     {
-                        text: '重新連接',
+                        text: lang(`pingServer_reconnect`),
                         onClick: function (inst) {
                             window.location.reload()
                         }

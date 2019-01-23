@@ -3,6 +3,14 @@
 	"header_welcome": "Welcome",
 	"header_version": "PokaPlayer {{version}}",
 
+	"checkUpdate_poka": "New Version: {{version}}",
+	"checkUpdate_pokaEle": "New version of PokaPlayer-electron: {{version}}",
+	"checkUpdate_button": "Update",
+
+	"pingServer_title": "Hii",
+	"pingServer_content": "Server finishes restarting!",
+	"pingServer_reconnect": "Reconnect",
+
 	"home": "Home",
 	"nowplaying": "Now Playing",
 	"lrc": "Lyrics",
@@ -35,6 +43,7 @@
 	"lrc_enter2search": "Press Enter to search",
 	"lrc_notLoad": "Remove loaded lyrics",
 	"lrc_notLoad_description": "Click to remove current lyrics",
+	"lrc_noLyrics": "No Lyrics",
 
 	"songAction_title": "Actions",
 	"songAction_like": "Save",
