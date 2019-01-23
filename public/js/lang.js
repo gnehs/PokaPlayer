@@ -4,19 +4,21 @@ String.prototype.render = function (context) {
 window.onload = async () => {
     setDrawerLang()
     $("#player .song-info .artist").text(lang("nowplaying_clickPlayRandom"))
-    console.log(`[Lang] ${localStorage["pokaLang"]}`)
+    console.log(`[Lang] ${_setting(`lang`)}`)
     await updateLang()
 }
 
 
 function lang(code) {
+    if (!localStorage["pokaLangData"]) localStorage["pokaLangData"] = `{}`
+    if (!localStorage["pokaLangDataEn"]) localStorage["pokaLangDataEn"] = `{}`
     return JSON.parse(localStorage["pokaLangData"])[code] || JSON.parse(localStorage["pokaLangDataEn"])[code] || ""
 }
 async function setLang(code) {
     let langData = await getLangs()
     if (langData[code]) {
         console.log(`[Lang] set as ${code}`)
-        localStorage["pokaLang"] = code
+        _setting(`lang`, code)
 
         //偵測看看隨機播放的字有沒有改掉
         let player_random = $("#player .song-info .artist").text() == lang("nowplaying_clickPlayRandom")
@@ -42,7 +44,7 @@ async function setLang(code) {
 
 async function updateLang() {
     let langinitialization = localStorage["pokaLangData"] == `{}`
-    localStorage["pokaLangData"] = JSON.stringify(await getLang(localStorage["pokaLang"]))
+    localStorage["pokaLangData"] = JSON.stringify(await getLang(_setting(`lang`)))
     localStorage["pokaLangDataEn"] = JSON.stringify(await getLang('en-US'))
     if (langinitialization) {
         location.reload();

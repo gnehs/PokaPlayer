@@ -263,7 +263,7 @@ function updateBottomPlayer() {
             transparent ${audioBuffered > 0 ? audioBuffered : cent}%,
             transparent 100%
         );`
-        let img = (localStorage["imgRes"] != "true" && cover) ? cover : getBackground()
+        let img = (!_setting(`imageDataSaving`) && cover) ? cover : getBackground()
 
         $('#player .song-info .name').text(name)
         $('#player .song-info .artist').text(artist)
@@ -415,7 +415,7 @@ function changePlayMode(get) {
 }
 
 function pokaHeader(title, subtitle = '', image = false, hide = false, blur = true) {
-    let style = image && localStorage["imgRes"] == "false" ?
+    let style = image && !_setting(`imageDataSaving`) ?
         `background-image: url('${image.replace(/'/g, "\\'")}');` :
         `background-image: url('${getBackground().replace(/'/g, "\\'")}');`
 
@@ -431,7 +431,7 @@ function pokaHeader(title, subtitle = '', image = false, hide = false, blur = tr
     else
         $("#header-wrapper .bg2").removeClass('blur')
 
-    if (image && blur && localStorage["imgRes"] == "false")
+    if (image && blur && !_setting(`imageDataSaving`))
         $("#header-wrapper .bg").addClass('blur')
     else
         $("#header-wrapper .bg").removeClass('blur')
@@ -458,10 +458,10 @@ async function showHome() {
     $('#content').attr('data-page', 'home')
     // 展示讀取中
     pokaHeader(lang("header_welcome"), lang("header_version").render({
-        version: localStorage["PokaPlayerVersion"] || ''
+        version: _setting(`version`) || ''
     }))
 
-    let placehoader = (localStorage["poka-filter"] == "true" ? template.getPlacehoader('filter') : "") +
+    let placehoader = (_setting(`filterEnabled`) ? template.getPlacehoader('filter') : "") +
         template.getPlacehoader("header") +
         template.getPlacehoader()
     $("#content").html(placehoader)
@@ -521,7 +521,7 @@ async function showSearch(keyword) {
     let noResult = `<div class="mdui-valign" style="height:150px"><p class="mdui-center">${noResultTexts}</p></div>`
     if (keyword) {
         // 先輸出搜尋中
-        let placehoader = (localStorage["poka-filter"] == "true" ? template.getPlacehoader('filter') : "") +
+        let placehoader = (_setting(`filterEnabled`) ? template.getPlacehoader('filter') : "") +
             template.getPlacehoader('tab') +
             template.getPlacehoader()
         $("#content").html(html + placehoader)
@@ -780,7 +780,7 @@ async function showPlaylist() {
     // 展示讀取中
     pokaHeader(lang("playlist"))
 
-    let placehoader = (localStorage["poka-filter"] == "true" ? template.getPlacehoader('filter') : "") +
+    let placehoader = (_setting(`filterEnabled`) ? template.getPlacehoader('filter') : "") +
         template.getPlacehoader()
     $("#content").html(placehoader)
     $('#content').attr('data-page', 'playlist')
@@ -921,7 +921,7 @@ async function showNow() {
             title = song.name,
             artist = song.artist,
             album = song.album,
-            img = localStorage["imgRes"] == "true" ? '' : `<div class="mdui-list-item-avatar"><img src="${ap.list.audios[i].cover || getBackground()}"/></div>`
+            img = _setting(`imageDataSaving`) ? '' : `<div class="mdui-list-item-avatar"><img src="${ap.list.audios[i].cover || getBackground()}"/></div>`
         html += `<li class="mdui-list-item mdui-ripple song ${focus}" >
             ${img}
             <div class="mdui-list-item-content songinfo" data-now-play-id="${i}">
@@ -943,7 +943,7 @@ async function showNow() {
         name = nowPlaying ? nowPlaying.name : "PokaPlayer",
         artist = nowPlaying ? (nowPlaying.artist || "N/A") : lang("nowplaying_clickPlayRandom"),
         album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>",
-        img = (nowPlaying && localStorage["imgRes"] != "true" && nowPlaying.cover) ? nowPlaying.cover : getBackground(),
+        img = (nowPlaying && !_setting(`imageDataSaving`) && nowPlaying.cover) ? nowPlaying.cover : getBackground(),
         currentTime = ap.audio.currentTime ? secondToTime(ap.audio.currentTime) : "0:00",
         duration = ap.audio.currentTime ? secondToTime(ap.audio.duration) : "0:00",
         timer = currentTime + '/' + duration,
@@ -1059,7 +1059,7 @@ async function showNow() {
         let name = nowPlaying ? nowPlaying.name : "PokaPlayer"
         let artist = nowPlaying ? (nowPlaying.artist || "N/A") : lang("nowplaying_clickPlayRandom")
         let album = nowPlaying ? `</br>${nowPlaying.album}` || "" : "</br>"
-        let img = (nowPlaying && localStorage["imgRes"] != "true" && nowPlaying.cover) ? nowPlaying.cover : getBackground(); //一定會有圖片
+        let img = (nowPlaying && !_setting(`imageDataSaving`) && nowPlaying.cover) ? nowPlaying.cover : getBackground(); //一定會有圖片
         $('[data-player]>.mdui-card').attr('style', `background-image:url('${img.replace(/'/g, "\\'")}');`)
         $('[data-player]>.info .title').text(name)
         $('[data-player]>.info .artist').html(artist + album)
@@ -1194,7 +1194,7 @@ function playSongs(songs, song = false, clear = true) {
     let playlist = []
     for (i = 0; i < songs.length; i++) {
         let nowsong = songs[i],
-            src = nowsong.url + '&songRes=' + localStorage["musicRes"].toLowerCase(),
+            src = nowsong.url + '&songRes=' + _setting(`audioQuality`).toLowerCase(),
             name = nowsong.name,
             artist = nowsong.artist,
             album = nowsong.album,
@@ -1234,7 +1234,7 @@ function addSong(songlist, songID = 0) {
             url
         } of songlist) {
         if (id == songID || songID == 0) {
-            let src = url + '&songRes=' + localStorage["musicRes"].toLowerCase()
+            let src = url + '&songRes=' + _setting(`audioQuality`).toLowerCase()
             playlist.push({
                 url: src,
                 cover: poster,

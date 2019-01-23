@@ -1,12 +1,12 @@
 $(() => {
     $("#colortheme").text(`:root {
-        --poka-theme-primary-color: ${localStorage["poka-theme-primary"]};
-        --poka-theme-primary-text-color: ${localStorage["poka-theme-primary-text"]};
+        --poka-theme-primary-color: ${_setting(`themeColor`)};
+        --poka-theme-primary-text-color: ${_setting(`themeTextColor`)};
     }`)
 
     // 顏色設定
     $('body').addClass(`mdui-theme-primary-${localStorage["mdui-theme-primary"]}`)
-    if (localStorage["mdui-theme-color"] == "true")
+    if (_setting(`darkMode`))
         $('body').addClass("mdui-theme-layout-dark theme-dark")
 
     // 設定狀態欄顏色

@@ -1,7 +1,7 @@
 //- 取得背景
 function getBackground() {
-    if (localStorage["randomImg"])
-        return localStorage["randomImg"]
+    if (_setting(`randomImgSource`))
+        return _setting(`randomImgSource`)
     else
         return "/og/og.png"
 }
