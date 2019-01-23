@@ -538,8 +538,9 @@ async function showSearch(keyword) {
             //-篩選器
             bindFilter()
         }
-    } else
+    } else {
         $("#content").html(html)
+    }
 
     //初始化
     mdui.mutation()

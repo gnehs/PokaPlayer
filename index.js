@@ -1,5 +1,6 @@
 const fs = require("fs"); //檔案系統
-const config = fs.existsSync("./config.json") ? require("./config.json") : !1; // 設定檔
+const jsonfile = require('jsonfile')
+const config = fs.existsSync("./config.json") ? jsonfile.readFileSync("./config.json") : !1; // 設定檔
 const package = require("./package.json"); // 設定檔
 const schedule = require("node-schedule"); // 很會計時ㄉ朋友
 const base64 = require("base-64");

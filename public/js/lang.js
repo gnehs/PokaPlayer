@@ -32,6 +32,9 @@ async function setLang(code) {
         if (player_random) {
             $("#player .song-info .artist").text(lang("nowplaying_clickPlayRandom"))
         }
+        // moduleShowName
+        moduleShowName["DSM"] = lang("moduleShowName_DSM")
+        moduleShowName["Netease2"] = lang("moduleShowName_Netease")
     } else {
         console.error(`[Lang] No such language`)
     }
@@ -42,7 +45,6 @@ async function updateLang() {
     localStorage["pokaLangData"] = JSON.stringify(await getLang(localStorage["pokaLang"]))
     localStorage["pokaLangDataEn"] = JSON.stringify(await getLang('en-US'))
     if (langinitialization) {
-        console.log(langinitialization);
         location.reload();
     }
 }
@@ -52,7 +54,7 @@ async function getLangs() {
     return (await getLangJson.json())
 }
 async function getLang(code) {
-    let getLangJson = await fetch(`/langs/${code}.json`)
+    let getLangJson = await fetch(`/langs/${code}/index.json`)
     return (await getLangJson.json())
 }
 
