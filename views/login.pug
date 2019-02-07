@@ -6,6 +6,7 @@ html
         link(href='//cdnjs.cloudflare.com/ajax/libs/mdui/0.4.2/css/mdui.min.css',rel='stylesheet')
         link(href='//fonts.googleapis.com/css?family=News+Cycle:400,700',rel='stylesheet')
         link(href='//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css',rel='stylesheet')
+        link(href='//fonts.googleapis.com/css?family=Product+Sans',rel='stylesheet')
         link(href='//unpkg.com/eva-icons@1.1.0/style/eva-icons.css',rel='stylesheet')
         link(href='/css/pokaplayer.css?'+version,rel='stylesheet')
         //-app
@@ -21,25 +22,23 @@ html
         meta(name="msapplication-TileColor" content="#3f51b5")
         //-lab
         style#colortheme
-    body.login
-        header.mdui-appbar.mdui-appbar-fixed(style="opacity: 0;")
-            .mdui-toolbar.mdui-color-theme
-                a.mdui-btn.mdui-btn-icon(disabled)
-                    i.mdui-icon.material-icons  
-                .mdui-typo-title PokaPlayer
-                .mdui-toolbar-spacer
-        main.mdui-valign(style="margin-top:25vh;opacity: 0;")
-            .mdui-center(style="width: 300px;box-shadow: 0 6px 20px #0000001f;overflow: hidden;border-radius: 8px;")
-                img.mdui-img-fluid(src="/img/PokaPlayerTransparent.png",style="width: 150px;margin:20px auto;")
-                .mdui-divider
-                .mdui-textfield(style="padding:5px;margin:10px 0")
-                    i.mdui-icon.eva.eva-lock
-                    label.mdui-textfield-label Password
-                    input.mdui-textfield-input(type='password',id='userPASS')
-                button.mdui-btn.mdui-btn-block.mdui-ripple(type='submit',onclick='check()') Login
+    body.login.mdui-theme-accent-blue.mdui-theme-primary-blue
+        main.mdui-valign
+            .mdui-center
+                .poka-logo.mdui-typo-display-2 PokaPlayer
+                .login-box.mdui-center
+                    .mdui-textfield
+                        label.mdui-textfield-label Username
+                        input.mdui-textfield-input(type='text',id='userName',value="poka",disabled)
+                    .mdui-textfield
+                        label.mdui-textfield-label Password
+                        input.mdui-textfield-input(type='password',id='userPASS')
+                    button.mdui-btn-block.mdui-btn.mdui-btn-raised.mdui-ripple.mdui-color-theme-accent.mdui-float-right(type='submit',onclick='check()') Login
+            .poka-bg
+                .poka-info PokaPlayer．Made with ❤️ in Taiwan．
+                    a(href="https://github.com/gnehs/PokaPlayer/") GitHub
         script(src='//cdnjs.cloudflare.com/ajax/libs/mdui/0.4.2/js/mdui.min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js')
         script(src='/js/animate-css.js')
         script(src='/js/login.js?'+version)
         script(src='/js/setting.js?'+version)
-        script(src='/js/color-theme.js?'+version)

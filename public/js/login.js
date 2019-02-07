@@ -9,8 +9,6 @@ $(function () {
             check()
         }
     });
-    $("main").attr('style', 'margin-top:25vh;')
-    $("main").animateCss('zoomIn')
     $(`input[id="userPASS"]`).focus()
 });
 
@@ -28,7 +26,6 @@ function login(password) {
         userPASS: password
     }, data => {
         if (data == 'success') {
-            $('header').removeAttr('style')
             $("main").animateCss('zoomOut', function () {
                 $("main").remove()
                 document.location.href = "/";
