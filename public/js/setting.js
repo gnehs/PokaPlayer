@@ -30,16 +30,16 @@ $(async () => {
 function _setting(setting, value = undefined) {
     let pokaSetting = JSON.parse(localStorage.pokaSetting || `{}`)
     let defaultPokaSetting = {
-        "audioQuality": localStorage["musicRes"] || "High", //音質
-        "randomImgSource": localStorage["randomImg"] || "/og/og.png",
-        "randomImgName": localStorage["randomImgName"] || "預設圖庫",
-        "imageDataSaving": Boolean(localStorage["imgRes"]) || false,
-        "showCardSource": Boolean(localStorage["pokaCardSource"]) || true,
-        "version": localStorage["PokaPlayerVersion"] || "0.0.0",
-        "filterEnabled": Boolean(localStorage["poka-filter"]) || true,
-        "darkMode": Boolean(localStorage["mdui-theme-color"]) || false,
-        "themeColor": localStorage["poka-theme-primary"] || "#009688",
-        "themeTextColor": localStorage["poka-theme-primary-text"] || "#FFF",
+        "audioQuality": "High",
+        "randomImgSource": "/og/og.png",
+        "randomImgName": "預設圖庫",
+        "imageDataSaving": false,
+        "showCardSource": true,
+        "version": "0.0.0",
+        "filterEnabled": true,
+        "darkMode": false,
+        "themeColor": "#009688",
+        "themeTextColor": "#FFF",
         "lang": "en-US",
     }
     if (value != undefined) { //設定值
@@ -268,10 +268,13 @@ async function showUpdateDialog(checkNewVersion, debug = sessionStorage.debug) {
                             timeout: 3000,
                             position: getSnackbarPosition()
                         }))
-                        socket.on('init', () => mdui.snackbar(lang("settings_update_initializing"), {
-                            timeout: 3000,
-                            position: getSnackbarPosition()
-                        }))
+                        socket.on('init', () => {
+                            mdui.snackbar(lang("settings_update_initializing"), {
+                                timeout: 3000,
+                                position: getSnackbarPosition()
+                            })
+                            pingServer()
+                        })
                         socket.on('git', data => mdui.snackbar({
                             fetch: lang("settings_update_git_fetch"),
                             reset: lang("settings_update_git_reset"),
