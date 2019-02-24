@@ -27,6 +27,8 @@ function parseSongs(songs) {
             artist: song.additional.song_tag.artist,
             album: song.additional.song_tag.album,
             cover: cover,
+            track: song.additional.song_tag.track,
+            year: song.additional.song_tag.year,
             url: "/pokaapi/song/?moduleName=DSM&songId=" + song.id,
             bitrate: song.additional.song_audio.bitrate,
             codec: song.additional.song_audio.codec,
@@ -132,7 +134,6 @@ async function onLoaded() {
     return await login();
 }
 async function login() {
-    //console.log("[DataModules][DSM] 正在登入...");
     if (!config.DSM.account && !config.DSM.password) {
         console.error("[DataModules][DSM] 登入失敗，未設定帳號密碼");
         return false;
@@ -539,6 +540,8 @@ async function getAlbumSongs(id) {
         PARAMS_JSON,
         3
     );
+    // sort by track
+    result.data.songs.sort((a, b) => a.additional.song_tag.track - b.additional.song_tag.track)
     return {
         songs: parseSongs(result.data.songs)
     };
