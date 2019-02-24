@@ -16,7 +16,12 @@ const session = require("express-session")({
     }
 });
 const bodyParser = require("body-parser");
-
+if (config && config.PokaPlayer.debug) {
+    router.use(require('cors')({
+        credentials: true,
+        origin: 'http://localhost:8080'
+    }))
+}
 router.use(session);
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({
