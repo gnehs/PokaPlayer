@@ -6,13 +6,34 @@ const config = require("../config.json"), // 很會設定ㄉ朋友
     dsmURL = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}`,
     lyricRegex = /\[([0-9.:]*)\]/i;
 
+
+
+function deReq(x) {
+    const b2a = x => Buffer.from(x, "base64").toString("utf8");
+    const decode = x => /(.{5})(.+)3C4C7CB3(.+)/.exec(x);
+    let [_, rand, link, checkSum] = decode(x);
+    [_, rand, link, checkSum] = [_, rand, b2a(link), b2a(checkSum)];
+    if (!Number.isInteger(Math.log10(rand.charCodeAt(0) + checkSum.charCodeAt(0)))) {
+        return false;
+    }
+    return link;
+}
+
+function genReq(link) {
+    const a2b = x => Buffer.from(x).toString("base64");
+    const rand = Math.random().toString(36).substring(2, 7)
+    const checkSum = N => 10 ** Number(N).toString().length - N;
+    return `${rand}${a2b(link)}3C4C7CB3${a2b(String.fromCharCode(checkSum(rand.charCodeAt(0))))}`;
+}
+
+
 function parseSongs(songs) {
     let r = [];
     for (i = 0; i < songs.length; i++) {
         let song = songs[i];
         let cover =
             `/pokaapi/cover/?moduleName=DSM&data=` +
-            encodeURIComponent(
+            encodeURIComponent(genReq(
                 JSON.stringify({
                     type: "album",
                     info: {
@@ -20,8 +41,7 @@ function parseSongs(songs) {
                         artist_name: song.additional.song_tag.artist || "",
                         album_artist_name: song.additional.song_tag.album_artist || ""
                     }
-                })
-            );
+                })));
         r.push({
             name: song.title,
             artist: song.additional.song_tag.artist,
@@ -51,12 +71,11 @@ function parseAlbums(albums) {
         };
         let cover =
             `/pokaapi/cover/?moduleName=DSM&data=` +
-            encodeURIComponent(
+            encodeURIComponent(genReq(
                 JSON.stringify({
                     type: "album",
                     info: coverInfo
-                })
-            );
+                })));
         r.push({
             name: album.name,
             artist: album.display_artist,
@@ -87,8 +106,8 @@ function parseArtists(artists) {
         r.push({
             name: artists[i].name,
             source: "DSM",
-            cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(
-                JSON.stringify({ type: "artist", info: artists[i].name || "" })
+            cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(genReq(
+                JSON.stringify({ type: "artist", info: artists[i].name || "" }))
             )}`,
             id: artists[i].name
         });
@@ -102,9 +121,9 @@ function parseComposers(composers) {
         r.push({
             name: composers[i].name,
             source: "DSM",
-            cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(
+            cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(genReq(
                 JSON.stringify({ type: "composer", info: composers[i].name || "" })
-            )}`,
+              )  )}`,
             id: composers[i].name
         });
     }
@@ -234,8 +253,8 @@ async function getHome() {
                 pins.artists.push({
                     name: pin.name,
                     source: "DSM",
-                    cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(
-                        JSON.stringify({ type: "artist", info: pin.name || "未知" })
+                    cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(genReq(
+                        JSON.stringify({ type: "artist", info: pin.name || "未知" }))
                     )}`,
                     id: pin.name
                 });
@@ -245,8 +264,8 @@ async function getHome() {
                 pins.composers.push({
                     name: pin.name,
                     source: "DSM",
-                    cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(
-                        JSON.stringify({ type: "composer", info: pin.name || "未知" })
+                    cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(genReq(
+                        JSON.stringify({ type: "composer", info: pin.name || "未知" }))
                     )}`,
                     id: pin.name
                 });
@@ -257,8 +276,8 @@ async function getHome() {
                     name: pin.name,
                     source: "DSM",
                     id: pin.criteria.folder,
-                    cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(
-                        JSON.stringify({ type: "folder", info: pin.criteria.folder })
+                    cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(genReq(
+                        JSON.stringify({ type: "folder", info: pin.criteria.folder }))
                     )}`
                 });
                 break;
@@ -279,12 +298,11 @@ async function getHome() {
                 };
                 let cover =
                     `/pokaapi/cover/?moduleName=DSM&data=` +
-                    encodeURIComponent(
+                    encodeURIComponent(genReq(
                         JSON.stringify({
                             type: "album",
                             info: coverInfo
-                        })
-                    );
+                        })));
                 pins.albums.push({
                     name: pin.name,
                     artist: pin.criteria.artist || pin.criteria.album_artist || "",
@@ -385,7 +403,7 @@ async function getSong(req, songRes, songId) {
 }
 
 async function getCover(data) {
-    coverData = JSON.parse(data);
+    coverData = JSON.parse(deReq(data));
     let url = `${dsmURL}/webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getcover&view=default`;
     switch (coverData.type) {
         case "artist": //演出者
@@ -497,7 +515,7 @@ async function getAlbums(limit = 1000, sort_by = "name", sort_direction = "ASC")
         albums: parseAlbums(result.data.albums)
     };
 }
-async function getAlbumSongs(id) {
+async function getAlbum(id) {
     albumData = JSON.parse(id);
     let PARAMS_JSON = [{
             key: "additional",
@@ -540,9 +558,18 @@ async function getAlbumSongs(id) {
         PARAMS_JSON,
         3
     );
+    let cover = `/pokaapi/cover/?moduleName=DSM&data=` +
+        encodeURIComponent(genReq(
+            JSON.stringify({
+                type: "album",
+                info: albumData
+            })))
     // sort by track
     result.data.songs.sort((a, b) => a.additional.song_tag.track - b.additional.song_tag.track)
     return {
+        name: albumData.album_name,
+        artist: albumData.artist_name || albumData.album_artist_name,
+        cover: cover,
         songs: parseSongs(result.data.songs)
     };
 }
@@ -600,8 +627,8 @@ async function getFolderFiles(id) {
                 name: item.title,
                 source: "DSM",
                 id: item.id,
-                cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(
-                    JSON.stringify({ type: "folder", info: item.id })
+                cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(genReq(
+                    JSON.stringify({ type: "folder", info: item.id }))
                 )}`
             });
     }
@@ -645,6 +672,19 @@ async function getArtists() {
     };
 }
 
+async function getArtist(id) {
+    let result = {}
+    result.name = id;
+    result.cover = `/pokaapi/cover/?moduleName=${encodeURIComponent(
+      "DSM"
+    )}&data=${encodeURIComponent(genReq(
+      JSON.stringify({
+        type: "artist",
+        info: id
+      }))
+    )}`;
+    return result;
+}
 async function getArtistAlbums(id) {
     let PARAMS_JSON = [{
                 key: "additional",
@@ -687,6 +727,19 @@ async function getArtistAlbums(id) {
     };
 }
 
+async function getComposer(id) {
+    let result = {}
+    result.name = id;
+    result.cover = `/pokaapi/cover/?moduleName=${encodeURIComponent(
+      "DSM"
+    )}&data=${encodeURIComponent(genReq(
+      JSON.stringify({
+        type: "composer",
+        info: id
+      }))
+    )}`;
+    return result;
+}
 async function getComposers() {
     let PARAMS_JSON = [{
                 key: "limit",
@@ -1017,11 +1070,14 @@ module.exports = {
     getCover,
     search,
     getAlbums,
-    getAlbumSongs,
+    getAlbum,
+    //getAlbumSongs,
     getFolders,
     getFolderFiles,
+    getArtist,
     getArtists,
     getArtistAlbums,
+    getComposer,
     getComposers,
     getComposerAlbums,
     getPlaylists,

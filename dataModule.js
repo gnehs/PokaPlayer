@@ -423,6 +423,23 @@ router.get("/artistAlbums/", async (req, res) => {
     return res.json(r);
 });
 //-----------------------------> 作曲者
+
+router.get("/composer/", async (req, res) => {
+    //http://localhost:3000/pokaapi/composers/?moduleName=DSN&id=19859
+    let moduleName = req.query.moduleName;
+    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+    // 沒這東西
+    if (!_module || moduleList[moduleName].active.indexOf("getComposer") == -1)
+        return res.status(501).send("The required module is currently unavailable :(");
+    let r;
+    try {
+        r = await _module.getComposer(req.query.id);
+    } catch (e) {
+        showError(moduleName, e)
+    }
+    return res.json(r || null);
+});
+
 // 取得作曲者清單
 router.get("/composers/", async (req, res) => {
     //http://localhost:3000/pokaapi/composers
