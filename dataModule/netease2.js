@@ -6,6 +6,7 @@ const request = require("request").defaults({
     jar
 });
 const fs = require("fs-extra");
+const pokaLog = require("../log"); // 可愛控制台輸出
 const schedule = require("node-schedule"); // 很會計時ㄉ朋友
 const franc = require("franc-min");
 const config = require(__dirname + "/../config.json").Netease2; // 設定
@@ -260,13 +261,13 @@ async function login(config) {
         result = await rp(options(`${server}login?email=${config.login.email}&password=${config.login.password}`));
     }
     isLoggedin = result.code == 200;
-    console.log(`[DataModules][Netease2] ${result.profile.nickname} 登入${isLoggedin ? "成功" : "失敗"}`);
+    pokaLog.logDM('Netease2', `${result.profile.nickname} 登入${isLoggedin ? "成功" : "失敗"}`)
     return result;
 }
 
 //自動重新登入
 schedule.scheduleJob("'* */12 * * *'", async function () {
-    console.log("[DataModules][Netease2] 正在重新登入...");
+    pokaLog.logDM('Netease2', `正在重新登入...`)
     await login(config);
 });
 async function onLoaded() {
@@ -278,11 +279,11 @@ async function onLoaded() {
             if ((await result.code) == 200) {
                 return true;
             } else {
-                console.log("[DataModules][Netease2] 登入失敗");
+                pokaLog.logDM('Netease2', `登入失敗`)
                 return false;
             }
         } else {
-            console.log("[DataModules][Netease2] 登入失敗，尚未設定帳號密碼");
+            pokaLog.logDM('Netease2', `登入失敗，尚未設定帳號密碼`)
             return false;
         }
     });
@@ -502,8 +503,7 @@ async function resolveTopPlaylistStack(topPlaylistStack) {
         x => x,
         (await Promise.all(topPlaylistStack)).map(x => (x[0] ? x[0].playlists : x.playlists))
     ).map(x =>
-        x ?
-        {
+        x ? {
             name: x.name,
             source: "Netease2",
             id: x.id,
@@ -518,15 +518,13 @@ async function resolveTopPlaylistStack(topPlaylistStack) {
 async function resolvePlaylistStack(playlistStack) {
     if (playlistStack.length === 0) return playlistStack;
     return (await Promise.all(playlistStack)).map(x =>
-        Array.isArray(x) ?
-        {
+        Array.isArray(x) ? {
             name: x[1].name || x[0].playlist.name,
             source: "Netease2",
             id: x[0].playlist.id,
             image: x[1].image || imageUrl(x[0].playlist.coverImgUrl || x[0].playlist.picUrl),
             from: "playlistStack"
-        } :
-        {
+        } : {
             name: x.playlist.name,
             source: "Netease2",
             id: x.playlist.id,
@@ -543,15 +541,13 @@ async function resolvedailyRecommendStack(dailyRecommendStack) {
             x => x,
             (await Promise.all(dailyRecommendStack)).map(x => (Array.isArray(x) ? [x[0], x[1].recommend] : x.recommend))
         ).map(x =>
-            Array.isArray(x) ?
-            {
+            Array.isArray(x) ? {
                 name: x[1].name,
                 id: x[1].id,
                 image: x[0] || imageUrl(x.coverImgUrl || x.picUrl),
                 source: "Netease2",
                 from: "dailyRecommendStack"
-            } :
-            {
+            } : {
                 name: x.name,
                 id: x.id,
                 image: imageUrl(x.coverImgUrl || x.picUrl),
@@ -614,10 +610,10 @@ async function getPlaylists(playlists) {
                             login.then(x => {
                                 if (x.code == 200) {
                                     userList.push(getCustomPlaylists(x.id));
-                                } else console.error("[DataModules][Netease2] 未登入，無法獲取用戶歌單。");
+                                } else pokaLog.logDMErr('Netease2', `未登入，無法獲取用戶歌單。`)
                             });
                         } else if (!isLoggedin) {
-                            console.error("[DataModules][Netease2] 未登入，無法獲取用戶歌單。");
+                            pokaLog.logDMErr('Netease2', `未登入，無法獲取用戶歌單。`)
                         } else {
                             userList.push(getCustomPlaylists(x.id));
                         }
@@ -648,7 +644,7 @@ async function getPlaylists(playlists) {
 
     if (config.topPlaylist.enabled) {
         if (!config.topPlaylist.category in catList) {
-            console.error(`[DataModules][Netease2] topPlaylist 的分類出錯，已預設為 ACG`);
+            pokaLog.logDMErr('Netease2', `topPlaylist 的分類出錯，已預設為 ACG`)
             config.topPlaylist.category = "ACG";
         }
         let c = config.topPlaylist;
@@ -672,7 +668,7 @@ async function getPlaylists(playlists) {
 
     if (config.hqPlaylist.enabled) {
         if (!config.hqPlaylist.category in catList) {
-            console.error(`[DataModules][Netease2] topPlaylist 的分類出錯，已預設為 ACG`);
+            pokaLog.logDMErr('Netease2', `topPlaylist 的分類出錯，已預設為 ACG`)
             config.hqPlaylist.category = "ACG";
         }
         let c = config.hqPlaylist;
@@ -699,7 +695,7 @@ async function getPlaylists(playlists) {
                 });
             });
         } else if (!isLoggedin) {
-            console.error("[DataModules][Netease2] 未登入，無法獲取每日推薦歌曲。");
+            pokaLog.logDMErr('Netease2', `未登入，無法獲取每日推薦歌曲。`)
         } else {
             r.push({
                 name: "每日推薦歌曲",
@@ -724,10 +720,10 @@ async function getPlaylists(playlists) {
                             rp(options(`${server}recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`))
                         ])
                     });
-                else console.error("[DataModules][Netease2] 未登入，無法獲取每日推薦歌單。");
+                else pokaLog.logDMErr('Netease2', `未登入，無法獲取每日推薦歌單。`)
             });
         } else if (!isLoggedin) {
-            console.error("[DataModules][Netease2] 未登入，無法獲取每日推薦歌單。");
+            pokaLog.logDMErr('Netease2', `未登入，無法獲取每日推薦歌單。`)
         } else
             r.push({
                 name: "每日推薦歌單",
@@ -771,7 +767,7 @@ async function getPlaylistSongs(id, br = 999000) {
                 }]
             };
         } else {
-            console.error(`[DataModules][Netease2] 無法獲取每日推薦歌單。(${result.code})`);
+            pokaLog.logDMErr('Netease2', `無法獲取每日推薦歌單。(${result.code})`)
             return null;
         }
     } else if (id == "yunPan") {
@@ -786,7 +782,7 @@ async function getPlaylistSongs(id, br = 999000) {
                 }]
             };
         } else {
-            console.error(`[DataModules][Netease2] 無法獲取網易雲音樂雲盤。(${result.code})`);
+            pokaLog.logDMErr('Netease2', `無法獲取網易雲音樂雲盤。(${result.code})`)
             return null;
         }
     } else {
@@ -802,7 +798,7 @@ async function getPlaylistSongs(id, br = 999000) {
                 }]
             };
         } else {
-            console.error(`[DataModules][Netease2] 無法獲取歌單 ${id}。(${result.code})`);
+            pokaLog.logDMErr('Netease2', `無法獲取歌單 ${id}。(${result.code})`)
             return null;
         }
     }
@@ -842,7 +838,7 @@ async function getLyric(id) {
         } else lyric = null;
         return lyric;
     } else {
-        console.error(`[DataModules][Netease2] 無法獲取歌詞 ${id}。(${result.code})`);
+        pokaLog.logDMErr('Netease2', `無法獲取歌詞 ${id}。(${result.code})`)
         return null;
     }
 }
@@ -916,11 +912,11 @@ async function getHome() {
             pinData[x.type + "s"].push(x);
         });
     } catch (e) {
-        console.error(e);
+        pokaLog.logDMErr('Netease2', e)
     }
     if (config.topPlaylist.enabled) {
         if (!config.topPlaylist.category in catList) {
-            console.error(`[DataModules][Netease2] topPlaylist 的分類出錯，已預設為 ACG`);
+            pokaLog.logDMErr('Netease2', `topPlaylist 的分類出錯，已預設為 ACG`)
             config.topPlaylist.category = "ACG";
         }
         let c = config.topPlaylist;
@@ -943,7 +939,7 @@ async function getHome() {
 
     if (config.hqPlaylist.enabled) {
         if (!config.hqPlaylist.category in catList) {
-            console.error(`[DataModules][Netease2] topPlaylist 的分類出錯，已預設為 ACG`);
+            pokaLog.logDMErr('Netease2', `topPlaylist 的分類出錯，已預設為 ACG`)
             config.hqPlaylist.category = "ACG";
         }
         let c = config.hqPlaylist;
@@ -969,7 +965,7 @@ async function getHome() {
                 });
             });
         } else if (!isLoggedin) {
-            console.error("[DataModules][Netease2] 未登入，無法獲取每日推薦歌曲。");
+            pokaLog.logDMErr('Netease2', `未登入，無法獲取每日推薦歌曲。`)
         } else {
             r.push({
                 name: "每日推薦歌曲",
@@ -987,10 +983,10 @@ async function getHome() {
                     dailyRecommendStack.push(
                         rp(options(`${server}recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`))
                     );
-                else console.error("[DataModules][Netease2] 未登入，無法獲取每日推薦歌單。");
+                else pokaLog.logDMErr('Netease2', `未登入，無法獲取每日推薦歌單。`)
             });
         } else if (!isLoggedin) {
-            console.error("[DataModules][Netease2] 未登入，無法獲取每日推薦歌單。");
+            pokaLog.logDMErr('Netease2', `未登入，無法獲取每日推薦歌單。`)
         } else
             dailyRecommendStack.push(
                 rp(options(`${server}recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`))
@@ -1061,10 +1057,10 @@ async function getUserPlaylists(uid) {
             login.then(async x => {
                 if (x.code == 200) {
                     uid = (await rp(options(`${server}login/status`))).profile.userId;
-                } else console.error("[DataModules][Netease2] 未登入，無法獲取用戶歌單。");
+                } else pokaLog.logDMErr('Netease2', `未登入，無法獲取用戶歌單。`)
             });
         } else if (!isLoggedin) {
-            console.error("[DataModules][Netease2] 未登入，無法獲取用戶歌單。");
+            pokaLog.logDMErr('Netease2', `未登入，無法獲取用戶歌單。`)
         } else {
             uid = (await rp(options(`${server}login/status`))).profile.userId;
         }

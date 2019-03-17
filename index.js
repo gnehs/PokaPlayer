@@ -3,6 +3,7 @@ const jsonfile = require('jsonfile')
 const config = fs.existsSync("./config.json") ? jsonfile.readFileSync("./config.json") : !1; // 設定檔
 const package = require("./package.json"); // 設定檔
 const schedule = require("node-schedule"); // 很會計時ㄉ朋友
+const pokaLog = require("./log"); // 可愛控制台輸出
 const base64 = require("base-64");
 const git = require("simple-git/promise")(__dirname);
 //express
@@ -93,16 +94,14 @@ app.use(express.static("public"));
 
 // 啟動囉
 server.listen(3000, () => {
-    let TTTTTTTTTTTTTime = moment().format("YYYY/MM/DD HH:mm:ss")
-    console.log(`
-|￣￣￣￣￣￣￣￣￣￣￣￣|  \x1b[34m[version]\x1b[32m ${package.version} \x1b[0m
-| PokaPlayer             |  ${config && config.PokaPlayer.debug?"\x1b[34m[info]\x1b[32m Debug 模式\x1b[0m":''}
-| http://localhost:3000  |  ${!config?"\x1b[31m未讀取到 config.json，請訪問 /install\x1b[0m":''}
-| ${TTTTTTTTTTTTTime}    |  ${!config?"\x1b[31m或是使用 config-simple.json 來建立設定檔\x1b[0m":''}
-|＿＿＿＿＿＿＿＿＿＿＿＿|  
-    (\\__/) || 
-    (•ㅅ•) || 
-    / 　 づ`)
+    pokaLog.log('PokaPlayer', package.version)
+    if (config && config.PokaPlayer.debug)
+        pokaLog.log('INFO', 'Debug Mode')
+    pokaLog.log('TIME', moment().format("YYYY/MM/DD HH:mm:ss"))
+    if (!config) {
+        pokaLog.log('INSTALL', `未讀取到 config.json，請訪問 /install`)
+        pokaLog.log('INSTALL', `或是使用 config-simple.json 來建立設定檔`)
+    }
 });
 
 //安裝頁面

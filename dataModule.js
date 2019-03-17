@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const config = require("./config.json"); // 設定檔
+const pokaLog = require("./log") // 可愛控制台輸出
 const playlist = fs.existsSync("./playlist.json") ? require("./playlist.json") : []; // 歌單
 const router = require("express").Router();
 const FileStore = require("session-file-store")(require("express-session")); // session
@@ -47,7 +48,6 @@ fs.readdir(__dirname + "/dataModule", (err, files) => {
         }
     });
 });
-
 // 首頁
 router.get("/", (req, res) => {
     res.send("PokaPlayer API");
@@ -73,10 +73,11 @@ router.get("/home/", async (req, res) => {
         let y = require(x.js);
         if (x.active.indexOf("getHome") > -1) {
             try {
-                let result = (await y.getHome(playlist)) || null;
-                if (result)
-                    for (i = 0; i < result.length; i++)
-                        resData.push(result[i])
+                let results = (await y.getHome(playlist)) || null;
+                if (results)
+                    for (result of results) {
+                        resData.push(result)
+                    }
             } catch (e) {
                 showError(x.name, e)
             }
@@ -809,7 +810,7 @@ router.use((req, res, next) => {
 });
 
 function showError(moduleName = false, error) {
-    console.log(`\x1b[31m%s\x1b[0m',[DataModules]${moduleName ? `[${moduleName}]` : ''}發生了錯誤：（`);
+    pokaLog.logDMErr(moduleName || '?', '發生了錯誤')
     console.error(error);
 }
 module.exports = router;

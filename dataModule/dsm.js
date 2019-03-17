@@ -1,5 +1,6 @@
 const config = require("../config.json"), // 很會設定ㄉ朋友
     schedule = require("node-schedule"), // 很會計時ㄉ朋友
+    pokaLog = require("../log"), // 可愛控制台輸出
     request = require("request").defaults({
         jar: require("request").jar()
     }), //很會請求ㄉ朋友
@@ -146,7 +147,7 @@ function parseLyrics(lyrics) {
 }
 //自動重新登入
 schedule.scheduleJob("'* */12 * * *'", async function () {
-    console.log("[DataModules][DSM] 正在重新登入...");
+    pokaLog.logDM('DSM', '正在重新登入...')
     login();
 });
 async function onLoaded() {
@@ -154,7 +155,7 @@ async function onLoaded() {
 }
 async function login() {
     if (!config.DSM.account && !config.DSM.password) {
-        console.error("[DataModules][DSM] 登入失敗，未設定帳號密碼");
+        pokaLog.logDMErr('DSM', '登入失敗，未設定帳號密碼')
         return false;
     }
     let result = await getAPI("auth.cgi", "SYNO.API.Auth", "Login", [{
@@ -175,10 +176,10 @@ async function login() {
         }
     ]);
     if (result.success) {
-        console.log("[DataModules][DSM] 登入成功！");
+        pokaLog.logDM('DSM', `${config.DSM.account} 登入成功！`)
         return true;
     } else {
-        console.error("[DataModules][DSM] 登入失敗，請檢查您的設定檔是否正確");
+        pokaLog.logDMErr('DSM', `${config.DSM.account} 登入失敗，請檢查您的設定檔是否正確`)
         return false;
     }
 }
