@@ -10,13 +10,12 @@
 ![](https://user-images.githubusercontent.com/16719720/50722632-e6256180-110c-11e9-951d-d534fad40e52.png)
 
 
-[![](https://user-images.githubusercontent.com/16719720/50722747-b70fef80-110e-11e9-9fc6-6cb1ba7107fe.png)](https://hub.docker.com/r/gnehs/pokaplayer/)
-[![](https://user-images.githubusercontent.com/16719720/50722746-b70fef80-110e-11e9-936f-b0a1a09d0c11.png)](https://github.com/gnehs/PokaPlayer/releases/latest)
-[![](https://user-images.githubusercontent.com/16719720/50722820-ea9f4980-110f-11e9-9aac-1c77de9aa394.png)](https://github.com/gnehs/PokaPlayer-electron/releases/latest)
-[![](https://user-images.githubusercontent.com/16719720/50722819-ea9f4980-110f-11e9-90b6-3e7109d969a2.png)](https://github.com/gnehs/PokaPlayer/wiki/%E5%A6%82%E4%BD%95%E5%9C%A8-Synology-NAS-%E4%BD%BF%E7%94%A8-Docker-%E9%83%A8%E7%BD%B2-PokaPlayer)
+<img src="https://raw.githubusercontent.com/gnehs/PokaPlayer/master/public/static/img/icons/192x192.png" align="center"/>
 
-## 截圖
-![image](https://user-images.githubusercontent.com/16719720/48269261-197fa300-e472-11e8-87d4-c9804a25c06f.png)
+![](https://i.imgur.com/aA2QBed.png)
+![](https://i.imgur.com/goZA2W7.png)
+![](https://i.imgur.com/pZwW8d7.png)
+![](https://i.imgur.com/b1znEO3.png)
 
 
 ## 開始使用
@@ -52,7 +51,6 @@
 -   隨機播放
 -   密碼保護
 -   夜間模式
--   主題切換
 -   MediaSession
 
 <img src="https://i.imgur.com/DLO96iq.png" width="500px">
