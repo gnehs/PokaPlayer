@@ -110,15 +110,6 @@ if (!config || config.PokaPlayer.debug)
         version: package.version
     }));
 
-// 隨機圖圖
-app.get("/og/og.png", (req, res) => {
-    let files = fs.readdirSync("./ogimage/").filter((i, n) => ((i.toString().indexOf(".png") > -1 || i.toString().indexOf(".jpg") > -1) && i.toString().indexOf("._") < 0));
-    //og
-    let imgnum = Math.floor(Math.random() * files.length);
-    let img = __dirname + "/ogimage/" + files[imgnum];
-
-    res.sendFile(img);
-});
 // 登入
 app
     .get("/login/", (req, res) => {
