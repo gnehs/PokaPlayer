@@ -137,7 +137,7 @@ app.get("/", (req, res) => {
     if (!config) {
         res.redirect("/install/");
     } else {
-        res.sendFile(path.join(__dirname + '/public/poka.html'))
+        res.sendFile(path.join(__dirname + '/public/index.html'))
     }
 })
 
@@ -228,7 +228,7 @@ app.use((req, res, next) => {
     if (!config)
         res.redirect("/install/");
     else
-        res.sendFile(path.join(__dirname + '/public/poka.html'))
+        res.sendFile(path.join(__dirname + '/public/index.html'))
 });
 // 報錯處理
 process.on("uncaughtException", err => {
