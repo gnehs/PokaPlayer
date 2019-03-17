@@ -1,10 +1,11 @@
 const fs = require("fs"); //檔案系統
 const jsonfile = require('jsonfile')
-const config = fs.existsSync("./config.json") ? jsonfile.readFileSync("./config.json") : !1; // 設定檔
+const config = fs.existsSync("./config.json") ? jsonfile.readFileSync("./config.json") : false; // 設定檔
 const package = require("./package.json"); // 設定檔
 const schedule = require("node-schedule"); // 很會計時ㄉ朋友
 const pokaLog = require("./log"); // 可愛控制台輸出
 const base64 = require("base-64");
+const path = require('path');
 const git = require("simple-git/promise")(__dirname);
 //express
 const express = require("express");
@@ -89,14 +90,13 @@ const moment = require("moment-timezone");
 moment.locale("zh-tw");
 moment.tz.setDefault("Asia/Taipei");
 
-// 設定 js icon css 目錄
-app.use(express.static("public"));
 
 // 啟動囉
 server.listen(3000, () => {
     pokaLog.log('PokaPlayer', package.version)
     if (config && config.PokaPlayer.debug)
         pokaLog.log('INFO', 'Debug Mode')
+    pokaLog.log('INFO', 'http://localhost:3000/')
     pokaLog.log('TIME', moment().format("YYYY/MM/DD HH:mm:ss"))
     if (!config) {
         pokaLog.log('INSTALL', `未讀取到 config.json，請訪問 /install`)
@@ -105,9 +105,10 @@ server.listen(3000, () => {
 });
 
 //安裝頁面
-if (!config || config.PokaPlayer.debug) app.get("/install", (req, res) => res.render("install", {
-    version: package.version
-}));
+if (!config || config.PokaPlayer.debug)
+    app.get("/install", (req, res) => res.render("install", {
+        version: package.version
+    }));
 
 // 隨機圖圖
 app.get("/og/og.png", (req, res) => {
@@ -120,10 +121,15 @@ app.get("/og/og.png", (req, res) => {
 });
 // 登入
 app
-    .get("/login/", (req, res) =>
-        config.PokaPlayer.passwordSwitch && (req.session.pass != config.PokaPlayer.password) ?
-        res.render("login") :
-        res.redirect("/"))
+    .get("/login/", (req, res) => {
+        if (!config) {
+            res.redirect("/install/");
+        } else {
+            config.PokaPlayer.passwordSwitch && (req.session.pass != config.PokaPlayer.password) ?
+                res.render("login") :
+                res.redirect("/")
+        }
+    })
     .post("/login/", (req, res) => {
         req.session.pass = req.body["userPASS"];
         if (config.PokaPlayer.passwordSwitch && req.body["userPASS"] != config.PokaPlayer.password)
@@ -135,6 +141,17 @@ app
         req.session.pass = ''
         res.redirect("/")
     });
+//首頁
+app.get("/", (req, res) => {
+    if (!config) {
+        res.redirect("/install/");
+    } else {
+        res.sendFile(path.join(__dirname + '/public/poka.html'))
+    }
+})
+
+// 設定 js icon css 目錄
+app.use(express.static("public"));
 
 // PONG
 app.get("/ping", (req, res) => res.send("PONG"));
@@ -147,10 +164,6 @@ app.use((req, res, next) => {
         res.redirect("/login/");
     else next();
 });
-// 首頁
-app.get("/", (req, res) => res.render("index", {
-    version: package.version
-}));
 
 io.on("connection", socket => {
     socket.emit("hello");
@@ -220,9 +233,12 @@ app.post("/restart", (req, res) => {
     process.exit();
 });
 
-app.use((req, res, next) => res.render("index", {
-    version: package.version
-}));
+app.use((req, res, next) => {
+    if (!config)
+        res.redirect("/install/");
+    else
+        res.sendFile(path.join(__dirname + '/public/poka.html'))
+});
 // 報錯處理
 process.on("uncaughtException", err => {
     if (config && config.PokaPlayer.debug) console.log(err);
