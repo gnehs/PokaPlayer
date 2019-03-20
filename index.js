@@ -187,7 +187,7 @@ io.on("connection", socket => {
                             setTimeout(resolve, interval);
                         });
                     };
-                    await delay(1000)
+                    await delay(3000)
                 })
                 .then(() => process.exit())
                 .catch(err => {
