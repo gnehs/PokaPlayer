@@ -1,4 +1,5 @@
 {
+    "scope": "/",
     "name": "PokaPlayer",
     "short_name": "PokaPlayer",
     "icons": [{
@@ -16,7 +17,7 @@
             "type": "image/png"
         }
     ],
-    "start_url": "/index.html",
+    "start_url": "/?pwa",
     "display": "standalone",
     "background_color": "rgb(68, 138, 255)",
     "theme_color": "#ffffff"
