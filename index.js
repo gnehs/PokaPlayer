@@ -181,6 +181,14 @@ io.on("connection", socket => {
                 .then(() => git.checkout(config.PokaPlayer.debug ? "dev" : "master"))
                 .then(() => socket.emit("git", "reset"))
                 .then(() => socket.emit("restart"))
+                .then(async () => {
+                    const delay = interval => {
+                        return new Promise(resolve => {
+                            setTimeout(resolve, interval);
+                        });
+                    };
+                    await delay(1000)
+                })
                 .then(() => process.exit())
                 .catch(err => {
                     console.error("failed: ", err);
