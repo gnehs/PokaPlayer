@@ -14,9 +14,6 @@ RUN chmod +x start.sh
 # 環境設定
 ENV NODE_ENV=production
 EXPOSE 3000
-# 時區
-RUN apk add --no-cache tzdata
-ENV TZ=Asia/Taipei
 # 啟動
 CMD ["sh", "start.sh"]
 
