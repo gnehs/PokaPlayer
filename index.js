@@ -159,11 +159,11 @@ app.use((req, res, next) => {
 io.on("connection", socket => {
     socket.emit("hello");
     // Accept a login event with user's data
-    socket.on("login", function (userdata) {
+    socket.on("login", userdata => {
         socket.handshake.session.userdata = userdata;
         socket.handshake.session.save();
     });
-    socket.on("logout", function (userdata) {
+    socket.on("logout", userdata => {
         if (socket.handshake.session.userdata) {
             delete socket.handshake.session.userdata;
             socket.handshake.session.save();
@@ -211,13 +211,13 @@ app.get("/upgrade", (req, res) => {
 });
 
 // get info
-app.get("/info", (req, res) => res.json(package));
-app.get("/debug", async (req, res) =>
-    res.send(
-        config.PokaPlayer.debug ?
+app.get("/info", async (req, res) => {
+    let _p = package
+    _p.debug = config.PokaPlayer.debug ?
         (await git.raw(["rev-parse", "--short", "HEAD"])).slice(0, -1) :
         "false"
-    ));
+    res.json(_p)
+});
 
 app.post("/restart", (req, res) => {
     res.send("k");
