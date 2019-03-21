@@ -176,8 +176,8 @@ io.on("connection", socket => {
                 .then(() => socket.emit("git", "fetch"))
                 .then(() => git.remote(["set-url", "origin", "https://github.com/gnehs/PokaPlayer.git"]))
                 .then(() => git.pull())
-                .then(() => socket.emit("restart"))
                 .then(() => socket.emit("git", "reset"))
+                .then(() => socket.emit("restart"))
                 .then(async () => {
                     const delay = interval => {
                         return new Promise(resolve => {
