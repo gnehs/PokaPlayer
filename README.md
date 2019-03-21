@@ -8,13 +8,13 @@
 [![Docker Build Status](https://img.shields.io/docker/build/gnehs/pokaplayer.svg)](https://hub.docker.com/r/gnehs/pokaplayer/)
 
 
-![](https://i.imgur.com/9HGPLIm.png)
+![](https://i.imgur.com/eOSlvuw.png)
 
 
 ## 開始使用
 
 -   使用 Docker 映像來部署 (https://hub.docker.com/r/gnehs/pokaplayer/)
-    -   [Synology Docker 可參考此教學](https://github.com/gnehs/PokaPlayer/wiki/%E5%A6%82%E4%BD%95%E5%9C%A8-Synology-NAS-%E4%BD%BF%E7%94%A8-Docker-%E9%83%A8%E7%BD%B2-PokaPlayer)
+    -   [Synology NAS 教學](https://github.com/gnehs/PokaPlayer/wiki/%E5%A6%82%E4%BD%95%E5%9C%A8-Synology-NAS-%E4%BD%BF%E7%94%A8-Docker-%E9%83%A8%E7%BD%B2-PokaPlayer)
 -   或是使用 node.js 來手動啟動
 ```bash
     npm install --production # 或是使用 `npm i` 來安裝所有組件來建立 Dev 環境
@@ -29,7 +29,7 @@
 
 ## 支援的模組
 
--   [Synology DSM Audio Station](https://www.synology.com/zh-tw/dsm/feature/audio_station)
+-   [DSM Audio Station](https://www.synology.com/zh-tw/dsm/feature/audio_station)
 -   [Netease Cloud Music](https://music.163.com/)
 
 ## 功能
@@ -47,13 +47,6 @@
 -   MediaSession
 
 <img src="https://i.imgur.com/DLO96iq.png" width="500px">
-
-## 備註
-
-Repo 內附的背景來自
-
--   [Free Set of 40+ Material Design Backgrounds](https://www.oxygenna.com/news/brand-new-set-of-40-material-design-backgrounds)
--   [New free set of 30 material design backgrounds](https://www.oxygenna.com/freebies/new-free-set-of-material-design-backgrounds)
 
 ## 貢獻者 Contributors
 
