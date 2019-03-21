@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "install node_modules"
+echo "[start.sh] install node_modules"
 npm install --production
-echo "PokaPlayer"
+echo "[start.sh] starting PokaPlayer......"
 npm start
