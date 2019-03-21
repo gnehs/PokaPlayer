@@ -173,7 +173,7 @@ io.on("connection", socket => {
         if (socket.handshake.session.pass == config.PokaPlayer.password) {
             socket.emit("init");
             git.raw(["config", "--global", "user.email", '"you@example.com"'])
-                .then(() => git.fetch(["https://github.com/gnehs/PokaPlayer.git"]))
+                .then(() => git.clone(["https://github.com/gnehs/PokaPlayer.git"]))
                 .then(() => socket.emit("git", "fetch"))
                 .then(() =>
                     git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? "dev" : "master")])
