@@ -7,15 +7,8 @@
 [![GitHub repo size in bytes](https://img.shields.io/github/repo-size/gnehs/PokaPlayer.svg)](https://github.com/gnehs/PokaPlayer/archive/master.zip)
 [![Docker Build Status](https://img.shields.io/docker/build/gnehs/pokaplayer.svg)](https://hub.docker.com/r/gnehs/pokaplayer/)
 
-![](https://user-images.githubusercontent.com/16719720/50722632-e6256180-110c-11e9-951d-d534fad40e52.png)
 
-
-<img src="https://raw.githubusercontent.com/gnehs/PokaPlayer/master/public/static/img/icons/192x192.png" align="center"/>
-
-![](https://i.imgur.com/aA2QBed.png)
-![](https://i.imgur.com/goZA2W7.png)
-![](https://i.imgur.com/pZwW8d7.png)
-![](https://i.imgur.com/b1znEO3.png)
+![](https://i.imgur.com/9HGPLIm.png)
 
 
 ## 開始使用
