@@ -1,13 +1,28 @@
 const fs = require("fs"); //檔案系統
 const jsonfile = require('jsonfile')
-const config = fs.existsSync("./config.json") ? jsonfile.readFileSync("./config.json") : false; // 設定檔
+const passwordHash = require('password-hash')
+
+let _c = jsonfile.readFileSync("./config.json")
+// 加鹽
+if (!_c.PokaPlayer.salt) {
+    _c.PokaPlayer.salt = Math.random().toString(36).substring(7)
+}
+//密碼 hash
+if (_c.PokaPlayer.password && !passwordHash.isHashed(_c.PokaPlayer.password)) {
+    _c.PokaPlayer.password = passwordHash.generate(_c.PokaPlayer.salt + _c.PokaPlayer.password)
+}
+jsonfile.writeFileSync("./config.json", _c, {
+    spaces: 4,
+    EOL: '\r\n'
+})
+
+const config = fs.existsSync("./config.json") ? _c : false; // 設定檔
 const package = require("./package.json"); // 設定檔
 const schedule = require("node-schedule"); // 很會計時ㄉ朋友
 const pokaLog = require("./log"); // 可愛控制台輸出
 const base64 = require("base-64");
 const path = require('path');
 const git = require("simple-git/promise")(__dirname);
-const passwordHash = require('password-hash');
 //express
 const express = require("express");
 const FileStore = require("session-file-store")(require("express-session")); // session
@@ -114,21 +129,10 @@ function verifyPassword(password) {
     /*
     驗證密碼是否正確
     */
-    if (!config) return true
+    if (!config) return true //沒有設定檔
+    if (!config.PokaPlayer.passwordSwitch) return true //未開啟密碼登入
     if (config.PokaPlayer.passwordSwitch) { //開啟密碼登入
-        if (passwordHash.isHashed(config.PokaPlayer.password)) {
-            if (passwordHash.isHashed(password)) {
-                return config.PokaPlayer.salt + password == config.PokaPlayer.password
-            } else {
-                return passwordHash.verify(config.PokaPlayer.salt + password, config.PokaPlayer.password)
-            }
-        } else if (passwordHash.isHashed(password)) {
-            return passwordHash.verify(config.PokaPlayer.salt + config.PokaPlayer.password, password)
-        } else {
-            return password == config.PokaPlayer.password
-        }
-    } else { //未開啟密碼登入
-        return true
+        return passwordHash.verify(config.PokaPlayer.salt + password, config.PokaPlayer.password)
     }
 }
 
@@ -144,7 +148,7 @@ app
     .post("/login/", (req, res) => {
         req.session.pass = req.body["userPASS"];
         if (verifyPassword(req.body["userPASS"])) {
-            req.session.pass = passwordHash.generate(config.PokaPlayer.salt + req.body["userPASS"])
+            req.session.pass = req.body["userPASS"]
             res.send("success");
         } else {
             res.send("fail");
@@ -202,7 +206,7 @@ io.on("connection", socket => {
         }
     });
     socket.on("update", userdata => {
-        if (socket.handshake.session.pass == config.PokaPlayer.password) {
+        if (verifyPassword(socket.handshake.session.pass)) {
             socket.emit("init");
             git.reset(["--hard", "HEAD"])
                 .then(() => socket.emit("git", "fetch"))

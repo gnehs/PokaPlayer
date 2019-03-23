@@ -29,22 +29,13 @@ function verifyPassword(password) {
     /*
     驗證密碼是否正確
     */
+    if (!config) return true //沒有設定檔
+    if (!config.PokaPlayer.passwordSwitch) return true //未開啟密碼登入
     if (config.PokaPlayer.passwordSwitch) { //開啟密碼登入
-        if (passwordHash.isHashed(config.PokaPlayer.password)) {
-            if (passwordHash.isHashed(password)) {
-                return config.PokaPlayer.salt + password == config.PokaPlayer.password
-            } else {
-                return passwordHash.verify(config.PokaPlayer.salt + password, config.PokaPlayer.password)
-            }
-        } else if (passwordHash.isHashed(password)) {
-            return passwordHash.verify(config.PokaPlayer.salt + config.PokaPlayer.password, password)
-        } else {
-            return password == config.PokaPlayer.password
-        }
-    } else { //未開啟密碼登入
-        return true
+        return passwordHash.verify(config.PokaPlayer.salt + password, config.PokaPlayer.password)
     }
 }
+
 router.use(session);
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({
