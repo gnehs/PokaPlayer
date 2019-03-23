@@ -4,6 +4,7 @@ const config = require("./config.json"); // 設定檔
 const pokaLog = require("./log") // 可愛控制台輸出
 const playlist = fs.existsSync("./playlist.json") ? require("./playlist.json") : []; // 歌單
 const router = require("express").Router();
+const passwordHash = require('password-hash');
 const FileStore = require("session-file-store")(require("express-session")); // session
 const session = require("express-session")({
     store: new FileStore({
@@ -22,6 +23,27 @@ if (config && config.PokaPlayer.debug) {
         credentials: true,
         origin: 'http://localhost:8080'
     }))
+}
+
+function verifyPassword(password) {
+    /*
+    驗證密碼是否正確
+    */
+    if (config.PokaPlayer.passwordSwitch) { //開啟密碼登入
+        if (passwordHash.isHashed(config.PokaPlayer.password)) {
+            if (passwordHash.isHashed(password)) {
+                return config.PokaPlayer.salt + password == config.PokaPlayer.password
+            } else {
+                return passwordHash.verify(config.PokaPlayer.salt + password, config.PokaPlayer.password)
+            }
+        } else if (passwordHash.isHashed(password)) {
+            return passwordHash.verify(config.PokaPlayer.salt + config.PokaPlayer.password, password)
+        } else {
+            return password == config.PokaPlayer.password
+        }
+    } else { //未開啟密碼登入
+        return true
+    }
 }
 router.use(session);
 router.use(bodyParser.json());
@@ -54,7 +76,7 @@ router.get("/", (req, res) => {
 });
 // 先在這裡蹦蹦蹦再轉交給其他好朋友
 router.use((req, res, next) => {
-    if (req.session.pass != config.PokaPlayer.password && config.PokaPlayer.passwordSwitch)
+    if (!verifyPassword(req.session.pass))
         res.status(403).send("Permission Denied Desu");
     else {
         if (req.method.toUpperCase() === "GET" && config.PokaPlayer.debug) {
