@@ -1,9 +1,12 @@
 const request = require("request");
 const jar = require("request").jar();
-const rp = require("request-promise").defaults({ jar });
+const rp = require("request-promise").defaults({
+    jar
+});
 const router = require("express").Router();
 const bodyParser = require("body-parser");
 const fs = require("fs-extra");
+const passwordHash = require('password-hash');
 
 router.use(bodyParser.json());
 
@@ -11,7 +14,7 @@ router.use(bodyParser.json());
 router.get("/", (req, res) => {
     res.send("PokaPlayer Install API");
 });
-router.post("/netease2", async(req, res) => {
+router.post("/netease2", async (req, res) => {
     async function netease2(config) {
         const options = (url, qs = {}) => ({
             uri: url,
@@ -49,17 +52,17 @@ router.post("/netease2", async(req, res) => {
         res.send('error');
     }
 });
-router.post("/dsm", async(req, res) => {
+router.post("/dsm", async (req, res) => {
     //- API 請求
     async function getAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 1, config) {
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
             let PARAMS = "";
             for (i = 0; i < PARAMS_JSON.length; i++) {
                 PARAMS += "&" + PARAMS_JSON[i].key + "=" + encodeURIComponent(PARAMS_JSON[i].value);
             }
             request(
                 `${config.protocol}://${config.host}:${config.port}/webapi/${CGI_PATH}?api=${API_NAME}&method=${METHOD}&version=${VERSION}${PARAMS}`,
-                function(error, res, body) {
+                function (error, res, body) {
                     if (!error && res.statusCode == 200) {
                         resolve(JSON.parse(body));
                     } else {
@@ -73,11 +76,22 @@ router.post("/dsm", async(req, res) => {
         if (!config.account && !config.password) {
             return false;
         }
-        let result = await getAPI("auth.cgi", "SYNO.API.Auth", "Login", [
-            { key: "account", value: config.account },
-            { key: "passwd", value: config.password },
-            { key: "session", value: "AudioStation" },
-            { key: "format", value: "cookie" }
+        let result = await getAPI("auth.cgi", "SYNO.API.Auth", "Login", [{
+                key: "account",
+                value: config.account
+            },
+            {
+                key: "passwd",
+                value: config.password
+            },
+            {
+                key: "session",
+                value: "AudioStation"
+            },
+            {
+                key: "format",
+                value: "cookie"
+            }
         ], 1, config);
         if (result.success) {
             return true;
@@ -92,8 +106,12 @@ router.post("/dsm", async(req, res) => {
         res.send('error');
     }
 })
-router.post("/config", async(req, res) => {
+router.post("/config", async (req, res) => {
     try {
+        let salt = Math.random().toString(36).substring(7)
+        req.body["PokaPlayer"].salt = salt
+        req.body["PokaPlayer"].password = passwordHash.generate(salt + req.body["PokaPlayer"].password)
+        req.body["PokaPlayer"].adminPassword = passwordHash.generate(salt + req.body["PokaPlayer"].adminPassword)
         await fs.writeJson('./config.json', req.body)
         await fs.writeJson('./playlist.json', [])
         await res.send('done')

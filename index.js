@@ -1,6 +1,22 @@
 const fs = require("fs"); //檔案系統
 const jsonfile = require('jsonfile')
-const config = fs.existsSync("./config.json") ? jsonfile.readFileSync("./config.json") : false; // 設定檔
+const passwordHash = require('password-hash')
+
+let _c = jsonfile.readFileSync("./config.json")
+// 加鹽
+if (!_c.PokaPlayer.salt) {
+    _c.PokaPlayer.salt = Math.random().toString(36).substring(7)
+}
+//密碼 hash
+if (_c.PokaPlayer.password && !passwordHash.isHashed(_c.PokaPlayer.password)) {
+    _c.PokaPlayer.password = passwordHash.generate(_c.PokaPlayer.salt + _c.PokaPlayer.password)
+}
+jsonfile.writeFileSync("./config.json", _c, {
+    spaces: 4,
+    EOL: '\r\n'
+})
+
+const config = fs.existsSync("./config.json") ? _c : false; // 設定檔
 const package = require("./package.json"); // 設定檔
 const schedule = require("node-schedule"); // 很會計時ㄉ朋友
 const pokaLog = require("./log"); // 可愛控制台輸出
@@ -103,12 +119,22 @@ server.listen(3000, () => {
         pokaLog.log('INSTALL', `或是使用 config-simple.json 來建立設定檔`)
     }
 });
-
 //安裝頁面
 if (!config || config.PokaPlayer.debug)
     app.get("/install", (req, res) => res.render("install", {
         version: package.version
     }));
+
+function verifyPassword(password) {
+    /*
+    驗證密碼是否正確
+    */
+    if (!config) return true //沒有設定檔
+    if (!config.PokaPlayer.passwordSwitch) return true //未開啟密碼登入
+    if (config.PokaPlayer.passwordSwitch) { //開啟密碼登入
+        return passwordHash.verify(config.PokaPlayer.salt + password, config.PokaPlayer.password)
+    }
+}
 
 // 登入
 app
@@ -116,16 +142,17 @@ app
         if (!config) {
             res.redirect("/install/");
         } else {
-            config.PokaPlayer.passwordSwitch && (req.session.pass != config.PokaPlayer.password) ?
-                res.render("login") :
-                res.redirect("/")
+            verifyPassword(req.session.pass) ? res.render("login") : res.redirect("/")
         }
     })
     .post("/login/", (req, res) => {
         req.session.pass = req.body["userPASS"];
-        if (config.PokaPlayer.passwordSwitch && req.body["userPASS"] != config.PokaPlayer.password)
+        if (verifyPassword(req.body["userPASS"])) {
+            req.session.pass = req.body["userPASS"]
+            res.send("success");
+        } else {
             res.send("fail");
-        else res.send("success");
+        }
     })
     .get("/logout/", (req, res) => {
         // 登出
@@ -147,11 +174,20 @@ app.use(express.static("public"));
 // PONG
 app.get("/ping", (req, res) => res.send("PONG"));
 
+// 取得狀態
+app.get("/status", async (req, res) => res.json({
+    login: verifyPassword(req.session.pass),
+    install: config,
+    version: package.version,
+    debug: config && config.PokaPlayer.debug ?
+        (await git.raw(["rev-parse", "--short", "HEAD"])).slice(0, -1) : false
+}));
+
 // 沒設定檔給設定頁面，沒登入給登入頁
 app.use((req, res, next) => {
     if (!config)
         res.redirect("/install/");
-    else if (config.PokaPlayer.passwordSwitch && (req.session.pass != config.PokaPlayer.password))
+    else if (!verifyPassword(req.session.pass))
         res.redirect("/login/");
     else next();
 });
@@ -170,7 +206,7 @@ io.on("connection", socket => {
         }
     });
     socket.on("update", userdata => {
-        if (socket.handshake.session.pass == config.PokaPlayer.password) {
+        if (verifyPassword(socket.handshake.session.pass)) {
             socket.emit("init");
             git.reset(["--hard", "HEAD"])
                 .then(() => socket.emit("git", "fetch"))
@@ -220,7 +256,7 @@ app.get("/info", async (req, res) => {
     let _p = package
     _p.debug = config.PokaPlayer.debug ?
         (await git.raw(["rev-parse", "--short", "HEAD"])).slice(0, -1) :
-        "false"
+        false
     res.json(_p)
 });
 
