@@ -154,7 +154,7 @@ app.use(express.static("public"));
 // 取得狀態
 app.get("/status", async (req, res) => res.json({
     login: verifyPassword(req.session.pass),
-    install: config,
+    install: Boolean(config),
     version: package.version,
     debug: config && config.PokaPlayer.debug ?
         (await git.raw(["rev-parse", "--short", "HEAD"])).slice(0, -1) : false
