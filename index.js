@@ -1,22 +1,24 @@
 const fs = require("fs"); //檔案系統
 const jsonfile = require('jsonfile')
 const passwordHash = require('password-hash')
-
-let _c = jsonfile.readFileSync("./config.json")
-// 加鹽
-if (!_c.PokaPlayer.salt) {
-    _c.PokaPlayer.salt = Math.random().toString(36).substring(7)
+let _c = false
+if (fs.existsSync("./config.json")) {
+    _c = jsonfile.readFileSync("./config.json")
+    // 加鹽
+    if (!_c.PokaPlayer.salt) {
+        _c.PokaPlayer.salt = Math.random().toString(36).substring(7)
+    }
+    //密碼 hash
+    if (_c.PokaPlayer.password && !passwordHash.isHashed(_c.PokaPlayer.password)) {
+        _c.PokaPlayer.password = passwordHash.generate(_c.PokaPlayer.salt + _c.PokaPlayer.password)
+    }
+    jsonfile.writeFileSync("./config.json", _c, {
+        spaces: 4,
+        EOL: '\r\n'
+    })
 }
-//密碼 hash
-if (_c.PokaPlayer.password && !passwordHash.isHashed(_c.PokaPlayer.password)) {
-    _c.PokaPlayer.password = passwordHash.generate(_c.PokaPlayer.salt + _c.PokaPlayer.password)
-}
-jsonfile.writeFileSync("./config.json", _c, {
-    spaces: 4,
-    EOL: '\r\n'
-})
 
-const config = fs.existsSync("./config.json") ? _c : false; // 設定檔
+const config = _c; // 設定檔
 const package = require("./package.json"); // 設定檔
 const schedule = require("node-schedule"); // 很會計時ㄉ朋友
 const pokaLog = require("./log"); // 可愛控制台輸出
@@ -51,8 +53,6 @@ if (!config || config.PokaPlayer.debug)
     app.use("/installapi", require("./checkConnection.js"));
 
 //
-app.set("views", __dirname + "/views");
-app.set("view engine", "pug");
 app.use(bodyParser.urlencoded({
     extended: true
 }));
@@ -119,11 +119,6 @@ server.listen(3000, () => {
         pokaLog.log('INSTALL', `或是使用 config-simple.json 來建立設定檔`)
     }
 });
-//安裝頁面
-if (!config || config.PokaPlayer.debug)
-    app.get("/install", (req, res) => res.render("install", {
-        version: package.version
-    }));
 
 function verifyPassword(password) {
     /*
@@ -138,13 +133,6 @@ function verifyPassword(password) {
 
 // 登入
 app
-    .get("/login/", (req, res) => {
-        if (!config) {
-            res.redirect("/install/");
-        } else {
-            verifyPassword(req.session.pass) ? res.render("login") : res.redirect("/")
-        }
-    })
     .post("/login/", (req, res) => {
         req.session.pass = req.body["userPASS"];
         if (verifyPassword(req.body["userPASS"])) {
@@ -159,20 +147,9 @@ app
         req.session.pass = ''
         res.redirect("/")
     });
-//首頁
-app.get("/", (req, res) => {
-    if (!config) {
-        res.redirect("/install/");
-    } else {
-        res.sendFile(path.join(__dirname + '/public/index.html'))
-    }
-})
 
-// 設定 js icon css 目錄
+// 設定 public 目錄
 app.use(express.static("public"));
-
-// PONG
-app.get("/ping", (req, res) => res.send("PONG"));
 
 // 取得狀態
 app.get("/status", async (req, res) => res.json({
@@ -182,15 +159,6 @@ app.get("/status", async (req, res) => res.json({
     debug: config && config.PokaPlayer.debug ?
         (await git.raw(["rev-parse", "--short", "HEAD"])).slice(0, -1) : false
 }));
-
-// 沒設定檔給設定頁面，沒登入給登入頁
-app.use((req, res, next) => {
-    if (!config)
-        res.redirect("/install/");
-    else if (!verifyPassword(req.session.pass))
-        res.redirect("/login/");
-    else next();
-});
 
 io.on("connection", socket => {
     socket.emit("hello");
@@ -232,6 +200,11 @@ io.on("connection", socket => {
         }
     });
 });
+
+app.use((req, res, next) => {
+    if (verifyPassword(req.session.pass)) next()
+    else res.sendFile(path.join(__dirname + '/public/index.html'))
+});
 // 更新
 app.get("/upgrade", (req, res) => {
     if (!config.PokaPlayer.instantUpgradeProcess) {
@@ -254,22 +227,16 @@ app.get("/upgrade", (req, res) => {
 // get info
 app.get("/info", async (req, res) => {
     let _p = package
-    _p.debug = config.PokaPlayer.debug ?
+    _p.debug = config && config.PokaPlayer.debug ?
         (await git.raw(["rev-parse", "--short", "HEAD"])).slice(0, -1) :
         false
     res.json(_p)
 });
 
-app.post("/restart", (req, res) => {
-    res.send("k");
-    process.exit();
-});
+app.post("/restart", (req, res) => process.exit());
 
 app.use((req, res, next) => {
-    if (!config)
-        res.redirect("/install/");
-    else
-        res.sendFile(path.join(__dirname + '/public/index.html'))
+    res.sendFile(path.join(__dirname + '/public/index.html'))
 });
 // 報錯處理
 process.on("uncaughtException", err => {
