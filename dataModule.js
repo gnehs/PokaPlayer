@@ -67,13 +67,13 @@ router.get("/", (req, res) => {
 });
 // 先在這裡蹦蹦蹦再轉交給其他好朋友
 router.use((req, res, next) => {
-    if (!verifyPassword(req.session.pass))
-        res.status(403).send("Permission Denied Desu");
-    else {
-        if (req.method.toUpperCase() === "GET" && config.PokaPlayer.debug) {
+    if (verifyPassword(req.session.pass)) {
+        if (req.method.toUpperCase() === "GET") {
             res.header("Cache-Control", "max-age=7200") //快取 2hr
         }
         next();
+    } else {
+        res.status(403).send("Permission Denied Desu");
     }
 });
 //-----------------------------> 首頁
