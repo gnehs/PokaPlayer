@@ -22,7 +22,7 @@ function deReq(x) {
 
 function genReq(link) {
     const a2b = x => Buffer.from(x).toString("base64");
-    const rand = Math.random().toString(36).substring(2, 7)
+    const rand = "Poka-"
     const checkSum = N => 10 ** Number(N).toString().length - N;
     return `${rand}${a2b(link)}3C4C7CB3${a2b(String.fromCharCode(checkSum(rand.charCodeAt(0))))}`;
 }
