@@ -13,15 +13,13 @@ services:
       - mongodb
     
   neteaseapi2:
-    build: .
-    dockerfile: NeteaseAPI2_Dockerfile
+    build: 
+      context: .
+      dockerfile: NeteaseAPI2_Dockerfile
     expose:
       - "3000"
       
   mongodb:
     image: mongo:latest
-    container_name: "mongodb"
-    environment:
-          - MONGO_LOG_DIR=/dev/null
-    command: mongod --smallfiles --logpath=/dev/null # --quiet
+    command: --smallfiles
     
