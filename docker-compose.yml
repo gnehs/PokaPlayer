@@ -3,9 +3,6 @@ version: '3'
 services:
   pokaplayer:
     build: .
-    depends_on:
-      - neteaseapi2
-    network_mode: bridge
     ports:
       - "3000"
     links:
@@ -18,7 +15,6 @@ services:
   neteaseapi2:
     build: .
     dockerfile: NeteaseAPI2_Dockerfile
-    network_mode: bridge
     expose:
       - "3000"
       
