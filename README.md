@@ -31,6 +31,7 @@
 
 -   [DSM Audio Station](https://www.synology.com/zh-tw/dsm/feature/audio_station)
 -   [Netease Cloud Music](https://music.163.com/)
+    -   該模組之歌詞轉換功能使用了 [繁化姬](https://zhconvert.org/) 的 API 服務
 
 ## 功能
 
