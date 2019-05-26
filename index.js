@@ -8,6 +8,9 @@ if (fs.existsSync("./config.json")) {
     if (!_c.PokaPlayer.salt) {
         _c.PokaPlayer.salt = Math.random().toString(36).substring(7)
     }
+    if (!_c.PokaPlayer.sessionSecret) {
+        _c.PokaPlayer.sessionSecret = Math.random().toString(36).substring(7)
+    }
     //密碼 hash
     if (_c.PokaPlayer.password && !passwordHash.isHashed(_c.PokaPlayer.password)) {
         _c.PokaPlayer.password = passwordHash.generate(_c.PokaPlayer.salt + _c.PokaPlayer.password)
@@ -22,7 +25,6 @@ if (fs.existsSync("./config.json")) {
         EOL: '\r\n'
     })
 }
-
 const config = _c; // 設定檔
 const package = require("./package.json"); // 設定檔
 const db = require("./db/db"); // 設定檔
@@ -193,23 +195,7 @@ app.use((req, res, next) => {
     else res.sendFile(path.join(__dirname + '/public/index.html'))
 });
 // 更新
-app.get("/upgrade", (req, res) => {
-    if (!config.PokaPlayer.instantUpgradeProcess) {
-        git.raw(["config", "--global", "user.email", '"you@example.com"'])
-            .then(() => git.fetch(["--all"]))
-            .then(() =>
-                git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? "dev" : "master")])
-            )
-            .then(() => git.checkout(config.PokaPlayer.debug ? "dev" : "master"))
-            .then(() => process.exit())
-            .catch(err => {
-                console.error("failed: ", err);
-                socket.emit("err", err.toString());
-            });
-    } else {
-        res.send("socket");
-    }
-});
+app.get("/upgrade", (req, res) => res.send("socket"));
 
 // get info
 app.get("/info", async (req, res) => {
