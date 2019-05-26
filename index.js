@@ -12,6 +12,11 @@ if (fs.existsSync("./config.json")) {
     if (_c.PokaPlayer.password && !passwordHash.isHashed(_c.PokaPlayer.password)) {
         _c.PokaPlayer.password = passwordHash.generate(_c.PokaPlayer.salt + _c.PokaPlayer.password)
     }
+    if (!_c.mongodb)
+        _c.mongodb = {
+            "enabled": false,
+            "uri": "mongodb://"
+        }
     jsonfile.writeFileSync("./config.json", _c, {
         spaces: 4,
         EOL: '\r\n'
@@ -46,20 +51,12 @@ if (!config || config.PokaPlayer.debug)
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-// SASS 好朋友
+// cors for debug
 if (config && config.PokaPlayer.debug) {
     app.use(require('cors')({
         credentials: true,
         origin: 'http://localhost:8080'
     }))
-    app.use(require('node-sass-middleware')({
-        src: __dirname + '/public/sass',
-        dest: __dirname + '/public/css',
-        sourceMap: __dirname + '/public/css/pokaplayer.map',
-        outputStyle: 'compressed',
-        indentedSyntax: true,
-        prefix: '/css'
-    }));
 }
 app.use(helmet());
 app.use(helmet.hidePoweredBy({
