@@ -6,7 +6,8 @@ const playlist = fs.existsSync("./playlist.json") ? require("./playlist.json") :
 const router = require("express").Router();
 const passwordHash = require('password-hash');
 const bodyParser = require("body-parser");
-const db = require("./db/db"); // 設定檔
+const db = require("./db/db.js");
+const lyricdb = require("./db/lyric.js");
 if (config && config.PokaPlayer.debug) {
     router.use(require('cors')({
         credentials: true,
@@ -592,6 +593,22 @@ router.get("/searchLyrics/", async (req, res) => {
     }
     return res.json(resData);
 });
+router.post("/lyric/", async (req, res) => {
+    let {
+        title,
+        artist,
+        songId,
+        source,
+        lyric
+    } = req.body
+    res.json(await lyricdb.saveLyric({
+        title,
+        artist,
+        songId,
+        source,
+        lyric
+    }))
+})
 router.get("/lyric/", async (req, res) => {
     //http://localhost:3000/pokaapi/lyric/?moduleName=DSM&id=music_1801
     let moduleName = req.query.moduleName;
@@ -602,6 +619,12 @@ router.get("/lyric/", async (req, res) => {
     let lyric = ``;
     try {
         lyric = await _module.getLyric(req.query.id);
+        if (!lyric) {
+            lyric = await lyricdb.getLyric({
+                songId: req.query.id,
+                source: moduleName
+            });
+        }
     } catch (e) {
         showError(moduleName, e)
     }
