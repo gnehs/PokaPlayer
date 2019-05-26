@@ -805,13 +805,13 @@ async function getPlaylistSongs(id, br = 999000) {
 }
 
 async function getLyric(id) {
-    async function chsToCht(chs) {
+    async function chsToCht(text, converter = "Taiwan") {
         let result = await rp({
             method: "POST",
             uri: "https://api.zhconvert.org/convert",
             body: {
-                converter: "Taiwan",
-                text: chs
+                converter,
+                text
             },
             json: true
         });
@@ -821,16 +821,16 @@ async function getLyric(id) {
     let lyric;
     if (result.code == 200) {
         if (result.nolyric) lyric = "[0:0] 純音樂";
-        else if (result.tlyric && result.tlyric.lyric) {
+        else if (result.tlyric && result.tlyric.lyric) { //翻譯後的歌詞
             try {
                 lyric = migrate(result.lrc.lyric, await chsToCht(result.tlyric.lyric));
             } catch (e) {
                 lyric = result.lrc.lyric;
             }
-        } else if (result.lrc && result.lrc.lyric) {
+        } else if (result.lrc && result.lrc.lyric) { // 中文歌詞
             if (franc(result.lrc.lyric) == "cmn") {
                 try {
-                    lyric = await chsToCht(result.lrc.lyric);
+                    lyric = await chsToCht(result.lrc.lyric, "Traditional");
                 } catch (e) {
                     lyric = result.lrc.lyric;
                 }
