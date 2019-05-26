@@ -6,8 +6,8 @@
         "debug": false
     },
     "mongodb": {
-        "enabled": false,
-        "uri": "mongodb://"
+        "enabled": true,
+        "uri": "mongodb://mongodb"
     },
     "DSM": {
         "enabled": true,
