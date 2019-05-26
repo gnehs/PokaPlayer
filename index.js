@@ -47,7 +47,7 @@ const server = require("http").createServer(app),
 if (config)
     app.use("/pokaapi", require("./dataModule.js"));
 if (!config || config.PokaPlayer.debug)
-    app.use("/installapi", require("./checkConnection.js"));
+    app.use("/installapi", require("./install.js"));
 
 //
 app.use(bodyParser.urlencoded({
