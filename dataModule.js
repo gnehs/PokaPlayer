@@ -5,19 +5,8 @@ const pokaLog = require("./log") // 可愛控制台輸出
 const playlist = fs.existsSync("./playlist.json") ? require("./playlist.json") : []; // 歌單
 const router = require("express").Router();
 const passwordHash = require('password-hash');
-const FileStore = require("session-file-store")(require("express-session")); // session
-const session = require("express-session")({
-    store: new FileStore({
-        reapInterval: -1
-    }),
-    secret: config.PokaPlayer.sessionSecret,
-    resave: true,
-    saveUninitialized: true,
-    cookie: {
-        expires: new Date(Date.now() + 60 * 60 * 1000 * 24 * 7)
-    }
-});
 const bodyParser = require("body-parser");
+const db = require("./db/db"); // 設定檔
 if (config && config.PokaPlayer.debug) {
     router.use(require('cors')({
         credentials: true,
@@ -36,7 +25,7 @@ function verifyPassword(password) {
     }
 }
 
-router.use(session);
+router.use(db.session);
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({
     extended: true

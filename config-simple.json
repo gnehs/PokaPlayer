@@ -8,6 +8,10 @@
         "instantUpgradeProcess": false,
         "debug": false
     },
+    "mongodb": {
+        "enabled": false,
+        "uri": "mongodb://"
+    },
     "DSM": {
         "enabled": true,
         "protocol": "https",

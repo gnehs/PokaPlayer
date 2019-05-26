@@ -20,6 +20,7 @@ if (fs.existsSync("./config.json")) {
 
 const config = _c; // 設定檔
 const package = require("./package.json"); // 設定檔
+const db = require("./db/db"); // 設定檔
 const schedule = require("node-schedule"); // 很會計時ㄉ朋友
 const pokaLog = require("./log"); // 可愛控制台輸出
 const base64 = require("base-64");
@@ -27,18 +28,7 @@ const path = require('path');
 const git = require("simple-git/promise")(__dirname);
 //express
 const express = require("express");
-const FileStore = require("session-file-store")(require("express-session")); // session
-const session = require("express-session")({
-    store: new FileStore({
-        reapInterval: -1
-    }),
-    secret: config ? config.PokaPlayer.sessionSecret : "no config.json",
-    resave: true,
-    saveUninitialized: true,
-    cookie: {
-        expires: new Date(Date.now() + 60 * 60 * 1000 * 24 * 7)
-    }
-});
+const session = db.session;
 const helmet = require("helmet"); // 防範您的應用程式出現已知的 Web 漏洞
 const bodyParser = require("body-parser"); // 讀入 post 請求
 const app = express(); // Node.js Web 架構
