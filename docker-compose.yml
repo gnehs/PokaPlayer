@@ -10,6 +10,10 @@ services:
       - "3000"
     links:
       - neteaseapi2
+      - mongodb
+    depends_on:
+      - neteaseapi2
+      - mongodb
     
   neteaseapi2:
     build: .
@@ -17,3 +21,11 @@ services:
     network_mode: bridge
     expose:
       - "3000"
+      
+  mongodb:
+    image: mongo:latest
+    container_name: "mongodb"
+    environment:
+          - MONGO_LOG_DIR=/dev/null
+    command: mongod --smallfiles --logpath=/dev/null # --quiet
+    
