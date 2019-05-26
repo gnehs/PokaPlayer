@@ -601,13 +601,14 @@ router.post("/lyric/", async (req, res) => {
         source,
         lyric
     } = req.body
-    res.json(await lyricdb.saveLyric({
-        title,
-        artist,
-        songId,
-        source,
-        lyric
-    }))
+    if (config && config.mongodb.enabled)
+        res.json(await lyricdb.saveLyric({
+            title,
+            artist,
+            songId,
+            source,
+            lyric
+        }))
 })
 router.get("/lyric/", async (req, res) => {
     //http://localhost:3000/pokaapi/lyric/?moduleName=DSM&id=music_1801
@@ -619,7 +620,7 @@ router.get("/lyric/", async (req, res) => {
     let lyric = ``;
     try {
         lyric = await _module.getLyric(req.query.id);
-        if (!lyric) {
+        if (!lyric && (config && config.mongodb.enabled)) {
             lyric = await lyricdb.getLyric({
                 songId: req.query.id,
                 source: moduleName
