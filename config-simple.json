@@ -1,12 +1,13 @@
 {
     "PokaPlayer": {
-        "salt": "SALT",
         "password": "CUSTOM_PASSWORD_HERE",
         "passwordSwitch": true,
         "adminPassword": "CUSTOM_ADMIN_PASSWORD_HERE",
-        "sessionSecret": "hello!!",
-        "instantUpgradeProcess": false,
         "debug": false
+    },
+    "mongodb": {
+        "enabled": false,
+        "uri": "mongodb://"
     },
     "DSM": {
         "enabled": true,

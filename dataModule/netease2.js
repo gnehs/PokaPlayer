@@ -1,7 +1,6 @@
 const jar = require("request").jar();
-const rp = require("request-promise").defaults({
-    jar
-});
+const rp = require("request-promise")
+const rpxc = require("request-promise") // request without cookie
 const request = require("request").defaults({
     jar
 });
@@ -12,10 +11,11 @@ const franc = require("franc-min");
 const config = require(__dirname + "/../config.json").Netease2; // 設定
 const server = config.server || "http://localhost:4000/";
 const pin = __dirname + "/netease2Pin.json";
-const options = (url, qs = {}, resolveWithFullResponse = false) => ({
+const options = (url, qs = {}, resolveWithFullResponse = false, cookie = true) => ({
     uri: url,
     qs,
     json: true, // Automatically parses the JSON string in the response
+    jar: cookie ? jar : null,
     resolveWithFullResponse
 });
 try {
@@ -356,7 +356,7 @@ async function getSongs(songs, br = 999000) {
     let isArray = Array.isArray(songs);
     songs = isArray ? songs : [songs];
     let result = await parseSongs(
-        await Promise.all(songs.map(async x => (await rp(options(`${server}song/detail?ids=${x}`))).songs[0])),
+        await Promise.all(songs.map(async x => (await rp(options(`${server}song/detail?ids=${x}`, {}, false, false))).songs[0])),
         br
     );
     return isArray ? result : result[0];
@@ -805,32 +805,32 @@ async function getPlaylistSongs(id, br = 999000) {
 }
 
 async function getLyric(id) {
-    async function chsToCht(chs) {
+    async function chsToCht(text, converter = "Taiwan") {
         let result = await rp({
             method: "POST",
             uri: "https://api.zhconvert.org/convert",
             body: {
-                converter: "Taiwan",
-                text: chs
+                converter,
+                text
             },
             json: true
         });
         return result.data.text;
     }
-    let result = await rp(options(`${server}lyric?id=${id}`));
+    let result = await rp(options(`${server}lyric?id=${id}`, {}, false, false));
     let lyric;
     if (result.code == 200) {
         if (result.nolyric) lyric = "[0:0] 純音樂";
-        else if (result.tlyric && result.tlyric.lyric) {
+        else if (result.tlyric && result.tlyric.lyric) { //翻譯後的歌詞
             try {
                 lyric = migrate(result.lrc.lyric, await chsToCht(result.tlyric.lyric));
             } catch (e) {
                 lyric = result.lrc.lyric;
             }
-        } else if (result.lrc && result.lrc.lyric) {
+        } else if (result.lrc && result.lrc.lyric) { // 中文歌詞
             if (franc(result.lrc.lyric) == "cmn") {
                 try {
-                    lyric = await chsToCht(result.lrc.lyric);
+                    lyric = await chsToCht(result.lrc.lyric, "Traditional");
                 } catch (e) {
                     lyric = result.lrc.lyric;
                 }

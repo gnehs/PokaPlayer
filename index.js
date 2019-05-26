@@ -8,18 +8,26 @@ if (fs.existsSync("./config.json")) {
     if (!_c.PokaPlayer.salt) {
         _c.PokaPlayer.salt = Math.random().toString(36).substring(7)
     }
+    if (!_c.PokaPlayer.sessionSecret) {
+        _c.PokaPlayer.sessionSecret = Math.random().toString(36).substring(7)
+    }
     //密碼 hash
     if (_c.PokaPlayer.password && !passwordHash.isHashed(_c.PokaPlayer.password)) {
         _c.PokaPlayer.password = passwordHash.generate(_c.PokaPlayer.salt + _c.PokaPlayer.password)
     }
+    if (!_c.mongodb)
+        _c.mongodb = {
+            "enabled": false,
+            "uri": "mongodb://"
+        }
     jsonfile.writeFileSync("./config.json", _c, {
         spaces: 4,
         EOL: '\r\n'
     })
 }
-
 const config = _c; // 設定檔
 const package = require("./package.json"); // 設定檔
+const db = require("./db/db"); // 設定檔
 const schedule = require("node-schedule"); // 很會計時ㄉ朋友
 const pokaLog = require("./log"); // 可愛控制台輸出
 const base64 = require("base-64");
@@ -27,18 +35,7 @@ const path = require('path');
 const git = require("simple-git/promise")(__dirname);
 //express
 const express = require("express");
-const FileStore = require("session-file-store")(require("express-session")); // session
-const session = require("express-session")({
-    store: new FileStore({
-        reapInterval: -1
-    }),
-    secret: config ? config.PokaPlayer.sessionSecret : "no config.json",
-    resave: true,
-    saveUninitialized: true,
-    cookie: {
-        expires: new Date(Date.now() + 60 * 60 * 1000 * 24 * 7)
-    }
-});
+const session = db.session;
 const helmet = require("helmet"); // 防範您的應用程式出現已知的 Web 漏洞
 const bodyParser = require("body-parser"); // 讀入 post 請求
 const app = express(); // Node.js Web 架構
@@ -50,26 +47,18 @@ const server = require("http").createServer(app),
 if (config)
     app.use("/pokaapi", require("./dataModule.js"));
 if (!config || config.PokaPlayer.debug)
-    app.use("/installapi", require("./checkConnection.js"));
+    app.use("/installapi", require("./install.js"));
 
 //
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-// SASS 好朋友
+// cors for debug
 if (config && config.PokaPlayer.debug) {
     app.use(require('cors')({
         credentials: true,
         origin: 'http://localhost:8080'
     }))
-    app.use(require('node-sass-middleware')({
-        src: __dirname + '/public/sass',
-        dest: __dirname + '/public/css',
-        sourceMap: __dirname + '/public/css/pokaplayer.map',
-        outputStyle: 'compressed',
-        indentedSyntax: true,
-        prefix: '/css'
-    }));
 }
 app.use(helmet());
 app.use(helmet.hidePoweredBy({
@@ -206,23 +195,7 @@ app.use((req, res, next) => {
     else res.sendFile(path.join(__dirname + '/public/index.html'))
 });
 // 更新
-app.get("/upgrade", (req, res) => {
-    if (!config.PokaPlayer.instantUpgradeProcess) {
-        git.raw(["config", "--global", "user.email", '"you@example.com"'])
-            .then(() => git.fetch(["--all"]))
-            .then(() =>
-                git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? "dev" : "master")])
-            )
-            .then(() => git.checkout(config.PokaPlayer.debug ? "dev" : "master"))
-            .then(() => process.exit())
-            .catch(err => {
-                console.error("failed: ", err);
-                socket.emit("err", err.toString());
-            });
-    } else {
-        res.send("socket");
-    }
-});
+app.get("/upgrade", (req, res) => res.send("socket"));
 
 // get info
 app.get("/info", async (req, res) => {
