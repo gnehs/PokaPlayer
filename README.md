@@ -17,8 +17,8 @@
     -   [Synology NAS 教學](https://github.com/gnehs/PokaPlayer/wiki/%E5%A6%82%E4%BD%95%E5%9C%A8-Synology-NAS-%E4%BD%BF%E7%94%A8-Docker-%E9%83%A8%E7%BD%B2-PokaPlayer)
 -   或是使用 node.js 來手動啟動
 ```bash
-    npm install --production # 或是使用 `npm i` 來安裝所有組件來建立 Dev 環境
-    npm start # 啟動 Pokaplayer
+    npm i
+    npm start # 啟動 PokaPlayer
 ```
 
 ## 建議和提示
