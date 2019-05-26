@@ -7,7 +7,7 @@
     },
     "mongodb": {
         "enabled": true,
-        "uri": "mongodb://mongodb"
+        "uri": "mongodb://mongodb/pokaplayer"
     },
     "DSM": {
         "enabled": true,
