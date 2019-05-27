@@ -7,10 +7,10 @@
     },
     "mongodb": {
         "enabled": true,
-        "uri": "mongodb://mongodb/pokaplayer"
+        "uri": "mongodb://mongodb/poka"
     },
     "DSM": {
-        "enabled": true,
+        "enabled": false,
         "protocol": "https",
         "host": "192.168.x.x",
         "port": 5000,
@@ -18,8 +18,8 @@
         "password": "YOUR_PASSWORD"
     },
     "Netease2": {
-        "enabled": true,
-        "server": "http://YOUR_NeteaseCloudMusicApi_SERVER",
+        "enabled": false,
+        "server": "http://neteaseapi2:3000/",
         "isPremium": true,
         "topPlaylist": {
             "enabled": true,

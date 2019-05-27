@@ -47,7 +47,7 @@
 -   夜間模式
 -   MediaSession
 
-<img src="https://i.imgur.com/DLO96iq.png" width="500px">
+<img src="https://i.imgur.com/wkp4Nu1.png" width="500px">
 
 ## 貢獻者 Contributors
 
