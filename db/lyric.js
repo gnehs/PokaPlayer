@@ -14,31 +14,28 @@ async function saveLyric({
     source,
     lyric
 }) {
-    let data
-    data = await getLyric({
+    let lyricData
+    lyricData = await model.findOne({
         songId,
         source
     })
-    if (data)
-        data = {
-            title,
-            artist,
-            songId,
-            source,
-            lyric
-        }
-    else
-        data = new model({
+    if (lyricData) {
+        lyricData.title = title
+        lyricData.artist = artist
+        lyricData.lyric = lyric
+    } else {
+        lyricData = new model({
             title,
             artist,
             songId,
             source,
             lyric
         })
-    data.save()
+    }
+    await lyricData.save()
     return ({
         success: true,
-        data
+        data: lyricData
     })
 }
 async function getLyric(data) {
