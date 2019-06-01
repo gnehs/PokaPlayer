@@ -1,11 +1,11 @@
-[![works badge](https://cdn.rawgit.com/nikku/works-on-my-machine/v0.2.0/badge.svg)](https://github.com/nikku/works-on-my-machine)
-[![GitHub issues](https://img.shields.io/github/issues/gnehs/PokaPlayer.svg)](https://github.com/gnehs/PokaPlayer/issues)
-[![GitHub forks](https://img.shields.io/github/forks/gnehs/PokaPlayer.svg)](https://github.com/gnehs/PokaPlayer/network)
-[![GitHub stars](https://img.shields.io/github/stars/gnehs/PokaPlayer.svg)](https://github.com/gnehs/PokaPlayer/stargazers)
-[![GitHub license](https://img.shields.io/github/license/gnehs/PokaPlayer.svg)](https://github.com/gnehs/PokaPlayer/blob/master/LICENSE)
-[![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/gnehs/PokaPlayer.svg)](https://github.com/gnehs/PokaPlayer/releases/latest)
-[![GitHub repo size in bytes](https://img.shields.io/github/repo-size/gnehs/PokaPlayer.svg)](https://github.com/gnehs/PokaPlayer/archive/master.zip)
-[![Docker Build Status](https://img.shields.io/docker/build/gnehs/pokaplayer.svg)](https://hub.docker.com/r/gnehs/pokaplayer/)
+[![works badge](https://cdn.rawgit.com/nikku/works-on-my-machine/v0.2.0/badge.svg?style=flat-square)](https://github.com/nikku/works-on-my-machine)
+[![GitHub issues](https://img.shields.io/github/issues/gnehs/PokaPlayer.svg?style=flat-square)](https://github.com/gnehs/PokaPlayer/issues)
+[![GitHub forks](https://img.shields.io/github/forks/gnehs/PokaPlayer.svg?style=flat-square)](https://github.com/gnehs/PokaPlayer/network)
+[![GitHub stars](https://img.shields.io/github/stars/gnehs/PokaPlayer.svg?style=flat-square)](https://github.com/gnehs/PokaPlayer/stargazers)
+[![GitHub license](https://img.shields.io/github/license/gnehs/PokaPlayer.svg?style=flat-square)](https://github.com/gnehs/PokaPlayer/blob/master/LICENSE)
+[![GitHub tag (latest Ver)](https://img.shields.io/github/package-json/v/gnehs/PokaPlayer.svg?style=flat-square)](https://github.com/gnehs/PokaPlayer/releases/latest)
+[![GitHub repo size in bytes](https://img.shields.io/github/repo-size/gnehs/PokaPlayer.svg?style=flat-square)](https://github.com/gnehs/PokaPlayer/archive/master.zip)
+[![Docker Build Status](https://img.shields.io/docker/build/gnehs/pokaplayer.svg?style=flat-square)](https://hub.docker.com/r/gnehs/pokaplayer/)
 
 
 ![](https://i.imgur.com/eOSlvuw.png)
@@ -47,7 +47,7 @@
 -   夜間模式
 -   MediaSession
 
-<img src="https://i.imgur.com/cCn2tpJ.png" width="500px">
+<img src="https://i.imgur.com/GOIe3va.png" width="500px">
 
 ## 貢獻者 Contributors
 
