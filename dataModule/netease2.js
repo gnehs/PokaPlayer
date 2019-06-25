@@ -828,13 +828,13 @@ async function getLyric(id) {
                 lyric = result.lrc.lyric;
             }
         } else if (result.lrc && result.lrc.lyric) { // 中文歌詞
-            if (franc(result.lrc.lyric) == "cmn") {
-                try {
-                    lyric = await chsToCht(result.lrc.lyric, "Traditional");
-                } catch (e) {
-                    lyric = result.lrc.lyric;
-                }
-            } else lyric = result.lrc.lyric;
+            //if (franc(result.lrc.lyric) == "cmn") {
+            try {
+                lyric = await chsToCht(result.lrc.lyric, "Traditional");
+            } catch (e) {
+                lyric = result.lrc.lyric;
+            }
+            //} else lyric = result.lrc.lyric;
         } else lyric = null;
         return lyric;
     } else {
