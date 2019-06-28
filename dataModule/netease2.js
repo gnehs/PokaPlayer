@@ -325,7 +325,7 @@ async function parseSongs(songs, br = 999000) {
                 artistId: song.ar[0].id,
                 album: song.al.name || "",
                 albumId: song.al.id || null,
-                cover: song.al.picUrl ? imageUrl(song.al.picUrl) : false,
+                cover: song.al.picUrl ? imageUrl(song.al.picUrl) : 'https://i.imgur.com/qxy800z.png',
                 url: `/pokaapi/song/?moduleName=Netease2&songId=${song.id}`,
                 codec: "mp3",
                 // lrc: song.id,
