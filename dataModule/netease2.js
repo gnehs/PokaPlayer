@@ -753,7 +753,9 @@ async function getPlaylistSongs(id, br = 999000) {
             let r = result.recommend.map((x, index) => ({
                 name: x.name,
                 artist: x.artists.map(x => x.name).join(", "),
+                artistId: x.artists[0].id,
                 album: x.album.name,
+                albumId: x.album.id,
                 cover: x.album.picUrl.replace("http", "https"),
                 url: `/pokaapi/song/?moduleName=Netease2&songId=${x.id}`,
                 codec: "mp3",
