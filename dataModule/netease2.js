@@ -897,9 +897,7 @@ async function isPinned(type, id, name) {
 }
 
 async function getHome() {
-    let r = [];
-    let topPlaylistStack = [];
-    let dailyRecommendStack = [];
+    let r = []; let result = []
 
     let pinData = {
         songs: [],
@@ -924,7 +922,8 @@ async function getHome() {
             config.topPlaylist.category = "ACG";
         }
         let c = config.topPlaylist;
-        topPlaylistStack.push(
+        let topPlaylistResult = []
+        topPlaylistResult.push(
             new Promise((resolve, reject) => {
                 rp(
                     options(
@@ -939,6 +938,11 @@ async function getHome() {
                     .catch(e => reject(e));
             })
         );
+        result.push({
+            title: "home_topPlaylist_netease",
+            source: "Netease2",
+            playlists: (await resolveTopPlaylistStack(topPlaylistResult)),
+        })
     }
 
     if (config.hqPlaylist.enabled) {
@@ -947,7 +951,8 @@ async function getHome() {
             config.hqPlaylist.category = "ACG";
         }
         let c = config.hqPlaylist;
-        topPlaylistStack.push(
+        let hqPlaylistResult = []
+        hqPlaylistResult.push(
             new Promise((resolve, reject) => {
                 rp(options(`${server}top/playlist/highquality?limit=${c.limit}&cat=${c.category}`))
                     .then(data => resolve([data, {
@@ -956,6 +961,11 @@ async function getHome() {
                     .catch(e => reject(e));
             })
         );
+        result.push({
+            title: "home_hqPlaylist_netease",
+            source: "Netease2",
+            playlists: (await resolveTopPlaylistStack(hqPlaylistResult)),
+        })
     }
 
     if (config.dailyRecommendSongs.enabled) {
@@ -981,6 +991,7 @@ async function getHome() {
     }
 
     if (config.dailyRecommendPlaylists.enabled) {
+        let dailyRecommendStack = [];
         if (isLoggedin === undefined) {
             login.then(async x => {
                 if (x.code == 200)
@@ -995,14 +1006,17 @@ async function getHome() {
             dailyRecommendStack.push(
                 rp(options(`${server}recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`))
             );
-    }
 
-    return [{
+        result.push({
+            title: "home_dailyRecommend_netease",
+            source: "Netease2",
+            playlists: (await resolvedailyRecommendStack(dailyRecommendStack)).slice(0, config.dailyRecommendPlaylists.limit || 50)
+        })
+    }
+    result.push({
         title: "home_netease",
         source: "Netease2",
         playlists: r.concat(
-            ...(await resolveTopPlaylistStack(topPlaylistStack)),
-            ...(await resolvedailyRecommendStack(dailyRecommendStack)),
             ...pinData.playlists
         ),
         songs: pinData.songs,
@@ -1019,7 +1033,8 @@ async function getHome() {
             })
         ),
         composers: pinData.composers
-    }];
+    })
+    return result;
 }
 
 function playlistOperation(operation) {
