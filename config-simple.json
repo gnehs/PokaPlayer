@@ -24,7 +24,7 @@
         "topPlaylist": {
             "enabled": true,
             "category": "ACG",
-            "limit": 5,
+            "limit": 6,
             "order": "hot",
             "image": "https://i.imgur.com/ZFaycMw.gif"
         },
@@ -39,12 +39,13 @@
         },
         "dailyRecommendPlaylists": {
             "enabled": true,
+            "limit": 6,
             "image": "https://i.imgur.com/ZFaycMw.gif"
         },
         "hqPlaylist": {
             "enabled": true,
             "category": "ACG",
-            "limit": 5,
+            "limit": 6,
             "image": "https://i.imgur.com/ZFaycMw.gif"
         }
     }
