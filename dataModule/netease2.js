@@ -449,7 +449,7 @@ async function search(keywords, limit = 30) {
         let typeNum = typeNums[type];
         let result;
         try {
-            result = (await rp(options(`${server}search?keywords=${keywords}&type=${typeNum}&limit=${limit}`))).result[
+            result = (await rp(options(`${server}search?keywords=${keywords}&type=${typeNum}&limit=${limit}`, {}, false, false))).result[
                 types
             ];
         } catch (e) {
