@@ -4,7 +4,6 @@ const config = require("./config.json"); // 設定檔
 const pokaLog = require("./log") // 可愛控制台輸出
 const playlist = fs.existsSync("./playlist.json") ? require("./playlist.json") : []; // 歌單
 const router = require("express").Router();
-const passwordHash = require('password-hash');
 const bodyParser = require("body-parser");
 const db = require("./db/db.js");
 const lyricdb = require("./db/lyric.js");
@@ -16,14 +15,7 @@ if (config && config.PokaPlayer.debug) {
 }
 
 function verifyPassword(password) {
-    /*
-    驗證密碼是否正確
-    */
-    if (!config) return true //沒有設定檔
-    if (!config.PokaPlayer.passwordSwitch) return true //未開啟密碼登入
-    if (config.PokaPlayer.passwordSwitch) { //開啟密碼登入
-        return passwordHash.verify(config.PokaPlayer.salt + password, config.PokaPlayer.password)
-    }
+
 }
 
 router.use(db.session);
@@ -57,7 +49,7 @@ router.get("/", (req, res) => {
 });
 // 先在這裡蹦蹦蹦再轉交給其他好朋友
 router.use((req, res, next) => {
-    if (verifyPassword(req.session.pass)) {
+    if (req.session.user) {
         if (req.method.toUpperCase() === "GET") {
             res.header("Cache-Control", "max-age=7200") //快取 2hr
         }
@@ -731,14 +723,14 @@ router
 
 //-----------------------------> 喜歡
 router.get('/canLike', async (req, res) => {
-        //http://localhost:3000/pokaapi/canLike/?moduleName=Netease2
-        let moduleName = req.query.moduleName;
-        let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
-        // 沒這東西
-        if (!_module || moduleList[moduleName].active.indexOf("like") == -1)
-            return res.status(501).send("The required module is currently unavailable :(");
-        return res.json(true)
-    })
+    //http://localhost:3000/pokaapi/canLike/?moduleName=Netease2
+    let moduleName = req.query.moduleName;
+    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+    // 沒這東西
+    if (!_module || moduleList[moduleName].active.indexOf("like") == -1)
+        return res.status(501).send("The required module is currently unavailable :(");
+    return res.json(true)
+})
     .post('/isLiked', async (req, res) => {
         //POST http://localhost:3000/pokaapi/isLiked/ 
         /*

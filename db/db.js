@@ -12,22 +12,14 @@ try {
 }
 const db = mongoose.connection;
 mongoose.Promise = global.Promise;
-if (config && config.mongodb.enabled) {
-    pokaLog.log('INFO', 'mongodb enabled')
-    mongoose.connect(config.mongodb.uri, {
-        useNewUrlParser: true
-    });
-} else {
-    pokaLog.log('INFO', 'mongodb disabled')
-}
+mongoose.connect(typeof config.mongodb === 'string' ? config.mongodb : config.mongodb.uri, { useNewUrlParser: true });
+
 /*=======================*/
 /*       session         */
 /*=======================*/
 const _session = require('express-session');
-const sessionStore = (config && config.mongodb.enabled) ? new(require('connect-mongo')(_session))({
+const sessionStore = new (require('connect-mongo')(_session))({
     mongooseConnection: db
-}) : new(require("session-file-store")(_session))({
-    reapInterval: -1
 })
 const session = _session({
     secret: config ? config.PokaPlayer.sessionSecret : "no config.json",
@@ -41,6 +33,6 @@ const session = _session({
 })
 
 module.exports = {
-    db: (config && config.mongodb.enabled) ? db : false,
+    db,
     session
 }

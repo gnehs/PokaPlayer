@@ -1,14 +1,8 @@
 {
     "PokaPlayer": {
-        "password": "CUSTOM_PASSWORD_HERE",
-        "passwordSwitch": true,
-        "adminPassword": "CUSTOM_ADMIN_PASSWORD_HERE",
         "debug": false
     },
-    "mongodb": {
-        "enabled": true,
-        "uri": "mongodb://mongodb/poka"
-    },
+    "mongodb": "mongodb://mongodb/poka",
     "DSM": {
         "enabled": false,
         "protocol": "https",

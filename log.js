@@ -25,11 +25,14 @@ let Reset = "\x1b[0m",
 const log = (a, b) => console.log(`${BgBlue}${FgBlue}[${FgWhite}%s${FgBlue}]${Reset} %s`, a, b)
 const logErr = (a, b) => console.log(`${BgBlue}${FgBlue}[${FgWhite}%s${FgBlue}]${Reset} %s`, a, b)
 const logDM = (a, b) => console.log(`${BgBlue}${FgBlue}[${FgWhite}DataModules${FgBlue}]${BgGreen}${FgGreen}[${FgWhite}%s${FgGreen}]${Reset} %s`, a, b)
+const logDB = (a, b) => console.log(`${BgBlue}${FgBlue}[${FgWhite}DB${FgBlue}]${BgCyan}${FgCyan}[${FgWhite}%s${FgCyan}]${Reset} %s`, a, b)
+const logDBErr = (a, b) => console.log(`${BgBlue}${FgBlue}[${FgWhite}DB${FgBlue}]${BgRed}${FgRed}[${FgWhite}%s${FgRed}]${Reset} %s`, a, b)
 const logDMErr = (a, b) => console.log(`${BgBlue}${FgBlue}[${FgWhite}DataModules${FgBlue}]${BgRed}${FgRed}[${FgWhite}%s${FgRed}]${Reset} %s`, a, b)
 
 module.exports = {
     log,
     logErr,
-    logDM,
-    logDMErr
+    logDM, logDMErr,
+    logDB, logDBErr
+
 }
