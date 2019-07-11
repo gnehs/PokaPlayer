@@ -6,7 +6,6 @@ const rp = require("request-promise").defaults({
 const router = require("express").Router();
 const bodyParser = require("body-parser");
 const fs = require("fs-extra");
-const passwordHash = require('password-hash');
 
 router.use(bodyParser.json());
 
@@ -28,7 +27,7 @@ router.post("/netease2", async (req, res) => {
                 return await rp(
                     options(
                         `${server}login/cellphone?phone=${config.login.phone}&password=${
-                            config.login.password
+                        config.login.password
                         }`
                     )
                 );
@@ -36,7 +35,7 @@ router.post("/netease2", async (req, res) => {
                 return await rp(
                     options(
                         `${server}login?email=${config.login.email}&password=${
-                            config.login.password
+                        config.login.password
                         }`
                     )
                 );
@@ -77,21 +76,21 @@ router.post("/dsm", async (req, res) => {
             return false;
         }
         let result = await getAPI("auth.cgi", "SYNO.API.Auth", "Login", [{
-                key: "account",
-                value: config.account
-            },
-            {
-                key: "passwd",
-                value: config.password
-            },
-            {
-                key: "session",
-                value: "AudioStation"
-            },
-            {
-                key: "format",
-                value: "cookie"
-            }
+            key: "account",
+            value: config.account
+        },
+        {
+            key: "passwd",
+            value: config.password
+        },
+        {
+            key: "session",
+            value: "AudioStation"
+        },
+        {
+            key: "format",
+            value: "cookie"
+        }
         ], 1, config);
         if (result.success) {
             return true;
@@ -110,8 +109,6 @@ router.post("/config", async (req, res) => {
     try {
         let salt = Math.random().toString(36).substring(7)
         req.body["PokaPlayer"].salt = salt
-        req.body["PokaPlayer"].password = passwordHash.generate(salt + req.body["PokaPlayer"].password)
-        req.body["PokaPlayer"].adminPassword = passwordHash.generate(salt + req.body["PokaPlayer"].adminPassword)
         await fs.writeJson('./config.json', req.body)
         await fs.writeJson('./playlist.json', [])
         await res.send('done')
