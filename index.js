@@ -145,17 +145,19 @@ app.use((req, res, next) => {
 io.on("connection", socket => {
     socket.emit("hello");
     // Accept a login event with user's data
-    socket.on("login", userdata => {
-        socket.handshake.session.userdata = userdata;
+    socket.on("login", async userdata => {
+        let { username, password } = userdata
+        let { user } = await User.login({ username, password })
+        socket.handshake.session.userdata = user;
         socket.handshake.session.save();
     });
-    socket.on("logout", userdata => {
+    socket.on("logout", () => {
         if (socket.handshake.session.userdata) {
             delete socket.handshake.session.userdata;
             socket.handshake.session.save();
         }
     });
-    socket.on("update", async userdata => {
+    socket.on("update", async () => {
         if (await User.isUserAdmin(socket.handshake.session.userdata)) {
             socket.emit("init");
             git.reset(["--hard", "HEAD"])
