@@ -11,6 +11,9 @@
         "account": "YOUR_ACCOUNT",
         "password": "YOUR_PASSWORD"
     },
+    "neteaseLyric": {
+        "enabled": true
+    },
     "Netease2": {
         "enabled": false,
         "server": "http://neteaseapi2:3000/",
