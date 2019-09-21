@@ -191,6 +191,11 @@ async function getLyric(id) {
                 lyric = result.lrc.lyric;
             }
         } else lyric = null;
+        try {
+            lyric = lyric.replace(/作词/g, '作詞')
+        } catch (e) {
+            lyric = lyric
+        }
         return lyric;
     } else {
         pokaLog.logDMErr('neteaseLyric', `無法獲取歌詞 ${id}。(${result.code})`)
