@@ -722,14 +722,14 @@ router
 
 //-----------------------------> 喜歡
 router.get('/canLike', async (req, res) => {
-    //http://localhost:3000/pokaapi/canLike/?moduleName=Netease2
-    let moduleName = req.query.moduleName;
-    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
-    // 沒這東西
-    if (!_module || moduleList[moduleName].active.indexOf("like") == -1)
-        return res.status(501).send("The required module is currently unavailable :(");
-    return res.json(true)
-})
+        //http://localhost:3000/pokaapi/canLike/?moduleName=Netease2
+        let moduleName = req.query.moduleName;
+        let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+        // 沒這東西
+        if (!_module || moduleList[moduleName].active.indexOf("like") == -1)
+            return res.status(501).send("The required module is currently unavailable :(");
+        return res.json(true)
+    })
     .post('/isLiked', async (req, res) => {
         //POST http://localhost:3000/pokaapi/isLiked/ 
         /*
@@ -826,8 +826,12 @@ router.use((req, res, next) => {
     res.status(404).send("PokaPlayer API - 404");
 });
 
+let logFile = fs.createWriteStream('poka.log', {
+    flags: 'a'
+});
+
 function showError(moduleName = false, error) {
-    pokaLog.logDMErr(moduleName || '?', '發生了錯誤')
-    console.error(error);
+    pokaLog.logDMErr(moduleName || '?', '發生了錯誤，請查看 poka.log 檔案')
+    logFile.write(`[${new Date()}][${error}]${error}\n`);
 }
 module.exports = router;
