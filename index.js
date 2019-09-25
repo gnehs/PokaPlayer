@@ -1,7 +1,9 @@
 const fs = require("fs"); //檔案系統
 const jsonfile = require('jsonfile')
 const package = require("./package.json"); // package
-const { session } = require("./db/db"); // DB
+const {
+    session
+} = require("./db/db"); // DB
 const User = require("./db/user"); // userDB
 const pokaLog = require("./log"); // 可愛控制台輸出
 const path = require('path');
@@ -73,7 +75,9 @@ app.use(bodyParser.json());
 app.use(express.static("public"))
 app.use(helmet())
 app.use(session)
-io.use(sharedsession(session, { autoSave: true }))
+io.use(sharedsession(session, {
+    autoSave: true
+}))
 
 // 時間處理
 const moment = require("moment-timezone");
@@ -82,8 +86,14 @@ moment.tz.setDefault("Asia/Taipei");
 // 登入
 app
     .post("/login/", async (req, res) => {
-        let { username, password } = req.body
-        let u = await User.login({ username, password })
+        let {
+            username,
+            password
+        } = req.body
+        let u = await User.login({
+            username,
+            password
+        })
         if (u.success) {
             req.session.user = u.user
         }
@@ -106,7 +116,8 @@ app
         res.json(result)
     })
     .post("/changeName/", async (req, res) => res.json(await User.changeName(req.session.user, req.body.n)))
-    .post("/changeSetting/", async (req, res) => res.json(await User.changeSetting(req.session.user, req.body.n)))
+    .get("/setting/", async (req, res) => res.json(await User.getSetting(req.session.user)))
+    .post("/setting/", async (req, res) => res.json(await User.changeSetting(req.session.user, req.body.n)))
     .post("/changeUsername/", async (req, res) => res.json(await User.changeUsername(req.session.user, req.body.n)))
     .post("/changePassword/", async (req, res) => res.json(await User.changePassword(req.session.user, req.body.oldpassword, req.body.password)))
 // 取得狀態
@@ -146,8 +157,16 @@ io.on("connection", socket => {
     socket.emit("hello");
     // Accept a login event with user's data
     socket.on("login", async userdata => {
-        let { username, password } = userdata
-        let { user } = await User.login({ username, password })
+        let {
+            username,
+            password
+        } = userdata
+        let {
+            user
+        } = await User.login({
+            username,
+            password
+        })
         socket.handshake.session.userdata = user;
         socket.handshake.session.save();
     });
@@ -189,7 +208,8 @@ async function pokaStart() {
     async function autoCreateUser() {
         let userlist = await User.getAllUsers()
         if (!userlist || userlist.length <= 0) {
-            let username = "admin", password = Math.random().toString(36).substring(7).toLowerCase()
+            let username = "admin",
+                password = Math.random().toString(36).substring(7).toLowerCase()
             User.create({
                 name: "PokaPlayer",
                 username,
