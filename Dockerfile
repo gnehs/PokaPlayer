@@ -11,6 +11,7 @@ RUN git clone https://github.com/gnehs/PokaPlayer.git
 COPY . /app 
 # node modules
 RUN npm install --production
+RUN npm install -g pm2
 # 執行權限
 RUN chmod +x start.sh
 # 環境設定
