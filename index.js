@@ -16,6 +16,7 @@ const app = express(); // Node.js Web 架構
 const server = require("http").createServer(app)
 const io = require("socket.io").listen(server)
 const sharedsession = require("express-socket.io-session");
+const exec = require('child_process').exec;
 //
 // config init
 //
@@ -53,7 +54,6 @@ if (config && config.PokaPlayer.debug) {
 
 // 檢查 branch
 if (config) {
-    const exec = require('child_process').exec;
     git.raw(["symbolic-ref", "--short", "HEAD"]).then(branch => {
         branch = branch.slice(0, -1); // 結果會多一個換行符
         if (branch != (config.PokaPlayer.debug ? "dev" : "master")) {
@@ -62,7 +62,7 @@ if (config) {
                     git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? "dev" : "master")])
                 )
                 .then(() => git.checkout(config.PokaPlayer.debug ? "dev" : "master"))
-                .then(() => child_process.exec(`pm2 restart poka`))
+                .then(() => exec(`pm2 restart poka`))
                 .catch(err => {
                     console.error("failed: ", err);
                     socket.emit("err", err.toString());
@@ -193,7 +193,7 @@ io.on("connection", socket => {
                     };
                     await delay(3000)
                 })
-                .then(() => process.exit())
+                .then(() => exec(`pm2 restart poka`))
                 .catch(err => {
                     console.error("failed: ", err);
                     socket.emit("err", err.toString());

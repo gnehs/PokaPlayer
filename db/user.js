@@ -148,7 +148,7 @@ async function getUserByUsername(username) {
 }
 async function isUserAdmin(id) {
     let userData = await model.findById(id)
-    return userData.role == 'admin'
+    return userData && userData.role == 'admin'
 }
 async function getAllUsers() {
     return (await model.findOne({}))
