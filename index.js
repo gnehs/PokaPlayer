@@ -53,16 +53,16 @@ if (config && config.PokaPlayer.debug) {
 
 // 檢查 branch
 if (config) {
+    const exec = require('child_process').exec;
     git.raw(["symbolic-ref", "--short", "HEAD"]).then(branch => {
         branch = branch.slice(0, -1); // 結果會多一個換行符
         if (branch != (config.PokaPlayer.debug ? "dev" : "master")) {
-            git.raw(["config", "--global", "user.email", '"you@example.com"'])
-                .then(() => git.fetch(["--all"]))
+            git.fetch(["--all"])
                 .then(() =>
                     git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? "dev" : "master")])
                 )
                 .then(() => git.checkout(config.PokaPlayer.debug ? "dev" : "master"))
-                .then(() => process.exit())
+                .then(() => child_process.exec(`pm2 restart poka`))
                 .catch(err => {
                     console.error("failed: ", err);
                     socket.emit("err", err.toString());
