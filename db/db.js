@@ -12,13 +12,16 @@ try {
 }
 const db = mongoose.connection;
 mongoose.Promise = global.Promise;
-mongoose.connect(typeof config.mongodb === 'string' ? config.mongodb : config.mongodb.uri, { useNewUrlParser: true });
+mongoose.connect(config.mongodb, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+});
 
 /*=======================*/
 /*       session         */
 /*=======================*/
 const _session = require('express-session');
-const sessionStore = new (require('connect-mongo')(_session))({
+const sessionStore = new(require('connect-mongo')(_session))({
     mongooseConnection: db
 })
 const session = _session({
