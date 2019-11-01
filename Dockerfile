@@ -12,11 +12,9 @@ COPY . /app
 # node modules
 RUN npm install --production
 RUN npm install -g pm2
-# 執行權限
-RUN chmod +x start.sh
 # 環境設定
 ENV NODE_ENV=production
 EXPOSE 3000
 # 啟動
-CMD ["sh", "start.sh"]
+CMD ["pm2-runtime", "ecosystem.config.js"]
 
