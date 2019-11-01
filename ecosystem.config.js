@@ -3,7 +3,7 @@ module.exports = {
         name: 'poka',
         script: './index.js',
         exec_mode: 'cluster',
-        cron_restart: "* * */1 * *", //每日重啟
+        cron_restart: "0 0 * * *", //每日重啟
         autorestart: true,
         instances: 2,
         watch: false,
