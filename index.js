@@ -147,7 +147,7 @@ app.get("/info", async (req, res) => {
     res.json(_p)
 });
 
-app.post("/restart", (req, res) => process.exit());
+app.post("/restart", (req, res) => exec(`pm2 restart poka`));
 
 app.use((req, res, next) => {
     res.sendFile(path.join(__dirname + '/public/index.html'))
@@ -199,7 +199,7 @@ io.on("connection", socket => {
                     socket.emit("err", err.toString());
                 });
         } else {
-            socket.emit("Permission Denied Desu");
+            socket.emit("err", "Permission Denied Desu");
         }
     });
 });
