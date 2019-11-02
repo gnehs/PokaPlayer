@@ -177,6 +177,12 @@ io.on("connection", socket => {
         }
     });
     socket.on("update", async () => {
+        await git.raw(['config', '--global', 'user.email']).then(r => {
+            if (r == '\n') {
+                git.raw(['config', '--global', 'user.email', 'poka@pokaplayer.poka'])
+                git.raw(['config', '--global', 'user.name', 'pokaUpdater'])
+            }
+        })
         if (await User.isUserAdmin(socket.handshake.session.userdata)) {
             socket.emit("init");
             git.reset(["--hard", "HEAD"])
