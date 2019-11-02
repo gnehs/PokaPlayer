@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "e5bef2d086226d94bc53",
-    "url": "/css/app.3b38d141.css"
+    "revision": "a4eddc7bba599bf2f232",
+    "url": "/css/app.8adc3c4b.css"
   },
   {
-    "revision": "e5bef2d086226d94bc53",
-    "url": "/js/app.c023e0db.js"
+    "revision": "a4eddc7bba599bf2f232",
+    "url": "/js/app.654d086d.js"
   },
   {
     "revision": "3f5ce505da92637d590f",
@@ -16,16 +16,16 @@ self.__precacheManifest = [
     "url": "/js/chunk-vendors.0c3b0bce.js"
   },
   {
-    "revision": "6c1f02361b93e0617bf1ba5e9421cc7d",
+    "revision": "efa8aeba98326552baa1b5cd26f4b9c9",
     "url": "/index.html"
-  },
-  {
-    "revision": "5f1292b57cedad9cca119d3326c01ac2",
-    "url": "/img/dailyRecommendPlaylists.png"
   },
   {
     "revision": "0dbaf805763d1e22f9c0a262a8e20903",
     "url": "/img/dailyRecommendSongs.png"
+  },
+  {
+    "revision": "5f1292b57cedad9cca119d3326c01ac2",
+    "url": "/img/dailyRecommendPlaylists.png"
   },
   {
     "revision": "2b6acf0d036c6749ead7731790621868",
