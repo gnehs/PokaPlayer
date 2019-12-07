@@ -815,7 +815,12 @@ async function getLyric(id) {
             uri: "https://api.zhconvert.org/convert",
             body: {
                 converter,
-                text
+                text,
+                modules: {
+                    QuotationMark: 1,
+                    EllipsisMark: 1,
+                    EngNumFWToHW: 1
+                }
             },
             json: true
         });
@@ -840,6 +845,7 @@ async function getLyric(id) {
             }
             //} else lyric = result.lrc.lyric;
         } else lyric = null;
+        if (lyric) lyric = lyric.replace(/作词/g, "作詞")
         return lyric;
     } else {
         pokaLog.logDMErr('Netease2', `無法獲取歌詞 ${id}。(${result.code})`)
