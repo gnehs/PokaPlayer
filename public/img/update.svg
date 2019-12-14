@@ -1,1 +1,23 @@
-<svg id="a96e6d9b-fdd8-4d82-bde2-2b6a231674bf" data-name="圖層 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><style>.add99ae1-2a99-432d-9c02-f3ac4f60798e{fill:#309;}.be53c4d5-2ecb-45aa-beb5-4c3ca2266b97{fill:#30c;}.fcd91670-88d9-4526-87e9-be2720ccf311{fill:#93f;}.adfa8514-651f-402b-84db-38ba930ca523{fill:#fff;}</style></defs><title>update</title><circle class="add99ae1-2a99-432d-9c02-f3ac4f60798e" cx="256.5" cy="264.5" r="231.5"/><circle class="be53c4d5-2ecb-45aa-beb5-4c3ca2266b97" cx="256.05" cy="264.95" r="199.4"/><circle class="fcd91670-88d9-4526-87e9-be2720ccf311" cx="256.5" cy="264.5" r="155.54"/><path id="a61e78da-151e-44f1-b83b-0e63a70f38c0" data-name="path7143" class="adfa8514-651f-402b-84db-38ba930ca523" d="M351.11,142.42c-40.75,0-95.43,28-132.15,76H188.52c-22,0-34.6,16.42-43.28,33.78l-11.62,23.24h54.9L217,304l28.51,28.51v54.9l23.24-11.61c17.36-8.69,33.78-21.29,33.78-43.29V302c48.06-36.72,76-91.4,76-132.15V142.42Zm-48.55,57a19,19,0,0,1,19,19h0a19,19,0,0,1-19,19h0a19,19,0,0,1-19-19h0a19,19,0,0,1,19-19ZM179,313.47,169.51,323c-13.72,13.72-19,47.51-19,47.51s32.27-3.76,47.51-19l9.51-9.51Z"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+    <circle class="animated-circle" cx="256.5" cy="264.5" r="231.5" style="fill:rgba(255,255,255,.03)"/>
+    <circle class="animated-circle" cx="256" cy="264" r="199.4" style="fill:rgba(255,255,255,.06)"/>
+    <circle class="animated-circle" cx="257" cy="265" r="155.54" style="fill:rgba(255,255,255,.09)"/>
+    <path d="M351.11,142.42c-40.75,0-95.43,28-132.15,76H188.52c-22,0-34.6,16.42-43.28,33.78l-11.62,23.24h54.9L217,304l28.51,28.51v54.9l23.24-11.61c17.36-8.69,33.78-21.29,33.78-43.29V302c48.06-36.72,76-91.4,76-132.15V142.42Zm-48.55,57a19,19,0,0,1,19,19h0a19,19,0,0,1-19,19h0a19,19,0,0,1-19-19h0a19,19,0,0,1,19-19ZM179,313.47,169.51,323c-13.72,13.72-19,47.51-19,47.51s32.27-3.76,47.51-19l9.51-9.51Z" style="fill:#fff"/>
+    <style>
+        .animated-circle{
+            animation: spin 5s linear infinite;
+            transform-origin: center;
+        }
+        .animated-circle:nth-child(1){
+            animation-delay: -2s;
+        }
+        .animated-circle:nth-child(2){
+            animation-delay: -1s;
+        }
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</svg>
