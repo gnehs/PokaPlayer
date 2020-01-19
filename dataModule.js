@@ -24,6 +24,7 @@ router.use(bodyParser.urlencoded({
     extended: true
 }));
 
+router.use("/playlist", require("./router/playlist.js"));
 let moduleList = {};
 fs.readdir(__dirname + "/dataModule", (err, files) => {
     if (err) return console.error(err);
