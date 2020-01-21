@@ -15,10 +15,7 @@ const songSchema = new mongoose.Schema({
 });
 const playlistSchema = new mongoose.Schema({
     name: String,
-    image: {
-        type: String,
-        default: 'https://i.imgur.com/z9tcal4.png'
-    },
+    image: String,
     pinned: {
         type: Boolean,
         default: false
