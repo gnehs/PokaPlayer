@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "0fee7b609717b7b7fdbc",
-    "url": "/css/app.4f195533.css"
+    "revision": "5f36b07dd320b8835265",
+    "url": "/css/app.4236b3bb.css"
   },
   {
-    "revision": "0fee7b609717b7b7fdbc",
-    "url": "/js/app.2e58cce5.js"
+    "revision": "5f36b07dd320b8835265",
+    "url": "/js/app.64fbe2cb.js"
   },
   {
     "revision": "a108f69e413f66e0e0a2",
@@ -16,7 +16,7 @@ self.__precacheManifest = [
     "url": "/js/chunk-vendors.e075106c.js"
   },
   {
-    "revision": "c29d2ba0f9ab974983c313544bb66e41",
+    "revision": "078bb0261016dc136c159bd7771b0898",
     "url": "/index.html"
   },
   {
@@ -24,8 +24,12 @@ self.__precacheManifest = [
     "url": "/img/._loginHeader.svg"
   },
   {
-    "revision": "2f1faec484d8d0c5cea318d005b94558",
-    "url": "/._index.html"
+    "revision": "87df19b1a250c195aa26608713ad75d3",
+    "url": "/img/._splashscreens"
+  },
+  {
+    "revision": "5f1292b57cedad9cca119d3326c01ac2",
+    "url": "/img/dailyRecommendPlaylists.png"
   },
   {
     "revision": "0dbaf805763d1e22f9c0a262a8e20903",
@@ -36,12 +40,8 @@ self.__precacheManifest = [
     "url": "/img/hqPlaylist.png"
   },
   {
-    "revision": "87df19b1a250c195aa26608713ad75d3",
-    "url": "/img/._splashscreens"
-  },
-  {
-    "revision": "5f1292b57cedad9cca119d3326c01ac2",
-    "url": "/img/dailyRecommendPlaylists.png"
+    "revision": "2f1faec484d8d0c5cea318d005b94558",
+    "url": "/._index.html"
   },
   {
     "revision": "ee9a23bf5b122a2026dbedb3f7d5a39f",
@@ -72,12 +72,20 @@ self.__precacheManifest = [
     "url": "/img/splashscreens/._ipadpro3_splash.png"
   },
   {
+    "revision": "9c528f0cc4c9e69758ecb5644357f11b",
+    "url": "/img/splashscreens/._iphone5_splash.png"
+  },
+  {
+    "revision": "49150a9e627e4848e41871221e3a7e55",
+    "url": "/img/splashscreens/._iphoneplus_splash.png"
+  },
+  {
     "revision": "47dbd85063dd7af8ecf0a4f5b89c21ad",
     "url": "/img/splashscreens/._iphone6_splash.png"
   },
   {
-    "revision": "aab8fae5732e190d7e0b2b52bb77e7fc",
-    "url": "/img/playlist.psd"
+    "revision": "05893221c58163823c07b5110483905c",
+    "url": "/img/splashscreens/._iphonex_splash.png"
   },
   {
     "revision": "64f01f528c3ff72fbc8f7e06f96bc06a",
@@ -88,40 +96,28 @@ self.__precacheManifest = [
     "url": "/img/splashscreens/._iphonexsmax_splash.png"
   },
   {
-    "revision": "05893221c58163823c07b5110483905c",
-    "url": "/img/splashscreens/._iphonex_splash.png"
+    "revision": "f2d3ff48a22d9bb54508e0f520b6441d",
+    "url": "/img/splashscreens/iphone5_splash.png"
   },
   {
-    "revision": "9c528f0cc4c9e69758ecb5644357f11b",
-    "url": "/img/splashscreens/._iphone5_splash.png"
-  },
-  {
-    "revision": "49150a9e627e4848e41871221e3a7e55",
-    "url": "/img/splashscreens/._iphoneplus_splash.png"
+    "revision": "4f581342e0dc57b34a176ebd1e491af0",
+    "url": "/img/splashscreens/ipad_splash.png"
   },
   {
     "revision": "d330a0b6e9c5bb917eee03b016f3f9e3",
     "url": "/img/splashscreens/ipadpro1_splash.png"
   },
   {
-    "revision": "35b6cf131562d21081a90a784f879b19",
-    "url": "/img/splashscreens/ipadpro2_splash.png"
-  },
-  {
-    "revision": "f2d3ff48a22d9bb54508e0f520b6441d",
-    "url": "/img/splashscreens/iphone5_splash.png"
-  },
-  {
     "revision": "6e7952c76307631bb228063e249d9c4a",
     "url": "/img/splashscreens/iphone6_splash.png"
   },
   {
-    "revision": "38e64c59bdd2bb89675eb334324cc8b9",
-    "url": "/img/splashscreens/ipadpro3_splash.png"
+    "revision": "aab8fae5732e190d7e0b2b52bb77e7fc",
+    "url": "/img/playlist.psd"
   },
   {
-    "revision": "ddface7d19acc6fa50ddea328d4a8037",
-    "url": "/img/splashscreens/iphonex_splash.png"
+    "revision": "38e64c59bdd2bb89675eb334324cc8b9",
+    "url": "/img/splashscreens/ipadpro3_splash.png"
   },
   {
     "revision": "f8b2c6d67c3707610f3c2ad4285af48a",
@@ -132,20 +128,24 @@ self.__precacheManifest = [
     "url": "/img/topPlaylist.png"
   },
   {
-    "revision": "b5011363a9bbaf722e223d41fc23f865",
-    "url": "/img/splashscreens/iphonexr_splash.png"
-  },
-  {
-    "revision": "4f581342e0dc57b34a176ebd1e491af0",
-    "url": "/img/splashscreens/ipad_splash.png"
+    "revision": "ddface7d19acc6fa50ddea328d4a8037",
+    "url": "/img/splashscreens/iphonex_splash.png"
   },
   {
     "revision": "f805f14e7d9ad7ee02c48cfeab58abb4",
     "url": "/img/update.svg"
   },
   {
+    "revision": "b5011363a9bbaf722e223d41fc23f865",
+    "url": "/img/splashscreens/iphonexr_splash.png"
+  },
+  {
     "revision": "b6216d61c03e6ce0c9aea6ca7808f7ca",
     "url": "/robots.txt"
+  },
+  {
+    "revision": "35b6cf131562d21081a90a784f879b19",
+    "url": "/img/splashscreens/ipadpro2_splash.png"
   },
   {
     "revision": "872c2998f0ea8d5f27cfd2916af1ffd4",
