@@ -70,10 +70,19 @@ router.get("/home/", async (req, res) => {
         if (x.active.indexOf("getHome") > -1) {
             try {
                 let results = (await y.getHome(playlist)) || null;
-                if (results)
+                let isNotEmpty = (...x) => {
+                    let r = false
+                    x.forEach(v => {
+                        if (v && v.length > 0) r = true
+                    })
+                    return r
+                }
+                if (results) {
                     for (result of results) {
-                        resData.push(result)
+                        if (isNotEmpty(result.playlists, result.songs, result.albums, result.artists, result.composers))
+                            resData.push(result)
                     }
+                }
             } catch (e) {
                 showError(x.name, e)
             }
