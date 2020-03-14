@@ -815,12 +815,7 @@ async function getLyric(id) {
             uri: "https://api.zhconvert.org/convert",
             body: {
                 converter,
-                text,
-                modules: {
-                    QuotationMark: 1,
-                    EllipsisMark: 1,
-                    EngNumFWToHW: 1
-                }
+                text
             },
             json: true
         });
