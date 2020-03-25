@@ -150,11 +150,11 @@ function migrate(org, t, offset = 10 ** -3) {
 
     const tagToTime = tag =>
         isDigit(tag[0]) ?
-            tag
-                .split(":")
-                .reverse()
-                .reduce((acc, cur, index) => plus(acc, Number(cur) * 60 ** index), 0) :
-            tag;
+        tag
+        .split(":")
+        .reverse()
+        .reduce((acc, cur, index) => plus(acc, Number(cur) * 60 ** index), 0) :
+        tag;
     const parse = (x, isTranslated = false) => {
         let pLyricLines = x
             .split("\n")
@@ -213,18 +213,18 @@ function migrate(org, t, offset = 10 ** -3) {
         } else if (i != parsedLyrics.length - 1) {
             if (parsedLyrics[i][0] == parsedLyrics[i + 1][0]) {
                 parsedLyricPairs.push([parsedLyrics[i][0],
-                [parsedLyrics[i][1], parsedLyrics[i + 1][1]]
+                    [parsedLyrics[i][1], parsedLyrics[i + 1][1]]
                 ]);
                 i += 2;
             } else {
                 parsedLyricPairs.push([parsedLyrics[i][0],
-                [parsedLyrics[i][1], parsedLyrics[i][1]]
+                    [parsedLyrics[i][1], parsedLyrics[i][1]]
                 ]);
                 i += 1;
             }
         } else {
             parsedLyricPairs.push([parsedLyrics[i][0],
-            [parsedLyrics[i][1], parsedLyrics[i][1]]
+                [parsedLyrics[i][1], parsedLyrics[i][1]]
             ]);
             i += 1;
         }
@@ -342,7 +342,7 @@ async function getSong(req, songRes, id) {
         medium: 192000,
         high: 320000,
         original: 320000
-    }[songRes];
+    } [songRes];
     let isArray = Array.isArray(id);
     id = isArray ? id : [id];
     let result = await Promise.all(
@@ -512,7 +512,7 @@ async function resolveTopPlaylistStack(topPlaylistStack) {
             image: imageUrl(x.coverImgUrl || x.picUrl),
             from: "topPlaylistStack"
         } :
-            false
+        false
     );
     return [].concat(...playlists);
 }
@@ -527,12 +527,12 @@ async function resolvePlaylistStack(playlistStack) {
             image: x[1].image || imageUrl(x[0].playlist.coverImgUrl || x[0].playlist.picUrl),
             from: "playlistStack"
         } : {
-                name: x.playlist.name,
-                source: "Netease2",
-                id: x.playlist.id,
-                image: imageUrl(x.playlist.coverImgUrl || x.playlist.picUrl),
-                from: "playlistStack"
-            }
+            name: x.playlist.name,
+            source: "Netease2",
+            id: x.playlist.id,
+            image: imageUrl(x.playlist.coverImgUrl || x.playlist.picUrl),
+            from: "playlistStack"
+        }
     );
 }
 
@@ -550,12 +550,12 @@ async function resolvedailyRecommendStack(dailyRecommendStack) {
                 source: "Netease2",
                 from: "dailyRecommendStack"
             } : {
-                    name: x.name,
-                    id: x.id,
-                    image: imageUrl(x.coverImgUrl || x.picUrl),
-                    source: "Netease2",
-                    from: "dailyRecommendStack"
-                }
+                name: x.name,
+                id: x.id,
+                image: imageUrl(x.coverImgUrl || x.picUrl),
+                source: "Netease2",
+                from: "dailyRecommendStack"
+            }
         )
     );
 }
@@ -746,7 +746,7 @@ async function getPlaylists(playlists) {
 
 async function getPlaylistSongs(id, br = 999000) {
     let name;
-    if (isIdName(id)) [id, name] = decomposeIdName(id);
+    if (isIdName(id))[id, name] = decomposeIdName(id);
     if (id == "dailyRecommendSongs") {
         let result = await rp(options(`${server}recommend/songs`));
         if (result.code == 200) {
@@ -898,7 +898,8 @@ async function isPinned(type, id, name) {
 }
 
 async function getHome() {
-    let r = []; let result = []
+    let r = [];
+    let result = []
 
     let pinData = {
         songs: [],
@@ -927,12 +928,12 @@ async function getHome() {
         topPlaylistResult.push(
             new Promise((resolve, reject) => {
                 rp(
-                    options(
-                        `${server}top/playlist?limit=${c.limit}&order=${
+                        options(
+                            `${server}top/playlist?limit=${c.limit}&order=${
                         c.order in ["hot", "new"] ? c.order : "hot"
                         }&cat=${c.category}`
+                        )
                     )
-                )
                     .then(data => resolve([data, {
                         image: config.topPlaylist.image || defaultImage
                     }]))
@@ -942,6 +943,7 @@ async function getHome() {
         result.push({
             title: "home_topPlaylist_netease",
             source: "Netease2",
+            icon: "whatshot",
             playlists: (await resolveTopPlaylistStack(topPlaylistResult)),
         })
     }
@@ -965,6 +967,7 @@ async function getHome() {
         result.push({
             title: "home_hqPlaylist_netease",
             source: "Netease2",
+            icon: "star",
             playlists: (await resolveTopPlaylistStack(hqPlaylistResult)),
         })
     }
@@ -1010,6 +1013,7 @@ async function getHome() {
 
         result.push({
             title: "home_dailyRecommend_netease",
+            icon: "insert_emoticon",
             source: "Netease2",
             playlists: (await resolvedailyRecommendStack(dailyRecommendStack)).slice(0, config.dailyRecommendPlaylists.limit || 50)
         })
@@ -1017,6 +1021,7 @@ async function getHome() {
     result.push({
         title: "home_netease",
         source: "Netease2",
+        icon: "audiotrack",
         playlists: r.concat(
             ...pinData.playlists
         ),
