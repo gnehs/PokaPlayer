@@ -67,3 +67,4 @@ playlist.json
 package-lock.json
 dataModule/netease2Pin.json
 tasks.json
+cache

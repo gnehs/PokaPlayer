@@ -497,11 +497,12 @@ router.get("/song/", async (req, res) => {
     let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
     // 沒這東西
     if (!_module) return res.status(501).send("The required module is currently unavailable :(");
-    let song = await _module.getSong(req, req.query.songRes, req.query.songId);
+    let song = await _module.getSong(req, req.query.songRes, req.query.songId, res);
     if (typeof song == "string") return res.redirect(song);
-    else
+    else {
         return song
-            .on("response", function (response) {
+            .on("response", response => {
+                console.log(response)
                 //針對 Audio 寫入 Header 避免 Chrome 時間軸不能跳
                 res.writeHead(206, {
                     "Accept-Ranges": response.headers["accept-ranges"] ?
@@ -515,6 +516,7 @@ router.get("/song/", async (req, res) => {
                 });
             })
             .pipe(res);
+    }
 });
 //- 評等
 router
