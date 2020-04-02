@@ -7,7 +7,8 @@ const config = require("../config.json"), // 很會設定ㄉ朋友
     }), //很會請求ㄉ朋友
     dsmURL = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}`,
     lyricRegex = /\[([0-9.:]*)\]/i,
-    fs = require('fs');
+    fs = require('fs'),
+    path = require('path');
 
 
 
@@ -428,33 +429,32 @@ async function getSong(req, songRes = "high", songId, res) {
             }
         })
         const newCompleter = () => {
-            let resolve, reject;
-            let promise = new Promise((res, rej) => {
-                resolve = res;
-                reject = reject;
+            let obj = {}
+            obj.promise = new Promise((res, rej) => {
+                obj.complete = res;
+                obj.fail = rej;
             });
 
-            return {
-                promise,
-                complete: resolve,
-                fail: reject
-            };
+            return obj;
         }
-        let fileOpenCompleter = newCompleter()
+        let transcodeCompleter = newCompleter()
 
-        let stream = fs.createWriteStream(`./cache/dsm_${songId}_${songRes}.opus`)
-        stream.once('open', () => fileopenCompleter.complete())
+        let writeStream = fs.createWriteStream(`./cache/dsm_${songId}_${songRes}.webm`)
         dsmreq.on('response', res => {
             new Transcoder(res)
                 .audioCodec('libopus')
                 .audioBitrate(bitrate)
-                .format('opus')
+                .format('webm')
+                .on('finish', () => transcodeCompleter.complete())
                 .stream()
-                .pipe(stream)
+                .pipe(writeStream)
         });
-        await fileOpenCompleter.promise;
-        return fs.createReadStream(`./cache/dsm_${songId}_${songRes}.opus`)
-
+        await transcodeCompleter.promise;
+        res.sendFile(path.join(__dirname, `../cache/dsm_${songId}_${songRes}.webm`))
+        //return fs.createReadStream(`./cache/dsm_${songId}_${songRes}.opus`);
+        return {
+            sent: true
+        }
     }
 
 }

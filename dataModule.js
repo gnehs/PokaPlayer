@@ -499,7 +499,7 @@ router.get("/song/", async (req, res) => {
     if (!_module) return res.status(501).send("The required module is currently unavailable :(");
     let song = await _module.getSong(req, req.query.songRes, req.query.songId, res);
     if (typeof song == "string") return res.redirect(song);
-    else {
+    else if (!song.sent) {
         return song
             .on("response", response => {
                 console.log(response)
