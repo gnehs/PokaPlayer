@@ -7,7 +7,7 @@ const config = require("../config.json"), // 很會設定ㄉ朋友
     }), //很會請求ㄉ朋友
     dsmURL = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}`,
     lyricRegex = /\[([0-9.:]*)\]/i,
-    fs = require('fs'),
+    fs = require('fs-extra'),
     path = require('path');
 
 
@@ -157,6 +157,7 @@ schedule.scheduleJob("'* */12 * * *'", async function () {
     login();
 });
 async function onLoaded() {
+    fs.emptyDirSync(`./cache/`)
     return await login();
 }
 async function login() {
@@ -412,7 +413,6 @@ async function getSong(req, songRes = "high", songId, res) {
             }
         });
     } else {
-        console.log('OPUS')
         let url = `${dsmURL}/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=stream&id=${songId}`;
         let bitrate = {
             low: 64 * 1000,
@@ -424,7 +424,7 @@ async function getSong(req, songRes = "high", songId, res) {
             headers: {
                 "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
                 //Range: req.headers.range,
-                // Accept: req.headers.accept,
+                //Accept: req.headers.accept,
                 Host: config.DSM.host
             }
         })
@@ -439,15 +439,15 @@ async function getSong(req, songRes = "high", songId, res) {
         }
         let transcodeCompleter = newCompleter()
 
-        let writeStream = fs.createWriteStream(`./cache/dsm_${songId}_${songRes}.webm`)
+        //let writeStream = fs.createWriteStream(`./cache/dsm_${songId}_${songRes}.webm`)
         dsmreq.on('response', res => {
             new Transcoder(res)
                 .audioCodec('libopus')
                 .audioBitrate(bitrate)
                 .format('webm')
                 .on('finish', () => transcodeCompleter.complete())
-                .stream()
-                .pipe(writeStream)
+                .writeToFile(path.join(__dirname, `../cache/dsm_${songId}_${songRes}.webm`))
+            //.pipe(writeStream)
         });
         await transcodeCompleter.promise;
         res.sendFile(path.join(__dirname, `../cache/dsm_${songId}_${songRes}.webm`))
