@@ -2,7 +2,7 @@ FROM node:alpine
 
 WORKDIR /app
 # 安裝必要組件
-RUN apk add --no-cache make gcc g++ python git openssh-client ffmpeg\
+RUN apk add --no-cache make gcc g++ python git openssh-client\
     && mkdir /root/.ssh/ \
     && ssh-keyscan github.com > ~/.ssh/known_hosts
 # 拉取程式碼

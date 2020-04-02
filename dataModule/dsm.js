@@ -1,14 +1,12 @@
 const config = require("../config.json"), // 很會設定ㄉ朋友
     schedule = require("node-schedule"), // 很會計時ㄉ朋友
     pokaLog = require("../log"), // 可愛控制台輸出
-    Transcoder = require('stream-transcoder'), // 轉檔好朋友
     request = require("request").defaults({
         jar: require("request").jar()
     }), //很會請求ㄉ朋友
     dsmURL = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}`,
     lyricRegex = /\[([0-9.:]*)\]/i,
-    fs = require('fs-extra'),
-    path = require('path');
+    fs = require('fs-extra')
 
 
 
@@ -157,7 +155,6 @@ schedule.scheduleJob("'* */12 * * *'", async function () {
     login();
 });
 async function onLoaded() {
-    fs.emptyDirSync(`./cache/`)
     return await login();
 }
 async function login() {
@@ -381,82 +378,35 @@ async function unPin(type, id, name) {
     if (result.success) return result.success;
     else return result.error;
 }
-async function getSong(req, songRes = "high", songId, res) {
-    let isSafari = /^((?!chrome|android).)*safari/i.test(req.headers['user-agent'])
-    if (isSafari || songRes == 'original') {
-        let url = dsmURL;
-        switch (songRes) {
-            case "high":
-                url += `/webapi/AudioStation/stream.cgi/0.wav?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=wav&id=`;
-                break;
-            case "low": //128K
-                url += `/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=mp3&id=`;
-                break;
-            case "medium": //128K
-                url += `/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=mp3&id=`;
-                break;
-            case "original":
-                url += `/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=stream&id=`;
-                break;
-            default:
-                url += `/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=stream&id=`;
-                break;
-        }
-        url += songId;
-        return request.get({
-            url: url,
-            headers: {
-                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
-                Range: req.headers.range,
-                Accept: req.headers.accept,
-                Host: config.DSM.host
-            }
-        });
-    } else {
-        let url = `${dsmURL}/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=stream&id=${songId}`;
-        let bitrate = {
-            low: 64 * 1000,
-            medium: 96 * 1000,
-            high: 128 * 1000,
-        } [songRes]
-        let dsmreq = request.get({
-            url: url,
-            headers: {
-                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
-                //Range: req.headers.range,
-                //Accept: req.headers.accept,
-                Host: config.DSM.host
-            }
-        })
-        const newCompleter = () => {
-            let obj = {}
-            obj.promise = new Promise((res, rej) => {
-                obj.complete = res;
-                obj.fail = rej;
-            });
-
-            return obj;
-        }
-        let transcodeCompleter = newCompleter()
-
-        //let writeStream = fs.createWriteStream(`./cache/dsm_${songId}_${songRes}.webm`)
-        dsmreq.on('response', res => {
-            new Transcoder(res)
-                .audioCodec('libopus')
-                .audioBitrate(bitrate)
-                .format('webm')
-                .on('finish', () => transcodeCompleter.complete())
-                .writeToFile(path.join(__dirname, `../cache/dsm_${songId}_${songRes}.webm`))
-            //.pipe(writeStream)
-        });
-        await transcodeCompleter.promise;
-        res.sendFile(path.join(__dirname, `../cache/dsm_${songId}_${songRes}.webm`))
-        //return fs.createReadStream(`./cache/dsm_${songId}_${songRes}.opus`);
-        return {
-            sent: true
-        }
+async function getSong(req, songRes = "high", songId) {
+    let url = dsmURL;
+    switch (songRes) {
+        case "high":
+            url += `/webapi/AudioStation/stream.cgi/0.wav?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=wav&id=`;
+            break;
+        case "low": //128K
+            url += `/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=mp3&id=`;
+            break;
+        case "medium": //128K
+            url += `/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=mp3&id=`;
+            break;
+        case "original":
+            url += `/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=stream&id=`;
+            break;
+        default:
+            url += `/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=stream&id=`;
+            break;
     }
-
+    url += songId;
+    return request.get({
+        url: url,
+        headers: {
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
+            Range: req.headers.range,
+            Accept: req.headers.accept,
+            Host: config.DSM.host
+        }
+    });
 }
 
 async function getCover(data) {
