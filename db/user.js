@@ -80,7 +80,7 @@ async function changePassword(_id, oldpassword, password) {
 
     if (comparePassword(oldpassword, user.password)) {
         user.password = bcrypt.hashSync(password, 10)
-        await user.save()
+        await user.save(err => err ? console.error(err) : null)
         return {
             success: true,
             error: null,
@@ -144,17 +144,17 @@ async function login({
 async function getUserByUsername(username) {
     return (await model.findOne({
         username: username
-    }))
+    }, err => err ? console.error(err) : null))
 }
 async function isUserAdmin(id) {
     let userData = await model.findById(id)
     return userData && userData.role == 'admin'
 }
 async function getAllUsers() {
-    return (await model.findOne({}))
+    return (await model.findOne({}, err => err ? console.error(err) : null))
 }
 async function getUserById(id) {
-    return (await model.findById(id))
+    return (await model.findById(id, err => err ? console.error(err) : null))
 }
 
 function comparePassword(s, hash) {

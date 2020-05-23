@@ -32,14 +32,14 @@ async function saveLyric({
             lyric
         })
     }
-    await lyricData.save()
+    await lyricData.save(err => err ? console.error(err) : null)
     return ({
         success: true,
         data: lyricData
     })
 }
 async function getLyric(data) {
-    let result = await model.findOne(data)
+    let result = await model.findOne(data, err => err ? console.error(err) : null)
     if (result)
         return result.lyric
     else

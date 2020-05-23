@@ -54,7 +54,7 @@ async function createPlaylist(name) {
     let playlist = new model({
         name
     })
-    await playlist.save()
+    await playlist.save(err => err ? console.error(err) : null)
     return ({
         success: true,
         playlist
@@ -99,10 +99,10 @@ async function editPlaylist(id, data) {
 }
 
 async function getPlaylistById(id) {
-    return (await model.findById(id))
+    return (await model.findById(id, err => err ? console.error(err) : null))
 }
 async function getParsedPlaylistById(id) {
-    return parsePlaylist(await model.findById(id))
+    return parsePlaylist(await model.findById(id, err => err ? console.error(err) : null))
 }
 async function getPlaylists() {
     return (await model.find())
@@ -121,7 +121,7 @@ async function toggleSongOfPlaylist({
         } else {
             playlist.songs.push(song)
         }
-        await playlist.save()
+        await playlist.save(err => err ? console.error(err) : null)
     } catch (e) {
         return ({
             success: false,
