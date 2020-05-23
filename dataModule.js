@@ -502,7 +502,6 @@ router.get("/song/", async (req, res) => {
     else {
         return song
             .on("response", response => {
-                console.log(response)
                 //針對 Audio 寫入 Header 避免 Chrome 時間軸不能跳
                 res.writeHead(206, {
                     "Accept-Ranges": response.headers["accept-ranges"] ?
@@ -734,14 +733,14 @@ router
 
 //-----------------------------> 喜歡
 router.get('/canLike', async (req, res) => {
-        //http://localhost:3000/pokaapi/canLike/?moduleName=Netease2
-        let moduleName = req.query.moduleName;
-        let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
-        // 沒這東西
-        if (!_module || moduleList[moduleName].active.indexOf("like") == -1)
-            return res.status(501).send("The required module is currently unavailable :(");
-        return res.json(true)
-    })
+    //http://localhost:3000/pokaapi/canLike/?moduleName=Netease2
+    let moduleName = req.query.moduleName;
+    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+    // 沒這東西
+    if (!_module || moduleList[moduleName].active.indexOf("like") == -1)
+        return res.status(501).send("The required module is currently unavailable :(");
+    return res.json(true)
+})
     .post('/isLiked', async (req, res) => {
         //POST http://localhost:3000/pokaapi/isLiked/ 
         /*
