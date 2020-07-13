@@ -21,7 +21,7 @@ mongoose.connect(config.mongodb, {
 /*       session         */
 /*=======================*/
 const _session = require('express-session');
-const sessionStore = new(require('connect-mongo')(_session))({
+const sessionStore = new (require('connect-mongo')(_session))({
     mongooseConnection: db
 })
 const session = _session({
@@ -30,8 +30,7 @@ const session = _session({
     saveUninitialized: true,
     store: sessionStore,
     cookie: {
-        httpOnly: true,
-        expires: new Date(Date.now() + 60 * 60 * 1000 * 24 * 7)
+        httpOnly: true
     }
 })
 
