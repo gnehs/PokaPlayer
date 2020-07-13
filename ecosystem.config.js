@@ -1,3 +1,5 @@
+// the 歷史遺留寶寶
+// 笨笨 PM2
 module.exports = {
     apps: [{
         name: 'poka',

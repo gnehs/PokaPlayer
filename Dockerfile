@@ -11,10 +11,9 @@ RUN git clone https://github.com/gnehs/PokaPlayer.git
 COPY . /app 
 # node modules
 RUN npm install --production
-RUN npm install -g pm2
 # 環境設定
 ENV NODE_ENV=production
 EXPOSE 3000
 # 啟動
-CMD ["pm2-runtime", "ecosystem.config.js"]
+CMD ["npm", "start"]
 
