@@ -62,7 +62,7 @@ if (config) {
                     git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? "dev" : "master")])
                 )
                 .then(() => git.checkout(config.PokaPlayer.debug ? "dev" : "master"))
-                .then(() => exec(`pm2 restart poka`))
+                .then(() => process.exit())
                 .catch(err => {
                     console.error("failed: ", err);
                     socket.emit("err", err.toString());
@@ -147,7 +147,7 @@ app.get("/info", async (req, res) => {
     res.json(_p)
 });
 
-app.post("/restart", (req, res) => exec(`pm2 restart poka`));
+app.post("/restart", (req, res) => process.exit());
 
 app.use((req, res, next) => {
     res.sendFile(path.join(__dirname + '/public/index.html'))
@@ -200,7 +200,7 @@ io.on("connection", socket => {
                     };
                     await delay(3000)
                 })
-                .then(() => exec(`pm2 restart poka`))
+                .then(() => process.exit())
                 .catch(err => {
                     console.error("failed: ", err);
                     socket.emit("err", err.toString());
