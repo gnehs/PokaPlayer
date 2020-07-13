@@ -26,33 +26,30 @@
     }
   ],
   "shortcuts": [{
-      "name": "首頁",
-      "short_name": "首頁",
-      "description": "開啟 PokaPlayer 的首頁",
+      "name": "Home",
       "url": "/home?utm_source=homescreen",
       "icons": [{
-        "src": "/icons/round_home_black_18dp.png",
-        "sizes": "36x36"
+        "src": "/img/pwa/home.png",
+        "type": "image/png",
+        "sizes": "192x192"
       }]
     },
     {
-      "name": "專輯",
-      "short_name": "專輯",
-      "description": "開啟 PokaPlayer 的專輯頁面",
+      "name": "Albums",
       "url": "/album?utm_source=homescreen",
       "icons": [{
-        "src": "/icons/round_album_black_18dp.png",
-        "sizes": "36x36"
+        "src": "/img/pwa/album.png",
+        "type": "image/png",
+        "sizes": "192x192"
       }]
     },
     {
-      "name": "播放清單",
-      "short_name": "播放清單",
-      "description": "開啟 PokaPlayer 的播放清單頁面",
+      "name": "Playlists",
       "url": "/playlist?utm_source=homescreen",
       "icons": [{
-        "src": "/icons/round_queue_music_black_18dp.png",
-        "sizes": "36x36"
+        "src": "/img/pwa/playlist.png",
+        "type": "image/png",
+        "sizes": "192x192"
       }]
     }
   ],
