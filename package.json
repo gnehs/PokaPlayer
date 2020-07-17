@@ -4,8 +4,8 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"dev": "nodemon index.js -e js --ignore public/ --ignore .git/",
-		"start": "node index.js",
+		"dev": "nodemon pokaplayer.js -e js --ignore public/ --ignore .git/",
+		"start": "node pokaplayer.js",
 		"update:packages": "node wipe-dependencies.js && rm -rf node_modules && npm update --save-dev && npm update --save"
 	},
 	"repository": {

@@ -4,12 +4,12 @@
     },
     "mongodb": "mongodb://mongodb/poka",
     "DSM": {
-        "enabled": false,
+        "enabled": true,
         "protocol": "https",
         "host": "192.168.x.x",
         "port": 5000,
-        "account": "YOUR_ACCOUNT",
-        "password": "YOUR_PASSWORD"
+        "account": "YOUR_DSM_ACCOUNT",
+        "password": "YOUR_DSM_PASSWORD"
     },
     "neteaseLyric": {
         "enabled": true
@@ -26,9 +26,10 @@
             "image": "https://i.imgur.com/ZFaycMw.gif"
         },
         "login": {
-            "phone": null,
-            "email": null,
-            "password": "YOUR_PASSWORD"
+            "//": "信箱或電話兩者選一",
+            "email": "YOUR_NETEASE_EMAIL",
+            "phone": "YOUR_NETEASE_PHONE_NUMBER",
+            "password": "YOUR_NETEASE_PASSWORD"
         },
         "dailyRecommendSongs": {
             "enabled": true,

@@ -1,9 +1,7 @@
 const fs = require("fs"); //檔案系統
 const jsonfile = require('jsonfile')
 const package = require("./package.json"); // package
-const {
-    session
-} = require("./db/db"); // DB
+const { session } = require("./db/db"); // DB
 const User = require("./db/user"); // userDB
 const pokaLog = require("./log"); // 可愛控制台輸出
 const path = require('path');
@@ -27,10 +25,6 @@ if (fs.existsSync("./config.json")) {
     if (!_c.PokaPlayer.sessionSecret) {
         _c.PokaPlayer.sessionSecret = Math.random().toString(36).substring(7)
     }
-    // 新格式的 mongodb
-    if (typeof _c.mongodb !== 'string') {
-        _c.mongodb = _c.mongodb.uri
-    }
     jsonfile.writeFileSync("./config.json", _c, {
         spaces: 4,
         EOL: '\r\n'
@@ -38,14 +32,11 @@ if (fs.existsSync("./config.json")) {
 }
 const config = _c; // 設定檔
 
-// 資料模組 or 連線測試模組
-if (config)
-    app.use("/pokaapi", require("./dataModule.js"));
-if (!config || config.PokaPlayer.debug)
-    app.use("/installapi", require("./install.js"));
+// 資料模組
+app.use("/pokaapi", require("./dataModule.js"));
 
 // cors for debug
-if (config && config.PokaPlayer.debug) {
+if (config.PokaPlayer.debug) {
     app.use(require('cors')({
         credentials: true,
         origin: 'http://localhost:8080'
@@ -53,23 +44,22 @@ if (config && config.PokaPlayer.debug) {
 }
 
 // 檢查 branch
-if (config) {
-    git.raw(["symbolic-ref", "--short", "HEAD"]).then(branch => {
-        branch = branch.slice(0, -1); // 結果會多一個換行符
-        if (branch != (config.PokaPlayer.debug ? "dev" : "master")) {
-            git.fetch(["--all"])
-                .then(() =>
-                    git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? "dev" : "master")])
-                )
-                .then(() => git.checkout(config.PokaPlayer.debug ? "dev" : "master"))
-                .then(() => process.exit())
-                .catch(err => {
-                    console.error("failed: ", err);
-                    socket.emit("err", err.toString());
-                });
-        }
-    });
-}
+git.raw(["symbolic-ref", "--short", "HEAD"]).then(branch => {
+    branch = branch.slice(0, -1); // 結果會多一個換行符
+    if (branch != (config.PokaPlayer.debug ? "dev" : "master")) {
+        git.fetch(["--all"])
+            .then(() =>
+                git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? "dev" : "master")])
+            )
+            .then(() => git.checkout(config.PokaPlayer.debug ? "dev" : "master"))
+            .then(() => process.exit())
+            .catch(err => {
+                console.error("failed: ", err);
+                socket.emit("err", err.toString());
+            });
+    }
+});
+
 //
 app.use(bodyParser.json());
 app.use(express.static("public"))
@@ -124,10 +114,8 @@ app
 app.get("/status", async (req, res) => {
     res.json({
         login: req.session.user,
-        install: !!config,
         version: package.version,
-        debug: config && config.PokaPlayer.debug ?
-            (await git.raw(["rev-parse", "--short", "HEAD"])).slice(0, -1) : false
+        debug: config.PokaPlayer.debug ? (await git.raw(["rev-parse", "--short", "HEAD"])).slice(0, -1) : false
     })
 });
 // 更新
@@ -141,9 +129,7 @@ app.use(async (req, res, next) => {
 app.get("/info", async (req, res) => {
     let _p = {}
     _p.version = package.version
-    _p.debug = config && config.PokaPlayer.debug ?
-        (await git.raw(["rev-parse", "--short", "HEAD"])).slice(0, -1) :
-        false
+    _p.debug = config.PokaPlayer.debug ? (await git.raw(["rev-parse", "--short", "HEAD"])).slice(0, -1) : false
     res.json(_p)
 });
 
@@ -234,14 +220,12 @@ async function pokaStart() {
     // 啟動囉
     server.listen(3000, () => {
         pokaLog.log('PokaPlayer', package.version)
-        if (config && config.PokaPlayer.debug)
+        if (config.PokaPlayer.debug)
             pokaLog.log('INFO', 'Debug Mode')
         pokaLog.log('INFO', 'http://localhost:3000/')
         pokaLog.log('TIME', moment().format("YYYY/MM/DD HH:mm:ss"))
-        if (!config) {
-            pokaLog.log('INSTALL', `未讀取到 config.json，請訪問 /install`)
-            pokaLog.log('INSTALL', `或是參考 config-simple.json 來建立設定檔`)
-        }
     });
 }
-pokaStart()
+module.exports = {
+    pokaStart
+}

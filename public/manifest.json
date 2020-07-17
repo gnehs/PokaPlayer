@@ -35,6 +35,15 @@
       }]
     },
     {
+      "name": "Shuffle",
+      "url": "/shuffle?utm_source=homescreen",
+      "icons": [{
+        "src": "/img/pwa/shuffle.png",
+        "type": "image/png",
+        "sizes": "192x192"
+      }]
+    },
+    {
       "name": "Albums",
       "url": "/album?utm_source=homescreen",
       "icons": [{

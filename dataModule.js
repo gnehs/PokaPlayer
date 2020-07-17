@@ -7,7 +7,7 @@ const router = require("express").Router();
 const bodyParser = require("body-parser");
 const db = require("./db/db.js");
 const lyricdb = require("./db/lyric.js");
-if (config && config.PokaPlayer.debug) {
+if (config.PokaPlayer.debug) {
     router.use(require('cors')({
         credentials: true,
         origin: 'http://localhost:8080'
@@ -622,7 +622,7 @@ router.get("/lyric/", async (req, res) => {
     let lyric = ``;
     try {
         lyric = await _module.getLyric(req.query.id);
-        if (!lyric && config) {
+        if (!lyric) {
             lyric = await lyricdb.getLyric({
                 songId: req.query.id,
                 source: moduleName
