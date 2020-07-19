@@ -4,7 +4,7 @@ let config
 try {
     config = jsonfile.readFileSync("./config.json")
 } catch (e) {
-
+    pokaLog.logErr('CONFIG', `config.json 讀取失敗`)
 }
 if (config) {
     const { pokaStart } = require('./index')
