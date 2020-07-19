@@ -201,10 +201,10 @@ async function pokaStart() {
     async function autoCreateUser() {
         let userlist = await User.getAllUsers()
         if (!userlist || userlist.length <= 0) {
-            let username = "admin",
-                password = Math.random().toString(36).substring(7).toLowerCase()
+            let username = "poka",
+                password = "poka"
             User.create({
-                name: "PokaPlayer",
+                name: "Admin",
                 username,
                 password,
                 role: "admin"
