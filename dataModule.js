@@ -621,12 +621,12 @@ router.get("/lyric/", async (req, res) => {
         return res.status(501).send("The required module is currently unavailable :(");
     let lyric = ``;
     try {
-        lyric = await _module.getLyric(req.query.id);
+        lyric = await lyricdb.getLyric({
+            songId: req.query.id,
+            source: moduleName
+        });
         if (!lyric) {
-            lyric = await lyricdb.getLyric({
-                songId: req.query.id,
-                source: moduleName
-            });
+            lyric = await _module.getLyric(req.query.id);
         }
     } catch (e) {
         showError(moduleName, e)
