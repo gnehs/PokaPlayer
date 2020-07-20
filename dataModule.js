@@ -615,10 +615,6 @@ router.post("/lyric/", async (req, res) => {
 router.get("/lyric/", async (req, res) => {
     //http://localhost:3000/pokaapi/lyric/?moduleName=DSM&id=music_1801
     let moduleName = req.query.moduleName;
-    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
-    // 沒這東西
-    if (!_module || moduleList[moduleName].active.indexOf("getLyric") == -1)
-        return res.status(501).send("The required module is currently unavailable :(");
     let lyric = ``;
     try {
         lyric = await lyricdb.getLyric({
@@ -626,7 +622,10 @@ router.get("/lyric/", async (req, res) => {
             source: moduleName
         });
         if (!lyric) {
-            lyric = await _module.getLyric(req.query.id);
+            let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
+            // 沒這東西
+            if (!(!_module || moduleList[moduleName].active.indexOf("getLyric") == -1))
+                lyric = await _module.getLyric(req.query.id);
         }
     } catch (e) {
         showError(moduleName, e)
