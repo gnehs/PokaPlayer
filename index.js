@@ -153,6 +153,7 @@ io.on("connection", socket => {
             username,
             password
         })
+        socket.join(user);
         socket.handshake.session.userdata = user;
         socket.handshake.session.save();
     });
@@ -162,6 +163,10 @@ io.on("connection", socket => {
             socket.handshake.session.save();
         }
     });
+    socket.on('send-nickname', nickname => {
+        socket.nickname = nickname;
+    });
+    // 更新
     socket.on("update", async () => {
         await git.raw(['config', '--global', 'user.email']).then(r => {
             if (r == '\n') {
