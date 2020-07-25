@@ -1,7 +1,5 @@
 const mongoose = require('mongoose')
-const {
-    db
-} = require('./db.js')
+const { db } = require('./db.js')
 const songSchema = new mongoose.Schema({
     name: String,
     artist: String,
@@ -16,6 +14,7 @@ const songSchema = new mongoose.Schema({
 const playlistSchema = new mongoose.Schema({
     name: String,
     image: String,
+    owner: String,
     pinned: {
         type: Boolean,
         default: false
@@ -50,9 +49,10 @@ function parsePlaylists(playlists) {
     }))
 }
 
-async function createPlaylist(name) {
+async function createPlaylist(name, userId) {
     let playlist = new model({
-        name
+        name,
+        owner: userId
     })
     await playlist.save(err => err ? console.error(err) : null)
     return ({
@@ -101,19 +101,20 @@ async function editPlaylist(id, data) {
 async function getPlaylistById(id) {
     return (await model.findById(id, err => err ? console.error(err) : null))
 }
-async function getParsedPlaylistById(id) {
-    return parsePlaylist(await model.findById(id, err => err ? console.error(err) : null))
+async function getParsedUserPlaylistById(id, userId) {
+    let playlistData = await getPlaylistById(id)
+
+    return playlistData.owner == userId
+        ? parsePlaylist(playlistData)
+        : ({ success: false, error: 'Permission Denied' })
 }
-async function getPlaylists() {
-    return (await model.find())
+async function getPlaylists(userId) {
+    return (await model.find({ owner: userId }))
 }
-async function getParsedPlaylists() {
-    return parsePlaylists(await model.find())
+async function getParsedUserPlaylists(userId) {
+    return parsePlaylists(await getPlaylists(userId))
 }
-async function toggleSongOfPlaylist({
-    playlistId,
-    song
-}) {
+async function toggleSongOfPlaylist({ playlistId, song }) {
     try {
         let playlist = await getPlaylistById(playlistId)
         if (playlist.songs.filter(x => x.id == song.id && x.source == song.source).length > 0) {
@@ -134,9 +135,9 @@ module.exports = {
     delPlaylist,
     editPlaylist,
     getPlaylists,
-    getParsedPlaylistById,
+    getParsedUserPlaylistById,
     getPlaylistById,
-    getParsedPlaylists,
+    getParsedUserPlaylists,
     //song
     toggleSongOfPlaylist,
     //parse

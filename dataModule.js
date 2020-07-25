@@ -24,7 +24,6 @@ router.use(bodyParser.urlencoded({
     extended: true
 }));
 
-router.use("/playlist", require("./router/playlist.js"));
 let moduleList = {};
 fs.readdir(__dirname + "/dataModule", (err, files) => {
     if (err) return console.error(err);
@@ -59,6 +58,9 @@ router.use((req, res, next) => {
         res.status(403).send("Permission Denied Desu");
     }
 });
+// router
+router.use("/playlist", require("./router/playlist"));
+router.use("/v2", require("./router/index"));
 //-----------------------------> 首頁
 // 取得想推薦的東西(?
 router.get("/home/", async (req, res) => {
@@ -311,7 +313,7 @@ router.get("/playlists/", async (req, res) => {
         let y = require(x.js);
         if (x.active.indexOf("getPlaylists") > -1) {
             try {
-                let list = (await y.getPlaylists(playlist)) || null;
+                let list = (await y.getPlaylists(req.session.user)) || null;
                 if (list) {
                     for (i = 0; i < list.playlists.length; i++) r.playlists.push(list.playlists[i]);
                 }
@@ -332,7 +334,7 @@ router.post("/playlists/", async (req, res) => {
         return res.status(501).send("The required module is currently unavailable :(");
     let r;
     try {
-        r = await _module.getPlaylists(req.body.playlists);
+        r = await _module.getPlaylists(req.body.playlists, req.session.user);
     } catch (e) {
         showError(moduleName, e)
     }
@@ -349,7 +351,7 @@ router.get("/playlistSongs/", async (req, res) => {
         return res.status(501).send("The required module is currently unavailable :(");
     let r;
     try {
-        r = await _module.getPlaylistSongs(req.query.id);
+        r = await _module.getPlaylistSongs(req.query.id, req.session.user);
     } catch (e) {
         showError(moduleName, e)
     }

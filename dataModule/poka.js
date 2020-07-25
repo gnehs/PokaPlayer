@@ -2,13 +2,13 @@ const playlistDB = require('../db/playlist')
 async function onLoaded() {
     return true
 }
-async function getPlaylists() {
+async function getPlaylists(userId) {
     return ({
-        playlists: (await playlistDB.getParsedPlaylists())
+        playlists: (await playlistDB.getParsedUserPlaylists(userId))
     })
 }
-async function getPlaylistSongs(id) {
-    return (await playlistDB.getParsedPlaylistById(id))
+async function getPlaylistSongs(id, userId) {
+    return (await playlistDB.getParsedUserPlaylistById(id, userId))
 }
 module.exports = {
     name: "poka",
