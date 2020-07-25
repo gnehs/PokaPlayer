@@ -114,8 +114,8 @@ app
 app.get("/status", async (req, res) => {
     res.json({
         login: req.session.user,
-        version: package.version,
-        debug: config.PokaPlayer.debug ? (await git.raw(["rev-parse", "--short", "HEAD"])).slice(0, -1) : false
+        version: req.session.user ? package.version : '0.0.0',
+        debug: config.PokaPlayer.debug && req.session.user ? (await git.raw(["rev-parse", "--short", "HEAD"])).slice(0, -1) : false
     })
 });
 // 更新
