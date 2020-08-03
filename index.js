@@ -76,14 +76,8 @@ moment.tz.setDefault("Asia/Taipei");
 // 登入
 app
     .post("/login/", async (req, res) => {
-        let {
-            username,
-            password
-        } = req.body
-        let u = await User.login({
-            username,
-            password
-        })
+        let { username, password } = req.body
+        let u = await User.login({ username, password })
         if (u.success) {
             req.session.user = u.user
         }
@@ -143,16 +137,7 @@ io.on("connection", socket => {
     socket.emit("hello");
     // Accept a login event with user's data
     socket.on("login", async userdata => {
-        let {
-            username,
-            password
-        } = userdata
-        let {
-            user
-        } = await User.login({
-            username,
-            password
-        })
+        let { user } = await User.login(userdata)
         socket.join(user);
         socket.handshake.session.userdata = user;
         socket.handshake.session.save();
