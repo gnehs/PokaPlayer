@@ -325,7 +325,7 @@ async function getHome() {
     latestAlbum.title = "home_recentAlbums"
     latestAlbum.source = "DSM"
     latestAlbum.icon = "album"
-    r.push(pins)
+    if (config.DSM.showPins) r.push(pins)
     if (latestAlbum.albums.length > 0) r.push(latestAlbum)
     return r
 }

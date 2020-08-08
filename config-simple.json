@@ -9,10 +9,11 @@
         "host": "192.168.x.x",
         "port": 5000,
         "account": "YOUR_DSM_ACCOUNT",
-        "password": "YOUR_DSM_PASSWORD"
+        "password": "YOUR_DSM_PASSWORD",
+        "showPins": false
     },
     "neteaseLyric": {
-        "enabled": true
+        "enabled": false
     },
     "Netease2": {
         "enabled": false,

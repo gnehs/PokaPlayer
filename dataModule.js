@@ -71,7 +71,7 @@ router.get("/home/", async (req, res) => {
         let y = require(x.js);
         if (x.active.indexOf("getHome") > -1) {
             try {
-                let results = (await y.getHome(playlist)) || null;
+                let results = (await y.getHome(req.session.user)) || null;
                 let isNotEmpty = (...x) => {
                     let r = false
                     x.forEach(v => {
