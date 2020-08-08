@@ -90,6 +90,20 @@ async function changePassword(_id, oldpassword, password) {
             error: 'password invalid'
         }
 }
+async function changePasswordAdmin(_id, password) {
+    let user = await getUserById(_id)
+    if (!user) return {
+        success: false,
+        error: 'user not found'
+    }
+    user.password = bcrypt.hashSync(password, 10)
+    await user.save(err => err ? console.error(err) : null)
+    return {
+        success: true,
+        error: null,
+        user: user._id
+    }
+}
 async function getSetting(_id) {
     let user = await getUserById(_id)
     if (!user) return {
@@ -149,10 +163,13 @@ async function isUserAdmin(id) {
     return userData && userData.role == 'admin'
 }
 async function getAllUsers() {
-    return (await model.findOne({}, err => err ? console.error(err) : null))
+    return (await model.find({}, err => err ? console.error(err) : null))
 }
 async function getUserById(id) {
     return (await model.findById(id, err => err ? console.error(err) : null))
+}
+async function deleteUserById(_id) {
+    return (await model.deleteOne({ _id }, err => err ? console.error(err) : null))
 }
 
 function comparePassword(s, hash) {
@@ -170,5 +187,7 @@ module.exports = {
     changeSetting,
     changeUsername,
     changePassword,
+    deleteUserById,
+    changePasswordAdmin,
     isUserAdmin
 }
