@@ -3,6 +3,10 @@ const Pin = require("../db/pin"); // pin db
 router.get("/", async (req, res) => {
     res.send("Poka API v2 Pin")
 })
+router.post("/pins", async (req, res) => {
+    let pinRes = await Pin.getPins(req.session.user)
+    res.json(pinRes)
+})
 router.post("/pin", async (req, res) => {
     let {
         name,
