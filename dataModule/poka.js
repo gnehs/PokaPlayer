@@ -15,7 +15,7 @@ async function getHome(userId) {
     let pins = {
         title: 'home_pins',
         source: "poka",
-        icon: "mdi-pin",
+        icon: "push_pin",
         artists: [],
         composers: [],
         folders: [],
