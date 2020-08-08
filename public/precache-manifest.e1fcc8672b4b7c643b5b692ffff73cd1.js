@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "5aedb5a213b86c271de4",
-    "url": "/css/app.76530daf.css"
+    "revision": "e012e9d8144d6433e896",
+    "url": "/css/app.817ccf37.css"
   },
   {
-    "revision": "5aedb5a213b86c271de4",
-    "url": "/js/app.83f01aaf.js"
+    "revision": "e012e9d8144d6433e896",
+    "url": "/js/app.d3dbc7c3.js"
   },
   {
     "revision": "162bd4c629a4c2be1807",
@@ -16,12 +16,8 @@ self.__precacheManifest = [
     "url": "/js/chunk-vendors.985fa9d6.js"
   },
   {
-    "revision": "04796e0c16b358f674eca3bc3e2ba755",
+    "revision": "0ff52ebc3aaa131d94b226eb8aa37e78",
     "url": "/index.html"
-  },
-  {
-    "revision": "0dbaf805763d1e22f9c0a262a8e20903",
-    "url": "/img/dailyRecommendSongs.png"
   },
   {
     "revision": "5f1292b57cedad9cca119d3326c01ac2",
@@ -32,16 +28,12 @@ self.__precacheManifest = [
     "url": "/img/hqPlaylist.png"
   },
   {
+    "revision": "0dbaf805763d1e22f9c0a262a8e20903",
+    "url": "/img/dailyRecommendSongs.png"
+  },
+  {
     "revision": "f6aebc3ee57feb127891f68d0b3f44f4",
     "url": "/img/loginHeader.svg"
-  },
-  {
-    "revision": "aab8fae5732e190d7e0b2b52bb77e7fc",
-    "url": "/img/playlist.psd"
-  },
-  {
-    "revision": "06387036315d4a6830c5462562b15133",
-    "url": "/img/pwa/playlist.png"
   },
   {
     "revision": "eafa3c03c415d0b76b6a9d2294e84580",
@@ -52,24 +44,32 @@ self.__precacheManifest = [
     "url": "/img/pwa/home.png"
   },
   {
+    "revision": "06387036315d4a6830c5462562b15133",
+    "url": "/img/pwa/playlist.png"
+  },
+  {
+    "revision": "aab8fae5732e190d7e0b2b52bb77e7fc",
+    "url": "/img/playlist.psd"
+  },
+  {
     "revision": "14127602e1dbdd8a42485579450c1801",
     "url": "/img/pwa/shuffle.png"
-  },
-  {
-    "revision": "4f581342e0dc57b34a176ebd1e491af0",
-    "url": "/img/splashscreens/ipad_splash.png"
-  },
-  {
-    "revision": "35b6cf131562d21081a90a784f879b19",
-    "url": "/img/splashscreens/ipadpro2_splash.png"
   },
   {
     "revision": "31f437d1172743a0330439681d0cf2b2",
     "url": "/img/pwa/pwa_shortcuts.psd"
   },
   {
+    "revision": "4f581342e0dc57b34a176ebd1e491af0",
+    "url": "/img/splashscreens/ipad_splash.png"
+  },
+  {
     "revision": "d330a0b6e9c5bb917eee03b016f3f9e3",
     "url": "/img/splashscreens/ipadpro1_splash.png"
+  },
+  {
+    "revision": "f2d3ff48a22d9bb54508e0f520b6441d",
+    "url": "/img/splashscreens/iphone5_splash.png"
   },
   {
     "revision": "6e7952c76307631bb228063e249d9c4a",
@@ -80,32 +80,20 @@ self.__precacheManifest = [
     "url": "/img/splashscreens/ipadpro3_splash.png"
   },
   {
-    "revision": "f2d3ff48a22d9bb54508e0f520b6441d",
-    "url": "/img/splashscreens/iphone5_splash.png"
-  },
-  {
     "revision": "f8b2c6d67c3707610f3c2ad4285af48a",
     "url": "/img/splashscreens/iphoneplus_splash.png"
   },
   {
-    "revision": "d50b11f2b0b92b6fa9bbf1700ea567bf",
-    "url": "/img/topPlaylist.png"
-  },
-  {
-    "revision": "b5011363a9bbaf722e223d41fc23f865",
-    "url": "/img/splashscreens/iphonexr_splash.png"
+    "revision": "35b6cf131562d21081a90a784f879b19",
+    "url": "/img/splashscreens/ipadpro2_splash.png"
   },
   {
     "revision": "f805f14e7d9ad7ee02c48cfeab58abb4",
     "url": "/img/update.svg"
   },
   {
-    "revision": "ddface7d19acc6fa50ddea328d4a8037",
-    "url": "/img/splashscreens/iphonex_splash.png"
-  },
-  {
-    "revision": "872c2998f0ea8d5f27cfd2916af1ffd4",
-    "url": "/img/splashscreens/iphonexsmax_splash.png"
+    "revision": "b5011363a9bbaf722e223d41fc23f865",
+    "url": "/img/splashscreens/iphonexr_splash.png"
   },
   {
     "revision": "f10254a806d67417a6d0fb0062bb2b94",
@@ -114,5 +102,17 @@ self.__precacheManifest = [
   {
     "revision": "b6216d61c03e6ce0c9aea6ca7808f7ca",
     "url": "/robots.txt"
+  },
+  {
+    "revision": "ddface7d19acc6fa50ddea328d4a8037",
+    "url": "/img/splashscreens/iphonex_splash.png"
+  },
+  {
+    "revision": "d50b11f2b0b92b6fa9bbf1700ea567bf",
+    "url": "/img/topPlaylist.png"
+  },
+  {
+    "revision": "872c2998f0ea8d5f27cfd2916af1ffd4",
+    "url": "/img/splashscreens/iphonexsmax_splash.png"
   }
 ];
