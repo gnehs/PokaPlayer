@@ -29,7 +29,7 @@ async function create({
     if (await getUserByUsername(username))
         return ({
             success: false,
-            error: 'username repeat'
+            error: 'username already taken'
         })
     let user = new model({
         name,
