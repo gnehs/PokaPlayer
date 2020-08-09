@@ -26,6 +26,11 @@ async function create({
     role
 }) {
     password = bcrypt.hashSync(password, 10)
+    if (await getUserByUsername(username))
+        return ({
+            success: false,
+            error: 'username repeat'
+        })
     let user = new model({
         name,
         username,
