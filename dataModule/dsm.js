@@ -321,7 +321,7 @@ async function getHome() {
         }
     }
     let r = []
-    let latestAlbum = await getAlbums(20, "time", "desc")
+    let latestAlbum = await getAlbums(50, "time", "desc")
     latestAlbum.title = "home_recentAlbums"
     latestAlbum.source = "DSM"
     latestAlbum.icon = "album"
