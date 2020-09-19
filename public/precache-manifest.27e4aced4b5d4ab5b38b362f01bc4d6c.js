@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "4790a713ff0f88b6c28d",
-    "url": "/css/app.0e1b19a9.css"
+    "revision": "7f1c1a63058f18906e25",
+    "url": "/css/app.be78db46.css"
   },
   {
-    "revision": "4790a713ff0f88b6c28d",
-    "url": "/js/app.3873ad24.js"
+    "revision": "7f1c1a63058f18906e25",
+    "url": "/js/app.c8e829c4.js"
   },
   {
     "revision": "13fb39bcc6f8b05f19b0",
@@ -16,7 +16,7 @@ self.__precacheManifest = [
     "url": "/js/chunk-vendors.c831bf85.js"
   },
   {
-    "revision": "e8c6677c3e462a77b2b6eb62a43336c7",
+    "revision": "9bb5bd382d5e4097c703f3ac21d30919",
     "url": "/index.html"
   },
   {
@@ -24,20 +24,16 @@ self.__precacheManifest = [
     "url": "/img/dailyRecommendPlaylists.png"
   },
   {
-    "revision": "0dbaf805763d1e22f9c0a262a8e20903",
-    "url": "/img/dailyRecommendSongs.png"
-  },
-  {
     "revision": "2b6acf0d036c6749ead7731790621868",
     "url": "/img/hqPlaylist.png"
   },
   {
-    "revision": "f6aebc3ee57feb127891f68d0b3f44f4",
-    "url": "/img/loginHeader.svg"
+    "revision": "0dbaf805763d1e22f9c0a262a8e20903",
+    "url": "/img/dailyRecommendSongs.png"
   },
   {
-    "revision": "aab8fae5732e190d7e0b2b52bb77e7fc",
-    "url": "/img/playlist.psd"
+    "revision": "f6aebc3ee57feb127891f68d0b3f44f4",
+    "url": "/img/loginHeader.svg"
   },
   {
     "revision": "eafa3c03c415d0b76b6a9d2294e84580",
@@ -52,14 +48,6 @@ self.__precacheManifest = [
     "url": "/img/pwa/playlist.png"
   },
   {
-    "revision": "d330a0b6e9c5bb917eee03b016f3f9e3",
-    "url": "/img/splashscreens/ipadpro1_splash.png"
-  },
-  {
-    "revision": "4f581342e0dc57b34a176ebd1e491af0",
-    "url": "/img/splashscreens/ipad_splash.png"
-  },
-  {
     "revision": "14127602e1dbdd8a42485579450c1801",
     "url": "/img/pwa/shuffle.png"
   },
@@ -68,40 +56,40 @@ self.__precacheManifest = [
     "url": "/img/pwa/pwa_shortcuts.psd"
   },
   {
-    "revision": "f2d3ff48a22d9bb54508e0f520b6441d",
-    "url": "/img/splashscreens/iphone5_splash.png"
+    "revision": "aab8fae5732e190d7e0b2b52bb77e7fc",
+    "url": "/img/playlist.psd"
+  },
+  {
+    "revision": "4f581342e0dc57b34a176ebd1e491af0",
+    "url": "/img/splashscreens/ipad_splash.png"
+  },
+  {
+    "revision": "d330a0b6e9c5bb917eee03b016f3f9e3",
+    "url": "/img/splashscreens/ipadpro1_splash.png"
   },
   {
     "revision": "35b6cf131562d21081a90a784f879b19",
     "url": "/img/splashscreens/ipadpro2_splash.png"
   },
   {
-    "revision": "38e64c59bdd2bb89675eb334324cc8b9",
-    "url": "/img/splashscreens/ipadpro3_splash.png"
+    "revision": "f2d3ff48a22d9bb54508e0f520b6441d",
+    "url": "/img/splashscreens/iphone5_splash.png"
   },
   {
-    "revision": "f8b2c6d67c3707610f3c2ad4285af48a",
-    "url": "/img/splashscreens/iphoneplus_splash.png"
+    "revision": "38e64c59bdd2bb89675eb334324cc8b9",
+    "url": "/img/splashscreens/ipadpro3_splash.png"
   },
   {
     "revision": "6e7952c76307631bb228063e249d9c4a",
     "url": "/img/splashscreens/iphone6_splash.png"
   },
   {
-    "revision": "ddface7d19acc6fa50ddea328d4a8037",
-    "url": "/img/splashscreens/iphonex_splash.png"
-  },
-  {
     "revision": "b5011363a9bbaf722e223d41fc23f865",
     "url": "/img/splashscreens/iphonexr_splash.png"
   },
   {
-    "revision": "872c2998f0ea8d5f27cfd2916af1ffd4",
-    "url": "/img/splashscreens/iphonexsmax_splash.png"
-  },
-  {
-    "revision": "d50b11f2b0b92b6fa9bbf1700ea567bf",
-    "url": "/img/topPlaylist.png"
+    "revision": "f8b2c6d67c3707610f3c2ad4285af48a",
+    "url": "/img/splashscreens/iphoneplus_splash.png"
   },
   {
     "revision": "f805f14e7d9ad7ee02c48cfeab58abb4",
@@ -114,5 +102,17 @@ self.__precacheManifest = [
   {
     "revision": "b6216d61c03e6ce0c9aea6ca7808f7ca",
     "url": "/robots.txt"
+  },
+  {
+    "revision": "ddface7d19acc6fa50ddea328d4a8037",
+    "url": "/img/splashscreens/iphonex_splash.png"
+  },
+  {
+    "revision": "d50b11f2b0b92b6fa9bbf1700ea567bf",
+    "url": "/img/topPlaylist.png"
+  },
+  {
+    "revision": "872c2998f0ea8d5f27cfd2916af1ffd4",
+    "url": "/img/splashscreens/iphonexsmax_splash.png"
   }
 ];
