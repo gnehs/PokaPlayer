@@ -846,4 +846,8 @@ function showError(moduleName = false, error) {
     pokaLog.logDMErr(moduleName || '?', '發生了錯誤，請查看 poka.log 檔案')
     logFile.write(`[${new Date()}][${error}]${error}\n`);
 }
+// catch err
+process.on('uncaughtException', function (err) {
+    console.error(err.stack);
+});
 module.exports = router;
