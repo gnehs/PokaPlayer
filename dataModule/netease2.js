@@ -30,7 +30,7 @@ const {
 } = require("dns").promises;
 const resolver = new Resolver();
 
-const m10s = resolver.resolve4("ws.acgvideo.com.cdn20.com");
+const m10s = resolver.resolve4("cdnetworks.com");
 
 // flatMap
 const concat = (x, y) => x.concat(y);
