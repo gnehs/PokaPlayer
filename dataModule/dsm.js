@@ -162,7 +162,7 @@ async function login() {
         pokaLog.logDMErr('DSM', '登入失敗，未設定帳號密碼')
         return false;
     }
-    let result = await getAPI("auth.cgi", "SYNO.API.Auth", "Login", [{
+    let result = await postAPI("entry.cgi", "SYNO.API.Auth", "login", [{
         key: "account",
         value: config.DSM.account
     },
@@ -174,17 +174,37 @@ async function login() {
         key: "session",
         value: "AudioStation"
     },
-    {
-        key: "format",
-        value: "cookie"
-    }
     ]);
     if (result.success) {
         pokaLog.logDM('DSM', `${config.DSM.account} 登入成功！`)
         return true;
     } else {
-        pokaLog.logDMErr('DSM', `${config.DSM.account} 登入失敗，請檢查您的設定檔是否正確`)
-        return false;
+        pokaLog.logDM('DSM', `正在嘗試以舊版 API 登入...`)
+        // 嘗試舊版 API (6.0 以下)
+        let oldApiResult = await getAPI("auth.cgi", "SYNO.API.Auth", "Login", [{
+            key: "account",
+            value: config.DSM.account
+        },
+        {
+            key: "passwd",
+            value: config.DSM.password
+        },
+        {
+            key: "session",
+            value: "AudioStation"
+        },
+        {
+            key: "format",
+            value: "cookie"
+        }
+        ]);
+        if (oldApiResult.success) {
+            pokaLog.logDM('DSM', `${config.DSM.account} 登入成功！`)
+            return true;
+        } else {
+            pokaLog.logDMErr('DSM', `${config.DSM.account} 登入失敗，請檢查您的設定檔是否正確`)
+            return false;
+        }
     }
 }
 //- API 請求
