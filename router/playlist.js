@@ -9,28 +9,6 @@ async function checkPlaylistOwner(playlistId, userId) {
     let playlist = await playlistDB.getPlaylistById(playlistId)
     return playlist.owner == userId
 }
-router.post("/migrate", async (req, res) => {
-    // migrate db: 將播放清單所有權移交給首次抓取播放清單的管理員
-    let userId = req.session.user
-    if (await userDB.isUserAdmin(userId)) {
-        let playlists = await playlistDB.getPlaylists()
-        for (let { _id } of playlists) {
-            let playlist = await playlistDB.getPlaylistById(_id)
-            playlist.owner = userId
-            playlist.save()
-        }
-        pokaLog.log('Playlist Migrated', userId)
-        res.json({
-            success: true,
-            error: null,
-        })
-    } else {
-        res.status(403).json({
-            success: true,
-            error: 'Permission Denied',
-        })
-    }
-})
 router.post("/create", async (req, res) => {
     let { name } = req.body
     res.json(await playlistDB.createPlaylist(name, req.session.user))
