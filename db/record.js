@@ -9,7 +9,7 @@ const RecordSchema = new mongoose.Schema({
     songId: String,
     source: String,
     userId: String,
-    times: Number
+    playedTimes: { type: [Date], index: true },
 });
 const model = mongoose.model('Record', RecordSchema)
 async function addRecord({
@@ -29,9 +29,7 @@ async function addRecord({
         source,
         userId
     })
-    if (recordData) {
-        recordData.times += 1
-    } else {
+    if (!recordData) {
         recordData = new model({
             title,
             cover,
@@ -41,10 +39,10 @@ async function addRecord({
             albumId,
             songId,
             source,
-            userId,
-            times: 1
+            userId
         })
     }
+    recordData.playedTimes.push(Date.now())
     await recordData.save(err => err ? console.error(err) : null)
     return ({
         success: true,
