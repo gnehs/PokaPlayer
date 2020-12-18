@@ -72,7 +72,7 @@ async function fetchListenedRecently(userId) {
             x.id = x.songId
             return x
         })
-        .sort((a, b) => a.lastListened - b.lastListened)
+        .sort((a, b) => Date.parse(b.lastListened) - Date.parse(a.lastListened))
         .filter((_, i) => i < 25)
 }
 module.exports = {
