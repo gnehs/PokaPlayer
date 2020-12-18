@@ -5,7 +5,7 @@ router.get("/", async (req, res) => {
 })
 router.post("/add", async (req, res) => {
     let {
-        name: title,
+        name,
         artist,
         artistId,
         album,
@@ -15,7 +15,7 @@ router.post("/add", async (req, res) => {
         id: songId
     } = req.body
     res.json(await recordDB.addRecord({
-        title,
+        name,
         artist,
         artistId,
         album,

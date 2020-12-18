@@ -1,7 +1,8 @@
 const mongoose = require('mongoose')
 const RecordSchema = new mongoose.Schema({
-    title: String,
+    name: String,
     cover: String,
+    url: String,
     artist: String,
     artistId: String,
     album: String,
@@ -13,8 +14,9 @@ const RecordSchema = new mongoose.Schema({
 });
 const model = mongoose.model('Record', RecordSchema)
 async function addRecord({
-    title,
+    name,
     cover,
+    url,
     artist,
     artistId,
     album,
@@ -31,8 +33,9 @@ async function addRecord({
     })
     if (!recordData) {
         recordData = new model({
-            title,
+            name,
             cover,
+            url,
             artist,
             artistId,
             album,
@@ -57,12 +60,25 @@ async function countRecords() {
 }
 async function countUserRecords(userId) {
     return (await model.countDocuments({ userId }))
-
+}
+async function fetchListenedRecently(userId) {
+    let res = (await model.find({ userId }))
+    let deepcopy = x => JSON.parse(JSON.stringify(x))
+    return deepcopy(res)
+        .map(x => {
+            x.lastListened = x.playedTimes[x.playedTimes.length - 1]
+            x.name = x.title // 歷史遺留
+            x.url = `/pokaapi/song/?moduleName=${x.source}&songId=${x.songId}`
+            return x
+        })
+        .sort((a, b) => a.lastListened - b.lastListened)
+        .filter((_, i) => i < 25)
 }
 module.exports = {
     model,
     addRecord,
     clearUserRecords,
     countRecords,
-    countUserRecords
+    countUserRecords,
+    fetchListenedRecently
 }
