@@ -13,4 +13,5 @@ router.use(async (req, res, next) => {
         res.status(403).send("Permission Denied Desu");
 });
 router.use("/users", require("./users"));
+router.use("/config", require("./config"));
 module.exports = router;
