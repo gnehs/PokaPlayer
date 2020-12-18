@@ -67,8 +67,9 @@ async function fetchListenedRecently(userId) {
     return deepcopy(res)
         .map(x => {
             x.lastListened = x.playedTimes[x.playedTimes.length - 1]
-            x.name = x.title // 歷史遺留
+            x.name = x.title // fixed name 
             x.url = `/pokaapi/song/?moduleName=${x.source}&songId=${x.songId}`
+            x.id = x.songId
             return x
         })
         .sort((a, b) => a.lastListened - b.lastListened)
