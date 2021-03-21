@@ -82,15 +82,23 @@ app
         let u = await User.login({ username, password })
         if (u.success) {
             req.session.user = u.user
+            addLog({
+                level: "info",
+                type: "user",
+                event: "Login",
+                user: req.session.user,
+                discription: `User {${req.session.user}} login`
+            })
+        } else {
+            addLog({
+                level: "info",
+                type: "user",
+                event: "Login",
+                user: req.session.user,
+                discription: `User ${username} login failed`
+            })
         }
         res.json(u)
-        addLog({
-            level: "info",
-            type: "user",
-            event: "Login",
-            user: req.session.user,
-            discription: `User {${req.session.user}} login`
-        })
     })
     .post("/clear-session/", async (req, res) => {
         let { username, password } = req.body
@@ -102,6 +110,7 @@ app
                 return res.json({ success: false, e })
             }
             res.json({ success: true })
+
             addLog({
                 level: "warn",
                 type: "system",
@@ -115,13 +124,15 @@ app
     })
     .get("/logout/", (req, res) => {
         // 登出
-        addLog({
-            level: "info",
-            type: "user",
-            event: "Logout",
-            user: req.session.user,
-            discription: `User {${req.session.user}} logout`
-        })
+        if (req.session.user) {
+            addLog({
+                level: "info",
+                type: "user",
+                event: "Logout",
+                user: req.session.user,
+                discription: `User {${req.session.user}} logout.`
+            })
+        }
         req.session.destroy(err => {
             if (err) {
                 console.error(err);
