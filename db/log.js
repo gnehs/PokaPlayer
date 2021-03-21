@@ -13,9 +13,7 @@ const LogSchema = new mongoose.Schema({
 const model = mongoose.model('Log', LogSchema)
 // type:
 // - user (login, logout)
-// - update
 // - system
-// - error
 
 // level:
 // - info

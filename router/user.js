@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const User = require("../db/user");
+const { addLog } = require("../db/log");
 router.get("/", async (req, res) => {
     let result = await User.getUserById(req.session.user)
     if (result)

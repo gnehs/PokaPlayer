@@ -89,7 +89,7 @@ app
             type: "user",
             event: "Login",
             user: req.session.user,
-            discription: `User {${req.session.user}} logined.`
+            discription: `User {${req.session.user}} login`
         })
     })
     .post("/clear-session/", async (req, res) => {
@@ -107,7 +107,7 @@ app
                 type: "system",
                 event: "Session cleared.",
                 user: req.session.user,
-                discription: `User {${req.session.user}} clearned session.`
+                discription: `User {${req.session.user}} clearned session`
             })
         } else {
             res.json({ success: false, e: 'Permission Denied Desu' })
@@ -120,7 +120,7 @@ app
             type: "user",
             event: "Logout",
             user: req.session.user,
-            discription: `User {${req.session.user}} logout.`
+            discription: `User {${req.session.user}} logout`
         })
         req.session.destroy(err => {
             if (err) {
