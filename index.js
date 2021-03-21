@@ -87,7 +87,7 @@ app
                 type: "user",
                 event: "Login",
                 user: req.session.user,
-                discription: `User {${req.session.user}} login`
+                discription: `User ${username} login`
             })
         } else {
             addLog({
