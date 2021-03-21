@@ -14,4 +14,5 @@ router.use(async (req, res, next) => {
 });
 router.use("/users", require("./users"));
 router.use("/config", require("./config"));
+router.use("/log", require("./log"));
 module.exports = router;

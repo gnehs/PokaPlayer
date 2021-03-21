@@ -15,6 +15,8 @@ const server = require("http").createServer(app)
 const io = require("socket.io").listen(server)
 const sharedsession = require("express-socket.io-session");
 const exec = require('child_process').exec;
+
+const { addLog } = require("./db/log");
 //
 // config init
 //
@@ -82,6 +84,13 @@ app
             req.session.user = u.user
         }
         res.json(u)
+        addLog({
+            level: "info",
+            type: "user",
+            event: "Login",
+            user: req.session.user,
+            discription: `User {${req.session.user}} logined.`
+        })
     })
     .post("/clear-session/", async (req, res) => {
         let { username, password } = req.body
@@ -93,12 +102,26 @@ app
                 return res.json({ success: false, e })
             }
             res.json({ success: true })
+            addLog({
+                level: "warn",
+                type: "system",
+                event: "Session cleared.",
+                user: req.session.user,
+                discription: `User {${req.session.user}} clearned session.`
+            })
         } else {
             res.json({ success: false, e: 'Permission Denied Desu' })
         }
     })
     .get("/logout/", (req, res) => {
         // 登出
+        addLog({
+            level: "info",
+            type: "user",
+            event: "Logout",
+            user: req.session.user,
+            discription: `User {${req.session.user}} logout.`
+        })
         req.session.destroy(err => {
             if (err) {
                 console.error(err);
@@ -174,6 +197,12 @@ io.on("connection", socket => {
             }
         })
         if (await User.isUserAdmin(socket.handshake.session.userdata)) {
+            addLog({
+                level: "info",
+                type: "system",
+                event: "Update",
+                discription: `PokaPlayer update.`
+            })
             socket.emit("init");
             git.reset(["--hard", "HEAD"])
                 .then(() => socket.emit("git", "fetch"))
@@ -228,6 +257,13 @@ async function pokaStart() {
             pokaLog.log('INFO', 'Debug Mode')
         pokaLog.log('INFO', 'http://localhost:3000/')
         pokaLog.log('TIME', moment().format("YYYY/MM/DD HH:mm:ss"))
+
+        addLog({
+            level: "info",
+            type: "system",
+            event: "Start",
+            discription: `PokaPlayer started. version:${package.version}`
+        })
     });
 }
 module.exports = {
