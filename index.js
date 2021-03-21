@@ -130,17 +130,6 @@ app
             res.redirect('/');
         });
     })
-    .get("/profile/", async (req, res) => {
-        let result = await User.getUserById(req.session.user)
-        if (result)
-            result.password = null
-        res.json(result)
-    })
-    .post("/changeName/", async (req, res) => res.json(await User.changeName(req.session.user, req.body.n)))
-    .get("/setting/", async (req, res) => res.json(await User.getSetting(req.session.user)))
-    .post("/setting/", async (req, res) => res.json(await User.changeSetting(req.session.user, req.body.n)))
-    .post("/changeUsername/", async (req, res) => res.json(await User.changeUsername(req.session.user, req.body.n)))
-    .post("/changePassword/", async (req, res) => res.json(await User.changePassword(req.session.user, req.body.oldpassword, req.body.password)))
 // 取得狀態
 app.get("/status", async (req, res) => {
     res.json({
@@ -149,8 +138,6 @@ app.get("/status", async (req, res) => {
         debug: config.PokaPlayer.debug && req.session.user ? (await git.raw(["rev-parse", "--short", "HEAD"])).slice(0, -1) : false
     })
 });
-// 更新
-app.get("/upgrade", (req, res) => res.send("socket"));
 
 app.use(async (req, res, next) => {
     if (req.session.user && await User.isUserAdmin(req.session.user)) next()
