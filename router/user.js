@@ -24,14 +24,17 @@ router.post("/name/", async (req, res) => {
     })
 })
 router.post("/username/", async (req, res) => {
-    res.json(await User.changeUsername(req.session.user, req.body.n))
-    addLog({
-        level: "info",
-        type: "user",
-        event: "Username changed",
-        user: req.session.user,
-        discription: `User {${req.session.user}} changed username to "${req.body.n}".`
-    })
+    let result = await User.changeUsername(req.session.user, req.body.n)
+    res.json(result)
+    if (result.success) {
+        addLog({
+            level: "info",
+            type: "user",
+            event: "Username changed",
+            user: req.session.user,
+            discription: `User {${req.session.user}} changed username to "${req.body.n}".`
+        })
+    }
 })
 router.post("/password/", async (req, res) => {
     res.json(await User.changePassword(req.session.user, req.body.oldpassword, req.body.password))
