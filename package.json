@@ -18,8 +18,7 @@
 		"url": "https://github.com/gnehs/PokaPlayer/issues"
 	},
 	"homepage": "https://github.com/gnehs/PokaPlayer#readme",
-	"dependencies": {
-		"base-64": "*",
+	"dependencies": { 
 		"bcryptjs": "*",
 		"body-parser": "^1.19.0",
 		"connect-mongo": "^3.2.0",

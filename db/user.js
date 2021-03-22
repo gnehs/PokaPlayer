@@ -126,7 +126,7 @@ async function changeSetting(_id, settings) {
         error: 'user not found'
     }
     let s = JSON.parse(user.settings)
-    for (i in settings)
+    for (let i in settings)
         s[i] = settings[i]
     user.settings = JSON.stringify(s)
     await user.save()

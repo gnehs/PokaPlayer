@@ -15,7 +15,6 @@ router.post("/setting/", async (req, res) => {
 })
 router.post("/name/", async (req, res) => {
     res.json(await User.changeName(req.session.user, req.body.n))
-
     addLog({
         level: "info",
         type: "user",
@@ -26,7 +25,6 @@ router.post("/name/", async (req, res) => {
 })
 router.post("/username/", async (req, res) => {
     res.json(await User.changeUsername(req.session.user, req.body.n))
-
     addLog({
         level: "info",
         type: "user",
@@ -37,7 +35,6 @@ router.post("/username/", async (req, res) => {
 })
 router.post("/password/", async (req, res) => {
     res.json(await User.changePassword(req.session.user, req.body.oldpassword, req.body.password))
-
     addLog({
         level: "info",
         type: "user",

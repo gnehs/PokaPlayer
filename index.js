@@ -1,6 +1,6 @@
 const fs = require("fs"); //檔案系統
 const jsonfile = require('jsonfile')
-const package = require("./package.json"); // package
+const packageData = require("./package.json"); // package
 const { session } = require("./db/db"); // DB
 const User = require("./db/user"); // userDB
 const pokaLog = require("./log"); // 可愛控制台輸出
@@ -87,14 +87,13 @@ app
                 type: "user",
                 event: "Login",
                 user: req.session.user,
-                discription: `User ${username} login`
+                discription: `User {${req.session.user}} login`
             })
         } else {
             addLog({
-                level: "info",
+                level: "warn",
                 type: "user",
                 event: "Login",
-                user: req.session.user,
                 discription: `User ${username} login failed`
             })
         }
@@ -130,7 +129,7 @@ app
                 type: "user",
                 event: "Logout",
                 user: req.session.user,
-                discription: `User {${req.session.user}} logout.`
+                discription: `User {${req.session.user}} logout`
             })
         }
         req.session.destroy(err => {
@@ -145,7 +144,7 @@ app
 app.get("/status", async (req, res) => {
     res.json({
         login: req.session.user,
-        version: req.session.user ? package.version : '0.0.0',
+        version: req.session.user ? packageData.version : '0.0.0',
         debug: config.PokaPlayer.debug && req.session.user ? (await git.raw(["rev-parse", "--short", "HEAD"])).slice(0, -1) : false
     })
 });
@@ -157,7 +156,7 @@ app.use(async (req, res, next) => {
 // get info
 app.get("/info", async (req, res) => {
     let _p = {}
-    _p.version = package.version
+    _p.version = packageData.version
     _p.debug = config.PokaPlayer.debug ? (await git.raw(["rev-parse", "--short", "HEAD"])).slice(0, -1) : false
     res.json(_p)
 });
@@ -250,7 +249,7 @@ async function pokaStart() {
 
     // 啟動囉
     server.listen(3000, () => {
-        pokaLog.log('PokaPlayer', package.version)
+        pokaLog.log('PokaPlayer', packageData.version)
         if (config.PokaPlayer.debug)
             pokaLog.log('INFO', 'Debug Mode')
         pokaLog.log('INFO', 'http://localhost:3000/')
@@ -260,7 +259,7 @@ async function pokaStart() {
             level: "info",
             type: "system",
             event: "Start",
-            discription: `PokaPlayer started. version:${package.version}`
+            discription: `PokaPlayer started. version: ${packageData.version}`
         })
     });
 }
