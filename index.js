@@ -87,14 +87,14 @@ app
                 type: "user",
                 event: "Login",
                 user: req.session.user,
-                discription: `User {${req.session.user}} login`
+                discription: `User {${req.session.user}} login from ${req.headers['x-forwarded-for'] || req.socket.remoteAddress}`
             })
         } else {
             addLog({
                 level: "warn",
                 type: "user",
                 event: "Login",
-                discription: `User ${username} login failed`
+                discription: `User ${username} login failed from ${req.headers['x-forwarded-for'] || req.socket.remoteAddress}`
             })
         }
         res.json(u)
