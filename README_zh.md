@@ -7,46 +7,49 @@
 [![GitHub repo size in bytes](https://img.shields.io/github/repo-size/gnehs/PokaPlayer.svg?style=flat-square)](https://github.com/gnehs/PokaPlayer/archive/master.zip)
 [![Docker Build Status](https://img.shields.io/docker/build/gnehs/pokaplayer.svg?style=flat-square)](https://hub.docker.com/r/gnehs/pokaplayer/)
 
-[繁體中文](https://github.com/gnehs/PokaPlayer/blob/master/README_zh.md)
+
+![](https://i.imgur.com/eOSlvuw.png)
 
 # PokaPlayer
-PokaPlayer is a player that can unify and play from multiple sources like DSM and Netease.
+PokaPlayer 是個能統合多個來源並進行播放的播放器。
 
-![image](https://user-images.githubusercontent.com/16719720/112631948-7da03780-8e72-11eb-877f-9aeb83318a66.png)
+![image](https://user-images.githubusercontent.com/16719720/112632087-9e688d00-8e72-11eb-8a81-b2d92185ded4.png)
 
-## Get Started
-- Fill out the configuration file according to config-simple.json 
-- Deploy [PokaPlayer](https://hub.docker.com/repository/docker/gnehs/pokaplayer) and [Mongo](https://hub.docker.com/_/mongo) containers (optional [neteasecloudmusicapi](https://hub.docker.com/repository/docker/gnehs/neteasecloudmusicapi-docker))
-- Done!
+## 開始使用
+- 按照 config-simple.json 填寫設定檔
+- 部署 [PokaPlayer](https://hub.docker.com/repository/docker/gnehs/pokaplayer) 與 [Mongo](https://hub.docker.com/_/mongo) 容器 (可選用 [neteasecloudmusicapi](https://hub.docker.com/repository/docker/gnehs/neteasecloudmusicapi-docker))
+- 完成！
  
-## Suggestions and Tips
--   Chrome is recommended
--   Chrome top right corner `...` Select "Add to Home" for a native APP-like experience.
--   **DSM strongly recommends opening an account that can only play music**
+## 建議和提示
 
-## Supported sources
+-   手機建議使用 Chrome
+-   Chrome 右上角 `...` 選「加到主畫面」可以有原生 APP 般的體驗
+-   **DSM 強烈建議開一個只能播音樂的帳號**
+
+## 支援的來源
 -   [DSM Audio Station](https://www.synology.com/zh-tw/dsm/feature/audio_station)
 -   [Netease Cloud Music](https://music.163.com/)
     -   該模組之歌詞轉換功能使用了 [繁化姬](https://zhconvert.org/) 的 API 服務
 
-## Features
+## 功能
 
-- Pinned Items
-- Search
-- Albums
-- Recently added albums
-- Folder
-- Performers
-- Composer
-- Random Play
-- Password Protection
-- Night Mode
-- Multi-User
+
+-   釘選項目
+-   搜尋
+-   專輯
+-   最近加入的專輯
+-   資料夾
+-   演出者
+-   作曲者
+-   隨機播放
+-   密碼保護
+-   夜間模式
+- 多使用者
 - MediaSession
 
 <img src="https://i.imgur.com/GOIe3va.png" width="500px">
 
-## Contributors
+## 貢獻者
 
 [@gnehs](https://github.com/gnehs)
 [@rexx0520](https://github.com/rexx0520)
