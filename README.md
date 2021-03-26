@@ -12,7 +12,7 @@
 # PokaPlayer
 PokaPlayer is a player that can unify and play from multiple sources like DSM and Netease.
 
-![image](https://user-images.githubusercontent.com/16719720/112631948-7da03780-8e72-11eb-877f-9aeb83318a66.png)
+![image](https://user-images.githubusercontent.com/16719720/112632910-ad9c0a80-8e73-11eb-9ca4-e04f2a3dc1de.png)
 
 ## Get Started
 - Fill out the configuration file according to config-simple.json 
@@ -27,7 +27,7 @@ PokaPlayer is a player that can unify and play from multiple sources like DSM an
 ## Supported sources
 -   [DSM Audio Station](https://www.synology.com/zh-tw/dsm/feature/audio_station)
 -   [Netease Cloud Music](https://music.163.com/)
-    -   該模組之歌詞轉換功能使用了 [繁化姬](https://zhconvert.org/) 的 API 服務
+    -   The module's lyric conversion function uses the API service of the [zhconvert](https://zhconvert.org/)
 
 ## Features
 

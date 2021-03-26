@@ -7,13 +7,10 @@
 [![GitHub repo size in bytes](https://img.shields.io/github/repo-size/gnehs/PokaPlayer.svg?style=flat-square)](https://github.com/gnehs/PokaPlayer/archive/master.zip)
 [![Docker Build Status](https://img.shields.io/docker/build/gnehs/pokaplayer.svg?style=flat-square)](https://hub.docker.com/r/gnehs/pokaplayer/)
 
-
-![](https://i.imgur.com/eOSlvuw.png)
-
 # PokaPlayer
 PokaPlayer 是個能統合多個來源並進行播放的播放器。
 
-![image](https://user-images.githubusercontent.com/16719720/112632087-9e688d00-8e72-11eb-8a81-b2d92185ded4.png)
+![image](https://user-images.githubusercontent.com/16719720/112633008-cc020600-8e73-11eb-8cb2-191301de9d04.png)
 
 ## 開始使用
 - 按照 config-simple.json 填寫設定檔
