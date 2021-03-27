@@ -21,14 +21,16 @@ mongoose.connect(config.mongodb, {
 /*       session         */
 /*=======================*/
 const _session = require('express-session');
-const sessionStore = new (require('connect-mongo')(_session))({
-    mongooseConnection: db
-})
+const MongoDBStore = require('connect-mongodb-session')(_session);
+const store = new MongoDBStore({
+    uri: config.mongodb,
+    collection: 'Sessions'
+});
 const session = _session({
     secret: config ? config.PokaPlayer.sessionSecret : "no config.json",
     resave: true,
     saveUninitialized: true,
-    store: sessionStore,
+    store,
     cookie: {
         httpOnly: true
     }
