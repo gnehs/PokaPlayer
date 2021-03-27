@@ -61,6 +61,16 @@ async function countRecords() {
 async function countUserRecords(userId) {
     return (await model.countDocuments({ userId }))
 }
+async function getReview(userId) {
+    let res = {}
+    res.mostPlayed = await model.aggregate([
+        { $match: { userId: userId.toString() } },
+        { $addFields: { playTimesCount: { $size: '$playedTimes' } } },
+        { $sort: { playTimesCount: -1 } },
+        { $limit: 10 }
+    ])
+    return res
+}
 async function fetchListenedRecently(userId) {
     let res = (await model.find({ userId }))
     let deepcopy = x => JSON.parse(JSON.stringify(x))
@@ -81,5 +91,6 @@ module.exports = {
     clearUserRecords,
     countRecords,
     countUserRecords,
-    fetchListenedRecently
+    fetchListenedRecently,
+    getReview,
 }
