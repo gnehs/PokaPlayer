@@ -1,8 +1,12 @@
+const pokaLog = require("./log"); // 可愛控制台輸出
 // install packages
 const child_process = require('child_process');
-child_process.execSync('npm i');
+try {
+    child_process.execSync('npm install --production', { stdio: [0, 1, 2] });
+} catch (e) {
+    pokaLog.logErr('ERROR', e)
+}
 // start PokaPlayer
-const pokaLog = require("./log"); // 可愛控制台輸出
 const jsonfile = require('jsonfile')
 
 let config

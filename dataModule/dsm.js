@@ -176,7 +176,7 @@ async function login() {
     },
     ]);
     if (result.success) {
-        pokaLog.logDM('DSM', `${config.DSM.account} 登入成功！`)
+        pokaLog.logDM('DSM', `${config.DSM.account} 登入成功！(DSM 7.0)`)
         return true;
     } else {
         pokaLog.logDM('DSM', `正在嘗試以舊版 API 登入...`)
