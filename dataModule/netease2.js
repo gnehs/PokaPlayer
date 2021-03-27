@@ -528,12 +528,12 @@ async function resolvePlaylistStack(playlistStack) {
             image: x[1].image || imageUrl(x[0].playlist.coverImgUrl || x[0].playlist.picUrl),
             from: "playlistStack"
         } : {
-                name: x.playlist.name,
-                source: "Netease2",
-                id: x.playlist.id,
-                image: imageUrl(x.playlist.coverImgUrl || x.playlist.picUrl),
-                from: "playlistStack"
-            }
+            name: x.playlist.name,
+            source: "Netease2",
+            id: x.playlist.id,
+            image: imageUrl(x.playlist.coverImgUrl || x.playlist.picUrl),
+            from: "playlistStack"
+        }
     );
 }
 
@@ -551,17 +551,17 @@ async function resolvedailyRecommendStack(dailyRecommendStack) {
                 source: "Netease2",
                 from: "dailyRecommendStack"
             } : {
-                    name: x.name,
-                    id: x.id,
-                    image: imageUrl(x.coverImgUrl || x.picUrl),
-                    source: "Netease2",
-                    from: "dailyRecommendStack"
-                }
+                name: x.name,
+                id: x.id,
+                image: imageUrl(x.coverImgUrl || x.picUrl),
+                source: "Netease2",
+                from: "dailyRecommendStack"
+            }
         )
     );
 }
 
-async function getPlaylists(playlists) {
+async function getPlaylists(userId) {
     // cat 可以從 getCatList() 抓
     async function resolveUserList(userList) {
         if (userList.length === 0) return userList;
@@ -579,7 +579,7 @@ async function getPlaylists(playlists) {
         }));
     }
 
-    async function processPlaylist(playlists) {
+    async function processPlaylist(playlists = []) {
         let r = [];
         let playlistStack = [];
         let userList = [];
@@ -642,9 +642,8 @@ async function getPlaylists(playlists) {
         return [r, playlistStack, userList];
     }
 
-    let [r, playlistStack, userList] = await processPlaylist(playlists);
-    let catList = await getCatList();
-
+    let [r, playlistStack, userList] = await processPlaylist();
+    let catList = await getCatList()
     if (config.topPlaylist.enabled) {
         if (!config.topPlaylist.category in catList) {
             pokaLog.logDMErr('Netease2', `topPlaylist 的分類出錯，已預設為 ACG`)

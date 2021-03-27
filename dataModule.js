@@ -819,7 +819,7 @@ router.use((req, res, next) => {
 });
 
 function showError(moduleName = false, error) {
-    pokaLog.logDMErr(moduleName || '?', 'An error occurred, please check the log.')
+    pokaLog.logDMErr(moduleName || '?', error)
     addLog({
         level: "error",
         type: "system",
@@ -829,7 +829,7 @@ function showError(moduleName = false, error) {
 }
 // catch err
 process.on('uncaughtException', err => {
-    pokaLog.logErr('ERROR', 'An error occurred, please check the log.')
+    pokaLog.logErr('ERROR', err)
     addLog({
         level: "error",
         type: "system",
