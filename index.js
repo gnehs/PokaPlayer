@@ -63,7 +63,7 @@ git.raw(["symbolic-ref", "--short", "HEAD"]).then(branch => {
 //
 app.use(express.json());
 app.use(express.static("public"))
-app.use(helmet())
+app.use(helmet({ contentSecurityPolicy: false, }))
 app.use(session)
 io.use(sharedsession(session, {
     autoSave: true
