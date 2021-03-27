@@ -15,6 +15,9 @@ PokaPlayer 是個能統合多個來源並進行播放的播放器。
 ## 開始使用
 - 按照 config-simple.json 填寫設定檔
 - 部署 [PokaPlayer](https://hub.docker.com/repository/docker/gnehs/pokaplayer) 與 [Mongo](https://hub.docker.com/_/mongo) 容器 (可選用 [neteasecloudmusicapi](https://hub.docker.com/repository/docker/gnehs/neteasecloudmusicapi-docker))
+    - 將設定檔掛載到 `/app/config.json`
+    - 連接 mongo 容器
+    - export port 3000
 - 完成！
  
 ## 建議和提示
@@ -24,13 +27,11 @@ PokaPlayer 是個能統合多個來源並進行播放的播放器。
 -   **DSM 強烈建議開一個只能播音樂的帳號**
 
 ## 支援的來源
--   [DSM Audio Station](https://www.synology.com/zh-tw/dsm/feature/audio_station)
+-   [DSM Audio Station](https://www.synology.com/dsm/feature/audio_station)
 -   [Netease Cloud Music](https://music.163.com/)
     -   該模組之歌詞轉換功能使用了 [繁化姬](https://zhconvert.org/) 的 API 服務
 
 ## 功能
-
-
 -   釘選項目
 -   搜尋
 -   專輯
@@ -41,8 +42,8 @@ PokaPlayer 是個能統合多個來源並進行播放的播放器。
 -   隨機播放
 -   密碼保護
 -   夜間模式
-- 多使用者
-- MediaSession
+-   多使用者
+-   MediaSession
 
 <img src="https://i.imgur.com/GOIe3va.png" width="500px">
 

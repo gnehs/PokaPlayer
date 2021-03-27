@@ -17,6 +17,9 @@ PokaPlayer is a player that can unify and play from multiple sources like DSM an
 ## Get Started
 - Fill out the configuration file according to config-simple.json 
 - Deploy [PokaPlayer](https://hub.docker.com/repository/docker/gnehs/pokaplayer) and [Mongo](https://hub.docker.com/_/mongo) containers (optional [neteasecloudmusicapi](https://hub.docker.com/repository/docker/gnehs/neteasecloudmusicapi-docker))
+    - Mount the configuration file to `/app/config.json`
+    - Connect the mongo container
+    - export port 3000
 - Done!
  
 ## Suggestions and Tips
@@ -25,12 +28,11 @@ PokaPlayer is a player that can unify and play from multiple sources like DSM an
 -   **DSM strongly recommends opening an account that can only play music**
 
 ## Supported sources
--   [DSM Audio Station](https://www.synology.com/zh-tw/dsm/feature/audio_station)
+-   [DSM Audio Station](https://www.synology.com/dsm/feature/audio_station)
 -   [Netease Cloud Music](https://music.163.com/)
     -   The module's lyric conversion function uses the API service of the [zhconvert](https://zhconvert.org/)
 
 ## Features
-
 - Pinned Items
 - Search
 - Albums
