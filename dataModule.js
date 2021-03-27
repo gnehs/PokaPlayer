@@ -1,12 +1,12 @@
 const fs = require("fs");
 const path = require("path");
 const config = require("./config.json"); // 設定檔
-const pokaLog = require("./log") // 可愛控制台輸出
-const playlist = fs.existsSync("./playlist.json") ? require("./playlist.json") : []; // 歌單
-const router = require("express").Router();
-const bodyParser = require("body-parser");
+const pokaLog = require("./log") // 可愛控制台輸出 
+const express = require("express")
+const router = express.Router();
 const db = require("./db/db.js");
 const lyricdb = require("./db/lyric.js");
+const { addLog } = require("./db/log");
 if (config.PokaPlayer.debug) {
     router.use(require('cors')({
         credentials: true,
@@ -14,16 +14,8 @@ if (config.PokaPlayer.debug) {
     }))
 }
 
-function verifyPassword(password) {
-
-}
-
 router.use(db.session);
-router.use(bodyParser.json());
-router.use(bodyParser.urlencoded({
-    extended: true
-}));
-
+router.use(express.json());
 let moduleList = {};
 fs.readdir(__dirname + "/dataModule", (err, files) => {
     if (err) return console.error(err);
@@ -200,7 +192,6 @@ router.get("/search/", async (req, res) => {
         folders: [],
         songs: [],
         albums: [],
-        songs: [],
         artists: [],
         composers: [],
         playlists: []
@@ -212,24 +203,13 @@ router.get("/search/", async (req, res) => {
             try {
                 let result = (await y.search(req.query.keyword)) || null;
                 if (result) {
-                    if (result.folders)
-                        for (i = 0; i < result.folders.length; i++)
-                            resData.folders.push(result.folders[i]);
-                    if (result.songs)
-                        for (i = 0; i < result.songs.length; i++)
-                            resData.songs.push(result.songs[i]);
-                    if (result.albums)
-                        for (i = 0; i < result.albums.length; i++)
-                            resData.albums.push(result.albums[i]);
-                    if (result.artists)
-                        for (i = 0; i < result.artists.length; i++)
-                            resData.artists.push(result.artists[i]);
-                    if (result.composers)
-                        for (i = 0; i < result.composers.length; i++)
-                            resData.composers.push(result.composers[i]);
-                    if (result.playlists)
-                        for (i = 0; i < result.playlists.length; i++)
-                            resData.playlists.push(result.playlists[i]);
+                    for (let key of Object.keys(result)) {
+                        if (result[key].length) {
+                            for (let item of result[key]) {
+                                resData[key].push(item);
+                            }
+                        }
+                    }
                 }
             } catch (e) {
                 showError(x.name, e)
@@ -838,16 +818,23 @@ router.use((req, res, next) => {
     res.status(404).send("PokaPlayer API - 404");
 });
 
-let logFile = fs.createWriteStream('poka.log', {
-    flags: 'a'
-});
-
 function showError(moduleName = false, error) {
-    pokaLog.logDMErr(moduleName || '?', '發生了錯誤，請查看 poka.log 檔案')
-    logFile.write(`[${new Date()}][${error}]${error}\n`);
+    pokaLog.logDMErr(moduleName || '?', 'An error occurred, please check the log.')
+    addLog({
+        level: "error",
+        type: "system",
+        event: `${moduleName} Error`,
+        discription: error
+    })
 }
 // catch err
-process.on('uncaughtException', function (err) {
-    console.error(err.stack);
+process.on('uncaughtException', err => {
+    pokaLog.logErr('error', 'An error occurred, please check the log.')
+    addLog({
+        level: "error",
+        type: "system",
+        event: `uncaughtException`,
+        discription: err.stack
+    })
 });
 module.exports = router;

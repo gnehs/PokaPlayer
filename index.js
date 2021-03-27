@@ -8,13 +8,11 @@ const path = require('path');
 const git = require("simple-git/promise")(__dirname);
 //express
 const express = require("express");
-const helmet = require("helmet"); // 防範您的應用程式出現已知的 Web 漏洞
-const bodyParser = require("body-parser"); // 讀入 post 請求
-const app = express(); // Node.js Web 架構
+const helmet = require("helmet");
+const app = express();
 const server = require("http").createServer(app)
 const io = require("socket.io")(server)
 const sharedsession = require("express-socket.io-session");
-const exec = require('child_process').exec;
 
 const { addLog } = require("./db/log");
 //
@@ -63,7 +61,7 @@ git.raw(["symbolic-ref", "--short", "HEAD"]).then(branch => {
 });
 
 //
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(express.static("public"))
 app.use(helmet())
 app.use(session)
