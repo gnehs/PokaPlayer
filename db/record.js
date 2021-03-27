@@ -63,12 +63,61 @@ async function countUserRecords(userId) {
 }
 async function getReview(userId) {
     let res = {}
-    res.mostPlayed = await model.aggregate([
+    res.songs = await model.aggregate([
         { $match: { userId: userId.toString() } },
-        { $addFields: { playTimesCount: { $size: '$playedTimes' } } },
-        { $sort: { playTimesCount: -1 } },
-        { $limit: 10 }
+        { $addFields: { count: { $size: '$playedTimes' } } },
+        { $sort: { count: -1 } },
+        { $limit: 16 }
     ])
+    res.songs = res.songs.map(x => {
+        if (!x.name) x.name = x.title // fixed name 
+        x.url = `/pokaapi/song/?moduleName=${x.source}&songId=${x.songId}`
+        x.id = x.songId
+        return x
+    })
+    res.artists = await model.aggregate([
+        { $match: { userId: userId.toString() } },
+        { $addFields: { count: { $size: '$playedTimes' } } },
+        {
+            $group: {
+                _id: "$artistId",
+                count: { $sum: "$count" },
+                name: { "$first": "$artist" },
+                id: { "$first": "$artistId" },
+                cover: { "$first": "$cover" },
+                source: { "$first": "$source" }
+            }
+        },
+        { $sort: { count: -1 } },
+        { $limit: 12 }
+    ])
+    res.albums = await model.aggregate([
+        { $match: { userId: userId.toString() } },
+        { $addFields: { count: { $size: '$playedTimes' } } },
+        {
+            $group: {
+                _id: "$albumId",
+                count: { $sum: "$count" },
+                name: { "$first": "$album" },
+                id: { "$first": "$albumId" },
+                artist: { "$first": "$artist" },
+                cover: { "$first": "$cover" },
+                source: { "$first": "$source" }
+            }
+        },
+        { $sort: { count: -1 } },
+        { $limit: 12 }
+    ])
+    res.days = await model.aggregate([
+        { $match: { userId: userId.toString() } },
+        { $addFields: { count: { $size: '$playedTimes' } } },
+        { $unwind: "$playedTimes" },
+        { $addFields: { date: { $dateToString: { format: "%Y-%m-%d", date: "$playedTimes" } } } },
+        { $group: { _id: "$date", count: { $sum: 1 }, } },
+        { $sort: { count: -1 } },
+        { $limit: 12 }
+    ])
+    res.total = await model.countDocuments({ userId })
     return res
 }
 async function fetchListenedRecently(userId) {
