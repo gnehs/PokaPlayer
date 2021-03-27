@@ -12,7 +12,7 @@ const helmet = require("helmet"); // 防範您的應用程式出現已知的 Web
 const bodyParser = require("body-parser"); // 讀入 post 請求
 const app = express(); // Node.js Web 架構
 const server = require("http").createServer(app)
-const io = require("socket.io").listen(server)
+const io = require("socket.io")(server)
 const sharedsession = require("express-socket.io-session");
 const exec = require('child_process').exec;
 
