@@ -1,5 +1,10 @@
+// install packages
+const child_process = require('child_process');
+child_process.execSync('npm i');
+// start PokaPlayer
 const pokaLog = require("./log"); // 可愛控制台輸出
 const jsonfile = require('jsonfile')
+
 let config
 try {
     config = jsonfile.readFileSync("./config.json")
