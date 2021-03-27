@@ -747,7 +747,6 @@ async function getPlaylistSongs(id, br = 999000) {
     if (id == "dailyRecommendSongs") {
         let result = await rp(options(`${server}recommend/songs`));
         if (result.code == 200) {
-            console.log(result.data.dailySongs[0].ar)
             let r = result.data.dailySongs.map((x, index) => ({
                 name: x.name,
                 artist: x.ar.map(x => x.name).join(", "),

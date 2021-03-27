@@ -824,7 +824,7 @@ function showError(moduleName = false, error) {
         level: "error",
         type: "system",
         event: `${moduleName} Error`,
-        description: error
+        description: error.stack
     })
 }
 // catch err
