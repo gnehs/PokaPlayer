@@ -1,13 +1,11 @@
 const jar = require("request").jar();
 const rp = require("request-promise")
-const rpxc = require("request-promise") // request without cookie
 const request = require("request").defaults({
     jar
 });
 const fs = require("fs-extra");
 const pokaLog = require("../log"); // 可愛控制台輸出
-const schedule = require("node-schedule"); // 很會計時ㄉ朋友
-const franc = require("franc-min");
+const schedule = require("node-schedule"); // 很會計時ㄉ朋友 
 const config = require(__dirname + "/../config.json").Netease2; // 設定
 const server = config.server || "http://localhost:4000/";
 const pin = __dirname + "/netease2Pin.json";
@@ -749,13 +747,14 @@ async function getPlaylistSongs(id, br = 999000) {
     if (id == "dailyRecommendSongs") {
         let result = await rp(options(`${server}recommend/songs`));
         if (result.code == 200) {
-            let r = result.recommend.map((x, index) => ({
+            console.log(result.data.dailySongs[0].ar)
+            let r = result.data.dailySongs.map((x, index) => ({
                 name: x.name,
-                artist: x.artists.map(x => x.name).join(", "),
-                artistId: x.artists[0].id,
-                album: x.album.name,
-                albumId: x.album.id,
-                cover: x.album.picUrl.replace("http", "https"),
+                artist: x.ar.map(x => x.name).join(", "),
+                artistId: x.ar[0].id,
+                album: x.al.name,
+                albumId: x.al.id,
+                cover: x.al.picUrl.replace("http", "https"),
                 url: `/pokaapi/song/?moduleName=Netease2&songId=${x.id}`,
                 codec: "mp3",
                 source: "Netease2",
