@@ -824,17 +824,17 @@ function showError(moduleName = false, error) {
         level: "error",
         type: "system",
         event: `${moduleName} Error`,
-        discription: error
+        description: error
     })
 }
 // catch err
 process.on('uncaughtException', err => {
-    pokaLog.logErr('error', 'An error occurred, please check the log.')
+    pokaLog.logErr('ERROR', 'An error occurred, please check the log.')
     addLog({
         level: "error",
         type: "system",
         event: `uncaughtException`,
-        discription: err.stack
+        description: err.stack
     })
 });
 module.exports = router;

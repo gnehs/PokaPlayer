@@ -85,14 +85,14 @@ app
                 type: "user",
                 event: "Login",
                 user: req.session.user,
-                discription: `User {${req.session.user}} login from ${req.headers['x-forwarded-for'] || req.socket.remoteAddress}`
+                description: `User {${req.session.user}} login from ${req.headers['x-forwarded-for'] || req.socket.remoteAddress}`
             })
         } else {
             addLog({
                 level: "warn",
                 type: "user",
                 event: "Login",
-                discription: `User ${username} login failed from ${req.headers['x-forwarded-for'] || req.socket.remoteAddress}`
+                description: `User ${username} login failed from ${req.headers['x-forwarded-for'] || req.socket.remoteAddress}`
             })
         }
         res.json(u)
@@ -113,7 +113,7 @@ app
                 type: "system",
                 event: "Session cleared.",
                 user: req.session.user,
-                discription: `User {${req.session.user}} clearned session`
+                description: `User {${req.session.user}} clearned session`
             })
         } else {
             res.json({ success: false, e: 'Permission Denied Desu' })
@@ -127,7 +127,7 @@ app
                 type: "user",
                 event: "Logout",
                 user: req.session.user,
-                discription: `User {${req.session.user}} logout`
+                description: `User {${req.session.user}} logout`
             })
         }
         req.session.destroy(err => {
@@ -196,7 +196,7 @@ io.on("connection", socket => {
                 level: "info",
                 type: "system",
                 event: "Update",
-                discription: `PokaPlayer update.`
+                description: `PokaPlayer update.`
             })
             socket.emit("init");
             git.reset(["--hard", "HEAD"])
@@ -257,7 +257,7 @@ async function pokaStart() {
             level: "info",
             type: "system",
             event: "Start",
-            discription: `PokaPlayer started. version: ${packageData.version}`
+            description: `PokaPlayer started. version: ${packageData.version}`
         })
     });
 }

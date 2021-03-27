@@ -4,7 +4,7 @@ const LogSchema = new mongoose.Schema({
     type: String,
     event: String,
     user: String,
-    discription: String,
+    description: String,
     time: {
         type: Date,
         default: Date.now
@@ -19,9 +19,9 @@ const model = mongoose.model('Log', LogSchema)
 // - info
 // - warn
 // - error 
-async function addLog({ level, type, event, user = "System", discription }) {
+async function addLog({ level, type, event, user = "System", description }) {
     await (new model({
-        level, type, event, user, discription
+        level, type, event, user, description
     })).save(err => err ? console.error(err) : null)
 }
 async function getLogs(limit = 100, page = 0) {

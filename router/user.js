@@ -20,7 +20,7 @@ router.post("/name/", async (req, res) => {
         type: "user",
         event: "Name changed",
         user: req.session.user,
-        discription: `User {${req.session.user}} changed name to "${req.body.n}".`
+        description: `User {${req.session.user}} changed name to "${req.body.n}".`
     })
 })
 router.post("/username/", async (req, res) => {
@@ -32,7 +32,7 @@ router.post("/username/", async (req, res) => {
             type: "user",
             event: "Username changed",
             user: req.session.user,
-            discription: `User {${req.session.user}} changed username to "${req.body.n}".`
+            description: `User {${req.session.user}} changed username to "${req.body.n}".`
         })
     }
 })
@@ -43,7 +43,7 @@ router.post("/password/", async (req, res) => {
         type: "user",
         event: "Password changed",
         user: req.session.user,
-        discription: `User {${req.session.user}} password changed.`
+        description: `User {${req.session.user}} password changed.`
     })
 })
 module.exports = router;

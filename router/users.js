@@ -18,7 +18,7 @@ router.post("/change-password", async (req, res) => {
         type: "user",
         event: "Password changed",
         user: req.session.user,
-        discription: `Admin changed {${req.body._id}}'s password.`
+        description: `Admin changed {${req.body._id}}'s password.`
     })
 })
 router.post("/delete", async (req, res) => {
@@ -29,7 +29,7 @@ router.post("/delete", async (req, res) => {
             type: "user",
             event: "User deleted",
             user: req.session.user,
-            discription: `Admin deleted {${req.body._id}}.`
+            description: `Admin deleted {${req.body._id}}.`
         })
     } else {
         res.status(406).send('You CAN NOT delete yourself')
