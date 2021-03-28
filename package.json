@@ -19,6 +19,7 @@
 	"homepage": "https://github.com/gnehs/PokaPlayer#readme",
 	"dependencies": {
 		"bcryptjs": "*",
+		"compression": "^1.7.4",
 		"connect-mongo": "^4.4.1",
 		"connect-mongodb-session": "*",
 		"cors": "*",

@@ -9,6 +9,7 @@ const git = require("simple-git/promise")(__dirname);
 //express
 const express = require("express");
 const helmet = require("helmet");
+const compression = require('compression')
 const app = express();
 const server = require("http").createServer(app)
 const io = require("socket.io")(server)
@@ -64,6 +65,7 @@ git.raw(["symbolic-ref", "--short", "HEAD"]).then(branch => {
 app.use(express.json());
 app.use(express.static("public"))
 app.use(helmet({ contentSecurityPolicy: false, }))
+app.use(compression())
 app.use(session)
 io.use(sharedsession(session, {
     autoSave: true
