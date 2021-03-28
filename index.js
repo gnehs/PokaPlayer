@@ -71,10 +71,6 @@ io.use(sharedsession(session, {
     autoSave: true
 }))
 
-// 時間處理
-const moment = require("moment-timezone");
-moment.locale("zh-tw");
-moment.tz.setDefault("Asia/Taipei");
 // 登入
 app
     .post("/login/", async (req, res) => {
@@ -253,7 +249,7 @@ async function pokaStart() {
         if (config.PokaPlayer.debug)
             pokaLog.log('INFO', 'Debug Mode')
         pokaLog.log('INFO', 'http://localhost:3000/')
-        pokaLog.log('TIME', moment().format("YYYY/MM/DD HH:mm:ss"))
+        pokaLog.log('TIME', new Date().toLocaleString())
 
         addLog({
             level: "info",
