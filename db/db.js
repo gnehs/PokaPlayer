@@ -1,5 +1,3 @@
-const fs = require("fs"); //檔案系統
-const pokaLog = require("../log"); // 可愛控制台輸出
 /*=======================*/
 /*       mongoose        */
 /*=======================*/
@@ -12,6 +10,7 @@ try {
 }
 const db = mongoose.connection;
 mongoose.Promise = global.Promise;
+mongoose.set('useCreateIndex', true)
 mongoose.connect(config.mongodb, {
     useNewUrlParser: true,
     useUnifiedTopology: true
