@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "0e8972a9def0be71e8ef",
-    "url": "/css/app.efc07e13.css"
+    "revision": "59c8f28ec47d2e0a6694",
+    "url": "/css/app.eff0316d.css"
   },
   {
-    "revision": "0e8972a9def0be71e8ef",
-    "url": "/js/app.4a584b70.js"
+    "revision": "59c8f28ec47d2e0a6694",
+    "url": "/js/app.99a7f1d5.js"
   },
   {
     "revision": "f4e074fc0cb6a8f57f23",
@@ -48,7 +48,7 @@ self.__precacheManifest = [
     "url": "/js/setting-admin.cc600e36.js"
   },
   {
-    "revision": "cfa56b7f5c8834d8d5853d4727b13cb2",
+    "revision": "8d80efeb06c1acafcd26c52e8bee26ff",
     "url": "/index.html"
   },
   {
@@ -56,12 +56,12 @@ self.__precacheManifest = [
     "url": "/img/dailyRecommendPlaylists.png"
   },
   {
-    "revision": "0dbaf805763d1e22f9c0a262a8e20903",
-    "url": "/img/dailyRecommendSongs.png"
-  },
-  {
     "revision": "2b6acf0d036c6749ead7731790621868",
     "url": "/img/hqPlaylist.png"
+  },
+  {
+    "revision": "0dbaf805763d1e22f9c0a262a8e20903",
+    "url": "/img/dailyRecommendSongs.png"
   },
   {
     "revision": "f6aebc3ee57feb127891f68d0b3f44f4",
@@ -76,10 +76,6 @@ self.__precacheManifest = [
     "url": "/img/pwa/home.png"
   },
   {
-    "revision": "31f437d1172743a0330439681d0cf2b2",
-    "url": "/img/pwa/pwa_shortcuts.psd"
-  },
-  {
     "revision": "06387036315d4a6830c5462562b15133",
     "url": "/img/pwa/playlist.png"
   },
@@ -88,12 +84,12 @@ self.__precacheManifest = [
     "url": "/img/pwa/shuffle.png"
   },
   {
-    "revision": "f2d3ff48a22d9bb54508e0f520b6441d",
-    "url": "/img/splashscreens/iphone5_splash.png"
-  },
-  {
     "revision": "4f581342e0dc57b34a176ebd1e491af0",
     "url": "/img/splashscreens/ipad_splash.png"
+  },
+  {
+    "revision": "31f437d1172743a0330439681d0cf2b2",
+    "url": "/img/pwa/pwa_shortcuts.psd"
   },
   {
     "revision": "d330a0b6e9c5bb917eee03b016f3f9e3",
@@ -104,18 +100,6 @@ self.__precacheManifest = [
     "url": "/img/playlist.psd"
   },
   {
-    "revision": "f8b2c6d67c3707610f3c2ad4285af48a",
-    "url": "/img/splashscreens/iphoneplus_splash.png"
-  },
-  {
-    "revision": "b5011363a9bbaf722e223d41fc23f865",
-    "url": "/img/splashscreens/iphonexr_splash.png"
-  },
-  {
-    "revision": "38e64c59bdd2bb89675eb334324cc8b9",
-    "url": "/img/splashscreens/ipadpro3_splash.png"
-  },
-  {
     "revision": "35b6cf131562d21081a90a784f879b19",
     "url": "/img/splashscreens/ipadpro2_splash.png"
   },
@@ -124,16 +108,36 @@ self.__precacheManifest = [
     "url": "/img/splashscreens/iphone6_splash.png"
   },
   {
-    "revision": "f805f14e7d9ad7ee02c48cfeab58abb4",
-    "url": "/img/update.svg"
+    "revision": "38e64c59bdd2bb89675eb334324cc8b9",
+    "url": "/img/splashscreens/ipadpro3_splash.png"
+  },
+  {
+    "revision": "f8b2c6d67c3707610f3c2ad4285af48a",
+    "url": "/img/splashscreens/iphoneplus_splash.png"
   },
   {
     "revision": "ddface7d19acc6fa50ddea328d4a8037",
     "url": "/img/splashscreens/iphonex_splash.png"
   },
   {
+    "revision": "f2d3ff48a22d9bb54508e0f520b6441d",
+    "url": "/img/splashscreens/iphone5_splash.png"
+  },
+  {
+    "revision": "b5011363a9bbaf722e223d41fc23f865",
+    "url": "/img/splashscreens/iphonexr_splash.png"
+  },
+  {
+    "revision": "f805f14e7d9ad7ee02c48cfeab58abb4",
+    "url": "/img/update.svg"
+  },
+  {
     "revision": "d50b11f2b0b92b6fa9bbf1700ea567bf",
     "url": "/img/topPlaylist.png"
+  },
+  {
+    "revision": "f10254a806d67417a6d0fb0062bb2b94",
+    "url": "/README.md"
   },
   {
     "revision": "872c2998f0ea8d5f27cfd2916af1ffd4",
@@ -142,9 +146,5 @@ self.__precacheManifest = [
   {
     "revision": "b6216d61c03e6ce0c9aea6ca7808f7ca",
     "url": "/robots.txt"
-  },
-  {
-    "revision": "f10254a806d67417a6d0fb0062bb2b94",
-    "url": "/README.md"
   }
 ];
