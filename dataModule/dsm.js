@@ -150,7 +150,7 @@ function parseLyrics(lyrics) {
     return r;
 }
 //自動重新登入
-schedule.scheduleJob("* * */12 * * *", function () {
+schedule.scheduleJob("0 0 * * *", function () {
     pokaLog.logDM('DSM', '正在重新登入...')
     login();
 });
