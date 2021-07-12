@@ -2,7 +2,8 @@
   "scope": "/",
   "name": "PokaPlayer",
   "short_name": "PokaPlayer",
-  "icons": [{
+  "icons": [
+    {
       "src": "./img/icons/android-chrome-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
@@ -25,41 +26,50 @@
       "type": "image/png"
     }
   ],
-  "shortcuts": [{
+  "shortcuts": [
+    {
       "name": "Home",
       "url": "/home?utm_source=homescreen",
-      "icons": [{
-        "src": "/img/pwa/home.png",
-        "type": "image/png",
-        "sizes": "192x192"
-      }]
+      "icons": [
+        {
+          "src": "/img/pwa/home.png",
+          "type": "image/png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "Shuffle",
       "url": "/shuffle?utm_source=homescreen",
-      "icons": [{
-        "src": "/img/pwa/shuffle.png",
-        "type": "image/png",
-        "sizes": "192x192"
-      }]
+      "icons": [
+        {
+          "src": "/img/pwa/shuffle.png",
+          "type": "image/png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "Albums",
       "url": "/album?utm_source=homescreen",
-      "icons": [{
-        "src": "/img/pwa/album.png",
-        "type": "image/png",
-        "sizes": "192x192"
-      }]
+      "icons": [
+        {
+          "src": "/img/pwa/album.png",
+          "type": "image/png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "Playlists",
       "url": "/playlist?utm_source=homescreen",
-      "icons": [{
-        "src": "/img/pwa/playlist.png",
-        "type": "image/png",
-        "sizes": "192x192"
-      }]
+      "icons": [
+        {
+          "src": "/img/pwa/playlist.png",
+          "type": "image/png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ],
   "start_url": "/",

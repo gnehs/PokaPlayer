@@ -1,54 +1,54 @@
 self.__precacheManifest = [
   {
-    "revision": "d20e4cb4136270eca7c1",
-    "url": "/css/app.3bce8904.css"
+    "revision": "50248399f2a641adaee2",
+    "url": "/css/app.59f922c6.css"
   },
   {
-    "revision": "d20e4cb4136270eca7c1",
-    "url": "/js/app.7c65ec12.js"
+    "revision": "50248399f2a641adaee2",
+    "url": "/js/app.384798c9.js"
   },
   {
-    "revision": "fd290525144fa27bd267",
-    "url": "/css/chunk-3b6cf722.b67733e0.css"
+    "revision": "e4b554017d33fe5d50fb",
+    "url": "/css/chunk-b8a804c8.876144e2.css"
   },
   {
-    "revision": "fd290525144fa27bd267",
-    "url": "/js/chunk-3b6cf722.a1390348.js"
+    "revision": "e4b554017d33fe5d50fb",
+    "url": "/js/chunk-b8a804c8.3b2521a0.js"
   },
   {
-    "revision": "724c4330090ef04a2534",
-    "url": "/css/chunk-53c1cabb.b17edda6.css"
+    "revision": "8767d22edfe835a906e6",
+    "url": "/css/chunk-dd345c24.150e9938.css"
   },
   {
-    "revision": "724c4330090ef04a2534",
-    "url": "/js/chunk-53c1cabb.9171b2dd.js"
+    "revision": "8767d22edfe835a906e6",
+    "url": "/js/chunk-dd345c24.f49c3a6d.js"
   },
   {
-    "revision": "f1e413242a60e9a135a8",
+    "revision": "a8d832db60575c315cd5",
     "url": "/css/chunk-vendors.df5281bf.css"
   },
   {
-    "revision": "f1e413242a60e9a135a8",
-    "url": "/js/chunk-vendors.3e07db4d.js"
+    "revision": "a8d832db60575c315cd5",
+    "url": "/js/chunk-vendors.161a49da.js"
   },
   {
-    "revision": "1dd11ba045947f696d8f",
+    "revision": "5747e87a61eb56ab4177",
     "url": "/css/setting.aae77af4.css"
   },
   {
-    "revision": "1dd11ba045947f696d8f",
-    "url": "/js/setting.087acad9.js"
+    "revision": "5747e87a61eb56ab4177",
+    "url": "/js/setting.b77a34ac.js"
   },
   {
-    "revision": "71f992ac21887dda71ed",
+    "revision": "5ef6c664796642b54533",
     "url": "/css/setting-admin.28c8a9f3.css"
   },
   {
-    "revision": "71f992ac21887dda71ed",
-    "url": "/js/setting-admin.3046531f.js"
+    "revision": "5ef6c664796642b54533",
+    "url": "/js/setting-admin.4366e656.js"
   },
   {
-    "revision": "f1b7478c4333e9fcf0405b75e44b26da",
+    "revision": "cdb186e3fad872dbf3a08295380adb40",
     "url": "/index.html"
   },
   {
@@ -76,6 +76,10 @@ self.__precacheManifest = [
     "url": "/img/pwa/home.png"
   },
   {
+    "revision": "aab8fae5732e190d7e0b2b52bb77e7fc",
+    "url": "/img/playlist.psd"
+  },
+  {
     "revision": "06387036315d4a6830c5462562b15133",
     "url": "/img/pwa/playlist.png"
   },
@@ -88,20 +92,24 @@ self.__precacheManifest = [
     "url": "/img/pwa/pwa_shortcuts.psd"
   },
   {
-    "revision": "aab8fae5732e190d7e0b2b52bb77e7fc",
-    "url": "/img/playlist.psd"
-  },
-  {
     "revision": "4f581342e0dc57b34a176ebd1e491af0",
     "url": "/img/splashscreens/ipad_splash.png"
   },
   {
-    "revision": "f2d3ff48a22d9bb54508e0f520b6441d",
-    "url": "/img/splashscreens/iphone5_splash.png"
-  },
-  {
     "revision": "d330a0b6e9c5bb917eee03b016f3f9e3",
     "url": "/img/splashscreens/ipadpro1_splash.png"
+  },
+  {
+    "revision": "35b6cf131562d21081a90a784f879b19",
+    "url": "/img/splashscreens/ipadpro2_splash.png"
+  },
+  {
+    "revision": "38e64c59bdd2bb89675eb334324cc8b9",
+    "url": "/img/splashscreens/ipadpro3_splash.png"
+  },
+  {
+    "revision": "f2d3ff48a22d9bb54508e0f520b6441d",
+    "url": "/img/splashscreens/iphone5_splash.png"
   },
   {
     "revision": "6e7952c76307631bb228063e249d9c4a",
@@ -112,36 +120,28 @@ self.__precacheManifest = [
     "url": "/img/splashscreens/iphoneplus_splash.png"
   },
   {
-    "revision": "38e64c59bdd2bb89675eb334324cc8b9",
-    "url": "/img/splashscreens/ipadpro3_splash.png"
-  },
-  {
-    "revision": "35b6cf131562d21081a90a784f879b19",
-    "url": "/img/splashscreens/ipadpro2_splash.png"
-  },
-  {
-    "revision": "d50b11f2b0b92b6fa9bbf1700ea567bf",
-    "url": "/img/topPlaylist.png"
-  },
-  {
     "revision": "b5011363a9bbaf722e223d41fc23f865",
     "url": "/img/splashscreens/iphonexr_splash.png"
-  },
-  {
-    "revision": "f805f14e7d9ad7ee02c48cfeab58abb4",
-    "url": "/img/update.svg"
   },
   {
     "revision": "ddface7d19acc6fa50ddea328d4a8037",
     "url": "/img/splashscreens/iphonex_splash.png"
   },
   {
+    "revision": "872c2998f0ea8d5f27cfd2916af1ffd4",
+    "url": "/img/splashscreens/iphonexsmax_splash.png"
+  },
+  {
     "revision": "f10254a806d67417a6d0fb0062bb2b94",
     "url": "/README.md"
   },
   {
-    "revision": "872c2998f0ea8d5f27cfd2916af1ffd4",
-    "url": "/img/splashscreens/iphonexsmax_splash.png"
+    "revision": "f805f14e7d9ad7ee02c48cfeab58abb4",
+    "url": "/img/update.svg"
+  },
+  {
+    "revision": "d50b11f2b0b92b6fa9bbf1700ea567bf",
+    "url": "/img/topPlaylist.png"
   },
   {
     "revision": "b6216d61c03e6ce0c9aea6ca7808f7ca",

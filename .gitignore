@@ -68,3 +68,4 @@ package-lock.json
 dataModule/netease2Pin.json
 tasks.json
 cache
+.DS_Store
