@@ -40,7 +40,7 @@ app.use("/pokaapi", require("./dataModule.js"));
 if (config.PokaPlayer.debug) {
     app.use(require('cors')({
         credentials: true,
-        origin: 'http://localhost:8080'
+        origin: true
     }))
 }
 
