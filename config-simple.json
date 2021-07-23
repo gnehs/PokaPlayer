@@ -9,8 +9,7 @@
         "host": "192.168.x.x",
         "port": 5000,
         "account": "YOUR_DSM_ACCOUNT",
-        "password": "YOUR_DSM_PASSWORD",
-        "showPins": false
+        "password": "YOUR_DSM_PASSWORD"
     },
     "neteaseLyric": {
         "enabled": false
@@ -19,33 +18,37 @@
         "enabled": false,
         "server": "http://neteaseapi2:3000/",
         "isPremium": true,
-        "topPlaylist": {
-            "enabled": true,
-            "category": "ACG",
-            "limit": 6,
-            "order": "hot",
-            "image": "https://i.imgur.com/ZFaycMw.gif"
-        },
         "login": {
             "//": "信箱或電話兩者選一",
             "email": "YOUR_NETEASE_EMAIL",
             "phone": "YOUR_NETEASE_PHONE_NUMBER",
             "password": "YOUR_NETEASE_PASSWORD"
         },
-        "dailyRecommendSongs": {
+        "topPlaylist": {
             "enabled": true,
-            "image": "https://i.imgur.com/ZFaycMw.gif"
-        },
-        "dailyRecommendPlaylists": {
-            "enabled": true,
-            "limit": 6,
-            "image": "https://i.imgur.com/ZFaycMw.gif"
+            "categories": [
+                "ACG",
+                "日语",
+                "欧美"
+            ],
+            "limit": 25,
+            "order": "hot"
         },
         "hqPlaylist": {
             "enabled": true,
-            "category": "ACG",
-            "limit": 6,
-            "image": "https://i.imgur.com/ZFaycMw.gif"
+            "categories": [
+                "ACG",
+                "日语",
+                "欧美"
+            ],
+            "limit": 25
+        },
+        "dailyRecommendSongs": {
+            "enabled": true
+        },
+        "dailyRecommendPlaylists": {
+            "enabled": true,
+            "limit": 10
         }
     }
 }
