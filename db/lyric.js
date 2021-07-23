@@ -6,6 +6,7 @@ const LyricSchema = new mongoose.Schema({
     source: String,
     lyric: String
 });
+LyricSchema.index({ title: 'text', artist: 'text' })
 const model = mongoose.model('Lyric', LyricSchema)
 async function saveLyric({
     title,
@@ -45,8 +46,13 @@ async function getLyric(data) {
     else
         return false
 }
+async function searchLyric(keyword) {
+    let result = await model.find({ $text: { $search: keyword } }, err => err ? console.error(err) : null).limit(10)
+    return result
+}
 module.exports = {
     model,
     saveLyric,
-    getLyric
+    getLyric,
+    searchLyric
 }

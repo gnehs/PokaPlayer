@@ -1,9 +1,23 @@
 const playlistDB = require('../db/playlist')
 const pinDB = require('../db/pin')
 const recordDB = require('../db/record')
+
+const lyricdb = require("../db/lyric.js");
 async function onLoaded() {
     return true
 }
+async function searchLyrics(keyword) {
+    let res = await lyricdb.searchLyric(keyword)
+    res = res.map(x => ({
+        artist: x.artist,
+        name: x.title,
+        id: x.songId,
+        source: "poka",
+        lyric: x.lyric
+    }))
+    return { lyrics: res };
+}
+
 async function getPlaylists(userId) {
     return ({
         playlists: [
@@ -52,6 +66,7 @@ module.exports = {
     name: "poka",
     enabled: true,
     onLoaded,
+    searchLyrics,
     getPlaylists,
     getPlaylistSongs,
     getHome,
