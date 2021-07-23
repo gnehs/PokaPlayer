@@ -275,7 +275,7 @@ async function chsToCht(text, converter = "Taiwan") {
     return result.data.text;
 }
 //自動重新登入
-schedule.scheduleJob("0 0 * * *", function () {
+schedule.scheduleJob("0 0 * * *", async function () {
     pokaLog.logDM('Netease2', `正在重新登入...`)
     await login(config);
 });
