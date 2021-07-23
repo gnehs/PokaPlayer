@@ -251,103 +251,11 @@ async function postAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 3
 }
 
 async function getHome() {
-    let result = await getAPI("entry.cgi", "SYNO.AudioStation.Pin", "list", [{
-        key: "limit",
-        value: -1
-    },
-    {
-        key: "offset",
-        value: 0
-    }
-    ]);
-    let pins = {
-        title: 'home_pins',
-        source: "DSM",
-        icon: "turned_in",
-        artists: [],
-        composers: [],
-        folders: [],
-        playlists: [],
-        albums: []
-    };
-    for (i = 0; i < result.data.items.length; i++) {
-        let pin = result.data.items[i];
-        let type = pin.type;
-        switch (type) {
-            case "artist":
-                //演出者
-                pins.artists.push({
-                    name: pin.name,
-                    source: "DSM",
-                    cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(genReq(
-                        JSON.stringify({ type: "artist", info: pin.name || "未知" }))
-                    )}`,
-                    id: pin.name
-                });
-                break;
-            case "composer":
-                //作曲者
-                pins.composers.push({
-                    name: pin.name,
-                    source: "DSM",
-                    cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(genReq(
-                        JSON.stringify({ type: "composer", info: pin.name || "未知" }))
-                    )}`,
-                    id: pin.name
-                });
-                break;
-            case "folder":
-                //資料夾
-                pins.folders.push({
-                    name: pin.name,
-                    source: "DSM",
-                    id: pin.criteria.folder,
-                    cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(genReq(
-                        JSON.stringify({ type: "folder", info: pin.criteria.folder }))
-                    )}`
-                });
-                break;
-            case "playlist":
-                //播放清單
-                pins.playlists.push({
-                    name: pin.name,
-                    source: "DSM",
-                    id: pin.criteria.playlist
-                });
-                break;
-            case "album":
-                //專輯
-                let coverInfo = {
-                    album_name: pin.criteria.album || "",
-                    artist_name: pin.criteria.artist || "",
-                    album_artist_name: (album_artist = pin.criteria.album_artist || "")
-                };
-                let cover =
-                    `/pokaapi/cover/?moduleName=DSM&data=` +
-                    encodeURIComponent(genReq(
-                        JSON.stringify({
-                            type: "album",
-                            info: coverInfo
-                        })));
-                pins.albums.push({
-                    name: pin.name,
-                    artist: pin.criteria.artist || pin.criteria.album_artist || "",
-                    year: 0,
-                    cover: cover,
-                    source: "DSM",
-                    id: JSON.stringify(coverInfo)
-                });
-                break;
-        }
-    }
-    let r = []
-    let latestAlbum = await getAlbums(50, "time", "desc")
+    let latestAlbum = await getAlbums(25, "time", "desc")
     latestAlbum.title = "home_recentAlbums"
     latestAlbum.source = "DSM"
     latestAlbum.icon = "album"
-    if (config.DSM.showPins) r.push(pins)
-    if (latestAlbum.albums.length > 0) r.push(latestAlbum)
-    return r
+    return latestAlbum.albums.length ? [latestAlbum] : []
 }
 async function addPin(type, id, name) {
     let PARAMS_JSON;
