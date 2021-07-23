@@ -23,14 +23,10 @@ try {
 }
 const defaultImage = config.isPremium ? "https://i.imgur.com/ZFaycMw.gif" : false;
 
-const {
-    Resolver
-} = require("dns").promises;
+const { Resolver } = require("dns").promises;
 const resolver = new Resolver();
 let m10s
-try {
-    m10s = resolver.resolve4("netease.ugcvideoss.ourdvs.com");
-} catch (e) { }
+try { m10s = resolver.resolve4("netease.ugcvideoss.ourdvs.com"); } catch (e) { console.log('cannot resolver m10s') }
 // flatMap
 const concat = (x, y) => x.concat(y);
 const flatMap = (f, xs) => xs.map(f).reduce(concat, []);
@@ -52,6 +48,7 @@ function isIdName(id) {
 }
 
 var isLoggedin;
+var userId;
 
 const normalOptions = async (url, req = {}) => {
     async function m10() {
@@ -260,10 +257,23 @@ async function login(config) {
         result = await rp(options(`${server}login?email=${config.login.email}&password=${config.login.password}`));
     }
     isLoggedin = result.code == 200;
-    pokaLog.logDM('Netease2', `${result.profile.nickname} 登入${isLoggedin ? "成功" : "失敗"}`)
+    userId = result.profile.userId
+    pokaLog.logDM('Netease2', `${result.profile.nickname}(${userId}) 登入${isLoggedin ? "成功" : "失敗"}`)
     return result;
 }
-
+// 繁化姬
+async function chsToCht(text, converter = "Taiwan") {
+    let result = await rp({
+        method: "POST",
+        uri: "https://api.zhconvert.org/convert",
+        body: {
+            converter,
+            text
+        },
+        json: true
+    });
+    return result.data.text;
+}
 //自動重新登入
 schedule.scheduleJob("'* */12 * * *'", async function () {
     pokaLog.logDM('Netease2', `正在重新登入...`)
@@ -271,7 +281,6 @@ schedule.scheduleJob("'* */12 * * *'", async function () {
 });
 async function onLoaded() {
     if (!config.enabled) return false;
-    //console.log("[DataModules][Netease2] 正在登入...");
     return await fs.ensureFile(pin).then(async () => {
         if (config && config.login && (config.login.phone || config.login.email) && config.login.password) {
             let result = await login(config);
@@ -507,20 +516,16 @@ async function getCatList() {
 
 async function resolveTopPlaylistStack(topPlaylistStack) {
     if (topPlaylistStack.length === 0) return topPlaylistStack;
-    let playlists = flatMap(
-        x => x,
-        (await Promise.all(topPlaylistStack)).map(x => (x[0] ? x[0].playlists : x.playlists))
-    ).map(x =>
+    let playlists = flatMap(x => x, (await Promise.all(topPlaylistStack)).map(x => (x[0] ? x[0].playlists : x.playlists))).map(x =>
         x ? {
             name: x.name,
             source: "Netease2",
             id: x.id,
             image: imageUrl(x.coverImgUrl || x.picUrl),
             from: "topPlaylistStack"
-        } :
-            false
+        } : false
     );
-    return [].concat(...playlists);
+    return [...playlists]
 }
 
 async function resolvePlaylistStack(playlistStack) {
@@ -566,7 +571,7 @@ async function resolvedailyRecommendStack(dailyRecommendStack) {
     );
 }
 
-async function getPlaylists(userId) {
+async function getPlaylists(uid) {
     // cat 可以從 getCatList() 抓
     async function resolveUserList(userList) {
         if (userList.length === 0) return userList;
@@ -648,53 +653,44 @@ async function getPlaylists(userId) {
     }
 
     let [r, playlistStack, userList] = await processPlaylist();
+    // get topPlaylist & hqPlaylist
     let catList = await getCatList()
-    if (config.topPlaylist.enabled) {
-        if (!config.topPlaylist.category in catList) {
-            pokaLog.logDMErr('Netease2', `topPlaylist 的分類出錯，已預設為 ACG`)
-            config.topPlaylist.category = "ACG";
+    await Promise.all(['topPlaylist', 'hqPlaylist'].map(async playlistId => {
+        if (config[playlistId].enabled) {
+            let { order, categories, limit } = config[playlistId];
+            await Promise.all(categories.map(async category => {
+                if (!category in catList) {
+                    pokaLog.logDMErr('Netease2', `${playlistId} 的分類出錯，已修正為預設`)
+                    config[playlistId].category = ["ACG", "日语", "欧美"];
+                }
+                let translatedCategory = await chsToCht(category)
+                r.push({
+                    name: `${translatedCategory} - ${playlistId == 'hqPlaylist' ? '精品' : '精選'}歌單`,
+                    source: "Netease2",
+                    type: "folder",
+                    id: `${playlistId}_${translatedCategory}`,
+                    playlists: await resolveTopPlaylistStack([
+                        rp(options(`${server}top/playlist${playlistId == 'hqPlaylist' ? '/highquality' : ''}?limit=${limit}&order=${order in ["hot", "new"] ? order : "hot"}&cat=${category}`))
+                    ])
+                });
+            }))
         }
-        let c = config.topPlaylist;
-        r.push({
-            name: "網友精選碟歌單",
-            source: "Netease2",
-            image: config.topPlaylist.image || defaultImage,
-            type: "folder",
-            id: "topPlaylist",
-            playlists: await resolveTopPlaylistStack([
-                rp(
-                    options(
-                        `${server}top/playlist?limit=${c.limit}&order=${c.order in ["hot", "new"] ? c.order : "hot"
-                        }&cat=${c.category}`
-                    )
-                )
-            ])
-        });
-    }
-
-    if (config.hqPlaylist.enabled) {
-        if (!config.hqPlaylist.category in catList) {
-            pokaLog.logDMErr('Netease2', `topPlaylist 的分類出錯，已預設為 ACG`)
-            config.hqPlaylist.category = "ACG";
-        }
-        let c = config.hqPlaylist;
-        r.push({
-            name: "精品歌單",
-            source: "Netease2",
-            image: config.hqPlaylist.image || defaultImage,
-            type: "folder",
-            id: "hqPlaylist",
-            playlists: await resolveTopPlaylistStack([
-                rp(options(`${server}top/playlist/highquality?limit=${c.limit}&cat=${c.category}`))
-            ])
-        });
-    }
-
+    }))
+    // push yunPan
     r.push({
         name: "網易雲音樂雲盤",
         source: "Netease2",
         id: "yunPan"
     })
+    // get user playlists
+    r.push({
+        name: `收藏歌單`,
+        source: "Netease2",
+        type: "folder",
+        id: `userPlaylists`,
+        playlists: await getCustomPlaylists(userId)
+    });
+
     if (config.dailyRecommendSongs.enabled) {
         if (isLoggedin === undefined) {
             login.then(x => {
@@ -747,9 +743,12 @@ async function getPlaylists(userId) {
                 ])
             });
     }
-    let result = r.concat(...(await resolveUserList(userList)), ...(await resolvePlaylistStack(playlistStack)));
     return {
-        playlists: result
+        playlists: [
+            ...r,
+            ...(await resolveUserList(userList)),
+            ...(await resolvePlaylistStack(playlistStack))
+        ]
     };
 }
 
@@ -818,18 +817,6 @@ async function getPlaylistSongs(id, br = 999000) {
 }
 
 async function getLyric(id) {
-    async function chsToCht(text, converter = "Taiwan") {
-        let result = await rp({
-            method: "POST",
-            uri: "https://api.zhconvert.org/convert",
-            body: {
-                converter,
-                text
-            },
-            json: true
-        });
-        return result.data.text;
-    }
     let result = await rp(options(`${server}lyric?id=${id}`, {}, false, false));
     let lyric;
     if (result.code == 200) {
@@ -841,13 +828,11 @@ async function getLyric(id) {
                 lyric = result.lrc.lyric;
             }
         } else if (result.lrc && result.lrc.lyric) { // 中文歌詞
-            //if (franc(result.lrc.lyric) == "cmn") {
             try {
                 lyric = await chsToCht(result.lrc.lyric, "Traditional");
             } catch (e) {
                 lyric = result.lrc.lyric;
             }
-            //} else lyric = result.lrc.lyric;
         } else lyric = null;
         if (lyric) lyric = lyric.replace(/作词/g, "作詞")
         return lyric;
@@ -917,67 +902,12 @@ async function getHome() {
         composers: [],
         playlists: []
     };
-
-    let catList = await getCatList();
-
     try {
         (await fs.readJson(pin)).forEach(x => {
             pinData[x.type + "s"].push(x);
         });
     } catch (e) {
         pokaLog.logDMErr('Netease2', e)
-    }
-    if (config.topPlaylist.enabled) {
-        if (!config.topPlaylist.category in catList) {
-            pokaLog.logDMErr('Netease2', `topPlaylist 的分類出錯，已預設為 ACG`)
-            config.topPlaylist.category = "ACG";
-        }
-        let c = config.topPlaylist;
-        let topPlaylistResult = []
-        topPlaylistResult.push(
-            new Promise((resolve, reject) => {
-                rp(
-                    options(
-                        `${server}top/playlist?limit=${c.limit}&order=${c.order in ["hot", "new"] ? c.order : "hot"
-                        }&cat=${c.category}`
-                    )
-                )
-                    .then(data => resolve([data, {
-                        image: config.topPlaylist.image || defaultImage
-                    }]))
-                    .catch(e => reject(e));
-            })
-        );
-        result.push({
-            title: "home_topPlaylist_netease",
-            source: "Netease2",
-            icon: "whatshot",
-            playlists: (await resolveTopPlaylistStack(topPlaylistResult)),
-        })
-    }
-
-    if (config.hqPlaylist.enabled) {
-        if (!config.hqPlaylist.category in catList) {
-            pokaLog.logDMErr('Netease2', `topPlaylist 的分類出錯，已預設為 ACG`)
-            config.hqPlaylist.category = "ACG";
-        }
-        let c = config.hqPlaylist;
-        let hqPlaylistResult = []
-        hqPlaylistResult.push(
-            new Promise((resolve, reject) => {
-                rp(options(`${server}top/playlist/highquality?limit=${c.limit}&cat=${c.category}`))
-                    .then(data => resolve([data, {
-                        image: config.hqPlaylist.image || defaultImage
-                    }]))
-                    .catch(e => reject(e));
-            })
-        );
-        result.push({
-            title: "home_hqPlaylist_netease",
-            source: "Netease2",
-            icon: "star",
-            playlists: (await resolveTopPlaylistStack(hqPlaylistResult)),
-        })
     }
 
     if (config.dailyRecommendSongs.enabled) {
