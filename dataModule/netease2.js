@@ -318,13 +318,20 @@ async function parseSongs(songs, br = 999000) {
     return await Promise.all(
         (await songs).map(async (song, index) => {
             song = await song;
+            let artist, artistId
+            if (song.ar && song.ar.length) {
+                artist = song.ar.map(x => x.name || "").join(", ")
+                artistId = song.ar[0].id
+            } else {
+                artist = '未知'
+            }
             return {
                 name: song.name,
-                artist: song.ar.map(x => x.name || "").join(", "),
-                artistId: song.ar[0].id,
-                album: song.al.name || "",
-                albumId: song.al.id || null,
-                cover: song.al.picUrl ? imageUrl(song.al.picUrl) : 'https://i.imgur.com/qxy800z.png',
+                artist,
+                artistId,
+                album: song.al?.name || "",
+                albumId: song.al?.id || null,
+                cover: song.al?.picUrl ? imageUrl(song.al.picUrl) : 'https://i.imgur.com/qxy800z.png',
                 url: `/pokaapi/song/?moduleName=Netease2&songId=${song.id}`,
                 codec: "mp3",
                 // lrc: song.id,
@@ -683,6 +690,11 @@ async function getPlaylists(userId) {
         });
     }
 
+    r.push({
+        name: "網易雲音樂雲盤",
+        source: "Netease2",
+        id: "yunPan"
+    })
     if (config.dailyRecommendSongs.enabled) {
         if (isLoggedin === undefined) {
             login.then(x => {
