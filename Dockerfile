@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM mhart/alpine-node:16
 
 WORKDIR /app
 # 安裝必要組件
@@ -8,7 +8,7 @@ RUN git clone https://github.com/gnehs/PokaPlayer.git
 # 覆蓋拉取的程式碼避免干擾到 dev
 COPY . /app 
 # node modules
-RUN npm install --production
+RUN npm ci --prod
 # 環境設定
 ENV NODE_ENV=production
 EXPOSE 3000
