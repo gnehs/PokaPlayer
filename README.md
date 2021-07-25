@@ -5,7 +5,6 @@
 [![GitHub license](https://img.shields.io/github/license/gnehs/PokaPlayer.svg?style=flat-square)](https://github.com/gnehs/PokaPlayer/blob/master/LICENSE)
 [![GitHub tag (latest Ver)](https://img.shields.io/github/package-json/v/gnehs/PokaPlayer.svg?style=flat-square)](https://github.com/gnehs/PokaPlayer/releases/latest)
 [![GitHub repo size in bytes](https://img.shields.io/github/repo-size/gnehs/PokaPlayer.svg?style=flat-square)](https://github.com/gnehs/PokaPlayer/archive/master.zip)
-[![Docker Build Status](https://img.shields.io/docker/build/gnehs/pokaplayer.svg?style=flat-square)](https://hub.docker.com/r/gnehs/pokaplayer/)
 
 [繁體中文](https://github.com/gnehs/PokaPlayer/blob/master/README_zh.md)
 
