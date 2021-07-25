@@ -825,12 +825,14 @@ async function getLyric(id) {
             try {
                 lyric = migrate(result.lrc.lyric, await chsToCht(result.tlyric.lyric));
             } catch (e) {
+                pokaLog.logDMErr('Netease2', `歌詞繁化錯誤 ${e.toString()}`)
                 lyric = result.lrc.lyric;
             }
         } else if (result.lrc && result.lrc.lyric) { // 中文歌詞
             try {
                 lyric = await chsToCht(result.lrc.lyric, "Traditional");
             } catch (e) {
+                pokaLog.logDMErr('Netease2', `歌詞繁化錯誤 ${e.toString()}`)
                 lyric = result.lrc.lyric;
             }
         } else lyric = null;
