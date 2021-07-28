@@ -8,13 +8,15 @@ async function onLoaded() {
 }
 async function searchLyrics(keyword) {
     let res = await lyricdb.searchLyric(keyword)
-    res = res.map(x => ({
-        artist: x.artist,
-        name: x.title,
-        id: x.songId,
-        source: "poka",
-        lyric: x.lyric
-    }))
+    res = res
+        .map(x => ({
+            artist: x.artist,
+            name: x.title,
+            id: x.songId,
+            source: "poka",
+            lyric: x.lyric
+        }))
+        .filter(x => x.lyric != '[00:00.000]')
     return { lyrics: res };
 }
 
