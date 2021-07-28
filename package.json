@@ -30,6 +30,7 @@
 		"helmet": "^4.4.1",
 		"jsonfile": "^6.1.0",
 		"mongoose": "^5.12.2",
+		"node-fetch": "^2.6.1",
 		"node-schedule": "^2.0.0",
 		"request": "^2.88.2",
 		"request-promise": "^4.2.5",
