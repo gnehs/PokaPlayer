@@ -99,9 +99,7 @@ const imageUrl = x => `/pokaapi/req/?moduleName=Netease2&data=${encodeURICompone
 async function login(config) {
     let result;
     if (config.login.phone) {
-        result = await rp(
-            options(`${server}login/cellphone?phone=${config.login.phone}&password=${config.login.password}`)
-        );
+        result = await rp(options(`${server}login/cellphone?phone=${config.login.phone}&password=${config.login.password}`));
     } else {
         result = await rp(options(`${server}login?email=${config.login.email}&password=${config.login.password}`));
     }

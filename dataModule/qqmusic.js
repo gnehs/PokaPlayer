@@ -60,16 +60,14 @@ function getLyric(id) {
         })
 }
 async function onLoaded() {
+    console.time("QQMusic Lyric Test");
     try {
         let res = await searchLyrics(`世界で一番恋してる 喜多修平`)
         if (res.lyrics.length) {
-            pokaLog.logDM('QQMusic', `Lyric 測試正常`)
-            pokaLog.logDM('QQMusic', new Date().toLocaleString())
-            console.log(res.lyrics.length)
-            return res.lyrics.length
-        } else {
-            return 0
+            pokaLog.logDM('QQMusic', `Lyric loaded`)
+            console.timeEnd("QQMusic Lyric Test");
         }
+        return res.lyrics.length
     } catch (e) {
         console.log(e)
         return false
