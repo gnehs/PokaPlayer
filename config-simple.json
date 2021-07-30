@@ -11,8 +11,9 @@
         "account": "YOUR_DSM_ACCOUNT",
         "password": "YOUR_DSM_PASSWORD"
     },
-    "neteaseLyric": {
-        "enabled": false
+    "QQMusic": {
+        "//": "enabled QQMusic as lyric provider",
+        "enabled": true
     },
     "Netease2": {
         "enabled": false,

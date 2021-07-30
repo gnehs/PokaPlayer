@@ -1,9 +1,7 @@
 const fetch = require('node-fetch')
 const { migrate, zhconvert } = require('./lyricUtils')
 const pokaLog = require("../log"); // 可愛控制台輸出
-const lyricTimeout = new Promise(function (resolve, reject) {
-    setTimeout(resolve, 5000, null);
-});
+const config = require(__dirname + "/../config.json").QQMusic; // 設定
 async function searchLyrics(keyword) {
     let searchResult = await fetch(`https://c.y.qq.com/soso/fcgi-bin/client_search_cp?w=${encodeURI(keyword)}&format=json&cr=1&g_tk=5381`, {
         method: "GET",
@@ -76,7 +74,7 @@ async function onLoaded() {
 
 module.exports = {
     name: "QQMusic",
-    enabled: true,
+    enabled: config && config.enabled,
     onLoaded,
     searchLyrics,
 };
