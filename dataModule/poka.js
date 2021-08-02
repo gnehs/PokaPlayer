@@ -24,7 +24,7 @@ async function getPlaylists(userId) {
     return ({
         playlists: [
             ...(await playlistDB.getParsedUserPlaylists(userId)),
-            { name: "最近聽過", source: "poka", id: "listenedRecently", icon: 'history' }]
+            { name: "最近聽過", source: "poka", id: "listenedRecently", icon: 'bx-history' }]
     })
 }
 async function getPlaylistSongs(id, userId) {
