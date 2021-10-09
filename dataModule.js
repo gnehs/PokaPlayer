@@ -286,7 +286,8 @@ router.get("/album/", async (req, res) => {
 router.get("/playlists/", async (req, res) => {
     //http://localhost:3000/pokaapi/playlists
     let r = {
-        playlists: []
+        playlists: [],
+        playlistFolders: []
     };
     for (var i in Object.keys(moduleList)) {
         let x = moduleList[Object.keys(moduleList)[i]];
@@ -295,7 +296,8 @@ router.get("/playlists/", async (req, res) => {
             try {
                 let list = (await y.getPlaylists(req.session.user)) || null;
                 if (list) {
-                    for (i = 0; i < list.playlists.length; i++) r.playlists.push(list.playlists[i]);
+                    if (list.playlists) r.playlists = r.playlists.concat(list.playlists);
+                    if (list.playlistFolders) r.playlistFolders = r.playlistFolders.concat(list.playlistFolders);
                 }
             } catch (e) {
                 showError(x.name, e)

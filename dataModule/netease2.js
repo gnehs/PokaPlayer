@@ -183,7 +183,7 @@ async function parseSongs(songs, br = 999000) {
                 codec: "mp3",
                 // lrc: song.id,
                 source: "Netease2",
-                id: song.id
+                id: `${song.id}`
             };
         })
     );
@@ -246,7 +246,7 @@ async function parseAlbums(albums) {
         year: new Date(x.publishTime).getFullYear(),
         cover: imageUrl(x.picUrl),
         source: "Netease2",
-        id: x.id
+        id: `${x.id}`
     }));
 }
 
@@ -255,7 +255,7 @@ async function parseArtists(artists) {
         name: x.name,
         cover: imageUrl(x.picUrl || x.img1v1Url),
         source: "Netease2",
-        id: x.id
+        id: `${x.id}`
     }));
 }
 
@@ -264,7 +264,7 @@ async function parsePlaylists(playlists) {
         name: x.name,
         image: imageUrl(x.coverImgUrl || x.picUrl),
         source: "Netease2",
-        id: x.id
+        id: `${x.id}`
     }));
 }
 
@@ -358,7 +358,7 @@ async function resolveTopPlaylistStack(topPlaylistStack) {
         x ? {
             name: x.name,
             source: "Netease2",
-            id: x.id,
+            id: `${x.id}`,
             image: imageUrl(x.coverImgUrl || x.picUrl),
             from: "topPlaylistStack"
         } : false
@@ -372,13 +372,13 @@ async function resolvePlaylistStack(playlistStack) {
         Array.isArray(x) ? {
             name: x[1].name || x[0].playlist.name,
             source: "Netease2",
-            id: x[0].playlist.id,
+            id: `${x[0].playlist.id}`,
             image: x[1].image || imageUrl(x[0].playlist.coverImgUrl || x[0].playlist.picUrl),
             from: "playlistStack"
         } : {
             name: x.playlist.name,
             source: "Netease2",
-            id: x.playlist.id,
+            id: `${x.playlist.id}`,
             image: imageUrl(x.playlist.coverImgUrl || x.playlist.picUrl),
             from: "playlistStack"
         }
@@ -394,13 +394,13 @@ async function resolvedailyRecommendStack(dailyRecommendStack) {
         ).map(x =>
             Array.isArray(x) ? {
                 name: x[1].name,
-                id: x[1].id,
+                id: `${x[1].id}`,
                 image: x[0] || imageUrl(x.coverImgUrl || x.picUrl),
                 source: "Netease2",
                 from: "dailyRecommendStack"
             } : {
                 name: x.name,
-                id: x.id,
+                id: `${x.id}`,
                 image: imageUrl(x.coverImgUrl || x.picUrl),
                 source: "Netease2",
                 from: "dailyRecommendStack"
@@ -421,7 +421,7 @@ async function getPlaylists(uid) {
         return result.playlist.map(x => ({
             name: x.name,
             source: "Netease2",
-            id: x.id,
+            id: `${x.id}`,
             image: imageUrl(x.coverImgUrl || x.picUrl),
             from: "getCustomPlaylists"
         }));
@@ -431,6 +431,7 @@ async function getPlaylists(uid) {
         let r = [];
         let playlistStack = [];
         let userList = [];
+        let playlistFolders = [];
         for (let x of playlists) {
             if (x.source != "Netease2") continue;
             else {
@@ -471,12 +472,12 @@ async function getPlaylists(uid) {
                         break;
                     case "folder":
                         let data = await processPlaylist(x.playlists);
-                        r.push({
+                        playlistFolders.push({
                             name: x.name,
                             type: "folder",
                             image: x.image,
                             source: "Netease2",
-                            id: x.id,
+                            id: `${x.id}`,
                             playlists: data[0].concat(
                                 ...(await resolvePlaylistStack(data[1])),
                                 ...(await resolveUserList(data[2]))
@@ -487,10 +488,10 @@ async function getPlaylists(uid) {
                 }
             }
         }
-        return [r, playlistStack, userList];
+        return [r, playlistStack, userList, playlistFolders];
     }
 
-    let [r, playlistStack, userList] = await processPlaylist();
+    let [r, playlistStack, userList, playlistFolders] = await processPlaylist();
     // get topPlaylist & hqPlaylist
     let catList = await getCatList()
     await Promise.all(['topPlaylist', 'hqPlaylist'].map(async playlistId => {
@@ -502,7 +503,7 @@ async function getPlaylists(uid) {
                     config[playlistId].category = ["ACG", "日语", "欧美"];
                 }
                 let translatedCategory = await zhconvert(category)
-                r.push({
+                playlistFolders.push({
                     name: `${translatedCategory} - ${playlistId == 'hqPlaylist' ? '精品' : '精選'}歌單`,
                     source: "Netease2",
                     type: "folder",
@@ -521,7 +522,7 @@ async function getPlaylists(uid) {
         id: "yunPan"
     })
     // get user playlists
-    r.push({
+    playlistFolders.push({
         name: `收藏歌單`,
         source: "Netease2",
         type: "folder",
@@ -555,7 +556,7 @@ async function getPlaylists(uid) {
         if (isLoggedin === undefined) {
             login.then(async x => {
                 if (x.code == 200)
-                    r.push({
+                    playlistFolders.push({
                         name: "每日推薦歌單",
                         source: "Netease2",
                         image: config.dailyRecommendPlaylists.image || defaultImage,
@@ -570,7 +571,7 @@ async function getPlaylists(uid) {
         } else if (!isLoggedin) {
             pokaLog.logDMErr('Netease2', `未登入，無法獲取每日推薦歌單。`)
         } else
-            r.push({
+            playlistFolders.push({
                 name: "每日推薦歌單",
                 source: "Netease2",
                 image: config.dailyRecommendPlaylists.image || defaultImage,
@@ -586,7 +587,8 @@ async function getPlaylists(uid) {
             ...r,
             ...(await resolveUserList(userList)),
             ...(await resolvePlaylistStack(playlistStack))
-        ]
+        ],
+        playlistFolders
     };
 }
 
@@ -606,7 +608,7 @@ async function getPlaylistSongs(id, br = 999000) {
                 url: `/pokaapi/song/?moduleName=Netease2&songId=${x.id}`,
                 codec: "mp3",
                 source: "Netease2",
-                id: x.id
+                id: `${x.id}`
             }));
             return {
                 songs: r,
@@ -689,7 +691,7 @@ async function searchLyrics(keyword) {
             name: x.name,
             artist: x.artist,
             source: "Netease2",
-            id: x.id,
+            id: `${x.id}`,
             lyric: await getLyric(x.id)
         }))
     )).filter(x => x.lyric && x.lyric != "[0:0] 純音樂");
@@ -875,7 +877,7 @@ async function getUserPlaylists(uid) {
             source: "Netease2",
             image: imageUrl(x.coverImgUrl) || defaultImage,
             type: "playlist",
-            id: x.id
+            id: `${x.id}`
         }));
 }
 
