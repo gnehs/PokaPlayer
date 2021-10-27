@@ -20,7 +20,7 @@ try {
 } catch (e) {
     fs.writeFile(pin, "[]");
 }
-const defaultImage = config.isPremium ? "https://i.imgur.com/ZFaycMw.gif" : false;
+const defaultImage = config.isPremium ? "https://i.imgur.com/ZFaycMw.gif" : "/img/icons/apple-touch-icon.png";
 
 const { Resolver } = require("dns").promises;
 const resolver = new Resolver();
