@@ -246,7 +246,7 @@ async function parseAlbums(albums) {
         year: new Date(x.publishTime).getFullYear(),
         cover: imageUrl(x.picUrl),
         source: "Netease2",
-        id: `${x.id}`
+        id: `netease_${x.id}`
     }));
 }
 
@@ -255,7 +255,7 @@ async function parseArtists(artists) {
         name: x.name,
         cover: imageUrl(x.picUrl || x.img1v1Url),
         source: "Netease2",
-        id: `${x.id}`
+        id: `netease_${x.id}`
     }));
 }
 
@@ -264,7 +264,7 @@ async function parsePlaylists(playlists) {
         name: x.name,
         image: imageUrl(x.coverImgUrl || x.picUrl),
         source: "Netease2",
-        id: `${x.id}`
+        id: `netease_${x.id}`
     }));
 }
 
@@ -358,7 +358,7 @@ async function resolveTopPlaylistStack(topPlaylistStack) {
         x ? {
             name: x.name,
             source: "Netease2",
-            id: `${x.id}`,
+            id: `netease_${x.id}`,
             image: imageUrl(x.coverImgUrl || x.picUrl),
             from: "topPlaylistStack"
         } : false
@@ -372,13 +372,13 @@ async function resolvePlaylistStack(playlistStack) {
         Array.isArray(x) ? {
             name: x[1].name || x[0].playlist.name,
             source: "Netease2",
-            id: `${x[0].playlist.id}`,
+            id: `netease_${x[0].playlist.id}`,
             image: x[1].image || imageUrl(x[0].playlist.coverImgUrl || x[0].playlist.picUrl),
             from: "playlistStack"
         } : {
             name: x.playlist.name,
             source: "Netease2",
-            id: `${x.playlist.id}`,
+            id: `netease_${x.playlist.id}`,
             image: imageUrl(x.playlist.coverImgUrl || x.playlist.picUrl),
             from: "playlistStack"
         }
@@ -394,13 +394,13 @@ async function resolvedailyRecommendStack(dailyRecommendStack) {
         ).map(x =>
             Array.isArray(x) ? {
                 name: x[1].name,
-                id: `${x[1].id}`,
+                id: `netease_${x[1].id}`,
                 image: x[0] || imageUrl(x.coverImgUrl || x.picUrl),
                 source: "Netease2",
                 from: "dailyRecommendStack"
             } : {
                 name: x.name,
-                id: `${x.id}`,
+                id: `netease_${x.id}`,
                 image: imageUrl(x.coverImgUrl || x.picUrl),
                 source: "Netease2",
                 from: "dailyRecommendStack"
@@ -421,7 +421,7 @@ async function getPlaylists(uid) {
         return result.playlist.map(x => ({
             name: x.name,
             source: "Netease2",
-            id: `${x.id}`,
+            id: `netease_${x.id}`,
             image: imageUrl(x.coverImgUrl || x.picUrl),
             from: "getCustomPlaylists"
         }));
@@ -477,7 +477,7 @@ async function getPlaylists(uid) {
                             type: "folder",
                             image: x.image,
                             source: "Netease2",
-                            id: `${x.id}`,
+                            id: `netease_${x.id}`,
                             playlists: data[0].concat(
                                 ...(await resolvePlaylistStack(data[1])),
                                 ...(await resolveUserList(data[2]))
@@ -594,6 +594,9 @@ async function getPlaylists(uid) {
 
 async function getPlaylistSongs(id, br = 999000) {
     let name;
+    if (id.startsWith('netease_')) {
+        id = id.split('_')[1];
+    }
     if (isIdName(id)) [id, name] = decomposeIdName(id);
     if (id == "dailyRecommendSongs") {
         let result = await rp(options(`${server}recommend/songs`));
@@ -877,7 +880,7 @@ async function getUserPlaylists(uid) {
             source: "Netease2",
             image: imageUrl(x.coverImgUrl) || defaultImage,
             type: "playlist",
-            id: `${x.id}`
+            id: `netease_${x.id}`
         }));
 }
 
