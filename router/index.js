@@ -5,6 +5,7 @@ router.use("/playlist", require("./playlist"));
 router.use("/user", require("./user"));
 router.use("/pin", require("./pin"));
 router.use("/record", require("./record"));
+router.use("/info", require("./info"));
 // admin
 router.use(async (req, res, next) => {
     if (req.session.user && await User.isUserAdmin(req.session.user))
