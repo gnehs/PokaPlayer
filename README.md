@@ -14,8 +14,33 @@ PokaPlayer is a player that can unify and play from multiple sources like DSM an
 ![image](https://user-images.githubusercontent.com/16719720/112632910-ad9c0a80-8e73-11eb-9ca4-e04f2a3dc1de.png)
 
 ## Get Started
+- Deploy [Mongo](https://hub.docker.com/_/mongo) containers 
+    - init database
+```bash
+# docker exec
+$ docker exec -it <container name> bash
+# enter mongo
+$ mongo
+# create database and user
+$ db.createUser(
+        {
+            user: "<user for database which shall be created>",
+            pwd: "<password of user>",
+            roles: [
+                {
+                    role: "readWrite",
+                    db: "<database to create>"
+                }
+            ]
+        }
+);
+# exit mongo
+$ exit
+# exit docker
+$ exit
+```
 - Fill out the configuration file according to config-simple.json 
-- Deploy [PokaPlayer](https://hub.docker.com/repository/docker/gnehs/pokaplayer) and [Mongo](https://hub.docker.com/_/mongo) containers (optional [neteasecloudmusicapi](https://hub.docker.com/repository/docker/gnehs/neteasecloudmusicapi-docker))
+- Deploy [PokaPlayer](https://hub.docker.com/repository/docker/gnehs/pokaplayer) container(optional [neteasecloudmusicapi](https://hub.docker.com/repository/docker/gnehs/neteasecloudmusicapi-docker))
     - Mount the configuration file to `/app/config.json`
     - Connect the mongo container
     - export port 3000

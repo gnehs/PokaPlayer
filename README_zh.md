@@ -13,8 +13,33 @@ PokaPlayer 是個能統合多個來源並進行播放的播放器。
 ![image](https://user-images.githubusercontent.com/16719720/112633008-cc020600-8e73-11eb-8cb2-191301de9d04.png)
 
 ## 開始使用
+- 部署 [Mongo](https://hub.docker.com/_/mongo) 容器 
+    - 初始化資料庫
+```bash
+# 進入 docker 容器
+$ docker exec -it <container name> bash
+# 進入 mongo
+$ mongo
+# 建立資料庫與使用者
+$ db.createUser(
+        {
+            user: "<user for database which shall be created>",
+            pwd: "<password of user>",
+            roles: [
+                {
+                    role: "readWrite",
+                    db: "<database to create>"
+                }
+            ]
+        }
+);
+# 退出 mongo
+$ exit
+# 退出 docker
+$ exit
+```
 - 按照 config-simple.json 填寫設定檔
-- 部署 [PokaPlayer](https://hub.docker.com/repository/docker/gnehs/pokaplayer) 與 [Mongo](https://hub.docker.com/_/mongo) 容器 (可選用 [neteasecloudmusicapi](https://hub.docker.com/repository/docker/gnehs/neteasecloudmusicapi-docker))
+- 部署 [PokaPlayer](https://hub.docker.com/repository/docker/gnehs/pokaplayer) 容器 (可選用 [neteasecloudmusicapi](https://hub.docker.com/repository/docker/gnehs/neteasecloudmusicapi-docker))
     - 將設定檔掛載到 `/app/config.json`
     - 連接 mongo 容器
     - export port 3000
