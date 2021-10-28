@@ -11,7 +11,7 @@
 # PokaPlayer
 PokaPlayer is a player that can unify and play from multiple sources like DSM and Netease.
 
-![image](https://user-images.githubusercontent.com/16719720/112632910-ad9c0a80-8e73-11eb-9ca4-e04f2a3dc1de.png)
+![image](https://user-images.githubusercontent.com/16719720/139267172-3960a386-d858-4db3-a9d7-30df8f379fd2.png)
 
 ## Get Started
 - Deploy [Mongo](https://hub.docker.com/_/mongo) containers 

@@ -10,7 +10,7 @@
 # PokaPlayer
 PokaPlayer 是個能統合多個來源並進行播放的播放器。
 
-![image](https://user-images.githubusercontent.com/16719720/112633008-cc020600-8e73-11eb-8cb2-191301de9d04.png)
+![image](https://user-images.githubusercontent.com/16719720/139267013-17ed31c5-8194-4498-b2b4-9bf149ac9860.png)
 
 ## 開始使用
 - 部署 [Mongo](https://hub.docker.com/_/mongo) 容器 
