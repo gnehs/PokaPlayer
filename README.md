@@ -14,6 +14,7 @@ PokaPlayer is a player that can unify and play from multiple sources like DSM an
 ![image](https://user-images.githubusercontent.com/16719720/139267172-3960a386-d858-4db3-a9d7-30df8f379fd2.png)
 
 ## Get Started
+- If you need to listen to your local music, you will need a Synology NAS with Audio Station installed, or you can try the [Open Audio Server](https://github.com/openaudioserver/open-audio-server) which is compatible with the Audio Station API. 
 - Deploy [Mongo](https://hub.docker.com/_/mongo) containers 
     - init database
 ```bash
