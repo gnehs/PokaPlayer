@@ -487,7 +487,7 @@ router.get("/song/", async (req, res) => {
         return song
             .on("response", response => {
                 //針對 Audio 寫入 Header 避免 Chrome 時間軸不能跳
-                res.writeHead(206, {
+                let headers = {
                     "Accept-Ranges": response.headers["accept-ranges"] ?
                         response.headers["accept-ranges"] : "",
                     "Content-Length": response.headers["content-length"] ?
@@ -496,7 +496,12 @@ router.get("/song/", async (req, res) => {
                         response.headers["content-range"] : "",
                     "Content-Type": response.headers["content-type"] ?
                         response.headers["content-type"] : ""
-                });
+                }
+                // fix for AVPlayer
+                if (headers["Content-Type"] == "audio/x-flac") {
+                    headers["Content-Type"] = "audio/flac";
+                }
+                res.writeHead(206, headers);
             })
             .pipe(res);
     }
