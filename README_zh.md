@@ -13,6 +13,7 @@ PokaPlayer 是個能統合多個來源並進行播放的播放器。
 ![image](https://user-images.githubusercontent.com/16719720/139267013-17ed31c5-8194-4498-b2b4-9bf149ac9860.png)
 
 ## 開始使用
+- 若您需要聆聽本地的音樂，您會需要已安裝 Audio Station 的 Synology NAS，或是你也可以試試看與 Audio Station API 相容的 [Open Audio Server](https://github.com/openaudioserver/open-audio-server)
 - 部署 [Mongo](https://hub.docker.com/_/mongo) 容器 
     - 初始化資料庫
 ```bash

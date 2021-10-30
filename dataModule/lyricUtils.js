@@ -160,7 +160,7 @@ function migrate(org, t, offset = 10 ** -3) {
 //         return await converter_TC.convertPromise(text)
 //     }
 // }
-async function zhconvert(text, converter = "Taiwan") {
+async function zhconvert(text, converter = "Taiwan", retry = 0) {
     try {
         let res = await fetch("https://api.zhconvert.org/convert", {
             method: "POST",
@@ -174,7 +174,11 @@ async function zhconvert(text, converter = "Taiwan") {
         }).then(x => x.json())
         return res.data.text;
     } catch (e) {
-        return text
+        if (retry < 3) {
+            return zhconvert(text, converter = "Taiwan", retry++)
+        } else {
+            return text
+        }
     }
 }
 module.exports = {
