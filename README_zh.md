@@ -50,7 +50,7 @@ $ exit
 
 -   手機建議使用 Chrome
 -   Chrome 右上角 `...` 選「加到主畫面」可以有原生 APP 般的體驗
--   **DSM 強烈建議開一個只能播音樂的帳號**
+-   **強烈建議在 DSM 上開一個只能播音樂的帳號**
 
 ## 支援的來源
 -   [DSM Audio Station](https://www.synology.com/dsm/feature/audio_station)

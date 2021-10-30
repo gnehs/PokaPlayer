@@ -50,7 +50,7 @@ $ exit
 ## Suggestions and Tips
 -   Chrome is recommended
 -   Chrome top right corner `...` Select "Add to Home" for a native APP-like experience.
--   **DSM strongly recommends opening an account that can only play music**
+-   **We strongly recommend open an new account that can only play music on DSM**
 
 ## Supported sources
 -   [DSM Audio Station](https://www.synology.com/dsm/feature/audio_station)
