@@ -11,6 +11,10 @@ async function checkPlaylistOwner(playlistId, userId) {
 }
 router.post("/create", async (req, res) => {
     let { name } = req.body
+    if (!name) {
+        res.status(400).send("name is required")
+        return
+    }
     res.json(await playlistDB.createPlaylist(name, req.session.user))
 })
 router.post("/del", async (req, res) => {
@@ -36,7 +40,7 @@ router.post("/edit", async (req, res) => {
 })
 router.post("/song/exist", async (req, res) => {
     let song = req.body
-    let playlists = await playlistDB.getPlaylists(req.session.user)
+    let playlists = (await playlistDB.getPlaylists(req.session.user)).map(x => ({ id: x._id, ...JSON.parse(JSON.stringify(x)) }))
     let result = {
         playlists: [],
         existsPlaylists: []
