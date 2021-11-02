@@ -620,11 +620,11 @@ router.get("/lyric/", async (req, res) => {
         showError(moduleName, e)
     }
     return res.json({
-        lyrics: [{
+        lyrics: lyric ? [{
             source: req.query.moduleName,
             id: req.query.id,
             lyric: lyric
-        }]
+        }] : []
     });
 });
 //-----------------------------> 加入清單

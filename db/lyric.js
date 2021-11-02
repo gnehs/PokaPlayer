@@ -44,7 +44,7 @@ async function getLyric(data) {
     if (result)
         return result.lyric
     else
-        return false
+        return null
 }
 async function searchLyric(keyword) {
     let result = await model.find({ $text: { $search: keyword } }, err => err ? console.error(err) : null).limit(10)
