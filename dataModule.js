@@ -569,20 +569,34 @@ router.get("/searchLyrics/", async (req, res) => {
     let resData = {
         lyrics: []
     };
-    for (var i in Object.keys(moduleList)) {
-        let x = moduleList[Object.keys(moduleList)[i]];
-        let y = require(x.js);
-        if (x.active.indexOf("searchLyrics") > -1) {
-            try {
-                let result = (await y.searchLyrics(req.query.keyword)) || null;
-                if (result && result.lyrics)
-                    for (i = 0; i < result.lyrics.length; i++)
-                        resData.lyrics.push(result.lyrics[i]);
-            } catch (e) {
-                showError(x.name, e)
-            }
-        }
+    await Promise.all(Object.keys(moduleList).map(async moudleName => new Promise(async (resolve, reject) => {
+        let timeout = 10
+        const timer = setTimeout(() => {
+            console.log(`${moudleName} timed out after ${timeout}s`)
+            return resolve()
+        }, timeout * 1000);
+        if (moduleList[moudleName].active.indexOf("searchLyrics") == -1) return resolve()
+        let _module = require(moduleList[moudleName].js);
+        let { lyrics } = await _module.searchLyrics(req.query.keyword);
+        if (lyrics) resData.lyrics = [...resData.lyrics, ...lyrics]
+        clearTimeout(timer);
+        return resolve()
+    })))
+    function matchRate(a, b, rate = 0) {
+        a = a.toLowerCase()
+        b = b.toLowerCase()
+        for (let c of a.split('')) b.includes(c) ? rate++ : rate--
+        for (let c of b.split('')) a.includes(c) ? rate++ : rate--
+        return Math.round((rate / (a.length * 2)) * 10000) / 100
     }
+    resData.lyrics.map(item => {
+        let rate = matchRate(req.query.keyword, item.name) * 0.7 + matchRate(req.query.keyword, item.artist) * 0.3
+        rate = Math.round(rate * 100) / 100
+        rate = rate > 0 ? (rate > 100 ? 90.25 : rate) : 0
+        return { ...item, rate }
+    })
+    resData.lyrics.sort((a, b) => b.rate - a.rate)
+
     return res.json(resData);
 });
 router.post("/lyric/", async (req, res) => {
