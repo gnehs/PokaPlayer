@@ -1,12 +1,14 @@
-FROM node
 
-WORKDIR /app
-# 安裝必要組件
-RUN apt-get update && apt-get install -y git
-# 拉取程式碼
-RUN git clone https://github.com/gnehs/PokaPlayer.git .
+FROM node:14-alpine
+
+WORKDIR /app 
 # 覆蓋拉取的程式碼避免干擾到 dev
 COPY . /app 
+
+RUN  apk update  
+RUN  apk add --no-cache --virtual build-pkg build-base python2 git  
+RUN  npm install --production --silent  
+RUN  apk del build-pkg
 # node modules
 RUN npm install --production
 # 環境設定
