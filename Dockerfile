@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM node
 
 WORKDIR /app
 # 安裝必要組件
