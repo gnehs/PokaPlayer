@@ -141,6 +141,7 @@ router.get("/folders/", async (req, res) => {
         folders: [],
         songs: []
     };
+
     for (var i in Object.keys(moduleList)) {
         let x = moduleList[Object.keys(moduleList)[i]];
         let y = require(x.js);
@@ -169,15 +170,10 @@ router.get("/folderFiles/", async (req, res) => {
     if (!_module || moduleList[moduleName].active.indexOf("getFolderFiles") == -1)
         return res.status(501).send("The required module is currently unavailable :(");
 
-    let resData = {
-        folders: [],
-        songs: []
-    };
+    let resData = { folders: [], songs: [] };
 
     try {
-        let info = await _module.getFolderFiles(req.query.id);
-        for (i = 0; i < info.folders.length; i++) resData.folders.push(info.folders[i]);
-        for (i = 0; i < info.songs.length; i++) resData.songs.push(info.songs[i]);
+        resData = await _module.getFolderFiles(req.query.id);
     } catch (e) {
         showError(moduleName, e)
     }
@@ -196,26 +192,23 @@ router.get("/search/", async (req, res) => {
         composers: [],
         playlists: []
     };
-    for (var i in Object.keys(moduleList)) {
-        let x = moduleList[Object.keys(moduleList)[i]];
-        let y = require(x.js);
-        if (x.active.indexOf("search") > -1) {
-            try {
-                let result = (await y.search(req.query.keyword)) || null;
-                if (result) {
-                    for (let key of Object.keys(result)) {
-                        if (result[key].length) {
-                            for (let item of result[key]) {
-                                resData[key].push(item);
-                            }
+    await Promise.all(
+        Object.keys(moduleList)
+            .filter(x => moduleList[x].active.includes("search"))
+            .map(x => moduleList[x])
+            .map(async x => {
+                try {
+                    let result = (await require(x.js).search(req.query.keyword)) || null;
+                    if (result) {
+                        for (let item of Object.keys(result)) {
+                            resData[item] = resData[item].concat(result[item])
                         }
                     }
+                } catch (e) {
+                    showError(x.name, e)
                 }
-            } catch (e) {
-                showError(x.name, e)
-            }
-        }
-    }
+            })
+    )
     return res.json(resData);
 });
 //-----------------------------> 專輯
