@@ -12,7 +12,7 @@ RUN apk del build-pkg
 
 RUN apk add git
 RUN git init
-RUN git add remote https://github.com/gnehs/PokaPlayer.git
+RUN git add remote origin https://github.com/gnehs/PokaPlayer.git
 # 環境設定
 ENV NODE_ENV=production
 EXPOSE 3000
