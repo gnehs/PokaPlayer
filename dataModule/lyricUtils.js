@@ -1,8 +1,6 @@
-
-const fetch = require('node-fetch')
-// const OpenCC = require('opencc');
-// const converter_TW = new OpenCC('s2twp.json');
-// const converter_TC = new OpenCC('s2t.json');
+const OpenCC = require('opencc');
+const converter_TW = new OpenCC('s2twp.json');
+const converter_TC = new OpenCC('s2t.json');
 function migrate(org, t, offset = 10 ** -3) {
     const isDigit = x => !isNaN(Number(x));
 
@@ -153,32 +151,11 @@ function migrate(org, t, offset = 10 ** -3) {
     return result;
 }
 
-// async function zhconvert(text, converter = "Taiwan") {
-//     if (converter == "Taiwan") {
-//         return await converter_TW.convertPromise(text)
-//     } else {
-//         return await converter_TC.convertPromise(text)
-//     }
-// }
-async function zhconvert(text, converter = "Taiwan", retry = 0) {
-    try {
-        let res = await fetch("https://api.zhconvert.org/convert", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                converter,
-                text
-            })
-        }).then(x => x.json())
-        return res.data.text;
-    } catch (e) {
-        if (retry < 3) {
-            return zhconvert(text, converter = "Taiwan", retry++)
-        } else {
-            return text
-        }
+async function zhconvert(text, converter = "Taiwan") {
+    if (converter == "Taiwan") {
+        return await converter_TW.convertPromise(text)
+    } else {
+        return await converter_TC.convertPromise(text)
     }
 }
 module.exports = {

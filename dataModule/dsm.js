@@ -853,37 +853,6 @@ async function getLyric(id) {
     else return false;
 }
 
-async function searchLyrics(keyword) {
-    let PARAMS_JSON = [{
-        key: "additional",
-        value: "full_lyrics"
-    },
-    {
-        key: "limit",
-        value: 30
-    },
-    {
-        key: "title",
-        value: keyword
-    },
-    {
-        key: "artist",
-        value: ""
-    }
-    ];
-    result = (await getAPI(
-        "AudioStation/lyrics_search.cgi",
-        "SYNO.AudioStation.LyricsSearch",
-        "searchlyrics",
-        PARAMS_JSON,
-        2
-    )).data;
-    if (result) return {
-        lyrics: parseLyrics(result.lyrics)
-    };
-    else return false;
-}
-
 module.exports = {
     name: "DSM",
     enabled: config.DSM.enabled,
@@ -910,5 +879,4 @@ module.exports = {
     getPlaylistSongs,
     getRandomSongs,
     getLyric
-    //searchLyrics //太慢
 };

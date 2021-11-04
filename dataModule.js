@@ -441,19 +441,26 @@ router.get("/searchLyrics/", async (req, res) => {
     let resData = {
         lyrics: []
     };
-    await Promise.all(Object.keys(moduleList).map(async moudleName => new Promise(async (resolve, reject) => {
-        let timeout = 10
-        const timer = setTimeout(() => {
-            console.log(`${moudleName} timed out after ${timeout}s`)
-            return resolve()
-        }, timeout * 1000);
-        if (moduleList[moudleName].active.indexOf("searchLyrics") == -1) return resolve()
-        let _module = require(moduleList[moudleName].js);
-        let { lyrics } = await _module.searchLyrics(req.query.keyword);
-        if (lyrics) resData.lyrics = [...resData.lyrics, ...lyrics]
-        clearTimeout(timer);
-        return resolve()
-    })))
+    await Promise.all(
+        Object.values(moduleList)
+            .filter(x => x.active.includes("searchLyrics"))
+            .map(async x => new Promise(async (resolve, reject) => {
+                let timeout = 10
+                const timer = setTimeout(() => {
+                    console.log(`${moudleName} timed out after ${timeout}s`)
+                    return resolve()
+                }, timeout * 1000);
+                try {
+                    let { lyrics } = (await require(x.js).searchLyrics(req.query.keyword)) || null;
+                    if (lyrics) resData.lyrics = [...resData.lyrics, ...lyrics]
+                    clearTimeout(timer);
+                    resolve()
+                }
+                catch (e) {
+                    showError(x.name, e)
+                }
+            }))
+    )
     function matchRate(a, b, rate = 0) {
         a = a.toLowerCase()
         b = b.toLowerCase()

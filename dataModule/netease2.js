@@ -685,7 +685,7 @@ async function getLyric(id) {
 }
 
 async function searchLyrics(keyword) {
-    let songs = (await search(keyword, 30, "song")).songs;
+    let songs = (await search(keyword, 15, "song")).songs;
     let result = (await Promise.all(
         songs.map(async x => ({
             name: x.name,
