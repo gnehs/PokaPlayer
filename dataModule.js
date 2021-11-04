@@ -58,30 +58,23 @@ router.use("/v2", require("./router/index"));
 router.get("/home/", async (req, res) => {
     //http://localhost:3000/pokaapi/home
     let resData = [];
-    for (var i in Object.keys(moduleList)) {
-        let x = moduleList[Object.keys(moduleList)[i]];
-        let y = require(x.js);
-        if (x.active.indexOf("getHome") > -1) {
-            try {
-                let results = (await y.getHome(req.session.user)) || null;
-                let isNotEmpty = (...x) => {
-                    let r = false
-                    x.forEach(v => {
-                        if (v && v.length > 0) r = true
-                    })
-                    return r
-                }
-                if (results) {
-                    for (result of results) {
-                        if (isNotEmpty(result.playlists, result.songs, result.albums, result.artists, result.composers))
-                            resData.push(result)
+    await Promise.all(
+        Object.values(moduleList)
+            .filter(x => x.active.includes("getHome"))
+            .map(async x => {
+                try {
+                    let results = (await require(x.js).getHome(req.session.user)) || null;
+                    for (let result of results) {
+                        if (result) {
+                            if (Object.values(result).filter(v => v.length).length > 0)
+                                resData.push(result)
+                        }
                     }
+                } catch (e) {
+                    showError(x.name, e)
                 }
-            } catch (e) {
-                showError(x.name, e)
-            }
-        }
-    }
+            })
+    )
     return res.json(resData);
 });
 //-----------------------------> 釘選好朋油
