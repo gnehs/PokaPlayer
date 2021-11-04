@@ -95,28 +95,6 @@ app
         }
         res.json(u)
     })
-    .post("/clear-session/", async (req, res) => {
-        let { username, password } = req.body
-        let u = await User.login({ username, password })
-        if (u.success && await User.isUserAdmin(u.user)) {
-            try {
-                await require('./db/session').clearAll()
-            } catch (e) {
-                return res.json({ success: false, e })
-            }
-            res.json({ success: true })
-
-            addLog({
-                level: "warn",
-                type: "system",
-                event: "Session cleared.",
-                user: req.session.user,
-                description: `User {${req.session.user}} clearned session`
-            })
-        } else {
-            res.json({ success: false, e: 'Permission Denied Desu' })
-        }
-    })
     .get("/logout/", (req, res) => {
         // 登出
         if (req.session.user) {
