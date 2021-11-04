@@ -42,9 +42,6 @@ router.get("/", (req, res) => {
 // 先在這裡蹦蹦蹦再轉交給其他好朋友
 router.use((req, res, next) => {
     if (req.session.user) {
-        if (req.method.toUpperCase() === "GET") {
-            res.header("Cache-Control", "max-age=7200") //快取 2hr
-        }
         next();
     } else {
         res.status(403).send("Permission Denied Desu");
@@ -157,25 +154,22 @@ router.get("/search/", async (req, res) => {
 // 取得專輯清單
 router.get("/albums/", async (req, res) => {
     //http://localhost:3000/pokaapi/albums
-    let albums = {
-        albums: []
-    };
-    for (var i in Object.keys(moduleList)) {
-        let x = moduleList[Object.keys(moduleList)[i]];
-        let y = require(x.js);
-        if (x.active.indexOf("getAlbums") > -1) {
-            try {
-                let albumList = (await y.getAlbums()) || null;
-                if (albumList) {
-                    for (i = 0; i < albumList.albums.length; i++)
-                        albums.albums.push(albumList.albums[i]);
+    let resData = [];
+    await Promise.all(
+        Object.values(moduleList)
+            .filter(x => x.active.includes("getAlbums"))
+            .map(async x => {
+                try {
+                    let { albums } = (await require(x.js).getAlbums()) || null;
+                    if (albums) {
+                        resData = resData.concat(albums)
+                    }
+                } catch (e) {
+                    showError(x.name, e)
                 }
-            } catch (e) {
-                showError(x.name, e)
-            }
-        }
-    }
-    res.json(albums);
+            })
+    )
+    res.json({ albums: resData });
 });
 // 取得專輯歌曲
 router.get("/albumSongs/", async (req, res) => {
@@ -224,21 +218,24 @@ router.get("/playlists/", async (req, res) => {
         playlists: [],
         playlistFolders: []
     };
-    for (var i in Object.keys(moduleList)) {
-        let x = moduleList[Object.keys(moduleList)[i]];
-        let y = require(x.js);
-        if (x.active.indexOf("getPlaylists") > -1) {
-            try {
-                let list = (await y.getPlaylists(req.session.user)) || null;
-                if (list) {
-                    if (list.playlists) r.playlists = r.playlists.concat(list.playlists);
-                    if (list.playlistFolders) r.playlistFolders = r.playlistFolders.concat(list.playlistFolders);
+    res.header("Cache-Control", "max-age=7200") //快取 2hr
+    await Promise.all(
+        Object.values(moduleList)
+            .filter(x => x.active.includes("getPlaylists"))
+            .map(async x => {
+                try {
+                    let res = (await require(x.js).getPlaylists(req.session.user)) || null;
+                    if (res) {
+                        if (res.playlists)
+                            r.playlists = r.playlists.concat(res.playlists);
+                        if (res.playlistFolders)
+                            r.playlistFolders = r.playlistFolders.concat(res.playlistFolders);
+                    }
+                } catch (e) {
+                    showError(x.name, e)
                 }
-            } catch (e) {
-                showError(x.name, e)
-            }
-        }
-    }
+            })
+    )
     res.json(r);
 });
 
