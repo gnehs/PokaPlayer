@@ -823,75 +823,6 @@ async function getHome() {
     return result;
 }
 
-function playlistOperation(operation) {
-    switch (operation) {
-        case "in":
-            return async (songIds, playlistId) => {
-                let playlistIds = (await getPlaylistSongs(playlistId)).songs.map(x => x.id);
-                if (!Array.isArray(songIds)) return playlistIds.includes(songIds);
-                else {
-                    let result = {};
-                    for (const i of songIds) {
-                        result[i] = playlistIds.includes(i);
-                    }
-                    return result;
-                }
-            };
-        case "add":
-            return async (songIds, playlistId) => {
-                if (Array.isArray(songIds)) songIds = songIds.join(",");
-                let response = await rp(
-                    options(`${server}playlist/tracks?op=add&pid=${playlistId}&tracks=${songIds}`, {}, true)
-                );
-                return response.body;
-            };
-        case "delete":
-            return async (songIds, playlistId) => {
-                if (Array.isArray(songIds)) songIds = songIds.join(",");
-                let response = await rp(
-                    options(`${server}playlist/tracks?op=del&pid=${playlistId}&tracks=${songIds}`, {}, true)
-                );
-                return response.body;
-            };
-    }
-}
-
-async function getUserPlaylists(uid) {
-    while (!uid) {
-        if (isLoggedin === undefined) {
-            login.then(async x => {
-                if (x.code == 200) {
-                    uid = (await rp(options(`${server}login/status`))).profile.userId;
-                } else pokaLog.logDMErr('Netease2', `未登入，無法獲取用戶歌單。`)
-            });
-        } else if (!isLoggedin) {
-            pokaLog.logDMErr('Netease2', `未登入，無法獲取用戶歌單。`)
-        } else {
-            uid = (await rp(options(`${server}login/status`))).profile.userId;
-        }
-    }
-    return (await rp(options(`${server}user/playlist?uid=${uid}`))).playlist
-        .filter(x => x.creator.userId == uid)
-        .map(x => ({
-            name: x.name,
-            source: "Netease2",
-            image: imageUrl(x.coverImgUrl) || defaultImage,
-            type: "playlist",
-            id: `${x.id}`
-        }));
-}
-
-async function like(songId, like = true) {
-    let response = await rp(
-        options(`${server}like?id=${songId}${like ? "&like=true" : ""}&timestamp=${Date.now()}`, {}, true)
-    );
-    return response.body;
-}
-
-async function isLiked(songId) {
-    let likeList = (await rp(options(`${server}likelist`))).ids;
-    return likeList.includes(songId);
-}
 
 module.exports = {
     name: "Netease2",
@@ -922,9 +853,5 @@ module.exports = {
     unPin,
     isPinned,
     getHome,
-    req,
-    getUserPlaylists,
-    playlistOperation,
-    like,
-    isLiked
+    req
 };

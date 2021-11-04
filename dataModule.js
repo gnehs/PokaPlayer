@@ -239,22 +239,6 @@ router.get("/playlists/", async (req, res) => {
     res.json(r);
 });
 
-// 取得播放清單資料夾
-router.post("/playlists/", async (req, res) => {
-    let moduleName = req.query.moduleName;
-    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
-    // 沒這東西
-    if (!_module || moduleList[moduleName].active.indexOf("getPlaylists") == -1)
-        return res.status(501).send("The required module is currently unavailable :(");
-    let r;
-    try {
-        r = await _module.getPlaylists(req.body.playlists, req.session.user);
-    } catch (e) {
-        showError(moduleName, e)
-    }
-    return res.json(r || null);
-});
-
 // 取得播放清單的歌曲
 router.get("/playlistSongs/", async (req, res) => {
     //http://localhost:3000/pokaapi/playlistSongs/?moduleName=DSM&id=playlist_shared_normal/15
@@ -271,23 +255,6 @@ router.get("/playlistSongs/", async (req, res) => {
     }
     return res.json(r || null);
 });
-// 取得可加入的播放清單
-router.get("/userPlaylists/", async (req, res) => {
-    //http://localhost:3000/pokaapi/userPlaylists/?moduleName=netease2
-    let moduleName = req.query.moduleName;
-    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
-    // 沒這東西
-    if (!_module || moduleList[moduleName].active.indexOf("getUserPlaylists") == -1)
-        return res.status(501).send("The required module is currently unavailable :(");
-    let r;
-    try {
-        r = await _module.getUserPlaylists();
-    } catch (e) {
-        showError(moduleName, e)
-    }
-    return res.json(r || null);
-});
-
 //-----------------------------> 演出者
 // 取得演出者資料
 router.get("/artist/", async (req, res) => {
@@ -438,33 +405,6 @@ router.get("/song/", async (req, res) => {
             .pipe(res);
     }
 });
-//- 評等
-router
-    .get("/ratingSong/", async (req, res) => { // 戳戳看能不能用
-        //http://localhost:3000/pokaapi/ratingSong/?moduleName=DSM
-        let moduleName = req.query.moduleName;
-        let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
-        // 沒這東西
-        if (!_module || moduleList[moduleName].active.indexOf("ratingSong") == -1)
-            return res.status(501).send("The required module is currently unavailable :(");
-        return res.json(true)
-    })
-    .post("/ratingSong/", async (req, res) => {
-        /*
-            req.body: {
-                moduleName: "Netease2",
-                songId: [songId <int>],
-                rating: 0-5
-            }
-        */
-        let moduleName = req.body.moduleName;
-        let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
-        // 沒這東西
-        if (!_module || moduleList[moduleName].active.indexOf("ratingSong") == -1)
-            return res.status(501).send("The required module is currently unavailable :(");
-        return res.json(await _module.ratingSong(req.body.songId, req.body.rating))
-    })
-
 //-----------------------------> 封面
 // 取得封面
 router.get("/cover/", async (req, res) => {
@@ -573,177 +513,6 @@ router.get("/lyric/", async (req, res) => {
         }] : []
     });
 });
-//-----------------------------> 加入清單
-router.get("/getUserPlaylists", async (req, res) => {
-    //http://localhost:3000/pokaapi/getUserPlaylists/?moduleName=Netease2
-    let moduleName = req.query.moduleName;
-    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
-    // 沒這東西
-    if (!_module || moduleList[moduleName].active.indexOf("getUserPlaylists") == -1)
-        return res.status(501).send("The required module is currently unavailable :(");
-    let result;
-    try {
-        result = await _module.getUserPlaylists()
-    } catch (e) {
-        result = false
-        showError(moduleName, e)
-    }
-    return res.json(result);
-})
-
-//-----------------------------> 清單動作
-router
-    .get("/playlistOperation", async (req, res) => {
-        // http://localhost:3000/pokaapi/playlistOperation/
-        /*
-            ------->>>>>req.query: {
-                moduleName: "Netease2",
-                songIds: [songId <int>],
-                playlistId <int>
-            }
-        */
-        let moduleName = req.query.moduleName;
-        let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
-        // 沒這東西
-        if (!_module || moduleList[moduleName].active.indexOf("playlistOperation") == -1)
-            return res.status(501).send("The required module is currently unavailable :(");
-        let result;
-        try {
-            result = await _module.playlistOperation("in")(JSON.parse(req.query.songIds), req.query.playlistId)
-        } catch (e) {
-            result = false
-            showError(moduleName, e)
-        }
-        res.header("Cache-Control", "max-age=0") //快取 0
-        return res.json(result);
-    })
-    .post("/playlistOperation", async (req, res) => {
-        // http://localhost:3000/pokaapi/playlistOperation/
-        /*
-            req.body: {
-                moduleName: "Netease2",
-                songIds: [songId <int>],
-                playlistId <int>
-            }
-        */
-        let moduleName = req.body.moduleName;
-        let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
-        // 沒這東西
-        if (!_module || moduleList[moduleName].active.indexOf("playlistOperation") == -1)
-            return res.status(501).send("The required module is currently unavailable :(");
-        let result;
-        try {
-            result = await _module.playlistOperation("add")(req.body.songIds, req.body.playlistId)
-        } catch (e) {
-            result = false
-            showError(moduleName, e)
-        }
-        return res.json(result);
-    })
-    .delete("/playlistOperation", async (req, res) => {
-        // http://localhost:3000/pokaapi/playlistOperation/
-        /*
-            req.query: {
-                moduleName: "Netease2",
-                songIds: [songId <int>],
-                playlistId <int>
-            }
-        */
-        let moduleName = req.query.moduleName;
-        let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
-        // 沒這東西
-        if (!_module || moduleList[moduleName].active.indexOf("playlistOperation") == -1)
-            return res.status(501).send("The required module is currently unavailable :(");
-        let result;
-        try {
-            result = await _module.playlistOperation("delete")(JSON.parse(req.query.songIds), req.query.playlistId)
-        } catch (e) {
-            result = false
-            showError(moduleName, e)
-        }
-        res.header("Cache-Control", "max-age=0") //快取 0
-        return res.json(result);
-    })
-
-//-----------------------------> 喜歡
-router.get('/canLike', async (req, res) => {
-    //http://localhost:3000/pokaapi/canLike/?moduleName=Netease2
-    let moduleName = req.query.moduleName;
-    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
-    // 沒這東西
-    if (!_module || moduleList[moduleName].active.indexOf("like") == -1)
-        return res.status(501).send("The required module is currently unavailable :(");
-    return res.json(true)
-})
-    .post('/isLiked', async (req, res) => {
-        //POST http://localhost:3000/pokaapi/isLiked/ 
-        /*
-            req.query: {
-                moduleName: "Netease2",
-                songId: songId
-            }
-        */
-        let moduleName = req.body.moduleName;
-        let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
-        // 沒這東西
-        if (!_module || moduleList[moduleName].active.indexOf("isLiked") == -1)
-            return res.status(501).send("The required module is currently unavailable :(");
-
-        let result;
-        try {
-            result = await _module.isLiked(req.body.songId)
-        } catch (e) {
-            result = false
-            showError(moduleName, e)
-        }
-        return res.json(result);
-    })
-    .post('/like', async (req, res) => {
-        //POST http://localhost:3000/pokaapi/like/
-        /*
-            req.query: {
-                moduleName: "Netease2",
-                songId: songId
-            }
-        */
-        let moduleName = req.body.moduleName;
-        let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
-        // 沒這東西
-        if (!_module || moduleList[moduleName].active.indexOf("like") == -1)
-            return res.status(501).send("The required module is currently unavailable :(");
-
-        let result;
-        try {
-            result = await _module.like(req.body.songId, true)
-        } catch (e) {
-            result = false
-            showError(moduleName, e)
-        }
-        return res.json(result);
-    })
-    .post('/disLike', async (req, res) => {
-        //POST http://localhost:3000/pokaapi/disLike/
-        /*
-            req.query: {
-                moduleName: "Netease2",
-                songId: songId
-            }
-        */
-        let moduleName = req.body.moduleName;
-        let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
-        // 沒這東西
-        if (!_module || moduleList[moduleName].active.indexOf("like") == -1)
-            return res.status(501).send("The required module is currently unavailable :(");
-
-        let result;
-        try {
-            result = await _module.like(req.body.songId, false)
-        } catch (e) {
-            result = false
-            showError(moduleName, e)
-        }
-        return res.json(result);
-    })
 //-----------------------------> 隨機
 // 隨機歌曲
 router.get("/randomSongs/", async (req, res) => {

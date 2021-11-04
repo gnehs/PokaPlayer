@@ -853,105 +853,6 @@ async function getLyric(id) {
     else return false;
 }
 
-function playlistOperation(operation) {
-    /*
-    req.body: {
-        moduleName: "Netease2",
-        songIds: [songId <int>],
-        playlistId <int>
-    }
-*/
-    switch (operation) {
-        case "in":
-            return async (songIds, playlistId) => {
-                let result = {};
-                let playlist = (await getPlaylistSongs(playlistId)).songs.map(x => x.id);
-                for (const i of songIds) {
-                    result[i] = playlist.includes(i);
-                }
-                return result
-            }
-        case "add":
-            return async (songIds, playlistId) => {
-                let result = await getAPI(
-                    "AudioStation/playlist.cgi",
-                    "SYNO.AudioStation.Playlist",
-                    "updatesongs", [{
-                        key: "offset",
-                        value: -1
-                    },
-                    {
-                        key: "limit",
-                        value: 0
-                    },
-                    {
-                        key: "id",
-                        value: playlistId
-                    },
-                    {
-                        key: "songs",
-                        value: songIds[0]
-                    }
-                ]
-                );
-                return {
-                    code: result.success ? 200 : 400
-                }
-            }
-        case "delete":
-            return async (songIds, playlistId) => {
-                let offset;
-                let playlist = (await getPlaylistSongs(playlistId)).songs
-                for (let i = 0; i < playlist.length; i++)
-                    if (playlist[i].id == songIds[0])
-                        offset = i
-                let result = await getAPI(
-                    "AudioStation/playlist.cgi",
-                    "SYNO.AudioStation.Playlist",
-                    "updatesongs", [{
-                        key: "offset",
-                        value: offset
-                    },
-                    {
-                        key: "limit",
-                        value: 1
-                    },
-                    {
-                        key: "id",
-                        value: playlistId
-                    },
-                    {
-                        key: "songs",
-                        value: ''
-                    }
-                ],
-                    3
-                );
-                return {
-                    code: result.success ? 200 : 400
-                }
-            };
-
-    }
-}
-async function ratingSong(songid, rating) {
-    let result = await getAPI("AudioStation/song.cgi", "SYNO.AudioStation.Song", "setrating", [{
-        key: "id",
-        value: songid
-    },
-    {
-        key: "rating",
-        value: rating
-    }
-    ], 3);
-    return result.success
-}
-async function getUserPlaylists() {
-    let info = await getAPI("AudioStation/info.cgi", "SYNO.AudioStation.Info", "getinfo", [], 4);
-    let result = (await getPlaylists()).playlists
-    // 看看 484 管理員
-    return info.data.is_manager ? result : result.filter(i => i.id.match(/^playlist_personal_normal/g));
-}
 async function searchLyrics(keyword) {
     let PARAMS_JSON = [{
         key: "additional",
@@ -1008,9 +909,6 @@ module.exports = {
     getPlaylists,
     getPlaylistSongs,
     getRandomSongs,
-    getLyric,
-    playlistOperation,
-    getUserPlaylists,
-    ratingSong
+    getLyric
     //searchLyrics //太慢
 };
