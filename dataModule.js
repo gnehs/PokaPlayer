@@ -137,29 +137,27 @@ router.post("/isPinned/", async (req, res) => {
 // 取得資料夾清單(根目錄)
 router.get("/folders/", async (req, res) => {
     //http://localhost:3000/pokaapi/folders
-    let folders = {
+    let resData = {
         folders: [],
         songs: []
     };
-
-    for (var i in Object.keys(moduleList)) {
-        let x = moduleList[Object.keys(moduleList)[i]];
-        let y = require(x.js);
-        if (x.active.indexOf("getFolders") > -1) {
-            try {
-                let folderList = (await y.getFolders()) || null;
-                if (folderList) {
-                    for (i = 0; i < folderList.folders.length; i++)
-                        folders.folders.push(folderList.folders[i]);
-                    for (i = 0; i < folderList.songs.length; i++)
-                        folders.songs.push(folderList.songs[i]);
+    await Promise.all(
+        Object.values(moduleList)
+            .filter(x => x.active.includes("getFolders"))
+            .map(async x => {
+                try {
+                    let result = (await require(x.js).getFolders()) || null;
+                    if (result) {
+                        for (let item of Object.keys(result)) {
+                            resData[item] = resData[item].concat(result[item])
+                        }
+                    }
+                } catch (e) {
+                    showError(x.name, e)
                 }
-            } catch (e) {
-                showError(x.name, e)
-            }
-        }
-    }
-    res.json(folders);
+            })
+    )
+    res.json(resData);
 });
 // 透過取得資料夾內檔案清單
 router.get("/folderFiles/", async (req, res) => {
@@ -193,9 +191,8 @@ router.get("/search/", async (req, res) => {
         playlists: []
     };
     await Promise.all(
-        Object.keys(moduleList)
-            .filter(x => moduleList[x].active.includes("search"))
-            .map(x => moduleList[x])
+        Object.values(moduleList)
+            .filter(x => x.active.includes("search"))
             .map(async x => {
                 try {
                     let result = (await require(x.js).search(req.query.keyword)) || null;
