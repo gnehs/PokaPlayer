@@ -6,9 +6,13 @@ WORKDIR /app
 COPY . /app 
 
 RUN apk update  
-RUN apk add --no-cache --virtual build-pkg build-base python2 git  
+RUN apk add --no-cache --virtual build-pkg build-base python2 
 RUN npm install --production --silent  
 RUN apk del build-pkg
+
+RUN apk add git
+RUN git init
+RUN git add remote https://github.com/gnehs/PokaPlayer.git
 # 環境設定
 ENV NODE_ENV=production
 EXPOSE 3000
