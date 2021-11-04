@@ -77,54 +77,6 @@ router.get("/home/", async (req, res) => {
     )
     return res.json(resData);
 });
-//-----------------------------> 釘選好朋油
-router.post("/addPin/", async (req, res) => {
-    //http://localhost:3000/pokaapi/addPin/?moduleName=DSM&type=album&id={%22album%22:%22%E4%B8%96%E7%95%8C%E3%81%AE%E6%9E%9C%E3%81%A6%E3%81%AB%E5%90%9B%E3%81%8C%E3%81%84%E3%81%A6%E3%82%82%22,%22album_artist%22:%22%E5%96%9C%E5%A4%9A%E4%BF%AE%E5%B9%B3%22}&name=%E4%B8%96%E7%95%8C%E3%81%AE%E6%9E%9C%E3%81%A6%E3%81%AB%E5%90%9B%E3%81%8C%E3%81%84%E3%81%A6%E3%82%82
-    //[{"type":"album","criteria":{"album":"世界の果てに君がいても","album_artist":"喜多修平"},"name":"世界の果てに君がいても"}]
-    let moduleName = req.query.moduleName;
-    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
-    // 沒這東西
-    if (!_module || moduleList[moduleName].active.indexOf("addPin") == -1)
-        return res.send("disabled");
-    try {
-        res.json(await _module.addPin(req.query.type, req.query.id, req.query.name));
-    } catch (e) {
-        showError(moduleList[moduleName].name, e)
-        return res.send("disabled");
-    }
-});
-router.post("/unPin/", async (req, res) => {
-    //http://localhost:3000/pokaapi/unPin/?moduleName=DSM&type=album&id={%22album%22:%22%E4%B8%96%E7%95%8C%E3%81%AE%E6%9E%9C%E3%81%A6%E3%81%AB%E5%90%9B%E3%81%8C%E3%81%84%E3%81%A6%E3%82%82%22,%22album_artist%22:%22%E5%96%9C%E5%A4%9A%E4%BF%AE%E5%B9%B3%22}&name=%E4%B8%96%E7%95%8C%E3%81%AE%E6%9E%9C%E3%81%A6%E3%81%AB%E5%90%9B%E3%81%8C%E3%81%84%E3%81%A6%E3%82%82
-    //[{"type":"album","criteria":{"album":"世界の果てに君がいても","album_artist":"喜多修平"},"name":"世界の果てに君がいても"}]
-    let moduleName = req.query.moduleName;
-    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
-    // 沒這東西
-    if (!_module || moduleList[moduleName].active.indexOf("unPin") == -1)
-        return res.send("disabled");
-
-    try {
-        res.json(await _module.unPin(req.query.type, req.query.id, req.query.name));
-    } catch (e) {
-        showError(moduleList[moduleName].name, e)
-        return res.send("disabled");
-    }
-});
-router.post("/isPinned/", async (req, res) => {
-    //http://localhost:3000/pokaapi/isPinned/?moduleName=DSM&type=album&id={%22album%22:%22%E4%B8%96%E7%95%8C%E3%81%AE%E6%9E%9C%E3%81%A6%E3%81%AB%E5%90%9B%E3%81%8C%E3%81%84%E3%81%A6%E3%82%82%22,%22album_artist%22:%22%E5%96%9C%E5%A4%9A%E4%BF%AE%E5%B9%B3%22}&name=%E4%B8%96%E7%95%8C%E3%81%AE%E6%9E%9C%E3%81%A6%E3%81%AB%E5%90%9B%E3%81%8C%E3%81%84%E3%81%A6%E3%82%82
-    //[{"type":"album","criteria":{"album":"世界の果てに君がいても","album_artist":"喜多修平"},"name":"世界の果てに君がいても"}]
-    let moduleName = req.query.moduleName;
-    let _module = moduleName in moduleList ? require(moduleList[moduleName].js) : null;
-    // 沒這東西
-    if (!_module || moduleList[moduleName].active.indexOf("isPinned") == -1)
-        return res.send("disabled");
-
-    try {
-        res.json(await _module.isPinned(req.query.type, req.query.id, req.query.name));
-    } catch (e) {
-        showError(moduleList[moduleName].name, e)
-        return res.send("disabled");
-    }
-});
 
 //-----------------------------> 資料夾
 // 取得資料夾清單(根目錄)
