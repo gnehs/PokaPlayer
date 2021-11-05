@@ -461,6 +461,45 @@ router.get("/searchLyrics/", async (req, res) => {
                 }
             }))
     )
+
+    function similarity(s1, s2) {
+        function editDistance(s1, s2) {
+            s1 = s1.toLowerCase();
+            s2 = s2.toLowerCase();
+
+            var costs = new Array();
+            for (var i = 0; i <= s1.length; i++) {
+                var lastValue = i;
+                for (var j = 0; j <= s2.length; j++) {
+                    if (i == 0)
+                        costs[j] = j;
+                    else {
+                        if (j > 0) {
+                            var newValue = costs[j - 1];
+                            if (s1.charAt(i - 1) != s2.charAt(j - 1))
+                                newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+                            costs[j - 1] = lastValue;
+                            lastValue = newValue;
+                        }
+                    }
+                }
+                if (i > 0)
+                    costs[s2.length] = lastValue;
+            }
+            return costs[s2.length];
+        }
+        var longer = s1;
+        var shorter = s2;
+        if (s1.length < s2.length) {
+            longer = s2;
+            shorter = s1;
+        }
+        var longerLength = longer.length;
+        if (longerLength == 0) {
+            return 1.0;
+        }
+        return (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);
+    }
     function matchRate(a, b, rate = 0) {
         a = a.toLowerCase()
         b = b.toLowerCase()
@@ -468,13 +507,12 @@ router.get("/searchLyrics/", async (req, res) => {
         for (let c of b.split('')) a.includes(c) ? rate++ : rate--
         return Math.round((rate / (a.length * 2)) * 10000) / 100
     }
-    resData.lyrics.map(item => {
-        let rate = matchRate(req.query.keyword, item.name) * 0.7 + matchRate(req.query.keyword, item.artist) * 0.3
-        rate = Math.round(rate * 100) / 100
-        rate = rate > 0 ? (rate > 100 ? 90.25 : rate) : 0
-        return { ...item, rate }
-    })
-    resData.lyrics.sort((a, b) => b.rate - a.rate)
+    resData.lyrics = resData.lyrics
+        .map(item => {
+            let rate = similarity(req.query.keyword, `${item.name} ${item.artist}`)
+            return { ...item, rate }
+        })
+        .sort((a, b) => b.rate - a.rate)
 
     return res.json(resData);
 });
