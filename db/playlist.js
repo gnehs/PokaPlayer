@@ -130,8 +130,12 @@ async function toggleSongOfPlaylist({ playlistId, song }) {
         })
     }
 }
+async function getAllPlaylists() {
+    return (await model.find({}))
+}
 module.exports = {
     createPlaylist,
+    getAllPlaylists,
     delPlaylist,
     editPlaylist,
     getPlaylists,
