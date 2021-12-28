@@ -515,7 +515,7 @@ async function getPlaylists(uid) {
                     type: "folder",
                     id: `${playlistId}_${translatedCategory}`,
                     playlists: await resolveTopPlaylistStack([
-                        client(options(`/top/playlist${playlistId == 'hqPlaylist' ? '/highquality' : ''}?limit=${limit}&order=${order in ["hot", "new"] ? order : "hot"}&cat=${category}`))
+                        client(options(`/top/playlist${playlistId == 'hqPlaylist' ? '/highquality' : ''}?limit=${limit}&order=${order in ["hot", "new"] ? order : "hot"}&cat=${encodeURIComponent(category)}`))
                     ])
                 });
             }))
