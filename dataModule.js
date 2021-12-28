@@ -384,7 +384,7 @@ router.get("/song/", async (req, res) => {
     if (typeof song == "string") return res.redirect(song);
     else {
         let { headers: resHeaders } = song
-        let ifNull = x => x ? x : "";
+        let ifNull = x => x ?? "";
         //針對 Audio 寫入 Header 避免 Chrome 時間軸不能跳
         let headers = {
             "Accept-Ranges": ifNull(resHeaders["accept-ranges"]),
