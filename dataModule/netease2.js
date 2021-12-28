@@ -2,8 +2,6 @@
 const config = require(__dirname + "/../config.json").Netease2;
 const server = config.server || "http://localhost:4000/";
 
-
-
 const axios = require('axios');
 const { wrapper } = require('axios-cookiejar-support');
 const { CookieJar } = require('tough-cookie');

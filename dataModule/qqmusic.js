@@ -1,16 +1,16 @@
-const fetch = require('node-fetch')
+const axios = require('axios')
 const { migrate, zhconvert } = require('./lyricUtils')
 const pokaLog = require("../log"); // 可愛控制台輸出
 const config = require(__dirname + "/../config.json").QQMusic; // 設定
 async function searchLyrics(keyword) {
-    let searchResult = await fetch(`https://c.y.qq.com/soso/fcgi-bin/client_search_cp?w=${encodeURI(keyword)}&format=json&cr=1&g_tk=5381`, {
+    let searchResult = await axios(`https://c.y.qq.com/soso/fcgi-bin/client_search_cp?w=${encodeURI(keyword)}&format=json&cr=1&g_tk=5381`, {
         method: "GET",
         headers: {
             "Referer": "y.qq.com/portal/player.html",
             "User-Agent": 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:46.0) Gecko/20100101 Firefox/46.0'
         }
     })
-        .then(res => res.json())
+        .then(res => res.data)
         .then(x => x.data.song.list)
         .then(x => x.slice(0, 5))
     searchResult = searchResult.map(async y => {
@@ -32,13 +32,13 @@ async function searchLyrics(keyword) {
     return { lyrics: (await Promise.all(searchResult)).filter(x => x) };
 }
 function getLyric(id) {
-    return fetch(`https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg?songmid=${encodeURI(id)}&g_tk=5381&format=json`, {
+    return axios(`https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg?songmid=${encodeURI(id)}&g_tk=5381&format=json`, {
         method: "GET",
         headers: {
             Referer: 'https://y.qq.com',
         }
     })
-        .then(res => res.json())
+        .then(res => res.data)
         .then(async x => {
             if (x.lyric) {
                 let lyric, tlyric, result
