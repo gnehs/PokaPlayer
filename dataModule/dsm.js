@@ -1,14 +1,15 @@
 const config = require("../config.json"), // 很會設定ㄉ朋友
     schedule = require("node-schedule"), // 很會計時ㄉ朋友
     pokaLog = require("../log"), // 可愛控制台輸出
-    request = require("request").defaults({
-        jar: require("request").jar()
-    }), //很會請求ㄉ朋友
     dsmURL = `${config.DSM.protocol}://${config.DSM.host}:${config.DSM.port}`,
-    lyricRegex = /\[([0-9.:]*)\]/i,
-    fs = require('fs-extra')
+    lyricRegex = /\[([0-9.:]*)\]/i
 
-
+const axios = require('axios');
+const { wrapper } = require('axios-cookiejar-support');
+const { CookieJar } = require('tough-cookie');
+const jar = new CookieJar();
+const client = wrapper(axios.create({ jar, baseURL: dsmURL }));
+const transformRequest = (jsonData = {}) => Object.entries(jsonData).map(x => `${encodeURIComponent(x[0])}=${encodeURIComponent(x[1])}`).join('&');
 
 function deReq(x) {
     const b2a = x => Buffer.from(x, "base64").toString("utf8");
@@ -30,14 +31,12 @@ function genReq(link) {
 
 
 function parseSongs(songs) {
-    let r = [];
-    for (i = 0; i < songs.length; i++) {
-        let song = songs[i];
+    return songs.map(x => {
         let albumInfo = {
-            album_name: song.additional.song_tag.album || "",
+            album_name: x.additional.song_tag.album || "",
             artist_name: "",
-            album_artist_name: song.additional.song_tag.album_artist || ""
-        }
+            album_artist_name: x.additional.song_tag.album_artist || ""
+        };
         let cover =
             `/pokaapi/cover/?moduleName=DSM&data=` +
             encodeURIComponent(genReq(
@@ -45,34 +44,31 @@ function parseSongs(songs) {
                     type: "album",
                     info: albumInfo
                 })));
-        r.push({
-            name: song.title,
-            artist: song.additional.song_tag.artist,
-            artistId: song.additional.song_tag.artist,
-            album: song.additional.song_tag.album,
+        return {
+            artist: x.additional.song_tag.artist,
+            artistId: x.additional.song_tag.artist,
+            album: x.additional.song_tag.album,
             albumId: JSON.stringify(albumInfo),
-            cover: cover,
-            track: song.additional.song_tag.track,
-            year: song.additional.song_tag.year,
-            url: "/pokaapi/song/?moduleName=DSM&songId=" + song.id,
-            bitrate: song.additional.song_audio.bitrate,
-            codec: song.additional.song_audio.codec,
-            lrc: "",
+            bitrate: x.additional.song_audio.bitrate,
+            cover,
+            codec: x.additional.song_audio.codec,
+            id: x.id,
             source: "DSM",
-            id: song.id
-        });
-    }
-    return r;
+            lrc: "",
+            name: x.title,
+            track: x.additional.song_tag.track,
+            url: "/pokaapi/song/?moduleName=DSM&songId=" + x.id,
+            year: x.additional.song_tag.year,
+        }
+    });
 }
 
 function parseAlbums(albums) {
-    let r = [];
-    for (i = 0; i < albums.length; i++) {
-        let album = albums[i];
+    return albums.map(x => {
         let coverInfo = {
-            album_name: album.name || "",
-            artist_name: album.artist || "",
-            album_artist_name: album.album_artist || ""
+            album_name: x.name || "",
+            artist_name: x.artist || "",
+            album_artist_name: x.album_artist || ""
         };
         let cover =
             `/pokaapi/cover/?moduleName=DSM&data=` +
@@ -81,74 +77,37 @@ function parseAlbums(albums) {
                     type: "album",
                     info: coverInfo
                 })));
-        r.push({
-            name: album.name,
-            artist: album.display_artist,
-            year: album.year,
-            cover: cover,
+        return {
+            artist: x.display_artist,
+            cover,
+            id: JSON.stringify(coverInfo),
+            name: x.name,
             source: "DSM",
-            id: JSON.stringify(coverInfo)
-        });
-    }
-    return r;
+            year: x.year,
+        }
+    });
 }
 
 function parsePlaylists(playlists) {
-    let r = [];
-    for (i = 0; i < playlists.length; i++) {
-        r.push({
-            name: playlists[i].name,
-            source: "DSM",
-            id: playlists[i].id
-        });
-    }
-    return r;
+    return playlists.map(x => ({
+        id: x.id,
+        name: x.name,
+        source: "DSM",
+    }));
 }
-
-function parseArtists(artists) {
-    let r = [];
-    for (i = 0; i < artists.length; i++) {
-        r.push({
-            name: artists[i].name,
-            source: "DSM",
-            cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(genReq(
-                JSON.stringify({ type: "artist", info: artists[i].name || "" }))
-            )}`,
-            id: artists[i].name
-        });
-    }
-    return r;
+function parseArtists(artists, type = "artist") {
+    return artists.map(x => ({
+        id: x.name,
+        name: x.name,
+        cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(genReq(JSON.stringify({ type, info: x.name || "" })))}`,
+        source: "DSM",
+    }));
 }
 
 function parseComposers(composers) {
-    let r = [];
-    for (i = 0; i < composers.length; i++) {
-        r.push({
-            name: composers[i].name,
-            source: "DSM",
-            cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(genReq(
-                JSON.stringify({ type: "composer", info: composers[i].name || "" })
-            ))}`,
-            id: composers[i].name
-        });
-    }
-    return r;
+    return parseArtists(artists, type = "composer")
 }
 
-function parseLyrics(lyrics) {
-    let r = [];
-    for (i = 0; i < lyrics.length; i++) {
-        if (lyrics[i].additional.full_lyrics.match(lyricRegex))
-            r.push({
-                name: lyrics[i].title,
-                artist: lyrics[i].artist,
-                source: "DSM",
-                id: lyrics[i].id,
-                lyric: lyrics[i].additional.full_lyrics
-            });
-    }
-    return r;
-}
 //自動重新登入
 schedule.scheduleJob("0 0 * * *", function () {
     pokaLog.logDM('DSM', '正在重新登入...')
@@ -169,12 +128,8 @@ async function login() {
     {
         key: "passwd",
         value: config.DSM.password
-    },
-    {
-        key: "session",
-        value: "AudioStation"
-    },
-    ]);
+    }
+    ], 7);
     if (result.success) {
         pokaLog.logDM('DSM', `${config.DSM.account} 登入成功！(DSM 7.0)`)
         return true;
@@ -214,16 +169,9 @@ async function getAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 1)
         for (i = 0; i < PARAMS_JSON.length; i++) {
             PARAMS += "&" + PARAMS_JSON[i].key + "=" + encodeURIComponent(PARAMS_JSON[i].value);
         }
-        request(
-            `${dsmURL}/webapi/${CGI_PATH}?api=${API_NAME}&method=${METHOD}&version=${VERSION}${PARAMS}`,
-            function (error, res, body) {
-                if (!error && res.statusCode == 200) {
-                    resolve(JSON.parse(body));
-                } else {
-                    reject(error);
-                }
-            }
-        );
+        client.get(`/webapi/${CGI_PATH}?api=${API_NAME}&method=${METHOD}&version=${VERSION}${PARAMS}`)
+            .then(({ data }) => resolve(data))
+            .catch(err => reject(err))
     });
 }
 async function postAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 3) {
@@ -235,19 +183,14 @@ async function postAPI(CGI_PATH, API_NAME, METHOD, PARAMS_JSON = [], VERSION = 3
         for (i = 0; i < PARAMS_JSON.length; i++) {
             form[PARAMS_JSON[i].key] = PARAMS_JSON[i].value
         }
-        request.post(
-            `${dsmURL}/webapi/${CGI_PATH}`, {
-            form: form
-        },
-            function (error, res, body) {
-                if (!error && res.statusCode == 200) {
-                    resolve(JSON.parse(body));
-                } else {
-                    reject(error);
-                }
+        client.post(`/webapi/${CGI_PATH}?api=${API_NAME}`, transformRequest(form), {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
             }
-        );
-    });
+        })
+            .then(({ data }) => resolve(data))
+            .catch(err => reject(err))
+    })
 }
 
 async function getHome() {
@@ -326,20 +269,19 @@ async function getSong(req, songRes = "high", songId) {
             break;
     }
     url += songId;
-    return request.get({
-        url: url,
+    return (await client.get(url, {
+        responseType: 'stream',
         headers: {
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
             Range: req.headers.range,
             Accept: req.headers.accept,
             Host: config.DSM.host
-        }
-    });
+        },
+    }))
 }
 
 async function getCover(data) {
     coverData = JSON.parse(deReq(data));
-    let url = `${dsmURL}/webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getcover&view=default`;
+    let url = `/webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getcover&view=default`;
     switch (coverData.type) {
         case "artist": //演出者
             url += coverData.info ?
@@ -355,10 +297,10 @@ async function getCover(data) {
             url += coverData.info ? `&genre_name=${encodeURIComponent(coverData.info)}` : ``;
             break;
         case "song": //歌曲
-            url = `${dsmURL}/webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getsongcover&view=large&id=${coverData.info}`;
+            url = `/webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getsongcover&view=large&id=${coverData.info}`;
             break;
         case "folder": //資料夾
-            url = `${dsmURL}/webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getfoldercover&view=default&id=${coverData.info}`;
+            url = `/webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getfoldercover&view=default&id=${coverData.info}`;
             break;
         case "album": //專輯
             url += coverData.info.album_name ? `&album_name=${encodeURIComponent(coverData.info.album_name)}` : ``;
@@ -366,7 +308,9 @@ async function getCover(data) {
             url += `&album_artist_name=${encodeURIComponent(coverData.info.album_artist_name || '')}`;
             break;
     }
-    return request.get(url);
+    return (await client.get(url, {
+        responseType: 'stream',
+    })).data
 }
 
 async function search(keyword, options = {}) {

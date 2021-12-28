@@ -1,20 +1,26 @@
-const jar = require("request").jar();
-const rp = require("request-promise")
-const request = require("request").defaults({ jar });
+
+const config = require(__dirname + "/../config.json").Netease2;
+const server = config.server || "http://localhost:4000/";
+
+
+
+const axios = require('axios');
+const { wrapper } = require('axios-cookiejar-support');
+const { CookieJar } = require('tough-cookie');
+const jar = new CookieJar();
+const client = async x => (await wrapper(axios.create({ jar, baseURL: server }))(x)).data;
+
 const { migrate, zhconvert } = require('./lyricUtils')
 const fs = require("fs-extra");
 const pokaLog = require("../log"); // 可愛控制台輸出
 const schedule = require("node-schedule"); // 很會計時ㄉ朋友 
-const config = require(__dirname + "/../config.json").Netease2; // 設定
-const server = config.server || "http://localhost:4000/";
 const pin = __dirname + "/netease2Pin.json";
 const options = (url, qs = {}, resolveWithFullResponse = false, cookie = true) => ({
-    uri: url,
-    qs,
-    json: true, // Automatically parses the JSON string in the response
+    url,
+    params: qs,
     jar: cookie ? jar : null,
     resolveWithFullResponse
-});
+})
 try {
     fs.readFileJSON(pin, "utf8");
 } catch (e) {
@@ -76,7 +82,8 @@ const normalOptions = async (url, req = {}) => {
     }
     return {
         method: "GET",
-        uri: url.replace("m10.music.126.net", `${await m10()}/m10.music.126.net`),
+        url: url.replace("m10.music.126.net", `${await m10()}/m10.music.126.net`),
+        responseType: 'stream',
         headers: {
             Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
             "Accept-Encoding": "gzip, deflate",
@@ -89,8 +96,8 @@ const normalOptions = async (url, req = {}) => {
             Range: req.headers && req.headers.range ? req.headers.range : "",
             Accept: req.headers && req.headers.accept ? req.headers.accept : ""
         },
-        json: true, // Automatically parses the JSON string in the response
-        followAllRedirects: true
+        //json: true, // Automatically parses the JSON string in the response
+        //followAllRedirects: true
     };
 };
 
@@ -99,9 +106,9 @@ const imageUrl = x => `/pokaapi/req/?moduleName=Netease2&data=${encodeURICompone
 async function login(config) {
     let result;
     if (config.login.phone) {
-        result = await rp(options(`${server}login/cellphone?phone=${config.login.phone}&password=${config.login.password}`));
+        result = await client(options(`/login/cellphone?phone=${config.login.phone}&password=${config.login.password}`));
     } else {
-        result = await rp(options(`${server}login?email=${config.login.email}&password=${config.login.password}`));
+        result = await client(options(`/login?email=${config.login.email}&password=${config.login.password}`));
     }
     if (!result) {
         pokaLog.logDMErr('Netease2', `登入失敗`)
@@ -151,7 +158,7 @@ async function req(x) {
     if (!link) return false;
     const re = /^(http|https)\:\/\/p(\d+)\.music\.126\.net\/(?:.+)/;
     if (!re.test(link)) return false;
-    else return request(await normalOptions(link));
+    else return client(await normalOptions(link));
 }
 
 function genReq(link) {
@@ -201,7 +208,7 @@ async function getSong(req, songRes, id) {
     let result = await Promise.all(
         (await getSongsUrl(id, br)).map(async x => {
             let url = x.url ? x.url : `http://music.163.com/song/media/outer/url?id=${x.id}.mp3`;
-            return request(await normalOptions(url, req));
+            return axios(await normalOptions(url, req));
         })
     );
     return isArray ? result : result[0];
@@ -211,14 +218,14 @@ async function getSongs(songs, br = 999000) {
     let isArray = Array.isArray(songs);
     songs = isArray ? songs : [songs];
     let result = await parseSongs(
-        await Promise.all(songs.map(async x => (await rp(options(`${server}song/detail?ids=${x}`, {}, false, false))).songs[0])),
+        await Promise.all(songs.map(async x => (await client(options(`/song/detail?ids=${x}`, {}, false, false))).songs[0])),
         br
     );
     return isArray ? result : result[0];
 }
 
 async function getAlbum(id) {
-    let result = await rp(options(`${server}album?id=${id}`));
+    let result = await client(options(`/album?id=${id}`));
     let album = (await parseAlbums([result.album]))[0];
     album.songs = await parseSongs(result.songs);
     return album;
@@ -227,7 +234,7 @@ async function getAlbum(id) {
 async function getSongsUrl(songs, br = 999000) {
     let isArray = Array.isArray(songs);
     songs = isArray ? songs : [songs];
-    let result = await rp(options(`${server}song/url?br=${br}&id=${songs.join()}`));
+    let result = await client(options(`/song/url?br=${br}&id=${songs.join()}`));
     return isArray ? result.data : result.data[0];
 }
 
@@ -236,18 +243,18 @@ async function getCover(id) {
 }
 
 async function getCovers(ids) {
-    return await Promise.all((await getSongs(ids)).map(async x => request(await normalOptions((await x).cover))));
+    return await Promise.all((await getSongs(ids)).map(async x => client(await normalOptions((await x).cover))));
 }
 
 async function parseAlbums(albums) {
-    return (await albums).map(x => ({
+    return albums ? (await albums).map(x => ({
         name: x.name,
         artist: x.artists.map(i => i.name).join(" ,"),
         year: new Date(x.publishTime).getFullYear(),
         cover: imageUrl(x.picUrl),
         source: "Netease2",
         id: `${x.id}`
-    }));
+    })) : []
 }
 
 async function parseArtists(artists) {
@@ -302,7 +309,7 @@ async function search(keywords, limit = 30) {
         let typeNum = typeNums[type];
         let result;
         try {
-            result = (await rp(options(`${server}search?keywords=${keywords}&type=${typeNum}&limit=${limit}`, {}, false, false))).result[
+            result = (await client(options(`/search?keywords=${keywords}&type=${typeNum}&limit=${limit}`, {}, false, false))).result[
                 types
             ];
         } catch (e) {
@@ -317,28 +324,29 @@ async function search(keywords, limit = 30) {
 }
 
 async function getArtist(id) {
-    let info = await rp(options(`${server}artists?id=${id}`));
+    let info = await client(options(`/artists?id=${id}`));
     let result = (await parseArtists([info.artist]))[0];
     result.songs = await parseSongs(info.hotSongs);
     return result;
 }
 
 async function getAlbumSongs(id) {
-    let info = await rp(options(`${server}album?id=${id}`));
+    let info = await client(options(`/album?id=${id}`));
     return {
         songs: await parseSongs(info.songs)
     };
 }
 
 async function getArtistSongs(id) {
-    let info = await rp(options(`${server}artists?id=${id}`));
+    let info = await client(options(`/artists?id=${id}`));
     return {
         songs: await parseSongs(info.hotSongs)
     };
 }
 
 async function getArtistAlbums(id, limit = 50, offset = 0) {
-    let info = await rp(options(`${server}artist/album?id=${id}&limit=${limit}&offset=${offset}`));
+    let info = await client(options(`/artist/album?id=${id}&limit=${limit}&offset=${offset}`));
+    console.log(info);
     let result = await parseAlbums(info.hotAlbums);
     return {
         albums: result
@@ -346,7 +354,7 @@ async function getArtistAlbums(id, limit = 50, offset = 0) {
 }
 
 async function getCatList() {
-    let info = await rp(options(`${server}playlist/catlist`));
+    let info = await client(options(`/playlist/catlist`));
     let result = info.sub.map(x => x.name);
     result.push(info.all.name);
     return result;
@@ -417,7 +425,7 @@ async function getPlaylists(uid) {
     }
 
     async function getCustomPlaylists(id) {
-        let result = await rp(options(`${server}user/playlist?uid=${id}`));
+        let result = await client(options(`/user/playlist?uid=${id}`));
         return result.playlist.map(x => ({
             name: x.name,
             source: "Netease2",
@@ -444,7 +452,7 @@ async function getPlaylists(uid) {
                             if (x.name || x.image)
                                 playlistStack.push(
                                     new Promise((resolve, reject) => {
-                                        rp(options(`${server}playlist/detail?id=${x.id}`))
+                                        client(options(`/playlist/detail?id=${x.id}`))
                                             .then(data => {
                                                 resolve([data, {
                                                     name: x.name,
@@ -454,7 +462,7 @@ async function getPlaylists(uid) {
                                             .catch(e => reject(e));
                                     })
                                 );
-                            else playlistStack.push(rp(options(`${server}playlist/detail?id=${x.id}`)));
+                            else playlistStack.push(client(options(`/playlist/detail?id=${x.id}`)));
                         }
                         break;
                     case "user":
@@ -509,7 +517,7 @@ async function getPlaylists(uid) {
                     type: "folder",
                     id: `${playlistId}_${translatedCategory}`,
                     playlists: await resolveTopPlaylistStack([
-                        rp(options(`${server}top/playlist${playlistId == 'hqPlaylist' ? '/highquality' : ''}?limit=${limit}&order=${order in ["hot", "new"] ? order : "hot"}&cat=${category}`))
+                        client(options(`/top/playlist${playlistId == 'hqPlaylist' ? '/highquality' : ''}?limit=${limit}&order=${order in ["hot", "new"] ? order : "hot"}&cat=${category}`))
                     ])
                 });
             }))
@@ -563,7 +571,7 @@ async function getPlaylists(uid) {
                         type: "folder",
                         id: "dailyRecommendPlaylists",
                         playlists: await resolvedailyRecommendStack([
-                            rp(options(`${server}recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`))
+                            client(options(`/recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`))
                         ])
                     });
                 else pokaLog.logDMErr('Netease2', `未登入，無法獲取每日推薦歌單。`)
@@ -578,7 +586,7 @@ async function getPlaylists(uid) {
                 type: "folder",
                 id: "dailyRecommendPlaylists",
                 playlists: await resolvedailyRecommendStack([
-                    rp(options(`${server}recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`))
+                    client(options(`/recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`))
                 ])
             });
     }
@@ -596,7 +604,7 @@ async function getPlaylistSongs(id, br = 999000) {
     let name;
     if (isIdName(id)) [id, name] = decomposeIdName(id);
     if (id == "dailyRecommendSongs") {
-        let result = await rp(options(`${server}recommend/songs`));
+        let result = await client(options(`/recommend/songs`));
         if (result.code == 200) {
             let r = result.data.dailySongs.map((x, index) => ({
                 name: x.name,
@@ -623,7 +631,7 @@ async function getPlaylistSongs(id, br = 999000) {
             return null;
         }
     } else if (id == "yunPan") {
-        let result = await rp(options(`${server}user/cloud?limit=2147483646`));
+        let result = await client(options(`/user/cloud?limit=2147483646`));
         if (result.code == 200) {
             return {
                 songs: await parseSongs(result.data.map(x => x.simpleSong)),
@@ -638,7 +646,7 @@ async function getPlaylistSongs(id, br = 999000) {
             return null;
         }
     } else {
-        let result = await rp(options(`${server}playlist/detail?id=${id}`));
+        let result = await client(options(`/playlist/detail?id=${id}`));
         if (result.code == 200) {
             return {
                 songs: await parseSongs(result.playlist.tracks),
@@ -657,7 +665,7 @@ async function getPlaylistSongs(id, br = 999000) {
 }
 
 async function getLyric(id) {
-    let result = await rp(options(`${server}lyric?id=${id}`, {}, false, false));
+    let result = await client(options(`/lyric?id=${id}`, {}, false, false));
     let lyric;
     if (result.code == 200) {
         if (result.nolyric) lyric = "[0:0] 純音樂";
@@ -780,7 +788,7 @@ async function getHome() {
             login.then(async x => {
                 if (x.code == 200)
                     dailyRecommendStack.push(
-                        rp(options(`${server}recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`))
+                        client(options(`/recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`))
                     );
                 else pokaLog.logDMErr('Netease2', `未登入，無法獲取每日推薦歌單。`)
             });
@@ -788,7 +796,7 @@ async function getHome() {
             pokaLog.logDMErr('Netease2', `未登入，無法獲取每日推薦歌單。`)
         } else
             dailyRecommendStack.push(
-                rp(options(`${server}recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`))
+                client(options(`/recommend/resource?timestamp=${Math.floor(Date.now() / 1000)}`))
             );
 
         result.push({

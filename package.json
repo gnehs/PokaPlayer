@@ -18,6 +18,8 @@
 	},
 	"homepage": "https://github.com/gnehs/PokaPlayer#readme",
 	"dependencies": {
+		"axios": "^0.24.0",
+		"axios-cookiejar-support": "^2.0.3",
 		"bcryptjs": "*",
 		"compression": "^1.7.4",
 		"connect-mongo": "^4.4.1",
@@ -33,11 +35,10 @@
 		"node-fetch": "^2.6.1",
 		"node-schedule": "^2.0.0",
 		"opencc": "^1.1.3",
-		"request": "^2.88.2",
-		"request-promise": "^4.2.5",
 		"simple-git": "^2.37.0",
 		"socket.io": "^4.0.0",
-		"stream-transcoder": "0.0.5"
+		"stream-transcoder": "0.0.5",
+		"tough-cookie": "^4.0.0"
 	},
 	"devDependencies": {
 		"chai": "*",

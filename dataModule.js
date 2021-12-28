@@ -383,26 +383,22 @@ router.get("/song/", async (req, res) => {
     let song = await _module.getSong(req, req.query.songRes, req.query.songId, res);
     if (typeof song == "string") return res.redirect(song);
     else {
-        return song
-            .on("response", response => {
-                //針對 Audio 寫入 Header 避免 Chrome 時間軸不能跳
-                let headers = {
-                    "Accept-Ranges": response.headers["accept-ranges"] ?
-                        response.headers["accept-ranges"] : "",
-                    "Content-Length": response.headers["content-length"] ?
-                        response.headers["content-length"] : "",
-                    "Content-Range": response.headers["content-range"] ?
-                        response.headers["content-range"] : "",
-                    "Content-Type": response.headers["content-type"] ?
-                        response.headers["content-type"] : ""
-                }
-                // fix for AVPlayer
-                if (headers["Content-Type"] == "audio/x-flac") {
-                    headers["Content-Type"] = "audio/flac";
-                }
-                res.writeHead(206, headers);
-            })
-            .pipe(res);
+        let { headers: resHeaders } = song
+        let ifNull = x => x ? x : "";
+        //針對 Audio 寫入 Header 避免 Chrome 時間軸不能跳
+        let headers = {
+            "Accept-Ranges": ifNull(resHeaders["accept-ranges"]),
+            "Content-Length": ifNull(resHeaders["content-length"]),
+            "Content-Range": ifNull(resHeaders["content-range"]),
+            "Content-Type": ifNull(resHeaders["content-type"]),
+        }
+        // fix for iOS AVPlayer
+        if (headers["Content-Type"] == "audio/x-flac") {
+            headers["Content-Type"] = "audio/flac";
+        }
+        // send data
+        res.writeHead(206, headers);
+        return song.data.pipe(res);
     }
 });
 //-----------------------------> 封面
