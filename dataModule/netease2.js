@@ -307,7 +307,7 @@ async function search(keywords, limit = 30) {
         let typeNum = typeNums[type];
         let result;
         try {
-            result = (await client(options(`/search?keywords=${keywords}&type=${typeNum}&limit=${limit}`, {}, false, false))).result[
+            result = (await client(options(`/search?keywords=${encodeURIComponent(keywords)}&type=${typeNum}&limit=${limit}`, {}, false, false))).result[
                 types
             ];
         } catch (e) {
