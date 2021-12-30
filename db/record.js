@@ -61,10 +61,17 @@ async function countRecords() {
 async function countUserRecords(userId) {
     return (await model.countDocuments({ userId }))
 }
-async function getReview(userId) {
+async function getReview(userId, year = 2021) {
     let res = {}
     res.songs = await model.aggregate([
-        { $match: { userId: userId.toString() } },
+        {
+            $match: {
+                userId: userId.toString(), playedTimes: {
+                    $gte: new Date(year, 0, 1),
+                    $lt: new Date(year + 1, 0, 1)
+                }
+            }
+        },
         { $addFields: { count: { $size: '$playedTimes' } } },
         { $sort: { count: -1 } },
         { $limit: 16 }
@@ -76,7 +83,14 @@ async function getReview(userId) {
         return x
     })
     res.artists = await model.aggregate([
-        { $match: { userId: userId.toString() } },
+        {
+            $match: {
+                userId: userId.toString(), playedTimes: {
+                    $gte: new Date(year, 0, 1),
+                    $lt: new Date(year + 1, 0, 1)
+                }
+            }
+        },
         { $addFields: { count: { $size: '$playedTimes' } } },
         {
             $group: {
@@ -92,7 +106,15 @@ async function getReview(userId) {
         { $limit: 12 }
     ])
     res.albums = await model.aggregate([
-        { $match: { userId: userId.toString() } },
+        {
+            $match: {
+                userId: userId.toString(),
+                playedTimes: {
+                    $gte: new Date(year, 0, 1),
+                    $lt: new Date(year + 1, 0, 1)
+                }
+            }
+        },
         { $addFields: { count: { $size: '$playedTimes' } } },
         {
             $group: {
@@ -109,7 +131,14 @@ async function getReview(userId) {
         { $limit: 12 }
     ])
     res.days = await model.aggregate([
-        { $match: { userId: userId.toString() } },
+        {
+            $match: {
+                userId: userId.toString(), playedTimes: {
+                    $gte: new Date(year, 0, 1),
+                    $lt: new Date(year + 1, 0, 1)
+                }
+            }
+        },
         { $addFields: { count: { $size: '$playedTimes' } } },
         { $unwind: "$playedTimes" },
         { $addFields: { date: { $dateToString: { format: "%Y-%m-%d", date: "$playedTimes" } } } },
@@ -117,7 +146,13 @@ async function getReview(userId) {
         { $sort: { count: -1 } },
         { $limit: 12 }
     ])
-    res.total = await model.countDocuments({ userId })
+    res.total = await model.countDocuments({
+        userId,
+        playedTimes: {
+            $gte: new Date(year, 0, 1),
+            $lt: new Date(year + 1, 0, 1)
+        }
+    })
     return res
 }
 async function fetchListenedRecently(userId) {

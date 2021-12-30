@@ -30,7 +30,7 @@ router.get("/count", async (req, res) => {
     res.json(await recordDB.countRecords())
 })
 router.get("/review", async (req, res) => {
-    res.json(await recordDB.getReview(req.session.user))
+    res.json(await recordDB.getReview(req.session.user, req.query.year))
 })
 router.get("/count/user", async (req, res) => {
     res.json(await recordDB.countUserRecords(req.session.user))
