@@ -443,7 +443,7 @@ router.get("/searchLyrics/", async (req, res) => {
             .map(async x => new Promise(async (resolve, reject) => {
                 let timeout = 10
                 const timer = setTimeout(() => {
-                    console.log(`${moudleName} timed out after ${timeout}s`)
+                    console.log(`${x.name} timed out after ${timeout}s`)
                     return resolve()
                 }, timeout * 1000);
                 try {
