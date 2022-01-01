@@ -1,4 +1,5 @@
 const axios = require('axios')
+const { decodeHTML } = require("entities")
 const { migrate, zhconvert } = require('./lyricUtils')
 const pokaLog = require("../log"); // 可愛控制台輸出
 const config = require(__dirname + "/../config.json").QQMusic; // 設定
@@ -20,6 +21,7 @@ async function searchLyrics(keyword) {
             // console.log(`${y.songname} timeout.`)
             return null
         }
+        lyric = decodeHTML(lyric)
         return {
             name: y.songname,
             artist: y.singer.map(x => x.name).join(`、`),
