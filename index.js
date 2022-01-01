@@ -66,6 +66,9 @@ app.use(express.json());
 app.use(express.static("public"))
 app.use(helmet({ contentSecurityPolicy: false, }))
 app.use(compression())
+// disable X-Powered-By
+app.set('x-powered-by', false);
+//session
 app.use(session)
 io.use(sharedsession(session, {
     autoSave: true
