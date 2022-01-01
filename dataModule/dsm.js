@@ -217,8 +217,7 @@ async function getSong(req, songRes = "high", songId) {
     return (await client.get(url, {
         responseType: 'stream',
         headers: {
-            Range: req.headers.range,
-            Accept: req.headers.accept,
+            ...req.headers,
             Host: config.DSM.host
         },
     }))

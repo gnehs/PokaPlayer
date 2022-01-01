@@ -396,6 +396,8 @@ router.get("/song/", async (req, res) => {
         if (headers["Content-Type"] == "audio/x-flac") {
             headers["Content-Type"] = "audio/flac";
         }
+        // disable keep-alive
+        headers["Connection"] = "close";
         // send data
         res.writeHead(206, headers);
         return song.data.pipe(res);
@@ -415,6 +417,7 @@ router.get("/cover/", async (req, res) => {
     //http://localhost:3000/pokaapi/cover/?moduleName=DSM&data={%22type%22:%22album%22,%22info%22:{%22album_name%22:%22%E6%AE%BF%E5%A0%82%E2%85%A2%22,%22artist_name%22:%22%E7%BA%AF%E7%99%BD,%20Digger%20feat.%20%E4%B9%90%E6%AD%A3%E7%BB%AB,%20%E6%B4%9B%E5%A4%A9%E4%BE%9D%22,%22album_artist_name%22:%22Various%20Artists%22}}
     // -> {"type":"album","info":{"album_name":"殿堂Ⅲ","artist_name":"纯白, Digger feat. 乐正绫, 洛天依","album_artist_name":"Various Artists"}}
     let cover = await _module.getCover(req.query.data);
+    res.header("Cache-Control", "max-age=7200") //快取 2hr
     return cover.pipe(res);
 });
 
