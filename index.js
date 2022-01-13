@@ -231,13 +231,13 @@ async function pokaStart() {
             pokaLog.log('INFO', 'Debug Mode')
         pokaLog.log('INFO', 'http://localhost:3000/')
         pokaLog.log('TIME', new Date().toLocaleString())
-
-        addLog({
-            level: "info",
-            type: "system",
-            event: "Start",
-            description: `PokaPlayer started. version: ${packageData.version}`
-        })
+        if (!config.PokaPlayer.debug)
+            addLog({
+                level: "info",
+                type: "system",
+                event: "Start",
+                description: `PokaPlayer started. version: ${packageData.version}`
+            })
     });
 }
 module.exports = {
