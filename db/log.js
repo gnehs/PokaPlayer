@@ -30,9 +30,9 @@ async function getLogs(limit = 100, page = 0) {
 async function clearLogs() {
     return await model.deleteMany({})
 }
-
 module.exports = {
     addLog,
     getLogs,
-    clearLogs
+    clearLogs,
+    model
 }

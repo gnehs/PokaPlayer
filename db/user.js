@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
+const log = require('./log').model
 const userSchema = new mongoose.Schema({
     name: String,
     username: String,
@@ -167,7 +168,17 @@ async function isUserAdmin(id) {
     return userData && userData.role == 'admin'
 }
 async function getAllUsers() {
-    return (await model.find({}, err => err ? console.error(err) : null))
+    let res = (await model.find({}, err => err ? console.error(err) : null))
+    res = JSON.parse(JSON.stringify(res))
+    // get last login time
+    if (res) {
+        res = res.map(async user => {
+            user.lastLoginTime = (await log.findOne({ user: user._id, event: 'Login' }).sort({ 'time': -1 }).limit(1)).time
+            return user
+        })
+        res = await Promise.all(res)
+    }
+    return res
 }
 async function getUserById(id) {
     return (await model.findById(id, err => err ? console.error(err) : null))
