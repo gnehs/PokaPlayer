@@ -2,10 +2,22 @@ const router = require("express").Router();
 const playlistDB = require("../db/playlist");
 const recordDB = require("../db/record");
 const dsm = require("../dataModule/dsm");
+const fs = require("fs");
+router.get("/", async (req, res) => {
+  res.json(JSON.parse(fs.readFileSync("./config.json", "utf8")));
+});
+router.post("/save", async (req, res) => {
+  let config = req.body
+  try {
+    fs.writeFileSync("./config.json", JSON.stringify(config, null, 2))
+    res.json({ success: true })
+  } catch (err) {
+    res.json({ success: false, err })
+  }
+});
+
 router.get("/dsm-music-id-fix", async (req, res) => {
-  res.json({
-    success: true,
-  })
+  res.json({ success: true, })
   console.log('fixing music id...')
   // fix record
   let records = await recordDB.getAllRecords();
