@@ -26,6 +26,24 @@ if (fs.existsSync("./config.json")) {
     if (!_c.PokaPlayer.sessionSecret) {
         _c.PokaPlayer.sessionSecret = Math.random().toString(36).substring(7)
     }
+    if (!_c.PokaPlayer.sc2tc) {
+        _c.PokaPlayer.sc2tc = true
+    }
+    if (!_c.PokaPlayer.fixPunctuation) {
+        _c.PokaPlayer.fixPunctuation = true
+    }
+    if (_c.Netease2.login) {
+        if (_c.Netease2.login.email) {
+            _c.Netease2.login.method = "email"
+            _c.Netease2.login.account = _c.Netease2.login.email
+            delete _c.Netease2.login.email
+        }
+        if (_c.Netease2.login.phone) {
+            _c.Netease2.login.method = "phone"
+            _c.Netease2.login.account = _c.Netease2.login.phone
+            delete _c.Netease2.login.phone
+        }
+    }
     jsonfile.writeFileSync("./config.json", _c, {
         spaces: 4,
         EOL: '\r\n'

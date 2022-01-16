@@ -1,6 +1,8 @@
 {
     "PokaPlayer": {
-        "debug": false
+        "debug": false,
+        "sc2tc": true,
+        "fixPunctuation": true
     },
     "mongodb": "mongodb://mongodb/poka",
     "DSM": {
@@ -20,9 +22,8 @@
         "server": "http://neteaseapi2:3000/",
         "isPremium": true,
         "login": {
-            "//": "信箱或電話兩者選一",
-            "email": "YOUR_NETEASE_EMAIL",
-            "phone": "YOUR_NETEASE_PHONE_NUMBER",
+            "method": "email/phone",
+            "account": "YOUR_NETEASE_ACCOUNT",
             "password": "YOUR_NETEASE_PASSWORD"
         },
         "topPlaylist": {

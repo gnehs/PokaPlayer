@@ -103,10 +103,10 @@ const imageUrl = x => `/pokaapi/req/?moduleName=Netease2&data=${encodeURICompone
 
 async function login(config) {
     let result;
-    if (config.login.phone) {
-        result = await client(options(`/login/cellphone?phone=${config.login.phone}&password=${config.login.password}`));
+    if (config.login.method == 'phone') {
+        result = await client(options(`/login/cellphone?phone=${config.login.account}&password=${config.login.password}`));
     } else {
-        result = await client(options(`/login?email=${config.login.email}&password=${config.login.password}`));
+        result = await client(options(`/login?email=${config.login.account}&password=${config.login.password}`));
     }
     if (!result) {
         pokaLog.logDMErr('Netease2', `登入失敗`)
@@ -125,7 +125,7 @@ schedule.scheduleJob("0 0 * * *", async function () {
 async function onLoaded() {
     if (!config.enabled) return false;
     return await fs.ensureFile(pin).then(async () => {
-        if (config && config.login && (config.login.phone || config.login.email) && config.login.password) {
+        if (config && config.login && config.login.method && config.login.password) {
             let result = await login(config);
             if ((await result.code) == 200) {
                 return true;
