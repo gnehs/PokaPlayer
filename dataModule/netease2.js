@@ -13,6 +13,7 @@ const fs = require("fs-extra");
 const pokaLog = require("../log"); // 可愛控制台輸出
 const schedule = require("node-schedule"); // 很會計時ㄉ朋友 
 const pin = __dirname + "/netease2Pin.json";
+const pangu = require('pangu');
 const options = (url, qs = {}, resolveWithFullResponse = false, cookie = true) => ({
     url,
     params: qs,
@@ -669,7 +670,7 @@ async function getLyric(id) {
         if (result.nolyric) lyric = "[0:0] 純音樂";
         else if (result.tlyric && result.tlyric.lyric) { //翻譯後的歌詞
             try {
-                lyric = migrate(result.lrc.lyric, await zhconvert(result.tlyric.lyric));
+                lyric = migrate(pangu.spacing(result.lrc.lyric), await zhconvert(result.tlyric.lyric));
             } catch (e) {
                 pokaLog.logDMErr('Netease2', `歌詞繁化錯誤 ${e.toString()}`)
                 lyric = result.lrc.lyric;

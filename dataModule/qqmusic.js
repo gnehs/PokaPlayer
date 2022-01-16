@@ -1,4 +1,5 @@
 const axios = require('axios')
+const pangu = require('pangu');
 const { decodeHTML } = require("entities")
 const { migrate, zhconvert } = require('./lyricUtils')
 const pokaLog = require("../log"); // 可愛控制台輸出
@@ -49,6 +50,7 @@ function getLyric(id) {
                     tlyric = Buffer.from(x.trans, 'base64').toString()
                 } catch (e) { }
                 if (tlyric) {
+                    lyric = pangu.spacing(lyric)
                     tlyric = await zhconvert(tlyric)
                     result = migrate(lyric, tlyric)
                 } else {

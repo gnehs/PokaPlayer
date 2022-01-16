@@ -2,6 +2,7 @@ const OpenCC = require('opencc');
 const converter_TW = new OpenCC('s2twp.json');
 const converter_TC = new OpenCC('s2tw.json');
 const jsonfile = require('jsonfile')
+const pangu = require('pangu');
 const config = jsonfile.readFileSync("./config.json").PokaPlayer;
 function migrate(org, t, offset = 10 ** -3) {
     const isDigit = x => !isNaN(Number(x));
@@ -176,6 +177,7 @@ async function zhconvert(text, converter = "Taiwan") {
             result = result.replace(new RegExp(key, "g"), punctuationList[key])
         }
     }
+    result = pangu.spacing(result)
     return result
 
 }
