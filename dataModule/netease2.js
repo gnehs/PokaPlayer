@@ -8,7 +8,7 @@ const { CookieJar } = require('tough-cookie');
 const jar = new CookieJar();
 const client = async x => (await wrapper(axios.create({ jar, baseURL: server }))(x)).data;
 
-const { migrate, zhconvert } = require('./lyricUtils')
+const { parseLyric, zhconvert } = require('./lyricUtils')
 const fs = require("fs-extra");
 const pokaLog = require("../log"); // 可愛控制台輸出
 const schedule = require("node-schedule"); // 很會計時ㄉ朋友 
@@ -668,22 +668,14 @@ async function getLyric(id) {
     let lyric;
     if (result.code == 200) {
         if (result.nolyric) lyric = "[0:0] 純音樂";
-        else if (result.tlyric && result.tlyric.lyric) { //翻譯後的歌詞
+        else if (result.lrc.lyric) {
             try {
-                lyric = migrate(pangu.spacing(result.lrc.lyric), await zhconvert(result.tlyric.lyric));
-            } catch (e) {
-                pokaLog.logDMErr('Netease2', `歌詞繁化錯誤 ${e.toString()}`)
-                lyric = result.lrc.lyric;
-            }
-        } else if (result.lrc && result.lrc.lyric) { // 中文歌詞
-            try {
-                lyric = await zhconvert(result.lrc.lyric, "Traditional");
+                lyric = parseLyric(result.lrc.lyric, (result.tlyric && result.tlyric.lyric) ? result.tlyric.lyric : null)
             } catch (e) {
                 pokaLog.logDMErr('Netease2', `歌詞繁化錯誤 ${e.toString()}`)
                 lyric = result.lrc.lyric;
             }
         } else lyric = null;
-        if (lyric) lyric = lyric.replace(/作词/g, "作詞")
         return lyric;
     } else {
         pokaLog.logDMErr('Netease2', `無法獲取歌詞 ${id}。(${result.code})`)

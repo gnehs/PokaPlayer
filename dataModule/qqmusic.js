@@ -1,7 +1,7 @@
 const axios = require('axios')
 const pangu = require('pangu');
 const { decodeHTML } = require("entities")
-const { migrate, zhconvert } = require('./lyricUtils')
+const { parseLyric } = require('./lyricUtils')
 const pokaLog = require("../log"); // 可愛控制台輸出
 const config = require(__dirname + "/../config.json").QQMusic; // 設定
 async function searchLyrics(keyword) {
@@ -44,20 +44,12 @@ function getLyric(id) {
         .then(res => res.data)
         .then(async x => {
             if (x.lyric) {
-                let lyric, tlyric, result
+                let lyric, tlyric
                 lyric = Buffer.from(x.lyric, 'base64').toString()
                 try {
                     tlyric = Buffer.from(x.trans, 'base64').toString()
                 } catch (e) { }
-                if (tlyric) {
-                    lyric = pangu.spacing(lyric)
-                    tlyric = await zhconvert(tlyric)
-                    result = migrate(lyric, tlyric)
-                } else {
-                    lyric = await zhconvert(lyric, "Traditional")
-                    result = lyric
-                }
-                return result
+                return tlyric ? await parseLyric(lyric, tlyric) : await parseLyric(lyric)
             }
         })
 }

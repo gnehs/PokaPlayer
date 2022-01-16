@@ -153,7 +153,21 @@ function migrate(org, t, offset = 10 ** -3) {
 
     return result;
 }
-
+async function parseLyric(originalLyric, translatedLyric) {
+    let result = ""
+    if (!translatedLyric) {
+        originalLyric = fixPunctuation(originalLyric)
+        originalLyric = pangu.spacing(originalLyric)
+        originalLyric = await zhconvert(originalLyric, "TC")
+        result = originalLyric
+    } else {
+        translatedLyric = await zhconvert(translatedLyric, "TC")
+        result = migrate(originalLyric, translatedLyric)
+        result = fixPunctuation(result)
+        result = pangu.spacing(result)
+    }
+    return result
+}
 async function zhconvert(text, converter = "Taiwan") {
     let result = text
     if (config.sc2tc) {
@@ -163,6 +177,9 @@ async function zhconvert(text, converter = "Taiwan") {
             result = await converter_TC.convertPromise(text)
         }
     }
+    return result
+}
+function fixPunctuation(text) {
     if (config.fixPunctuation) {
         // sc chinese to tc chinese punctuation
         let punctuationList = {
@@ -174,13 +191,11 @@ async function zhconvert(text, converter = "Taiwan") {
             "编": "編",
         }
         for (let key in punctuationList) {
-            result = result.replace(new RegExp(key, "g"), punctuationList[key])
+            text = text.replace(new RegExp(key, "g"), punctuationList[key])
         }
     }
-    result = pangu.spacing(result)
-    return result
-
+    return text
 }
 module.exports = {
-    migrate, zhconvert
+    zhconvert, parseLyric
 }
