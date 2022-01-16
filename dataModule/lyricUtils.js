@@ -1,6 +1,8 @@
 const OpenCC = require('opencc');
 const converter_TW = new OpenCC('s2twp.json');
-const converter_TC = new OpenCC('s2t.json');
+const converter_TC = new OpenCC('s2tw.json');
+const jsonfile = require('jsonfile')
+const config = jsonfile.readFileSync("./config.json").PokaPlayer;
 function migrate(org, t, offset = 10 ** -3) {
     const isDigit = x => !isNaN(Number(x));
 
@@ -152,11 +154,30 @@ function migrate(org, t, offset = 10 ** -3) {
 }
 
 async function zhconvert(text, converter = "Taiwan") {
-    if (converter == "Taiwan") {
-        return await converter_TW.convertPromise(text)
-    } else {
-        return await converter_TC.convertPromise(text)
+    let result = text
+    if (config.sc2tc) {
+        if (converter == "Taiwan") {
+            result = await converter_TW.convertPromise(text)
+        } else {
+            result = await converter_TC.convertPromise(text)
+        }
     }
+    if (config.fixPunctuation) {
+        // sc chinese to tc chinese punctuation
+        let punctuationList = {
+            "“": "「",
+            "”": "」",
+            "‘": "『",
+            "’": "』",
+            "词": "詞",
+            "编": "編",
+        }
+        for (let key in punctuationList) {
+            result = result.replace(new RegExp(key, "g"), punctuationList[key])
+        }
+    }
+    return result
+
 }
 module.exports = {
     migrate, zhconvert

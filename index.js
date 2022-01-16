@@ -21,33 +21,44 @@ const { addLog } = require("./db/log");
 //
 let _c = false
 if (fs.existsSync("./config.json")) {
+    let edited = false
     _c = jsonfile.readFileSync("./config.json")
     // sessionSecret
     if (!_c.PokaPlayer.sessionSecret) {
         _c.PokaPlayer.sessionSecret = Math.random().toString(36).substring(7)
+        edited = true
     }
     if (!_c.PokaPlayer.sc2tc) {
         _c.PokaPlayer.sc2tc = true
+        edited = true
     }
     if (!_c.PokaPlayer.fixPunctuation) {
         _c.PokaPlayer.fixPunctuation = true
+        edited = true
     }
     if (_c.Netease2.login) {
         if (_c.Netease2.login.email) {
             _c.Netease2.login.method = "email"
             _c.Netease2.login.account = _c.Netease2.login.email
             delete _c.Netease2.login.email
+            edited = true
         }
         if (_c.Netease2.login.phone) {
             _c.Netease2.login.method = "phone"
             _c.Netease2.login.account = _c.Netease2.login.phone
             delete _c.Netease2.login.phone
+            edited = true
         }
     }
     jsonfile.writeFileSync("./config.json", _c, {
         spaces: 4,
         EOL: '\r\n'
     })
+    if (edited) {
+        //exit 
+        pokaLog.logDB('config', `config changed, restarting`)
+        process.exit()
+    }
 }
 const config = _c; // 設定檔
 
