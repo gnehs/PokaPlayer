@@ -49,7 +49,12 @@ function getLyric(id) {
                 try {
                     tlyric = Buffer.from(x.trans, 'base64').toString()
                 } catch (e) { }
-                return tlyric ? await parseLyric(lyric, tlyric) : await parseLyric(lyric)
+                let result = tlyric ? await parseLyric(lyric, tlyric) : await parseLyric(lyric)
+                result = result
+                    .split('\n')
+                    .map(x => x.endsWith('//') ? x.replace(/\/\/$/, '') : x)
+                    .join('\n')
+                return result
             }
         })
 }
