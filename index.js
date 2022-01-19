@@ -199,7 +199,7 @@ io.on("connection", socket => {
                 git.raw(['config', '--global', 'user.name', 'pokaUpdater'])
             }
         })
-        if (await User.isUserAdmin(socket.handshake.session.userdata)) {
+        if (await User.isUserAdmin(socket.handshake.session.userdata) && config.PokaPlayer.debug) {
             addLog({
                 level: "info",
                 type: "system",
@@ -227,6 +227,19 @@ io.on("connection", socket => {
                     console.error("failed: ", err);
                     socket.emit("err", err.toString());
                 });
+        } else if (config.PokaPlayer.debug) {
+            const delay = interval => {
+                return new Promise(resolve => {
+                    setTimeout(resolve, interval);
+                });
+            };
+            socket.emit("git", "fetch")
+            await delay(1000)
+            socket.emit("git", "reset")
+            await delay(1000)
+            socket.emit("restart")
+            await delay(3000)
+            process.exit()
         } else {
             socket.emit("err", "Permission Denied Desu");
         }
