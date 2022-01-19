@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.126a14b0b5f10c7af3d44a57624a7a52.js"
+  "/precache-manifest.d42b420b30d5fec2906e225f8e14dea5.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "pokaplayerfrontend"});
