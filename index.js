@@ -199,7 +199,7 @@ io.on("connection", socket => {
                 git.raw(['config', '--global', 'user.name', 'pokaUpdater'])
             }
         })
-        if (await User.isUserAdmin(socket.handshake.session.userdata) && config.PokaPlayer.debug) {
+        if (await User.isUserAdmin(socket.handshake.session.userdata) && !config.PokaPlayer.debug) {
             addLog({
                 level: "info",
                 type: "system",
