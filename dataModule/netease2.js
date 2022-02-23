@@ -105,7 +105,11 @@ const imageUrl = x => `/pokaapi/req/?moduleName=Netease2&data=${encodeURICompone
 async function login(config) {
     let result;
     if (config.login.method == 'phone') {
-        result = await client(options(`/login/cellphone?phone=${config.login.account}&password=${config.login.password}`));
+        if (config.login.countrycode) {
+            result = await client(options(`/login/cellphone?phone=${config.login.account}&password=${config.login.password}&countrycode=${config.login.countrycode}`));
+        } else {
+            result = await client(options(`/login/cellphone?phone=${config.login.account}&password=${config.login.password}`));
+        }
     } else {
         result = await client(options(`/login?email=${config.login.account}&password=${config.login.password}`));
     }
@@ -114,8 +118,12 @@ async function login(config) {
         return
     }
     isLoggedin = result.code == 200;
-    userId = result.profile.userId
-    pokaLog.logDM('Netease2', `${result.profile.nickname}(${userId}) 登入${isLoggedin ? "成功" : "失敗"}`)
+    if (isLoggedin) {
+        userId = result.profile.userId
+        pokaLog.logDM('Netease2', `${result.profile.nickname}(${userId}) 登入成功`)
+    } else if (result.msg) {
+        pokaLog.logDMErr('Netease2', result.msg)
+    }
     return result;
 }
 //自動重新登入
@@ -126,16 +134,16 @@ schedule.scheduleJob("0 0 * * *", async function () {
 async function onLoaded() {
     if (!config.enabled) return false;
     return await fs.ensureFile(pin).then(async () => {
-        if (config && config.login && config.login.method && config.login.password) {
+        if (config && config.login && config.login.method && config.login.password && config.login.account) {
             let result = await login(config);
             if ((await result.code) == 200) {
                 return true;
             } else {
-                pokaLog.logDM('Netease2', `登入失敗`)
+                pokaLog.logDMErr('Netease2', `登入失敗`)
                 return false;
             }
         } else {
-            pokaLog.logDM('Netease2', `登入失敗，尚未設定帳號密碼`)
+            pokaLog.logDMErr('Netease2', `登入失敗，尚未設定帳號密碼`)
             return false;
         }
     });
