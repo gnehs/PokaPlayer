@@ -193,6 +193,9 @@ function fixPunctuation(text) {
         for (let key in punctuationList) {
             text = text.replace(new RegExp(key, "g"), punctuationList[key])
         }
+        // fix english ab』cd
+        text = text.replace(/(\w)』(\w)/g, "$1'$2")
+
     }
     return text
 }
