@@ -195,6 +195,7 @@ function fixPunctuation(text) {
         }
         // fix english ab』cd
         text = text.replace(/(\w)』(\w)/g, "$1'$2")
+        text = text.replace(/『(\w)/g, "'$1")
 
     }
     return text
