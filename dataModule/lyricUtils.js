@@ -194,8 +194,10 @@ function fixPunctuation(text) {
             text = text.replace(new RegExp(key, "g"), punctuationList[key])
         }
         // fix english ab』cd
-        text = text.replace(/(\w)』(\w)/g, "$1'$2")
-        text = text.replace(/『(\w)/g, "'$1")
+        text = text.replace(/(\w)』(\w)/g, "$1’$2") // ab』cd -> ab’cd
+        text = text.replace(/(\w)'(\w)/g, "$1’$2") // ab'cd -> ab’cd
+        text = text.replace(/『(\w)/g, "‘$1") // 『cd -> ‘cd
+        text = text.replace(/"(\w)"/g, "“$1”") // "cd" -> “cd”
 
     }
     return text
