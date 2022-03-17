@@ -198,6 +198,7 @@ function fixPunctuation(text) {
         text = text.replace(/(\w)'(\w)/g, "$1’$2") // ab'cd -> ab’cd
         text = text.replace(/『(\w)/g, "‘$1") // 『cd -> ‘cd
         text = text.replace(/"(\w)"/g, "“$1”") // "cd" -> “cd”
+        text = text.replace(/\/\//g, "") // // -> <empty>
 
     }
     return text
