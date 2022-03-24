@@ -173,8 +173,13 @@ async function getAllUsers() {
     // get last login time
     if (res) {
         res = res.map(async user => {
-            user.lastLoginTime = (await log.findOne({ user: user._id, event: 'Login' }).sort({ 'time': -1 }).limit(1)).time
-            return user
+            try {
+                user.lastLoginTime = (await log.findOne({ user: user._id, event: 'Login' }).sort({ 'time': -1 }).limit(1)).time
+                return user
+            } catch (e) {
+                user.lastLoginTime = null
+                return user
+            }
         })
         res = await Promise.all(res)
     }
