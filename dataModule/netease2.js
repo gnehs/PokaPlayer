@@ -58,6 +58,20 @@ const normalOptions = async (url, req = {}) => {
     async function m10() {
         return (await m10s)[Math.floor(Math.random() * (await m10s).length)];
     }
+    function generateRandomChinaIP() {
+        let chinaIPList = [
+            '36.56.0.0',
+            '60.168.0.0',
+            '211.161.244.0',
+            '27.16.0.0',
+            '1.202.0.0',
+            '103.22.4.0',
+            '61.159.64.0',
+        ];
+        let ip = chinaIPList[Math.floor(Math.random() * chinaIPList.length)];
+        ip = ip.split('.').map(x => x === '0' ? Math.floor(Math.random() * 253 + 1) : x).join('.')
+        return ip;
+    }
     const randomUserAgent = () => {
         const userAgentList = [
             'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1',
@@ -75,6 +89,7 @@ const normalOptions = async (url, req = {}) => {
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36',
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/13.10586',
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36',
         ]
         let index = Math.floor(Math.random() * userAgentList.length)
         return userAgentList[index]
@@ -93,7 +108,8 @@ const normalOptions = async (url, req = {}) => {
             "Upgrade-Insecure-Requests": 1,
             "User-Agent": randomUserAgent(),
             Range: req.headers && req.headers.range ? req.headers.range : "",
-            Accept: req.headers && req.headers.accept ? req.headers.accept : ""
+            Accept: req.headers && req.headers.accept ? req.headers.accept : "",
+            'X-Real-IP': generateRandomChinaIP()
         },
         //json: true, // Automatically parses the JSON string in the response
         //followAllRedirects: true
