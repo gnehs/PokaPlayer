@@ -6,6 +6,7 @@ const User = require("./db/user"); // userDB
 const pokaLog = require("./log"); // 可愛控制台輸出
 const path = require('path');
 const git = require("simple-git/promise")(__dirname);
+const child_process = require('child_process');
 //express
 const express = require("express");
 const helmet = require("helmet");
@@ -213,6 +214,14 @@ io.on("connection", socket => {
                 .then(() => git.fetch())
                 .then(() => git.pull())
                 .then(() => socket.emit("git", "reset"))
+                .then(() => {
+                    if (process.env.NODE_ENV == 'production') {
+                        child_process.execSync('npm install --production', { stdio: [0, 1, 2], cwd: "/app/" });
+                    } else {
+                        child_process.execSync('npm install --production', { stdio: [0, 1, 2] });
+                    }
+                })
+                .then(() => socket.emit("git", "package_updated"))
                 .then(() => socket.emit("restart"))
                 .then(async () => {
                     const delay = interval => {
@@ -228,18 +237,21 @@ io.on("connection", socket => {
                     socket.emit("err", err.toString());
                 });
         } else if (config.PokaPlayer.debug) {
+            // for ui test
             const delay = interval => {
                 return new Promise(resolve => {
                     setTimeout(resolve, interval);
                 });
             };
             socket.emit("git", "fetch")
-            await delay(1000)
+            await delay(1500)
             socket.emit("git", "reset")
-            await delay(1000)
+            await delay(1500)
+            socket.emit("git", "package_updated")
+            await delay(1500)
             socket.emit("restart")
             await delay(3000)
-            process.exit()
+            socket.emit("hello");
         } else {
             socket.emit("err", "Permission Denied Desu");
         }

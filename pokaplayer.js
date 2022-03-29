@@ -1,15 +1,4 @@
 const pokaLog = require("./log"); // 可愛控制台輸出
-// install packages
-const child_process = require('child_process');
-try {
-    if (process.env.NODE_ENV == 'production') {
-        child_process.execSync('npm install --production', { stdio: [0, 1, 2], cwd: "/app/" });
-    } else {
-        child_process.execSync('npm install --production', { stdio: [0, 1, 2] });
-    }
-} catch (e) {
-    pokaLog.logErr('ERROR', e)
-}
 // start PokaPlayer
 const jsonfile = require('jsonfile')
 
