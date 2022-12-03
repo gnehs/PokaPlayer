@@ -74,7 +74,7 @@ function randomUserAgent(){
 const userAgent = randomUserAgent();
 
 const options = (url, qs = {}, resolveWithFullResponse = false, cookie = true) => ({
-    url: `${url}${url.includes("?" ? "&" : "?")}realIP=${chinaIP}`,
+    url: `${url}${url.includes("?") ? "&" : "?"}realIP=${chinaIP}`,
     params: qs,
     jar: cookie ? jar : null,
     resolveWithFullResponse
