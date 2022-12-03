@@ -5,26 +5,35 @@ const { parseLyric } = require('./lyricUtils')
 const pokaLog = require("../log"); // 可愛控制台輸出
 const config = require(__dirname + "/../config.json").QQMusic; // 設定
 async function searchLyrics(keyword) {
-    let searchResult = await axios(`https://c.y.qq.com/soso/fcgi-bin/client_search_cp?w=${encodeURIComponent(keyword)}&format=json&cr=1&g_tk=5381`, {
-        method: "GET",
+    //  ?w=${encodeURIComponent(keyword)}&format=json&cr=1&g_tk=5381&t=0&n=5&p=1
+    let searchResult = await axios(`https://u.y.qq.com/cgi-bin/musicu.fcg`, {
+        method: "POST",
         headers: {
-            "Referer": "y.qq.com/portal/player.html",
-            "User-Agent": 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:46.0) Gecko/20100101 Firefox/46.0'
+            Referer: 'https://y.qq.com',
+        },
+        data: {
+            "music.search.SearchCgiService": {
+                method: "DoSearchForQQMusicDesktop",
+                module: "music.search.SearchCgiService",
+                param: {
+                    num_per_page: 5,
+                    page_num: 1,
+                    query: keyword,
+                    search_type: 0,  // 0：单曲，2：歌单，7：歌词，8：专辑，9：歌手，12：mv
+                },
+            },
         }
     })
-        .then(res => res.data)
-        .then(x => x.data.song.list)
-        .then(x => x.slice(0, 5))
+        .then(res => res.data['music.search.SearchCgiService'].data.body.song.list)
     searchResult = searchResult.map(async y => {
-        if (!y.songmid || !y.songmid) return null
-        let lyric = await getLyric(y.songmid)
+        if (!y.mid) return null
+        let lyric = await getLyric(y.mid)
         if (!lyric) {
-            // console.log(`${y.songname} timeout.`)
             return null
         }
         lyric = decodeHTML(lyric)
         return {
-            name: y.songname,
+            name: y.title,
             artist: y.singer.map(x => x.name).join(`、`),
             source: "QQMusic",
             id: y.songmid,
@@ -35,13 +44,27 @@ async function searchLyrics(keyword) {
     return { lyrics: (await Promise.all(searchResult)).filter(x => x) };
 }
 function getLyric(id) {
-    return axios(`https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg?songmid=${encodeURIComponent(id)}&g_tk=5381&format=json`, {
+    let url = `https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg?songmid=${encodeURIComponent(id)}`
+    url += `&pcachetime=${new Date().getTime()}`
+    url += `&g_tk=5381`
+    url += `&loginUin=0`
+    url += `&hostUin=0`
+    url += `&inCharset=utf8`
+    url += `&outCharset=utf-8`
+    url += `&notice=0`
+    url += `&platform=yqq`
+    url += `&needNewCode=0`
+
+    return axios(url, {
         method: "GET",
         headers: {
             Referer: 'https://y.qq.com',
         }
     })
         .then(res => res.data)
+        // decode jsonp
+        .then(res => res.replace(/^.*?\(/, '').replace(/\);?$/, ''))
+        .then(res => JSON.parse(res))
         .then(async x => {
             if (x.lyric) {
                 let lyric, tlyric
