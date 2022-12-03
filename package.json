@@ -34,7 +34,7 @@
 		"jsonfile": "^6.1.0",
 		"mongoose": "^5.12.2",
 		"node-schedule": "^2.0.0",
-		"opencc": "^1.1.3",
+		"opencc-js": "^1.0.5",
 		"pangu": "^4.0.7",
 		"simple-git": "^2.37.0",
 		"socket.io": "^4.0.0",
