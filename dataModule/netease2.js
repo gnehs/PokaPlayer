@@ -73,12 +73,17 @@ function randomUserAgent(){
 }
 const userAgent = randomUserAgent();
 
-const options = (url, qs = {}, resolveWithFullResponse = false, cookie = true) => ({
-    url: `${url}${url.includes("?") ? "&" : "?"}realIP=${chinaIP}${config.proxy ? "&proxy="+encodeURIComponent(config.proxy) : ""}`,
-    params: qs,
-    jar: cookie ? jar : null,
-    resolveWithFullResponse
-})
+const options = (url, qs = {}, resolveWithFullResponse = false, cookie = true) => {
+    if (!url.match(/login/)) {
+        url = `${url}${url.includes("?") ? "&" : "?"}realIP=${chinaIP}${config.proxy ? "&proxy=" + encodeURIComponent(config.proxy) : ""}`
+    }
+    return ({
+        url: url,
+        params: qs,
+        jar: cookie ? jar : null,
+        resolveWithFullResponse
+    })
+}
 
 function idPlusName(id, name) {
     const a2b = x => Buffer.from(x).toString("base64");
