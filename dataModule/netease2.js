@@ -74,7 +74,7 @@ function randomUserAgent(){
 const userAgent = randomUserAgent();
 
 const options = (url, qs = {}, resolveWithFullResponse = false, cookie = true) => ({
-    url: `${url}${url.includes("?") ? "&" : "?"}realIP=${chinaIP}`,
+    url: `${url}${url.includes("?") ? "&" : "?"}realIP=${chinaIP}${config.proxy ? "&proxy="+encodeURIComponent(config.proxy) : ""}`,
     params: qs,
     jar: cookie ? jar : null,
     resolveWithFullResponse
@@ -234,7 +234,7 @@ async function getSong(req, songRes, id) {
         low: 128000,
         medium: 192000,
         high: 320000,
-        original: 320000
+        original: 999000
     }[songRes];
     let isArray = Array.isArray(id);
     id = isArray ? id : [id];
