@@ -10,7 +10,8 @@ const { CookieJar } = require('tough-cookie');
 const jar = new CookieJar();
 const client = wrapper(axios.create({ jar, baseURL: dsmURL }));
 const transformRequest = (jsonData = {}) => Object.entries(jsonData).map(x => `${encodeURIComponent(x[0])}=${encodeURIComponent(x[1])}`).join('&');
-
+let SynoToken = "";
+let sid = "";
 function deReq(x) {
     const b2a = x => Buffer.from(x, "base64").toString("utf8");
     const decode = x => /(.{5})(.+)3C4C7CB3(.+)/.exec(x);
@@ -127,11 +128,15 @@ async function login() {
         method: "login",
         params: {
             account: config.DSM.account,
-            passwd: config.DSM.password
+            passwd: config.DSM.password,
+            enable_syno_token: 'yes'
         },
         version: 7
     })
     if (result.success) {
+        SynoToken = result.data.synotoken;
+        sid = result.data.sid;
+        console.log('SynoToken', SynoToken)
         pokaLog.logDM('DSM', `${config.DSM.account} 登入成功！(DSM 7.0)`)
         return true;
     } else {
@@ -167,6 +172,7 @@ async function requestAPI({
     version = 1,
     requestMethod = "POST"
 }) {
+    params = { ...params, SynoToken }
     let form = Object.assign({
         api: name,
         method,
@@ -177,9 +183,11 @@ async function requestAPI({
             method: requestMethod,
             params,
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'x-syno-token': SynoToken
             }
         })
+        console.log(name, params, data)
         return data;
     } catch (e) {
         pokaLog.logDMErr('DSM', `${name} API request error:\n${e.message}`)
@@ -198,19 +206,19 @@ async function getSong(req, songRes = "high", songId) {
     let url = dsmURL;
     switch (songRes) {
         case "high":
-            url += `/webapi/AudioStation/stream.cgi/0.wav?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=wav&id=`;
+            url += `/webapi/AudioStation/stream.cgi/0.wav?api=SYNO.AudioStation.Stream&version=2&method=transcode&SynoToken=${SynoToken}&format=wav&id=`;
             break;
         case "low": //128K
-            url += `/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=mp3&id=`;
+            url += `/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=transcode&SynoToken=${SynoToken}&format=mp3&id=`;
             break;
         case "medium": //128K
-            url += `/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=transcode&format=mp3&id=`;
+            url += `/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=transcode&SynoToken=${SynoToken}&format=mp3&id=`;
             break;
         case "original":
-            url += `/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=stream&id=`;
+            url += `/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=stream&SynoToken=${SynoToken}&id=`;
             break;
         default:
-            url += `/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=stream&id=`;
+            url += `/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=stream&SynoToken=${SynoToken}&id=`;
             break;
     }
     url += songId;
@@ -225,7 +233,7 @@ async function getSong(req, songRes = "high", songId) {
 
 async function getCover(data) {
     coverData = JSON.parse(deReq(data));
-    let url = `/webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getcover&view=default`;
+    let url = `/webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getcover&view=default&SynoToken=${SynoToken}`;
     switch (coverData.type) {
         case "artist": //演出者
             url += coverData.info ?
