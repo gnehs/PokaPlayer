@@ -2,7 +2,7 @@ FROM node:lts-alpine
 
 RUN apk add --no-cache tini git
 RUN git clone https://github.com/Binaryify/NeteaseCloudMusicApi.git /app
-
+RUN chown -R node:node /app
 
 ENV NODE_ENV production
 USER node
