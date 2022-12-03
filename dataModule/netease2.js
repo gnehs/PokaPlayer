@@ -239,6 +239,7 @@ async function getSong(req, songRes, id) {
         low: 128000,
         medium: 192000,
         high: 320000,
+        ori: 999000,
         original: 999000
     }[songRes];
     let isArray = Array.isArray(id);
