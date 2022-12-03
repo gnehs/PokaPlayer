@@ -12,6 +12,7 @@ services:
       - mongodb
     volumes:
       - ./data/config.json:/app/config.json
+    restart: always
     
   neteaseapi2:
     build: 
