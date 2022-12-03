@@ -10,6 +10,8 @@ services:
     depends_on:
       - neteaseapi2
       - mongodb
+    volumes:
+      - ./data/config.json:/app/config.json
     
   neteaseapi2:
     build: 
