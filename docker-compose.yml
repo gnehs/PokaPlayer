@@ -21,6 +21,13 @@ services:
   mongodb:
     image: mongo:latest
     command: --smallfiles
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: <admin-user>
+      MONGO_INITDB_ROOT_PASSWORD: <admin-password>
+      MONGO_INITDB_DATABASE: <database to create>
+    volumes:
+      - ./data/db:/data/db
+      - ./data/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     networks:
       - pokaplayer
 

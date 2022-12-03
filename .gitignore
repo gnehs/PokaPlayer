@@ -69,3 +69,4 @@ dataModule/netease2Pin.json
 tasks.json
 cache
 .DS_Store
+data/
