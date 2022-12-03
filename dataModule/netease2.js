@@ -14,12 +14,7 @@ const pokaLog = require("../log"); // 可愛控制台輸出
 const schedule = require("node-schedule"); // 很會計時ㄉ朋友 
 const pin = __dirname + "/netease2Pin.json";
 const pangu = require('pangu');
-const options = (url, qs = {}, resolveWithFullResponse = false, cookie = true) => ({
-    url,
-    params: qs,
-    jar: cookie ? jar : null,
-    resolveWithFullResponse
-})
+
 try {
     fs.readFileJSON(pin, "utf8");
 } catch (e) {
@@ -29,11 +24,61 @@ const defaultImage = config.isPremium ? "https://i.imgur.com/ZFaycMw.gif" : "/im
 
 const { Resolver } = require("dns").promises;
 const resolver = new Resolver();
-let m10s
+let m10s;
 try { m10s = resolver.resolve4("netease.ugcvideoss.ourdvs.com"); } catch (e) { console.log('cannot resolver m10s') }
+
 // flatMap
 const concat = (x, y) => x.concat(y);
 const flatMap = (f, xs) => xs.map(f).reduce(concat, []);
+
+// chinaIP
+function generateRandomChinaIP() {
+    let chinaIPList = [
+        '36.56.0.0',
+        '60.168.0.0',
+        '211.161.244.0',
+        '27.16.0.0',
+        '1.202.0.0',
+        '103.22.4.0',
+        '61.159.64.0',
+    ];
+    let ip = chinaIPList[Math.floor(Math.random() * chinaIPList.length)];
+    ip = ip.split('.').map(x => x === '0' ? Math.floor(Math.random() * 253 + 1) : x).join('.')
+    return ip;
+}
+const chinaIP = generateRandomChinaIP();
+
+// User agent
+function randomUserAgent(){
+    const userAgentList = [
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1',
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1',
+        'Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Mobile Safari/537.36',
+        'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Mobile Safari/537.36',
+        'Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Mobile Safari/537.36',
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_2 like Mac OS X) AppleWebKit/603.2.4 (KHTML, like Gecko) Mobile/14F89;GameHelper',
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 10_0 like Mac OS X) AppleWebKit/602.1.38 (KHTML, like Gecko) Version/10.0 Mobile/14A300 Safari/602.1',
+        'Mozilla/5.0 (iPad; CPU OS 10_0 like Mac OS X) AppleWebKit/602.1.38 (KHTML, like Gecko) Version/10.0 Mobile/14A300 Safari/602.1',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:46.0) Gecko/20100101 Firefox/46.0',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/603.2.4 (KHTML, like Gecko) Version/10.1.1 Safari/603.2.4',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:46.0) Gecko/20100101 Firefox/46.0',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/13.10586',
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36',
+    ]
+    let index = Math.floor(Math.random() * userAgentList.length)
+    return userAgentList[index]
+}
+const userAgent = randomUserAgent();
+
+const options = (url, qs = {}, resolveWithFullResponse = false, cookie = true) => ({
+    url: `${url}${url.includes("?" ? "&" : "?")}realIP=${chinaIP}`,
+    params: qs,
+    jar: cookie ? jar : null,
+    resolveWithFullResponse
+})
 
 function idPlusName(id, name) {
     const a2b = x => Buffer.from(x).toString("base64");
@@ -58,42 +103,7 @@ const normalOptions = async (url, req = {}) => {
     async function m10() {
         return (await m10s)[Math.floor(Math.random() * (await m10s).length)];
     }
-    function generateRandomChinaIP() {
-        let chinaIPList = [
-            '36.56.0.0',
-            '60.168.0.0',
-            '211.161.244.0',
-            '27.16.0.0',
-            '1.202.0.0',
-            '103.22.4.0',
-            '61.159.64.0',
-        ];
-        let ip = chinaIPList[Math.floor(Math.random() * chinaIPList.length)];
-        ip = ip.split('.').map(x => x === '0' ? Math.floor(Math.random() * 253 + 1) : x).join('.')
-        return ip;
-    }
-    const randomUserAgent = () => {
-        const userAgentList = [
-            'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1',
-            'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1',
-            'Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Mobile Safari/537.36',
-            'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Mobile Safari/537.36',
-            'Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Mobile Safari/537.36',
-            'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_2 like Mac OS X) AppleWebKit/603.2.4 (KHTML, like Gecko) Mobile/14F89;GameHelper',
-            'Mozilla/5.0 (iPhone; CPU iPhone OS 10_0 like Mac OS X) AppleWebKit/602.1.38 (KHTML, like Gecko) Version/10.0 Mobile/14A300 Safari/602.1',
-            'Mozilla/5.0 (iPad; CPU OS 10_0 like Mac OS X) AppleWebKit/602.1.38 (KHTML, like Gecko) Version/10.0 Mobile/14A300 Safari/602.1',
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:46.0) Gecko/20100101 Firefox/46.0',
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36',
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/603.2.4 (KHTML, like Gecko) Version/10.1.1 Safari/603.2.4',
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:46.0) Gecko/20100101 Firefox/46.0',
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36',
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/13.10586',
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36',
-        ]
-        let index = Math.floor(Math.random() * userAgentList.length)
-        return userAgentList[index]
-    }
+    
     return {
         method: "GET",
         url: url.replace("m10.music.126.net", `${await m10()}/m10.music.126.net`),
@@ -101,15 +111,15 @@ const normalOptions = async (url, req = {}) => {
         headers: {
             Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
             "Accept-Encoding": "gzip, deflate",
-            "Accept-Language": "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7",
+            "Accept-Language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7",
             Connection: "keep-alive",
             "Cache-Control": "max-age=0",
             DNT: 1,
             "Upgrade-Insecure-Requests": 1,
-            "User-Agent": randomUserAgent(),
+            "User-Agent": userAgent,
             Range: req.headers && req.headers.range ? req.headers.range : "",
             Accept: req.headers && req.headers.accept ? req.headers.accept : "",
-            'X-Real-IP': generateRandomChinaIP()
+            'X-Real-IP': chinaIP
         },
         //json: true, // Automatically parses the JSON string in the response
         //followAllRedirects: true
@@ -347,28 +357,28 @@ async function search(keywords, limit = 30) {
 }
 
 async function getArtist(id) {
-    let info = await client(options(`/artists?id=${id}`));
+    let info = await client(options(`/artists?id=${encodeURIComponent(id)}`));
     let result = (await parseArtists([info.artist]))[0];
     result.songs = await parseSongs(info.hotSongs);
     return result;
 }
 
 async function getAlbumSongs(id) {
-    let info = await client(options(`/album?id=${id}`));
+    let info = await client(options(`/album?id=${encodeURIComponent(id)}`));
     return {
         songs: await parseSongs(info.songs)
     };
 }
 
 async function getArtistSongs(id) {
-    let info = await client(options(`/artists?id=${id}`));
+    let info = await client(options(`/artists?id=${encodeURIComponent(id)}`));
     return {
         songs: await parseSongs(info.hotSongs)
     };
 }
 
 async function getArtistAlbums(id, limit = 50, offset = 0) {
-    let info = await client(options(`/artist/album?id=${id}&limit=${limit}&offset=${offset}`));
+    let info = await client(options(`/artist/album?id=${encodeURIComponent(id)}&limit=${limit}&offset=${offset}`));
     console.log(info);
     let result = await parseAlbums(info.hotAlbums);
     return {
@@ -448,7 +458,7 @@ async function getPlaylists(uid) {
     }
 
     async function getCustomPlaylists(id) {
-        let result = await client(options(`/user/playlist?uid=${id}`));
+        let result = await client(options(`/user/playlist?uid=${encodeURIComponent(id)}`));
         return result.playlist.map(x => ({
             name: x.name,
             source: "Netease2",
@@ -475,7 +485,7 @@ async function getPlaylists(uid) {
                             if (x.name || x.image)
                                 playlistStack.push(
                                     new Promise((resolve, reject) => {
-                                        client(options(`/playlist/detail?id=${x.id}`))
+                                        client(options(`/playlist/detail?id=${encodeURIComponent(x.id)}`))
                                             .then(data => {
                                                 resolve([data, {
                                                     name: x.name,
@@ -485,7 +495,7 @@ async function getPlaylists(uid) {
                                             .catch(e => reject(e));
                                     })
                                 );
-                            else playlistStack.push(client(options(`/playlist/detail?id=${x.id}`)));
+                            else playlistStack.push(client(options(`/playlist/detail?id=${encodeURIComponent(x.id)}`)));
                         }
                         break;
                     case "user":
@@ -636,7 +646,7 @@ async function getPlaylistSongs(id, br = 999000) {
                 album: x.al.name,
                 albumId: x.al.id,
                 cover: x.al.picUrl.replace("http", "https"),
-                url: `/pokaapi/song/?moduleName=Netease2&songId=${x.id}`,
+                url: `/pokaapi/song/?moduleName=Netease2&songId=${encodeURIComponent(x.id)}`,
                 codec: "mp3",
                 source: "Netease2",
                 id: `${x.id}`
@@ -669,7 +679,7 @@ async function getPlaylistSongs(id, br = 999000) {
             return null;
         }
     } else {
-        let result = await client(options(`/playlist/detail?id=${id}`));
+        let result = await client(options(`/playlist/detail?id=${encodeURIComponent(id)}`));
         if (result.code == 200) {
             return {
                 songs: await parseSongs(result.playlist.tracks),
@@ -688,7 +698,7 @@ async function getPlaylistSongs(id, br = 999000) {
 }
 
 async function getLyric(id) {
-    let result = await client(options(`/lyric?id=${id}`, {}, false, false));
+    let result = await client(options(`/lyric?id=${encodeURIComponent(id)}`, {}, false, false));
     let lyric;
     if (result.code == 200) {
         if (result.nolyric) lyric = "[0:0] 純音樂";

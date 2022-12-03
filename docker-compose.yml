@@ -5,9 +5,8 @@ services:
     build: .
     ports:
       - "3000"
-    links:
-      - neteaseapi2
-      - mongodb
+    networks:
+      - pokaplayer
     depends_on:
       - neteaseapi2
       - mongodb
@@ -16,10 +15,14 @@ services:
     build: 
       context: .
       dockerfile: NeteaseAPI2_Dockerfile
-    expose:
-      - "3000"
+    networks:
+      - pokaplayer
       
   mongodb:
     image: mongo:latest
     command: --smallfiles
-    
+    networks:
+      - pokaplayer
+
+networks:
+  - pokaplayer
