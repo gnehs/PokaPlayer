@@ -1,6 +1,12 @@
-const OpenCC = require('opencc');
-const converter_TW = new OpenCC('s2twp.json');
-const converter_TC = new OpenCC('s2tw.json');
+const OpenCC = require('opencc-js');
+const converter_TW = OpenCC.ConverterFactory(
+    OpenCC.Locale.from.cn,
+    OpenCC.Locale.to.twp
+);
+const converter_TC = OpenCC.ConverterFactory(
+    OpenCC.Locale.from.cn,
+    OpenCC.Locale.to.tw
+);
 const jsonfile = require('jsonfile')
 const pangu = require('pangu');
 const config = jsonfile.readFileSync("./config.json").PokaPlayer;
@@ -172,9 +178,9 @@ async function zhconvert(text, converter = "Taiwan") {
     let result = text
     if (config.sc2tc) {
         if (converter == "Taiwan") {
-            result = await converter_TW.convertPromise(text)
+            result = converter_TW(text)
         } else {
-            result = await converter_TC.convertPromise(text)
+            result = converter_TC(text)
         }
     }
     return result

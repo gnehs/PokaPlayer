@@ -136,12 +136,11 @@ async function login() {
     if (result.success) {
         SynoToken = result.data.synotoken;
         sid = result.data.sid;
-        console.log('SynoToken', SynoToken)
         pokaLog.logDM('DSM', `${config.DSM.account} 登入成功！(DSM 7.0)`)
         return true;
     } else {
         pokaLog.logDM('DSM', `正在嘗試以舊版 API 登入...`)
-        // 嘗試舊版 API (6.0 以下) 
+        // 嘗試舊版 API (6.0 以下)
         let oldApiResult = await requestAPI({
             path: "auth.cgi",
             name: "SYNO.API.Auth",
@@ -187,7 +186,7 @@ async function requestAPI({
                 'x-syno-token': SynoToken
             }
         })
-        console.log(name, params, data)
+        // console.log(name, params, data)
         return data;
     } catch (e) {
         pokaLog.logDMErr('DSM', `${name} API request error:\n${e.message}`)
