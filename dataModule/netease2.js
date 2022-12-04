@@ -273,7 +273,11 @@ async function getAlbum(id) {
 async function getSongsUrl(songs, br = 999000) {
     let isArray = Array.isArray(songs);
     songs = isArray ? songs : [songs];
-    let result = await client(options(`/song/url?br=${br}&id=${songs.join()}`));
+    let level = "hires";
+    if (br == 320000) level = "exhigh";
+    if (br == 192000) level = "higher";
+    if (br == 128000) level = "standard";
+    let result = await client(options(`/song/url/v1?level=${level}&id=${songs.join()}`));
     return isArray ? result.data : result.data[0];
 }
 
