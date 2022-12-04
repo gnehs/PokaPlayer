@@ -574,7 +574,7 @@ async function getPlaylists(uid) {
         id: "yunPan"
     })
     // get user playlists
-    const userPlaylists = getCustomPlaylists(userId);
+    const userPlaylists = await getCustomPlaylists(userId);
     playlistFolders.push({
         name: `收藏歌單`,
         source: "Netease2",
