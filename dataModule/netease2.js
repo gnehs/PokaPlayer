@@ -1,3 +1,4 @@
+const INTELLIGENCE_PLAYLIST_PREFIX = "_int";
 
 const config = require(__dirname + "/../config.json").Netease2;
 const server = config.server || "http://localhost:4000/";
@@ -573,12 +574,21 @@ async function getPlaylists(uid) {
         id: "yunPan"
     })
     // get user playlists
+    const userPlaylists = getCustomPlaylists(userId);
     playlistFolders.push({
         name: `收藏歌單`,
         source: "Netease2",
         type: "folder",
         id: `userPlaylists`,
-        playlists: await getCustomPlaylists(userId)
+        playlists: userPlaylists
+    });
+
+    playlistFolders.push({
+        name: `收藏歌單 (心動模式)`,
+        source: "Netease2",
+        type: "folder",
+        id: `userPlaylists`,
+        playlists: userPlaylists.map(x => ({...x, id: `${INTELLIGENCE_PLAYLIST_PREFIX}${x.id}`}))
     });
 
     if (config.dailyRecommendSongs.enabled) {
@@ -688,7 +698,45 @@ async function getPlaylistSongs(id, br = 999000) {
             pokaLog.logDMErr('Netease2', `無法獲取網易雲音樂雲盤。(${result.code})`)
             return null;
         }
-    } else {
+    } else if (id.startsWith(INTELLIGENCE_PLAYLIST_PREFIX)) {
+        const realPlaylistId = id.substring(INTELLIGENCE_PLAYLIST_PREFIX.length);
+
+        const stageOneResult = await client(options(
+            `/playlist/detail?id=${encodeURIComponent(realPlaylistId)}`
+        ));
+
+        if (stageOneResult.code !== 200) {
+            pokaLog.logDMErr('Netease2', `無法獲取歌單 ${realPlaylistId}。(${stageOneResult.code})`)
+            return null;
+        }
+
+        if (stageOneResult.playlist.tracks.length === 0) {
+            pokaLog.logDMErr('Netease2', `歌單 ${realPlaylistId} 內沒有歌曲。`)
+            return null;
+        }
+
+        const firstSongId = stageOneResult.playlist.tracks[0].id;
+
+        const stageTwoResult = await client(options(
+            `/playmode/intelligence/list?id=${encodeURIComponent(firstSongId)}&pid=${encodeURIComponent(realPlaylistId)}`
+        ));
+
+        if (stageTwoResult.code !== 200) {
+            pokaLog.logDMErr('Netease2', `無法獲取心動歌單 ${realPlaylistId}。(${stageTwoResult.code})`)
+            return null;
+        }
+
+        return {
+            songs: await parseSongs(stageTwoResult.data.map(x => x.songInfo)),
+            playlists: [{
+                name: name ? name : `[❤️] ${stageOneResult.playlist.name}`,
+                source: "Netease2",
+                id: id,
+                image: imageUrl(stageOneResult.playlist.coverImgUrl || stageOneResult.playlist.picUrl)
+            }]
+        };
+    }
+    else {
         let result = await client(options(`/playlist/detail?id=${encodeURIComponent(id)}`));
         if (result.code == 200) {
             return {
