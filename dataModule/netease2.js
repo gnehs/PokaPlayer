@@ -74,6 +74,13 @@ function randomUserAgent(){
 }
 const userAgent = randomUserAgent();
 
+// Convert
+const OpenCC = require('opencc-js');
+const chnToTw = OpenCC.ConverterFactory(
+    OpenCC.Locale.from.cn,
+    OpenCC.Locale.to.twp
+);
+
 const options = (url, qs = {}, resolveWithFullResponse = false, cookie = true) => {
     if (!url.match(/login/)) {
         url = `${url}${url.includes("?") ? "&" : "?"}realIP=${chinaIP}${config.proxy ? "&proxy=" + encodeURIComponent(config.proxy) : ""}`
@@ -312,7 +319,7 @@ async function parseArtists(artists) {
 
 async function parsePlaylists(playlists) {
     return (await playlists).map(x => ({
-        name: x.name,
+        name: chnToTw(x.name),
         image: imageUrl(x.coverImgUrl || x.picUrl),
         source: "Netease2",
         id: `${x.id}`
@@ -408,7 +415,7 @@ async function resolveTopPlaylistStack(topPlaylistStack) {
     if (topPlaylistStack.length === 0) return topPlaylistStack;
     let playlists = flatMap(x => x, (await Promise.all(topPlaylistStack)).map(x => (x[0] ? x[0].playlists : x.playlists))).map(x =>
         x ? {
-            name: x.name,
+            name: chnToTw(x.name),
             source: "Netease2",
             id: `${x.id}`,
             image: imageUrl(x.coverImgUrl || x.picUrl),
@@ -422,13 +429,13 @@ async function resolvePlaylistStack(playlistStack) {
     if (playlistStack.length === 0) return playlistStack;
     return (await Promise.all(playlistStack)).map(x =>
         Array.isArray(x) ? {
-            name: x[1].name || x[0].playlist.name,
+            name: chnToTw(x[1].name || x[0].playlist.name),
             source: "Netease2",
             id: `${x[0].playlist.id}`,
             image: x[1].image || imageUrl(x[0].playlist.coverImgUrl || x[0].playlist.picUrl),
             from: "playlistStack"
         } : {
-            name: x.playlist.name,
+            name: chnToTw(x.playlist.name),
             source: "Netease2",
             id: `${x.playlist.id}`,
             image: imageUrl(x.playlist.coverImgUrl || x.playlist.picUrl),
@@ -445,13 +452,13 @@ async function resolvedailyRecommendStack(dailyRecommendStack) {
             (await Promise.all(dailyRecommendStack)).map(x => (Array.isArray(x) ? [x[0], x[1].recommend] : x.recommend))
         ).map(x =>
             Array.isArray(x) ? {
-                name: x[1].name,
+                name: chnToTw(x[1].name),
                 id: `${x[1].id}`,
                 image: x[0] || imageUrl(x.coverImgUrl || x.picUrl),
                 source: "Netease2",
                 from: "dailyRecommendStack"
             } : {
-                name: x.name,
+                name: chnToTw(x.name),
                 id: `${x.id}`,
                 image: imageUrl(x.coverImgUrl || x.picUrl),
                 source: "Netease2",
@@ -471,7 +478,7 @@ async function getPlaylists(uid) {
     async function getCustomPlaylists(id) {
         let result = await client(options(`/user/playlist?uid=${encodeURIComponent(id)}`));
         return result.playlist.map(x => ({
-            name: x.name,
+            name: chnToTw(x.name),
             source: "Netease2",
             id: `${x.id}`,
             image: imageUrl(x.coverImgUrl || x.picUrl),
@@ -490,7 +497,7 @@ async function getPlaylists(uid) {
                 switch (x.type) {
                     case "playlist":
                         if (x.name && x.image) {
-                            x.id = isIdName(x.id) ? x.id : idPlusName(x.id, x.name);
+                            x.id = isIdName(x.id) ? x.id : idPlusName(x.id, chnToTw(x.name));
                             r.push(x);
                         } else {
                             if (x.name || x.image)
@@ -499,7 +506,7 @@ async function getPlaylists(uid) {
                                         client(options(`/playlist/detail?id=${encodeURIComponent(x.id)}`))
                                             .then(data => {
                                                 resolve([data, {
-                                                    name: x.name,
+                                                    name: chnToTw(x.name),
                                                     image: x.image
                                                 }]);
                                             })
@@ -525,7 +532,7 @@ async function getPlaylists(uid) {
                     case "folder":
                         let data = await processPlaylist(x.playlists);
                         playlistFolders.push({
-                            name: x.name,
+                            name: chnToTw(x.name),
                             type: "folder",
                             image: x.image,
                             source: "Netease2",
@@ -729,7 +736,7 @@ async function getPlaylistSongs(id, br = 999000) {
         return {
             songs: await parseSongs(stageTwoResult.data.map(x => x.songInfo)),
             playlists: [{
-                name: name ? name : `[❤️] ${stageOneResult.playlist.name}`,
+                name: name ? chnToTw(name) : `[❤️] ${chnToTw(stageOneResult.playlist.name)}`,
                 source: "Netease2",
                 id: id,
                 image: imageUrl(stageOneResult.playlist.coverImgUrl || stageOneResult.playlist.picUrl)
@@ -742,7 +749,7 @@ async function getPlaylistSongs(id, br = 999000) {
             return {
                 songs: await parseSongs(result.playlist.tracks),
                 playlists: [{
-                    name: name ? name : result.playlist.name,
+                    name: name ? chnToTw(name) : chnToTw(result.playlist.name),
                     source: "Netease2",
                     id: id,
                     image: imageUrl(result.playlist.coverImgUrl || result.playlist.picUrl)
