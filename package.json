@@ -36,7 +36,7 @@
 		"node-schedule": "^2.0.0",
 		"opencc-js": "^1.0.5",
 		"pangu": "^4.0.7",
-		"simple-git": "^2.37.0",
+		"simple-git": "^3.5.0",
 		"socket.io": "^4.0.0",
 		"stream-transcoder": "0.0.5",
 		"tough-cookie": "^4.0.0"
