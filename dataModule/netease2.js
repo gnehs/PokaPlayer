@@ -9,7 +9,7 @@ const { CookieJar } = require('tough-cookie');
 const jar = new CookieJar();
 const client = async x => (await wrapper(axios.create({ jar, baseURL: server }))(x)).data;
 
-const { parseLyric, zhconvert } = require('./lyricUtils')
+const { parseLyric, chnToTw } = require('./lyricUtils')
 const fs = require("fs-extra");
 const pokaLog = require("../log"); // 可愛控制台輸出
 const schedule = require("node-schedule"); // 很會計時ㄉ朋友 
@@ -73,13 +73,6 @@ function randomUserAgent(){
     return userAgentList[index]
 }
 const userAgent = randomUserAgent();
-
-// Convert
-const OpenCC = require('opencc-js');
-const chnToTw = OpenCC.ConverterFactory(
-    OpenCC.Locale.from.cn,
-    OpenCC.Locale.to.twp
-);
 
 const options = (url, qs = {}, resolveWithFullResponse = false, cookie = true) => {
     if (!url.match(/login/)) {
@@ -561,7 +554,7 @@ async function getPlaylists(uid) {
                     pokaLog.logDMErr('Netease2', `${playlistId} 的分類出錯，已修正為預設`)
                     config[playlistId].category = ["ACG", "日语", "欧美"];
                 }
-                let translatedCategory = await zhconvert(category)
+                let translatedCategory = chnToTw(category)
                 playlistFolders.push({
                     name: `${translatedCategory} - ${playlistId == 'hqPlaylist' ? '精品' : '精選'}歌單`,
                     source: "Netease2",
@@ -582,6 +575,9 @@ async function getPlaylists(uid) {
     })
     // get user playlists
     const userPlaylists = getCustomPlaylists(userId);
+    for(const playlist of userPlaylists){
+        playlist.name = chnToTw(playlist.name);
+    }
     playlistFolders.push({
         name: `收藏歌單`,
         source: "Netease2",
