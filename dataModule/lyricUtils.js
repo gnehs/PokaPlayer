@@ -175,39 +175,40 @@ async function parseLyric(originalLyric, translatedLyric) {
     return result
 }
 async function zhconvert(text, converter = "Taiwan") {
-    let result = text
-    if (config.sc2tc) {
-        if (converter == "Taiwan") {
-            result = converter_TW(text)
-        } else {
-            result = converter_TC(text)
-        }
+    if (!config.sc2tc) {
+        return text;
     }
-    return result
+
+    if (converter == "Taiwan") {
+        return converter_TW(text);
+    }
+
+    return converter_TC(text);
 }
 function fixPunctuation(text) {
-    if (config.fixPunctuation) {
-        // sc chinese to tc chinese punctuation
-        let punctuationList = {
-            "“": "「",
-            "”": "」",
-            "‘": "『",
-            "’": "』",
-            "词": "詞",
-            "编": "編",
-        }
-        for (let key in punctuationList) {
-            text = text.replace(new RegExp(key, "g"), punctuationList[key])
-        }
-        // fix english ab』cd
-        text = text.replace(/(\w)』(\w)/g, "$1’$2") // ab』cd -> ab’cd
-        text = text.replace(/(\w)'(\w)/g, "$1’$2") // ab'cd -> ab’cd
-        text = text.replace(/『(\w)/g, "‘$1") // 『cd -> ‘cd
-        text = text.replace(/"(\w)"/g, "“$1”") // "cd" -> “cd”
-        text = text.replace(/\/\//g, "") // // -> <empty>
-
+    if (!config.fixPunctuation) {
+        return text;
     }
+
+    let punctuationList = {
+        "“": "「",
+        "”": "」",
+        "‘": "『",
+        "’": "』",
+        "词": "詞",
+        "编": "編",
+    };
+
+    for (let key in punctuationList) {
+        text = text.replace(new RegExp(key, "g"), punctuationList[key]);
+    }
+
     return text
+        .replace(/(\w)』(\w)/g, "$1’$2")
+        .replace(/(\w)'(\w)/g, "$1’$2")
+        .replace(/『(\w)/g, "‘$1")
+        .replace(/"(\w)"/g, "“$1”")
+        .replace(/\/\//g, "");
 }
 module.exports = {
     zhconvert, parseLyric

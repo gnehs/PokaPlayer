@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const config = require("./config.json"); // 設定檔
-const pokaLog = require("./log") // 可愛控制台輸出 
+const pokaLog = require("./log") // 可愛控制台輸出
 const express = require("express")
 const router = express.Router();
 const db = require("./db/db.js");
@@ -498,13 +498,6 @@ router.get("/searchLyrics/", async (req, res) => {
             return 1.0;
         }
         return (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);
-    }
-    function matchRate(a, b, rate = 0) {
-        a = a.toLowerCase()
-        b = b.toLowerCase()
-        for (let c of a.split('')) b.includes(c) ? rate++ : rate--
-        for (let c of b.split('')) a.includes(c) ? rate++ : rate--
-        return Math.round((rate / (a.length * 2)) * 10000) / 100
     }
     resData.lyrics = resData.lyrics
         .map(item => {
