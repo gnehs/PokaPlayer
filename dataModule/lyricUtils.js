@@ -211,5 +211,6 @@ function fixPunctuation(text) {
         .replace(/\/\//g, "");
 }
 module.exports = {
-    zhconvert, parseLyric
+    zhconvert, parseLyric, 
+    chnToTw: converter_TW
 }
