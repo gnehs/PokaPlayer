@@ -71,7 +71,7 @@ $ exit
 - Multi-User
 - MediaSession
 
-<img src="https://i.imgur.com/GOIe3va.png" width="500px">
+<img width="297" alt="mediasession" src="https://user-images.githubusercontent.com/16719720/205482841-a9ebfc50-1437-42c5-96d6-868768fe07f4.png">
 
 ## Contributors
 ![](https://contributors.nn.ci/api?repo=gnehs/PokaPlayer)
