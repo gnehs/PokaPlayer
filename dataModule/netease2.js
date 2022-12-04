@@ -587,8 +587,8 @@ async function getPlaylists(uid) {
         name: `收藏歌單 (心動模式)`,
         source: "Netease2",
         type: "folder",
-        id: `userPlaylists`,
-        playlists: userPlaylists.map(x => ({...x, id: `${INTELLIGENCE_PLAYLIST_PREFIX}${x.id}`}))
+        id: `${INTELLIGENCE_PLAYLIST_PREFIX}userPlaylists`,
+        playlists: userPlaylists.map(x => ({...x, name: `[❤️] ${x.name}`, id: `${INTELLIGENCE_PLAYLIST_PREFIX}${x.id}`}))
     });
 
     if (config.dailyRecommendSongs.enabled) {
