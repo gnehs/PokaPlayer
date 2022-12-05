@@ -574,8 +574,8 @@ async function getPlaylists(uid) {
         id: "yunPan"
     })
     // get user playlists
-    const userPlaylists = getCustomPlaylists(userId);
-    for(const playlist of userPlaylists){
+    const userPlaylists = await getCustomPlaylists(userId);
+    for (const playlist of userPlaylists) {
         playlist.name = chnToTw(playlist.name);
     }
     playlistFolders.push({
