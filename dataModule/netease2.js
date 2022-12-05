@@ -12,7 +12,7 @@ const client = async x => (await wrapper(axios.create({ jar, baseURL: server }))
 const { parseLyric, chnToTw } = require('./lyricUtils')
 const fs = require("fs-extra");
 const pokaLog = require("../log"); // 可愛控制台輸出
-const schedule = require("node-schedule"); // 很會計時ㄉ朋友 
+const schedule = require("node-schedule"); // 很會計時ㄉ朋友
 const pin = __dirname + "/netease2Pin.json";
 const pangu = require('pangu');
 
@@ -50,7 +50,7 @@ function generateRandomChinaIP() {
 const chinaIP = generateRandomChinaIP();
 
 // User agent
-function randomUserAgent(){
+function randomUserAgent() {
     const userAgentList = [
         'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1',
         'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1',
@@ -109,7 +109,7 @@ const normalOptions = async (url, req = {}) => {
     async function m10() {
         return (await m10s)[Math.floor(Math.random() * (await m10s).length)];
     }
-    
+
     return {
         method: "GET",
         url: url.replace("m10.music.126.net", `${await m10()}/m10.music.126.net`),
@@ -591,7 +591,7 @@ async function getPlaylists(uid) {
         source: "Netease2",
         type: "folder",
         id: `${INTELLIGENCE_PLAYLIST_PREFIX}userPlaylists`,
-        playlists: userPlaylists.map(x => ({...x, name: `[❤️] ${x.name}`, id: `${INTELLIGENCE_PLAYLIST_PREFIX}${x.id}`}))
+        playlists: userPlaylists.map(x => ({ ...x, name: `[❤️] ${x.name}`, id: `${INTELLIGENCE_PLAYLIST_PREFIX}${x.id}` }))
     });
 
     if (config.dailyRecommendSongs.enabled) {
