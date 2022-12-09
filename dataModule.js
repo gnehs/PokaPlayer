@@ -41,7 +41,6 @@ router.get("/", (req, res) => {
 });
 // 先在這裡蹦蹦蹦再轉交給其他好朋友
 router.use((req, res, next) => {
-    console.log(req.path)
     if (req.path == "/v2/user/login/" || req.path == "/v2/user/logout/") {
         return next();
     }
