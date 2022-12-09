@@ -150,7 +150,10 @@ async function login({
         return {
             success: true,
             error: null,
-            user: user._id
+            user: user._id,// TODO: remove
+            name: user.name,
+            role: user.role,
+            id: user._id
         }
     else
         return {

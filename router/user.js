@@ -7,6 +7,47 @@ router.get("/", async (req, res) => {
         result.password = null
     res.json(result)
 })
+router.post("/login/", async (req, res) => {
+    let { username, password } = req.body
+    let u = await User.login({ username, password })
+    if (u.success) {
+        req.session.user = u.user
+        addLog({
+            level: "info",
+            type: "user",
+            event: "Login",
+            user: req.session.user,
+            description: `User {${req.session.user}} login from ${req.headers['x-forwarded-for'] || req.socket.remoteAddress}`
+        })
+    } else {
+        addLog({
+            level: "warn",
+            type: "user",
+            event: "Login",
+            description: `User ${username} login failed from ${req.headers['x-forwarded-for'] || req.socket.remoteAddress}`
+        })
+    }
+    res.json(u)
+})
+router.get("/logout/", (req, res) => {
+    // 登出
+    if (req.session?.user) {
+        addLog({
+            level: "info",
+            type: "user",
+            event: "Logout",
+            user: req.session.user,
+            description: `User {${req.session.user}} logout`
+        })
+    }
+    req.session.destroy(err => {
+        if (err) {
+            console.error(err);
+        }
+        res.clearCookie();
+        res.redirect('/');
+    });
+})
 router.get("/setting/", async (req, res) => {
     res.json(await User.getSetting(req.session.user))
 })
