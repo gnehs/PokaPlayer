@@ -216,7 +216,23 @@ async function getSong(req, songRes = "high", songId) {
 }
 
 async function getCover(data) {
-    coverData = JSON.parse(decodeBase64(data));
+    function deReq(x) {
+        const b2a = x => Buffer.from(x, "base64").toString("utf8");
+        const decode = x => /(.{5})(.+)3C4C7CB3(.+)/.exec(x);
+        let [_, rand, link, checkSum] = decode(x);
+        [_, rand, link, checkSum] = [_, rand, b2a(link), b2a(checkSum)];
+        if (!Number.isInteger(Math.log10(rand.charCodeAt(0) + checkSum.charCodeAt(0)))) {
+            return false;
+        }
+        return link;
+    }
+    let coverData;
+    if (data.startsWith("Poka-")) {
+        coverData = JSON.parse(deReq(data));
+        coverData.info = Object.values(coverData.info)
+    } else {
+        coverData = JSON.parse(decodeBase64(data));
+    }
     let url = `/webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getcover&view=default&SynoToken=${SynoToken}`;
     switch (coverData.type) {
         case "artist": //演出者
