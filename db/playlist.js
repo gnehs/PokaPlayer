@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const { db } = require('./db.js')
+const { encodeURL } = require('../dataModule/cryptoUtils')
 const songSchema = new mongoose.Schema({
     name: String,
     artist: String,
@@ -35,7 +36,7 @@ function parsePlaylist(playlist) {
             name: playlist.name,
             source: playlist.source,
             id: playlist._id,
-            image: playlist.image
+            image: `/pokaapi/cover/?moduleName=poka&data=${encodeURL(playlist.image)}`
         }]
     })
 }
@@ -45,7 +46,7 @@ function parsePlaylists(playlists) {
         name: x.name,
         source: x.source,
         id: x._id,
-        image: x.image
+        image: `/pokaapi/cover/?moduleName=poka&data=${encodeURL(x.image)}`
     }))
 }
 

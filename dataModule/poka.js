@@ -1,7 +1,8 @@
 const playlistDB = require('../db/playlist')
 const pinDB = require('../db/pin')
 const recordDB = require('../db/record')
-
+const { encodeURL, decodeURL } = require('./cryptoUtils')
+const axios = require('axios');
 const lyricdb = require("../db/lyric.js");
 async function onLoaded() {
     return true
@@ -20,11 +21,23 @@ async function searchLyrics(keyword) {
     return { lyrics: res };
 }
 
+
+async function getCover(data) {
+    let url = decodeURL(data)
+    if (url) {
+        return (await axios.get(url, {
+            responseType: 'stream',
+        })).data
+    } else {
+        return null
+    }
+}
 async function getPlaylists(userId) {
     return ({
         playlists: [
             ...(await playlistDB.getParsedUserPlaylists(userId)),
-            { name: "最近聽過", source: "poka", id: "listenedRecently", icon: 'bx-history' }]
+            { name: "最近聽過", source: "poka", id: "listenedRecently", image: `/img/playlist/listenedRecently.jpg` }
+        ]
     })
 }
 async function getPlaylistSongs(id, userId) {
@@ -72,4 +85,5 @@ module.exports = {
     getPlaylists,
     getPlaylistSongs,
     getHome,
+    getCover,
 };
