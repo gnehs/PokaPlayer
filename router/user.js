@@ -45,7 +45,7 @@ router.get("/logout/", (req, res) => {
             console.error(err);
         }
         res.clearCookie();
-        res.redirect('/');
+        res.json({ success: true })
     });
 })
 router.get("/setting/", async (req, res) => {
