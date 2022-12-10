@@ -33,11 +33,11 @@ function genReq(link) {
 
 function parseSongs(songs) {
     return songs.map(x => {
-        let albumInfo = {
-            album_name: x.additional.song_tag.album || "",
-            artist_name: "",
-            album_artist_name: x.additional.song_tag.album_artist || ""
-        };
+        let albumInfo = [
+            x.additional.song_tag.album || "",
+            "",
+            x.additional.song_tag.album_artist || ""
+        ];
         let cover =
             `/pokaapi/cover/?moduleName=DSM&data=` +
             encodeURIComponent(genReq(
@@ -66,11 +66,11 @@ function parseSongs(songs) {
 
 function parseAlbums(albums) {
     return albums.map(x => {
-        let coverInfo = {
-            album_name: x.name || "",
-            artist_name: x.artist || "",
-            album_artist_name: x.album_artist || ""
-        };
+        let coverInfo = [
+            x.name || "",
+            x.artist || "",
+            x.album_artist || ""
+        ];
         let cover =
             `/pokaapi/cover/?moduleName=DSM&data=` +
             encodeURIComponent(genReq(
@@ -254,9 +254,9 @@ async function getCover(data) {
             url = `/webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getfoldercover&view=default&id=${coverData.info}`;
             break;
         case "album": //專輯
-            url += coverData.info.album_name ? `&album_name=${encodeURIComponent(coverData.info.album_name)}` : ``;
-            url += coverData.info.artist_name ? `&artist_name=${encodeURIComponent(coverData.info.artist_name)}` : ``;
-            url += `&album_artist_name=${encodeURIComponent(coverData.info.album_artist_name || '')}`;
+            url += coverData.info[0] ? `&album_name=${encodeURIComponent(coverData.info[0])}` : ``;
+            url += coverData.info[1] ? `&artist_name=${encodeURIComponent(coverData.info[1])}` : ``;
+            url += `&album_artist_name=${encodeURIComponent(coverData.info[2] || '')}`;
             break;
     }
     return (await client.get(url, {
@@ -305,8 +305,7 @@ async function getAlbums(limit = 1000, sort_by = "name", sort_direction = "ASC")
     };
 }
 async function getAlbum(id) {
-    let albumData = JSON.parse(id);
-
+    let [album, album_artist, artist] = JSON.parse(id);
     let params = {
         additional: "song_tag,song_audio,song_rating",
         library: "shared",
@@ -314,9 +313,9 @@ async function getAlbum(id) {
         sort_by: "title",
         sort_direction: "ASC",
     }
-    if (albumData.album_name) params["album"] = albumData.album_name
-    if (albumData.album_artist_name) params["album_artist"] = albumData.album_artist_name
-    if (albumData.artist_name) params["artist"] = albumData.artist_name
+    if (album != '') params["album"] = album
+    if (album_artist != '') params["album_artist"] = album_artist
+    if (artist != '') params["artist"] = artist
     let result = await requestAPI({
         path: "AudioStation/song.cgi",
         name: "SYNO.AudioStation.Song",
@@ -324,12 +323,12 @@ async function getAlbum(id) {
         params,
         version: 3
     })
-    let cover = `/pokaapi/cover/?moduleName=DSM&data=` + encodeURIComponent(genReq(JSON.stringify({ type: "album", info: albumData })))
+    let cover = `/pokaapi/cover/?moduleName=DSM&data=` + encodeURIComponent(genReq(JSON.stringify({ type: "album", info: [album, album_artist, artist] })))
     // sort by track
     result.data.songs.sort((a, b) => a.additional.song_tag.track - b.additional.song_tag.track)
     return {
-        name: albumData.album_name,
-        artist: albumData.artist_name || albumData.album_artist_name,
+        name: album,
+        artist: artist || album_artist,
         cover: cover,
         songs: parseSongs(result.data.songs)
     };
