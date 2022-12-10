@@ -56,7 +56,7 @@ if (fs.existsSync("./config.json")) {
         EOL: '\r\n'
     })
     if (edited) {
-        //exit 
+        //exit
         pokaLog.logDB('config', `config changed, restarting`)
         process.exit()
     }
@@ -104,49 +104,6 @@ io.use(sharedsession(session, {
     autoSave: true
 }))
 
-// 登入
-app
-    .post("/login/", async (req, res) => {
-        let { username, password } = req.body
-        let u = await User.login({ username, password })
-        if (u.success) {
-            req.session.user = u.user
-            addLog({
-                level: "info",
-                type: "user",
-                event: "Login",
-                user: req.session.user,
-                description: `User {${req.session.user}} login from ${req.headers['x-forwarded-for'] || req.socket.remoteAddress}`
-            })
-        } else {
-            addLog({
-                level: "warn",
-                type: "user",
-                event: "Login",
-                description: `User ${username} login failed from ${req.headers['x-forwarded-for'] || req.socket.remoteAddress}`
-            })
-        }
-        res.json(u)
-    })
-    .get("/logout/", (req, res) => {
-        // 登出
-        if (req.session.user) {
-            addLog({
-                level: "info",
-                type: "user",
-                event: "Logout",
-                user: req.session.user,
-                description: `User {${req.session.user}} logout`
-            })
-        }
-        req.session.destroy(err => {
-            if (err) {
-                console.error(err);
-            }
-            res.clearCookie();
-            res.redirect('/');
-        });
-    })
 // 取得狀態
 app.get("/status", async (req, res) => {
     res.json({
