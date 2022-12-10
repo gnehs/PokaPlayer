@@ -13,8 +13,8 @@ const transformRequest = (jsonData = {}) => Object.entries(jsonData).map(x => `$
 let SynoToken = "";
 let sid = "";
 
-const deReq = x => Buffer.from(x, "base64").toString("utf8");
-const genReq = x => Buffer.from(x).toString("base64");
+const decodeBase64 = x => Buffer.from(x, "base64").toString("utf8");
+const encodeBase64 = x => Buffer.from(x).toString("base64");
 
 function parseSongs(songs) {
     return songs.map(x => {
@@ -25,7 +25,7 @@ function parseSongs(songs) {
         ];
         let cover =
             `/pokaapi/cover/?moduleName=DSM&data=` +
-            encodeURIComponent(genReq(
+            encodeURIComponent(encodeBase64(
                 JSON.stringify({
                     type: "album",
                     info: albumInfo
@@ -58,7 +58,7 @@ function parseAlbums(albums) {
         ];
         let cover =
             `/pokaapi/cover/?moduleName=DSM&data=` +
-            encodeURIComponent(genReq(
+            encodeURIComponent(encodeBase64(
                 JSON.stringify({
                     type: "album",
                     info: coverInfo
@@ -85,7 +85,7 @@ function parseArtists(data, type = "artist") {
     return data.map(x => ({
         id: x.name,
         name: x.name,
-        cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(genReq(JSON.stringify({ type, info: x.name || "" })))}`,
+        cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(encodeBase64(JSON.stringify({ type, info: x.name || "" })))}`,
         source: "DSM",
     }));
 }
@@ -216,7 +216,7 @@ async function getSong(req, songRes = "high", songId) {
 }
 
 async function getCover(data) {
-    coverData = JSON.parse(deReq(data));
+    coverData = JSON.parse(decodeBase64(data));
     let url = `/webapi/AudioStation/cover.cgi?api=SYNO.AudioStation.Cover&output_default=true&is_hr=false&version=3&library=shared&method=getcover&view=default&SynoToken=${SynoToken}`;
     switch (coverData.type) {
         case "artist": //演出者
@@ -308,7 +308,7 @@ async function getAlbum(id) {
         params,
         version: 3
     })
-    let cover = `/pokaapi/cover/?moduleName=DSM&data=` + encodeURIComponent(genReq(JSON.stringify({ type: "album", info: [album, album_artist, artist] })))
+    let cover = `/pokaapi/cover/?moduleName=DSM&data=` + encodeURIComponent(encodeBase64(JSON.stringify({ type: "album", info: [album, album_artist, artist] })))
     // sort by track
     result.data.songs.sort((a, b) => a.additional.song_tag.track - b.additional.song_tag.track)
     return {
@@ -345,7 +345,7 @@ async function getFolderFiles(id) {
         name: x.title,
         cover: `/pokaapi/cover/?moduleName=DSM&data=` +
             encodeURIComponent(
-                genReq(
+                encodeBase64(
                     JSON.stringify({
                         type: "folder",
                         info: x.id
@@ -382,7 +382,7 @@ async function getArtists() {
 async function getArtist(id) {
     let result = {}
     result.name = id;
-    result.cover = `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(genReq(JSON.stringify({ type: "artist", info: id })))}`;
+    result.cover = `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(encodeBase64(JSON.stringify({ type: "artist", info: id })))}`;
     return result;
 }
 async function getArtistAlbums(id) {
@@ -409,7 +409,7 @@ async function getArtistAlbums(id) {
 async function getComposer(id) {
     let result = {}
     result.name = id;
-    result.cover = `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(genReq(JSON.stringify({ type: "composer", info: id })))}`;
+    result.cover = `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(encodeBase64(JSON.stringify({ type: "composer", info: id })))}`;
     return result;
 }
 async function getComposers() {
