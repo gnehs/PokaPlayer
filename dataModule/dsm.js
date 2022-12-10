@@ -13,8 +13,8 @@ const transformRequest = (jsonData = {}) => Object.entries(jsonData).map(x => `$
 let SynoToken = "";
 let sid = "";
 
-const decodeBase64 = x => Buffer.from(x, "base64").toString("utf8");
-const encodeBase64 = x => Buffer.from(x).toString("base64");
+const decodeBase64 = x => Buffer.from(x, "base64url").toString("utf8");
+const encodeBase64 = x => Buffer.from(x).toString("base64url");
 
 function parseSongs(songs) {
     return songs.map(x => {
@@ -34,7 +34,7 @@ function parseSongs(songs) {
             artist: x.additional.song_tag.artist,
             artistId: x.additional.song_tag.artist,
             album: x.additional.song_tag.album,
-            albumId: JSON.stringify(albumInfo),
+            albumId: encodeBase64(JSON.stringify(albumInfo)),
             bitrate: x.additional.song_audio.bitrate,
             cover,
             codec: x.additional.song_audio.codec,
@@ -66,7 +66,7 @@ function parseAlbums(albums) {
         return {
             artist: x.display_artist,
             cover,
-            id: JSON.stringify(coverInfo),
+            id: encodeBase64(JSON.stringify(coverInfo)),
             name: x.name,
             source: "DSM",
             year: x.year,
@@ -290,7 +290,7 @@ async function getAlbums(limit = 1000, sort_by = "name", sort_direction = "ASC")
     };
 }
 async function getAlbum(id) {
-    let [album, album_artist, artist] = JSON.parse(id);
+    let [album, album_artist, artist] = JSON.parse(decodeBase64(id));
     let params = {
         additional: "song_tag,song_audio,song_rating",
         library: "shared",
