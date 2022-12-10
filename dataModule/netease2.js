@@ -571,6 +571,7 @@ async function getPlaylists(uid) {
     r.push({
         name: "網易雲音樂雲盤",
         source: "Netease2",
+        image: `/img/playlist/cloud.jpg`,
         id: "yunPan"
     })
     // get user playlists
@@ -601,7 +602,7 @@ async function getPlaylists(uid) {
                     name: "每日推薦歌曲",
                     source: "Netease2",
                     id: "dailyRecommendSongs",
-                    image: config.dailyRecommendSongs.image || defaultImage
+                    image: `/img/playlist/dailyRecommendSongs.jpg`
                 });
             });
         } else if (!isLoggedin) {
@@ -611,7 +612,7 @@ async function getPlaylists(uid) {
                 name: "每日推薦歌曲",
                 source: "Netease2",
                 id: "dailyRecommendSongs",
-                image: config.dailyRecommendSongs.image || defaultImage
+                image: `/img/playlist/dailyRecommendSongs.jpg`
             });
         }
     }
@@ -623,7 +624,7 @@ async function getPlaylists(uid) {
                     playlistFolders.push({
                         name: "每日推薦歌單",
                         source: "Netease2",
-                        image: config.dailyRecommendPlaylists.image || defaultImage,
+                        image: `/img/playlist/dailyRecommendSongs.jpg`,
                         type: "folder",
                         id: "dailyRecommendPlaylists",
                         playlists: await resolvedailyRecommendStack([
@@ -638,7 +639,7 @@ async function getPlaylists(uid) {
             playlistFolders.push({
                 name: "每日推薦歌單",
                 source: "Netease2",
-                image: config.dailyRecommendPlaylists.image || defaultImage,
+                image: `/img/playlist/dailyRecommendSongs.jpg`,
                 type: "folder",
                 id: "dailyRecommendPlaylists",
                 playlists: await resolvedailyRecommendStack([
@@ -694,6 +695,7 @@ async function getPlaylistSongs(id, br = 999000) {
                 playlists: [{
                     name: "網易雲音樂雲盤",
                     source: "Netease2",
+                    image: `/img/playlist/cloud.jpg`,
                     id: "yunPan"
                 }]
             };
@@ -853,7 +855,7 @@ async function getHome() {
                     name: "每日推薦歌曲",
                     source: "Netease2",
                     id: "dailyRecommendSongs",
-                    image: config.dailyRecommendSongs.image
+                    image: `/img/playlist/dailyRecommendSongs.jpg`
                 });
             });
         } else if (!isLoggedin) {
@@ -863,7 +865,7 @@ async function getHome() {
                 name: "每日推薦歌曲",
                 source: "Netease2",
                 id: "dailyRecommendSongs",
-                image: config.dailyRecommendSongs.image
+                image: `/img/playlist/dailyRecommendSongs.jpg`
             });
         }
     }
