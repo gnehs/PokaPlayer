@@ -83,8 +83,8 @@ function parsePlaylists(playlists) {
 }
 function parseArtists(data, type = "artist") {
     return data.map(x => ({
-        id: x.name,
-        name: x.name,
+        id: x.name == '' ? `DSM_unknown` : x.name,
+        name: x.name == '' ? `Unknown` : x.name,
         cover: `/pokaapi/cover/?moduleName=DSM&data=${encodeURIComponent(encodeBase64(JSON.stringify({ type, info: x.name || "" })))}`,
         source: "DSM",
     }));
@@ -314,6 +314,7 @@ async function getAlbum(id) {
     return {
         name: album,
         artist: artist || album_artist,
+        artistId: artist,
         cover: cover,
         songs: parseSongs(result.data.songs)
     };
@@ -386,6 +387,7 @@ async function getArtist(id) {
     return result;
 }
 async function getArtistAlbums(id) {
+    if (id == `DSM_unknown`) id = ''
     let result = await requestAPI({
         path: "AudioStation/album.cgi",
         name: "SYNO.AudioStation.Album",
@@ -432,6 +434,7 @@ async function getComposers() {
 }
 
 async function getComposerAlbums(id) {
+    if (id == `DSM_unknown`) id = ''
     let result = await requestAPI({
         path: "AudioStation/album.cgi",
         name: "SYNO.AudioStation.Album",
