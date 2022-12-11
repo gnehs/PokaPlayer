@@ -13,8 +13,7 @@ const transformRequest = (jsonData = {}) => Object.entries(jsonData).map(x => `$
 let SynoToken = "";
 let sid = "";
 
-const decodeBase64 = x => Buffer.from(x, "base64url").toString("utf8");
-const encodeBase64 = x => Buffer.from(x).toString("base64url");
+const { decodeBase64, encodeBase64 } = require('./cryptoUtils')
 
 function parseSongs(songs) {
     return songs.map(x => {

@@ -23,6 +23,8 @@ function decodeURL(str) {
   }
 }
 module.exports = {
+  decodeBase64,
+  encodeBase64,
   encodeURL,
   decodeURL
 }
