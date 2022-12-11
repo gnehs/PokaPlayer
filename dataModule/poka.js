@@ -1,7 +1,7 @@
 const playlistDB = require('../db/playlist')
 const pinDB = require('../db/pin')
 const recordDB = require('../db/record')
-const { encodeURL, decodeURL } = require('./cryptoUtils')
+const { encodeBase64, decodeURL, encodeURL } = require('./cryptoUtils')
 const axios = require('axios');
 const lyricdb = require("../db/lyric.js");
 async function onLoaded() {
@@ -75,6 +75,21 @@ async function getHome(userId) {
         catch (e) {
             throw new Error(`${e} ${JSON.stringify(x)}`);
         }
+    })
+    pins.albums = pins.albums.map(x => {
+        if (x.source == 'DSM') {
+            x.id = encodeBase64(JSON.stringify(Object.values(JSON.parse(x.id))))
+        }
+        return x
+    })
+    pins.playlists = pins.playlists.map(x => {
+        if (x.source == 'poka') {
+            let url = x.cover
+            if (url.startsWith('http')) {
+                x.cover = `/pokaapi/cover/?moduleName=poka&data=${encodeURL(url)}`
+            }
+        }
+        return x
     })
     return [pins]
 }
