@@ -680,7 +680,8 @@ async function getPlaylistSongs(id, br = 999000) {
                 playlists: [{
                     name: "每日推薦歌曲",
                     source: "Netease2",
-                    id
+                    id,
+                    image: `/img/playlist/dailyRecommendSongs.jpg`
                 }]
             };
         } else {

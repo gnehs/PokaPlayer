@@ -47,7 +47,8 @@ async function getPlaylistSongs(id, userId) {
             playlists: [{
                 name: "最近聽過",
                 source: "poka",
-                id: "listenedRecently"
+                id: "listenedRecently",
+                image: `/img/playlist/listenedRecently.jpg`
             }]
         })
     }
