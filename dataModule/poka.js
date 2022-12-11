@@ -36,7 +36,7 @@ async function getPlaylists(userId) {
     return ({
         playlists: [
             ...(await playlistDB.getParsedUserPlaylists(userId)),
-            { name: "最近聽過", source: "poka", id: "listenedRecently", image: `/img/playlist/listenedRecently.jpg` }
+            { name: "最近聽過", source: "poka", id: "listenedRecently", cover: `/img/playlist/listenedRecently.jpg` }
         ]
     })
 }
@@ -48,7 +48,7 @@ async function getPlaylistSongs(id, userId) {
                 name: "最近聽過",
                 source: "poka",
                 id: "listenedRecently",
-                image: `/img/playlist/listenedRecently.jpg`
+                cover: `/img/playlist/listenedRecently.jpg`
             }]
         })
     }

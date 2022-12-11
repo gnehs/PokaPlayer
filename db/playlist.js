@@ -36,7 +36,7 @@ function parsePlaylist(playlist) {
             name: playlist.name,
             source: playlist.source,
             id: playlist._id,
-            image: `/pokaapi/cover/?moduleName=poka&data=${encodeURL(playlist.image)}`
+            cover: `/pokaapi/cover/?moduleName=poka&data=${encodeURL(playlist.image)}`
         }]
     })
 }
@@ -46,7 +46,7 @@ function parsePlaylists(playlists) {
         name: x.name,
         source: x.source,
         id: x._id,
-        image: `/pokaapi/cover/?moduleName=poka&data=${encodeURL(x.image)}`
+        cover: `/pokaapi/cover/?moduleName=poka&data=${encodeURL(x.image)}`
     }))
 }
 
@@ -84,7 +84,7 @@ async function editPlaylist(id, data) {
         if (data.name)
             playlist.name = data.name
         if (data.image)
-            playlist.image = data.image
+            playlist.image = data.cover
         playlist.save()
         return ({
             success: true,

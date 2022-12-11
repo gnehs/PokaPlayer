@@ -313,7 +313,7 @@ async function parseArtists(artists) {
 async function parsePlaylists(playlists) {
     return (await playlists).map(x => ({
         name: chnToTw(x.name),
-        image: imageUrl(x.coverImgUrl || x.picUrl),
+        cover: imageUrl(x.coverImgUrl || x.picUrl),
         source: "Netease2",
         id: `${x.id}`
     }));
@@ -411,7 +411,7 @@ async function resolveTopPlaylistStack(topPlaylistStack) {
             name: chnToTw(x.name),
             source: "Netease2",
             id: `${x.id}`,
-            image: imageUrl(x.coverImgUrl || x.picUrl),
+            cover: imageUrl(x.coverImgUrl || x.picUrl),
             from: "topPlaylistStack"
         } : false
     );
@@ -425,13 +425,13 @@ async function resolvePlaylistStack(playlistStack) {
             name: chnToTw(x[1].name || x[0].playlist.name),
             source: "Netease2",
             id: `${x[0].playlist.id}`,
-            image: x[1].image || imageUrl(x[0].playlist.coverImgUrl || x[0].playlist.picUrl),
+            cover: x[1].image || imageUrl(x[0].playlist.coverImgUrl || x[0].playlist.picUrl),
             from: "playlistStack"
         } : {
             name: chnToTw(x.playlist.name),
             source: "Netease2",
             id: `${x.playlist.id}`,
-            image: imageUrl(x.playlist.coverImgUrl || x.playlist.picUrl),
+            cover: imageUrl(x.playlist.coverImgUrl || x.playlist.picUrl),
             from: "playlistStack"
         }
     );
@@ -447,13 +447,13 @@ async function resolvedailyRecommendStack(dailyRecommendStack) {
             Array.isArray(x) ? {
                 name: chnToTw(x[1].name),
                 id: `${x[1].id}`,
-                image: x[0] || imageUrl(x.coverImgUrl || x.picUrl),
+                cover: x[0] || imageUrl(x.coverImgUrl || x.picUrl),
                 source: "Netease2",
                 from: "dailyRecommendStack"
             } : {
                 name: chnToTw(x.name),
                 id: `${x.id}`,
-                image: imageUrl(x.coverImgUrl || x.picUrl),
+                cover: imageUrl(x.coverImgUrl || x.picUrl),
                 source: "Netease2",
                 from: "dailyRecommendStack"
             }
@@ -474,7 +474,7 @@ async function getPlaylists(uid) {
             name: chnToTw(x.name),
             source: "Netease2",
             id: `${x.id}`,
-            image: imageUrl(x.coverImgUrl || x.picUrl),
+            cover: imageUrl(x.coverImgUrl || x.picUrl),
             from: "getCustomPlaylists"
         }));
     }
@@ -500,7 +500,7 @@ async function getPlaylists(uid) {
                                             .then(data => {
                                                 resolve([data, {
                                                     name: chnToTw(x.name),
-                                                    image: x.image
+                                                    cover: x.image
                                                 }]);
                                             })
                                             .catch(e => reject(e));
@@ -527,7 +527,7 @@ async function getPlaylists(uid) {
                         playlistFolders.push({
                             name: chnToTw(x.name),
                             type: "folder",
-                            image: x.image,
+                            cover: x.image,
                             source: "Netease2",
                             id: `${x.id}`,
                             playlists: data[0].concat(
@@ -571,7 +571,7 @@ async function getPlaylists(uid) {
     r.push({
         name: "網易雲音樂雲盤",
         source: "Netease2",
-        image: `/img/playlist/cloud.jpg`,
+        cover: `/img/playlist/cloud.jpg`,
         id: "yunPan"
     })
     // get user playlists
@@ -602,7 +602,7 @@ async function getPlaylists(uid) {
                     name: "每日推薦歌曲",
                     source: "Netease2",
                     id: "dailyRecommendSongs",
-                    image: `/img/playlist/dailyRecommendSongs.jpg`
+                    cover: `/img/playlist/dailyRecommendSongs.jpg`
                 });
             });
         } else if (!isLoggedin) {
@@ -612,7 +612,7 @@ async function getPlaylists(uid) {
                 name: "每日推薦歌曲",
                 source: "Netease2",
                 id: "dailyRecommendSongs",
-                image: `/img/playlist/dailyRecommendSongs.jpg`
+                cover: `/img/playlist/dailyRecommendSongs.jpg`
             });
         }
     }
@@ -624,7 +624,7 @@ async function getPlaylists(uid) {
                     playlistFolders.push({
                         name: "每日推薦歌單",
                         source: "Netease2",
-                        image: `/img/playlist/dailyRecommendSongs.jpg`,
+                        cover: `/img/playlist/dailyRecommendSongs.jpg`,
                         type: "folder",
                         id: "dailyRecommendPlaylists",
                         playlists: await resolvedailyRecommendStack([
@@ -639,7 +639,7 @@ async function getPlaylists(uid) {
             playlistFolders.push({
                 name: "每日推薦歌單",
                 source: "Netease2",
-                image: `/img/playlist/dailyRecommendSongs.jpg`,
+                cover: `/img/playlist/dailyRecommendSongs.jpg`,
                 type: "folder",
                 id: "dailyRecommendPlaylists",
                 playlists: await resolvedailyRecommendStack([
@@ -681,7 +681,7 @@ async function getPlaylistSongs(id, br = 999000) {
                     name: "每日推薦歌曲",
                     source: "Netease2",
                     id,
-                    image: `/img/playlist/dailyRecommendSongs.jpg`
+                    cover: `/img/playlist/dailyRecommendSongs.jpg`
                 }]
             };
         } else {
@@ -696,7 +696,7 @@ async function getPlaylistSongs(id, br = 999000) {
                 playlists: [{
                     name: "網易雲音樂雲盤",
                     source: "Netease2",
-                    image: `/img/playlist/cloud.jpg`,
+                    cover: `/img/playlist/cloud.jpg`,
                     id: "yunPan"
                 }]
             };
@@ -738,7 +738,7 @@ async function getPlaylistSongs(id, br = 999000) {
                 name: name ? chnToTw(name) : `[❤️] ${chnToTw(stageOneResult.playlist.name)}`,
                 source: "Netease2",
                 id: id,
-                image: imageUrl(stageOneResult.playlist.coverImgUrl || stageOneResult.playlist.picUrl)
+                cover: imageUrl(stageOneResult.playlist.coverImgUrl || stageOneResult.playlist.picUrl)
             }]
         };
     }
@@ -751,7 +751,7 @@ async function getPlaylistSongs(id, br = 999000) {
                     name: name ? chnToTw(name) : chnToTw(result.playlist.name),
                     source: "Netease2",
                     id: id,
-                    image: imageUrl(result.playlist.coverImgUrl || result.playlist.picUrl)
+                    cover: imageUrl(result.playlist.coverImgUrl || result.playlist.picUrl)
                 }]
             };
         } else {
@@ -856,7 +856,7 @@ async function getHome() {
                     name: "每日推薦歌曲",
                     source: "Netease2",
                     id: "dailyRecommendSongs",
-                    image: `/img/playlist/dailyRecommendSongs.jpg`
+                    cover: `/img/playlist/dailyRecommendSongs.jpg`
                 });
             });
         } else if (!isLoggedin) {
@@ -866,7 +866,7 @@ async function getHome() {
                 name: "每日推薦歌曲",
                 source: "Netease2",
                 id: "dailyRecommendSongs",
-                image: `/img/playlist/dailyRecommendSongs.jpg`
+                cover: `/img/playlist/dailyRecommendSongs.jpg`
             });
         }
     }
