@@ -78,7 +78,9 @@ async function getHome(userId) {
     })
     pins.albums = pins.albums.map(x => {
         if (x.source == 'DSM') {
-            x.id = encodeBase64(JSON.stringify(Object.values(JSON.parse(x.id))))
+            if (!x.id.startsWith('Wy')) {
+                x.id = encodeBase64(JSON.stringify(Object.values(JSON.parse(x.id))))
+            }
         }
         return x
     })
