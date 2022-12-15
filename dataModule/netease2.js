@@ -294,6 +294,7 @@ async function parseAlbums(albums) {
     return albums ? (await albums).map(x => ({
         name: x.name,
         artist: x.artists.map(i => i.name).join(" ,"),
+        artistId: x.artists[0].id,
         year: new Date(x.publishTime).getFullYear(),
         cover: imageUrl(x.picUrl),
         source: "Netease2",
