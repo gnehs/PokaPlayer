@@ -391,7 +391,6 @@ async function getArtistSongs(id) {
 
 async function getArtistAlbums(id, limit = 50, offset = 0) {
     let info = await client(options(`/artist/album?id=${encodeURIComponent(id)}&limit=${limit}&offset=${offset}`));
-    console.log(info);
     let result = await parseAlbums(info.hotAlbums);
     return {
         albums: result
