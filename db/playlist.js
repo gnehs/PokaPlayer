@@ -135,6 +135,7 @@ async function getAllPlaylists() {
     return (await model.find({}))
 }
 module.exports = {
+    model,
     createPlaylist,
     getAllPlaylists,
     delPlaylist,

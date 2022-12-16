@@ -17,6 +17,7 @@ const io = require("socket.io")(server)
 const sharedsession = require("express-socket.io-session");
 
 const { addLog } = require("./db/log");
+const updateDatabase = require("./update-database");
 //
 // config init
 //
@@ -234,6 +235,7 @@ async function pokaStart() {
         }
     }
     await autoCreateUser()
+    await updateDatabase()
 
     // 啟動囉
     server.listen(3000, () => {
