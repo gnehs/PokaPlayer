@@ -32,6 +32,7 @@ fs.readdir(__dirname + "/dataModule", (err, files) => {
                 await _module.onLoaded() :
                 true;
             if (enabled && _module.enabled) moduleList[moduleData.name] = moduleData;
+            else if (moduleData.name) pokaLog.logDB('dataModule', `Module ${moduleData.name} disabled`)
         }
     });
 });
