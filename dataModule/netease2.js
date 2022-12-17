@@ -13,15 +13,6 @@ const { parseLyric, chnToTw } = require('./lyricUtils')
 const fs = require("fs-extra");
 const pokaLog = require("../log"); // 可愛控制台輸出
 const schedule = require("node-schedule"); // 很會計時ㄉ朋友
-const pin = __dirname + "/netease2Pin.json";
-const pangu = require('pangu');
-
-try {
-    fs.readFileJSON(pin, "utf8");
-} catch (e) {
-    fs.writeFile(pin, "[]");
-}
-const defaultImage = config.isPremium ? "https://i.imgur.com/ZFaycMw.gif" : "/img/icons/apple-touch-icon.png";
 
 const { Resolver } = require("dns").promises;
 const resolver = new Resolver();
@@ -805,40 +796,6 @@ async function searchLyrics(keyword) {
         lyrics: result
     };
 }
-
-async function addPin(type, id, name) {
-    let data = await fs.readJson(pin);
-    let artist = type == "album" ? (await getAlbum(id)).artist : undefined;
-
-    data = data.concat({
-        type,
-        id,
-        name,
-        artist,
-        source: "Netease2"
-    });
-    try {
-        return await fs.writeJson(pin, data).then(() => true);
-    } catch (e) {
-        return e;
-    }
-}
-
-async function unPin(type, id, name) {
-    let data = (await fs.readJson(pin)).filter(x => !(x.id == id && x.type == type));
-    try {
-        return await fs.writeJson(pin, data).then(() => true);
-    } catch (e) {
-        return e;
-    }
-}
-
-async function isPinned(type, id, name) {
-    let data = await fs.readJson(pin);
-
-    return data.some(x => x.type == type && x.id == id) || false;
-}
-
 async function getHome() {
     let r = [];
     let result = []
@@ -955,9 +912,6 @@ module.exports = {
     getCatList,
     getLyric,
     searchLyrics,
-    addPin,
-    unPin,
-    isPinned,
     getHome,
     req
 };
