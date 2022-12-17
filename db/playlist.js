@@ -124,6 +124,9 @@ async function toggleSongOfPlaylist({ playlistId, song }) {
             playlist.songs.push(song)
         }
         await playlist.save(err => err ? console.error(err) : null)
+        return ({
+            success: true,
+        })
     } catch (e) {
         return ({
             success: false,

@@ -41,15 +41,11 @@ router.post("/edit", async (req, res) => {
 router.post("/song/exist", async (req, res) => {
     let song = req.body
     let playlists = (await playlistDB.getPlaylists(req.session.user)).map(x => ({ id: x._id, ...JSON.parse(JSON.stringify(x)) }))
-    let result = {
-        playlists: [],
-        existsPlaylists: []
-    }
+    let result = []
     for (let playlist of playlists) {
-        if (playlist.songs && playlist.songs.filter(x => x.source == song.source && x.id == song.id).length > 0) {
-            result.existsPlaylists.push(playlist)
-        }
-        result.playlists.push(playlist)
+        playlist.exist = playlist.songs && playlist.songs.filter(x => x.source == song.source && x.id == song.id).length > 0
+        delete playlist.songs
+        result.push(playlist)
     }
     res.json(result)
 })
