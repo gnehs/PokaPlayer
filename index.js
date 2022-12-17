@@ -5,7 +5,7 @@ const { session } = require("./db/db"); // DB
 const User = require("./db/user"); // userDB
 const pokaLog = require("./log"); // 可愛控制台輸出
 const path = require('path');
-const git = require("simple-git/promise")(__dirname);
+const git = require("simple-git")(__dirname);
 const child_process = require('child_process');
 //express
 const express = require("express");

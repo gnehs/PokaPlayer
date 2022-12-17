@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const packageData = require("../package.json"); // package
 const jsonfile = require('jsonfile')
-const git = require("simple-git/promise")(__dirname);
+const git = require("simple-git")(__dirname);
 const config = jsonfile.readFileSync("./config.json")
 router.get("/", async (req, res) => {
     let result = {
