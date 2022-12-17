@@ -39,7 +39,6 @@ function parseSongs(songs) {
             codec: x.additional.song_audio.codec,
             id: x.id,
             source: "DSM",
-            lrc: "",
             name: x.title,
             track: x.additional.song_tag.track,
             url: "/pokaapi/song/?moduleName=DSM&songId=" + x.id,
