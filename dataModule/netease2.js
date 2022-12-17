@@ -204,21 +204,31 @@ schedule.scheduleJob("0 0 * * *", async function () {
         pokaLog.logDMErr('Netease2', `Refresh cookie failed`)
     }
 });
+async function getStatus() {
+    let status = await client(options(`/login/status`));
+    if (status.data.account) {
+        pokaLog.logDM('Netease2', `已登入`)
+        isLoggedin = true;
+        userId = status.data.account.id;
+        return true;
+    }
+    return false;
+}
 async function onLoaded() {
     if (!config.enabled) return false;
 
     if (config && config.login && config.login.method && config.login.password && config.login.account) {
         try {
-            let status = await client(options(`/login/status`));
-            if (status.data.account) {
+            let status = await getStatus()
+            if (status) {
                 pokaLog.logDM('Netease2', `已登入`)
-                isLoggedin = true;
-                return true;
+            } else {
+                let result = await login(config);
+                if ((await result.code) == 200) {
+                    status = await getStatus()
+                }
             }
-            let result = await login(config);
-            if ((await result.code) == 200) {
-                return true;
-            }
+            return status;
         } catch (e) {
             pokaLog.logDMErr('Netease2', `登入失敗`)
             pokaLog.logDMErr('Netease2', e.toString())
