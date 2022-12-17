@@ -70,3 +70,4 @@ tasks.json
 cache
 .DS_Store
 data/
+cookie.json
