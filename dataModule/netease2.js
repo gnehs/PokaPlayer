@@ -160,18 +160,27 @@ async function login(config) {
 }
 //自動重新登入
 schedule.scheduleJob("0 0 * * *", async function () {
-    pokaLog.logDM('Netease2', `正在重新登入...`)
-    await login(config);
+    pokaLog.logDM('Netease2', `Refresh cookie...`)
+    /// /login/refresh
+    let result = await client(options(`/login/refresh`));
+    if (result.code == 200) {
+        pokaLog.logDM('Netease2', `Refresh cookie success`)
+    } else {
+        pokaLog.logDMErr('Netease2', `Refresh cookie failed`)
+    }
 });
 async function onLoaded() {
     if (!config.enabled) return false;
     return await fs.ensureFile(pin).then(async () => {
         if (config && config.login && config.login.method && config.login.password && config.login.account) {
-            let result = await login(config);
-            if ((await result.code) == 200) {
-                return true;
-            } else {
+            try {
+                let result = await login(config);
+                if ((await result.code) == 200) {
+                    return true;
+                }
+            } catch (e) {
                 pokaLog.logDMErr('Netease2', `登入失敗`)
+                pokaLog.logDMErr('Netease2', e.toString())
                 return false;
             }
         } else {
