@@ -148,8 +148,10 @@ async function qrLogin() {
         console.log(`or open the following link in the browser to scan`)
         console.log(`https://chart.apis.google.com/chart?cht=qr&&chs=500x500&chl=${encodeURIComponent(createQr.data.qrurl)}`)
         console.log(`=~=`.repeat(20))
+        let count = 0
         let checkInterval = setInterval(async () => {
             let checkQr = await client(options(`/login/qr/check?key=${qrKey.data.unikey}&t=${Date.now()}`))
+            count++
             if (checkQr.code != 801) {
                 console.log(checkQr.message)
                 clearInterval(checkInterval)
@@ -158,6 +160,13 @@ async function qrLogin() {
                 resolve({ code: 200 })
             }
             if (checkQr.code != 801) { reject() }
+            if (count > 60) {
+                console.log('二维码已过期，请重新登录')
+                console.log('QR Code 已過期，請重新登入')
+                console.log('QR Code has expired, please login again')
+
+                reject()
+            }
         }, 7500)
     })
 }
