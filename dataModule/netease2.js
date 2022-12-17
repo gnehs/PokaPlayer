@@ -800,21 +800,6 @@ async function getHome() {
     let r = [];
     let result = []
 
-    let pinData = {
-        songs: [],
-        albums: [],
-        artists: [],
-        composers: [],
-        playlists: []
-    };
-    try {
-        (await fs.readJson(pin)).forEach(x => {
-            pinData[x.type + "s"].push(x);
-        });
-    } catch (e) {
-        pokaLog.logDMErr('Netease2', e)
-    }
-
     if (config.dailyRecommendSongs.enabled) {
         if (isLoggedin === undefined) {
             login.then(x => {
@@ -861,28 +846,6 @@ async function getHome() {
             playlists: (await resolvedailyRecommendStack(dailyRecommendStack)).slice(0, config.dailyRecommendPlaylists.limit || 50)
         })
     }
-    result.push({
-        title: "home_netease",
-        source: "Netease2",
-        icon: "audiotrack",
-        playlists: r.concat(
-            ...pinData.playlists
-        ),
-        songs: pinData.songs,
-        albums: await Promise.all(
-            pinData.albums.map(async x => {
-                x.cover = (await getAlbum(x.id)).cover;
-                return x;
-            })
-        ),
-        artists: await Promise.all(
-            pinData.artists.map(async x => {
-                x.cover = (await getArtist(x.id)).cover;
-                return x;
-            })
-        ),
-        composers: pinData.composers
-    })
     return result;
 }
 
