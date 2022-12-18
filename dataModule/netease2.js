@@ -78,7 +78,7 @@ function randomUserAgent() {
 const userAgent = randomUserAgent();
 
 const options = (url, qs = {}, resolveWithFullResponse = false) => {
-    if (!url.match(/login/)) {
+    if (!url.match(/login/) || url.match(/login\/status/)) {
         url = `${url}${url.includes("?") ? "&" : "?"}realIP=${chinaIP}`
         + `${config.proxy ? "&proxy=" + encodeURIComponent(config.proxy) : ""}`
         + `${cookie ? "&cookie=" + encodeURIComponent(cookie) : ""}`
@@ -137,7 +137,7 @@ const normalOptions = async (url, req = {}) => {
 
 const imageUrl = x => `/pokaapi/req/?moduleName=Netease2&data=${encodeURIComponent(genReq(x))}`;
 
-async function qrLogin() {
+function qrLogin() {
     return new Promise(async (resolve, reject) => {
         let qrKey = await client(options(`/login/qr/key?t=${Date.now()}`))
         let createQr = await client(options(`/login/qr/create?key=${qrKey.data.unikey}`))
