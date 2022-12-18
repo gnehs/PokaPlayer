@@ -174,33 +174,25 @@ function qrLogin() {
     })
 }
 
-async function login(config) {
-    let result;
+async function login() {
     try {
-        if (config.login.method == 'phone') {
-            if (config.login.countrycode) {
-                result = await client(options(`/login/cellphone?phone=${config.login.account}&password=${config.login.password}&countrycode=${config.login.countrycode}`));
-            } else {
-                result = await client(options(`/login/cellphone?phone=${config.login.account}&password=${config.login.password}`));
+        let result = await qrLogin();
+        if (result.code === 200) {
+            pokaLog.logDM('Netease2', `登入成功`)
+            if (result.cookie) {
+                cookie = result.cookie;
+                fs.writeFileSync(COOKIE_FILE_PATH, result.cookie);
             }
         } else {
-            result = await client(options(`/login?email=${config.login.account}&password=${config.login.password}`));
+            throw new Error();
         }
+        return result;
     } catch (e) {
-        pokaLog.logDMErr('Netease2', e.response.data)
-        result = await qrLogin()
-    }
-    if (result.code === 200) {
-        pokaLog.logDM('Netease2', `登入成功`)
-        if (result.cookie) {
-            cookie = result.cookie;
-            fs.writeFileSync(COOKIE_FILE_PATH, result.cookie);
-        }
-    } else {
         pokaLog.logDMErr('Netease2', `登入失敗`)
+        return { code: 400 };
     }
-    return result;
 }
+
 //自動重新登入
 schedule.scheduleJob("0 0 * * *", async function () {
     let result = await client(options(`/login/refresh`));

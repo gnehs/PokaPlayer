@@ -21,11 +21,6 @@
         "enabled": false,
         "server": "http://neteaseapi2:3000/",
         "isPremium": true,
-        "login": {
-            "method": "email/phone",
-            "account": "YOUR_NETEASE_ACCOUNT",
-            "password": "YOUR_NETEASE_PASSWORD"
-        },
         "topPlaylist": {
             "enabled": true,
             "categories": [
