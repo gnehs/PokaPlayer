@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - dev
+      - master-3
   release:
     types:
       - created
