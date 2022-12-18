@@ -1,25 +1,34 @@
 const INTELLIGENCE_PLAYLIST_PREFIX = "_int";
 
 const config = require(__dirname + "/../config.json").Netease2;
-const server = config.server || "http://localhost:4000/";
+const SERVER_URL = config.server || "http://localhost:4000/";
+const PIN_FILE_PATH = __dirname + "/netease2Pin.json";
+const COOKIE_FILE_PATH = "./cookie.json";
 
+const fs = require("fs-extra");
 const axios = require('axios');
 const { wrapper } = require('axios-cookiejar-support');
 const { CookieJar } = require('tough-cookie');
-const jar = new CookieJar();
-const client = async x => (await wrapper(axios.create({ jar, baseURL: server }))(x)).data;
 
+let jar;
+try {
+    const file = fs.readJsonSync(COOKIE_FILE_PATH);
+    jar = CookieJar.fromJSON(file);
+} catch (e) {
+    jar = new CookieJar();
+}
+
+const client = async x => (await wrapper(axios.create({ jar, baseURL: SERVER_URL }))(x)).data;
 const { parseLyric, chnToTw } = require('./lyricUtils')
-const fs = require("fs-extra");
+
 const pokaLog = require("../log"); // 可愛控制台輸出
 const schedule = require("node-schedule"); // 很會計時ㄉ朋友
-const pin = __dirname + "/netease2Pin.json";
-const pangu = require('pangu');
+const qrcode = require('qrcode-terminal');
 
 try {
-    fs.readFileJSON(pin, "utf8");
+    fs.readJsonSync(PIN_FILE_PATH, "utf8");
 } catch (e) {
-    fs.writeFile(pin, "[]");
+    fs.writeFile(PIN_FILE_PATH, "[]");
 }
 const defaultImage = config.isPremium ? "https://i.imgur.com/ZFaycMw.gif" : "/img/icons/apple-touch-icon.png";
 
@@ -134,51 +143,114 @@ const normalOptions = async (url, req = {}) => {
 
 const imageUrl = x => `/pokaapi/req/?moduleName=Netease2&data=${encodeURIComponent(genReq(x))}`;
 
+async function qrLogin() {
+    return new Promise(async (resolve, reject) => {
+        let qrKey = await client(options(`/login/qr/key?t=${Date.now()}`))
+        let createQr = await client(options(`/login/qr/create?key=${qrKey.data.unikey}`))
+        console.log(`=~=`.repeat(20))
+        console.log('请使用网易云音乐 APP 扫描二维码登录')
+        console.log(`請使用網易雲音樂 APP 掃描 QR Code 登入`)
+        console.log(`please use Netease Music APP to scan the QR code to login`)
+        qrcode.generate(createQr.data.qrurl, { small: true })
+        console.log(`或以浏览器开启以下链接进行扫描`)
+        console.log(`或以瀏覽器開啟以下連結進行掃描`)
+        console.log(`or open the following link in the browser to scan`)
+        console.log(`https://chart.apis.google.com/chart?cht=qr&&chs=500x500&chl=${encodeURIComponent(createQr.data.qrurl)}`)
+        console.log(`=~=`.repeat(20))
+        let count = 0
+        let checkInterval = setInterval(async () => {
+            let checkQr = await client(options(`/login/qr/check?key=${qrKey.data.unikey}&t=${Date.now()}`))
+            count++
+            if (checkQr.code != 801) {
+                console.log(checkQr.message)
+                clearInterval(checkInterval)
+            }
+            if (checkQr.code == 803) {
+                resolve({ code: 200 })
+            }
+            if (checkQr.code != 801) { reject() }
+            if (count > 60) {
+                console.log('二维码已过期，请重新登录')
+                console.log('QR Code 已過期，請重新登入')
+                console.log('QR Code has expired, please login again')
+
+                reject()
+            }
+        }, 7500)
+    })
+}
+
 async function login(config) {
     let result;
-    if (config.login.method == 'phone') {
-        if (config.login.countrycode) {
-            result = await client(options(`/login/cellphone?phone=${config.login.account}&password=${config.login.password}&countrycode=${config.login.countrycode}`));
+    try {
+        if (config.login.method == 'phone') {
+            if (config.login.countrycode) {
+                result = await client(options(`/login/cellphone?phone=${config.login.account}&password=${config.login.password}&countrycode=${config.login.countrycode}`));
+            } else {
+                result = await client(options(`/login/cellphone?phone=${config.login.account}&password=${config.login.password}`));
+            }
         } else {
-            result = await client(options(`/login/cellphone?phone=${config.login.account}&password=${config.login.password}`));
+            result = await client(options(`/login?email=${config.login.account}&password=${config.login.password}`));
         }
-    } else {
-        result = await client(options(`/login?email=${config.login.account}&password=${config.login.password}`));
-    }
-    if (!result) {
-        pokaLog.logDMErr('Netease2', `登入失敗`)
-        return
+    } catch (e) {
+        pokaLog.logDMErr('Netease2', e.response.data)
+        result = await qrLogin()
     }
     isLoggedin = result.code == 200;
     if (isLoggedin) {
-        userId = result.profile.userId
-        pokaLog.logDM('Netease2', `${result.profile.nickname}(${userId}) 登入成功`)
-    } else if (result.msg) {
-        pokaLog.logDMErr('Netease2', result.msg)
+        pokaLog.logDM('Netease2', `登入成功`)
+        fs.writeJSONSync('./cookie.json', jar.toJSON());
+    } else {
+        pokaLog.logDMErr('Netease2', `登入失敗`)
     }
     return result;
 }
 //自動重新登入
 schedule.scheduleJob("0 0 * * *", async function () {
-    pokaLog.logDM('Netease2', `正在重新登入...`)
-    await login(config);
+    let result = await client(options(`/login/refresh`));
+    if (result.code == 200) {
+        pokaLog.logDM('Netease2', `Refresh cookie success`)
+    } else {
+        pokaLog.logDMErr('Netease2', `Refresh cookie failed`)
+    }
 });
+
+async function getStatus() {
+    let status = await client(options(`/login/status`));
+    if (status.data.account) {
+        pokaLog.logDM('Netease2', `已登入`)
+        isLoggedin = true;
+        userId = status.data.account.id;
+        return true;
+    }
+    return false;
+}
+
 async function onLoaded() {
     if (!config.enabled) return false;
-    return await fs.ensureFile(pin).then(async () => {
-        if (config && config.login && config.login.method && config.login.password && config.login.account) {
-            let result = await login(config);
-            if ((await result.code) == 200) {
-                return true;
+
+    await fs.ensureFile(PIN_FILE_PATH);
+    if (config && config.login && config.login.method && config.login.password && config.login.account) {
+        try {
+            let status = await getStatus();
+            if (status) {
+                pokaLog.logDM('Netease2', `已登入`)
             } else {
-                pokaLog.logDMErr('Netease2', `登入失敗`)
-                return false;
+                let result = await login(config);
+                if ((await result.code) == 200) {
+                    status = await getStatus()
+                }
             }
-        } else {
-            pokaLog.logDMErr('Netease2', `登入失敗，尚未設定帳號密碼`)
+            return status;
+        } catch (e) {
+            pokaLog.logDMErr('Netease2', `登入失敗`)
+            pokaLog.logDMErr('Netease2', e.toString())
             return false;
         }
-    });
+    } else {
+        pokaLog.logDMErr('Netease2', `登入失敗，尚未設定帳號密碼`)
+        return false;
+    }
 }
 
 async function req(x) {
@@ -510,7 +582,7 @@ async function getPlaylists(uid) {
                         }
                         break;
                     case "user":
-                        if (isLoggedin === undefined) {
+                        if (!isLoggedin) {
                             login.then(x => {
                                 if (x.code == 200) {
                                     userList.push(getCustomPlaylists(x.id));
@@ -595,7 +667,7 @@ async function getPlaylists(uid) {
     });
 
     if (config.dailyRecommendSongs.enabled) {
-        if (isLoggedin === undefined) {
+        if (!isLoggedin) {
             login.then(x => {
                 r.push({
                     name: "每日推薦歌曲",
@@ -617,7 +689,7 @@ async function getPlaylists(uid) {
     }
 
     if (config.dailyRecommendPlaylists.enabled) {
-        if (isLoggedin === undefined) {
+        if (!isLoggedin) {
             login.then(async x => {
                 if (x.code == 200)
                     playlistFolders.push({
@@ -795,7 +867,7 @@ async function searchLyrics(keyword) {
 }
 
 async function addPin(type, id, name) {
-    let data = await fs.readJson(pin);
+    let data = await fs.readJson(PIN_FILE_PATH);
     let artist = type == "album" ? (await getAlbum(id)).artist : undefined;
 
     data = data.concat({
@@ -806,23 +878,23 @@ async function addPin(type, id, name) {
         source: "Netease2"
     });
     try {
-        return await fs.writeJson(pin, data).then(() => true);
+        return await fs.writeJson(PIN_FILE_PATH, data).then(() => true);
     } catch (e) {
         return e;
     }
 }
 
 async function unPin(type, id, name) {
-    let data = (await fs.readJson(pin)).filter(x => !(x.id == id && x.type == type));
+    let data = (await fs.readJson(PIN_FILE_PATH)).filter(x => !(x.id == id && x.type == type));
     try {
-        return await fs.writeJson(pin, data).then(() => true);
+        return await fs.writeJson(PIN_FILE_PATH, data).then(() => true);
     } catch (e) {
         return e;
     }
 }
 
 async function isPinned(type, id, name) {
-    let data = await fs.readJson(pin);
+    let data = await fs.readJson(PIN_FILE_PATH);
 
     return data.some(x => x.type == type && x.id == id) || false;
 }
@@ -839,7 +911,7 @@ async function getHome() {
         playlists: []
     };
     try {
-        (await fs.readJson(pin)).forEach(x => {
+        (await fs.readJson(PIN_FILE_PATH)).forEach(x => {
             pinData[x.type + "s"].push(x);
         });
     } catch (e) {
@@ -847,7 +919,7 @@ async function getHome() {
     }
 
     if (config.dailyRecommendSongs.enabled) {
-        if (isLoggedin === undefined) {
+        if (!isLoggedin) {
             login.then(x => {
                 r.push({
                     name: "每日推薦歌曲",
@@ -870,7 +942,7 @@ async function getHome() {
 
     if (config.dailyRecommendPlaylists.enabled) {
         let dailyRecommendStack = [];
-        if (isLoggedin === undefined) {
+        if (!isLoggedin) {
             login.then(async x => {
                 if (x.code == 200)
                     dailyRecommendStack.push(
