@@ -102,7 +102,6 @@ function isIdName(id) {
     return /(?:.{5})(.+)BJmemv4fx(.+)/.test(id);
 }
 
-var isLoggedin;
 var userId;
 
 const normalOptions = async (url, req = {}) => {
@@ -186,8 +185,7 @@ async function login(config) {
         pokaLog.logDMErr('Netease2', e.response.data)
         result = await qrLogin()
     }
-    isLoggedin = result.code == 200;
-    if (isLoggedin) {
+    if (result.code === 200) {
         pokaLog.logDM('Netease2', `登入成功`)
         fs.writeFileSync('./cookie.json', JSON.stringify(jar.toJSON()));
     } else {
@@ -206,10 +204,9 @@ schedule.scheduleJob("0 0 * * *", async function () {
 });
 async function getStatus() {
     let status = await client(options(`/login/status`));
-    if (status.data.account) {
-        pokaLog.logDM('Netease2', `已登入`)
-        isLoggedin = true;
-        userId = status.data.account.id;
+    if (status.data.profile) {
+        pokaLog.logDM('Netease2', `已登入`);
+        userId = status.data.profile.userId;
         return true;
     }
     return false;
@@ -569,7 +566,7 @@ async function getPlaylists(uid) {
                         }
                         break;
                     case "user":
-                        if (!isLoggedin) {
+                        if (!await getStatus()) {
                             pokaLog.logDMErr('Netease2', `未登入，無法獲取用戶歌單。`)
                         } else {
                             userList.push(getCustomPlaylists(x.id));
@@ -649,7 +646,7 @@ async function getPlaylists(uid) {
     });
 
     if (config.dailyRecommendSongs.enabled) {
-        if (!isLoggedin) {
+        if (!await getStatus()) {
             pokaLog.logDMErr('Netease2', `未登入，無法獲取每日推薦歌曲。`)
         } else {
             r.push({
@@ -662,7 +659,7 @@ async function getPlaylists(uid) {
     }
 
     if (config.dailyRecommendPlaylists.enabled) {
-        if (!isLoggedin) {
+        if (!await getStatus()) {
             pokaLog.logDMErr('Netease2', `未登入，無法獲取每日推薦歌單。`)
         } else
             playlistFolders.push({
@@ -830,7 +827,7 @@ async function getHome() {
     let result = []
 
     if (config.dailyRecommendSongs.enabled) {
-        if (!isLoggedin) {
+        if (!await getStatus()) {
             pokaLog.logDMErr('Netease2', `未登入，無法獲取每日推薦歌曲。`)
         } else {
             r.push({
@@ -844,7 +841,7 @@ async function getHome() {
 
     if (config.dailyRecommendPlaylists.enabled) {
         let dailyRecommendStack = [];
-        if (!isLoggedin) {
+        if (!await getStatus()) {
             pokaLog.logDMErr('Netease2', `未登入，無法獲取每日推薦歌單。`)
         } else
             dailyRecommendStack.push(
