@@ -160,7 +160,7 @@ function qrLogin() {
                 clearInterval(checkInterval)
             }
             if (checkQr.code == 803) {
-                resolve({ code: 200, cookie: checkQr.cookie })
+                return resolve({ code: 200, cookie: checkQr.cookie })
             }
             if (checkQr.code != 801) { reject() }
             if (count > 60) {
