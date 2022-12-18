@@ -224,26 +224,21 @@ async function onLoaded() {
     if (!config.enabled) return false;
 
     await fs.ensureFile(PIN_FILE_PATH);
-    if (config && config.login && config.login.method && config.login.password && config.login.account) {
-        try {
-            let status = await getStatus();
-            if (status) {
-                pokaLog.logDM('Netease2', `已登入`);
-            } else {
-                pokaLog.logDM('Netease2', `正在登入...`);
-                let result = await login(config);
-                if ((await result.code) == 200) {
-                    status = await getStatus()
-                }
+    try {
+        let status = await getStatus();
+        if (status) {
+            pokaLog.logDM('Netease2', `已登入`);
+        } else {
+            pokaLog.logDM('Netease2', `正在登入...`);
+            let result = await login(config);
+            if ((await result.code) == 200) {
+                status = await getStatus()
             }
-            return status;
-        } catch (e) {
-            pokaLog.logDMErr('Netease2', `登入失敗`)
-            pokaLog.logDMErr('Netease2', e.toString())
-            return false;
         }
-    } else {
-        pokaLog.logDMErr('Netease2', `登入失敗，尚未設定帳號密碼`)
+        return status;
+    } catch (e) {
+        pokaLog.logDMErr('Netease2', `登入失敗`)
+        pokaLog.logDMErr('Netease2', e.toString())
         return false;
     }
 }
