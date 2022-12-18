@@ -4,6 +4,7 @@ const config = require('../config.json').YouTube;
 const pokaLog = require("../log"); // 可愛控制台輸出
 const axios = require('axios');
 const fs = require('fs');
+const path = require('path');
 const YTDLP_PATH = "./temp/yt-dlp";
 fs.mkdirSync('./temp', { recursive: true });
 // clear temp folder
@@ -49,12 +50,30 @@ async function search(keyword) {
   return { songs: await parseSongs(res) }
 }
 async function getSong(req, songRes = "high", id, res) {
-  let readableStream = ytDlpWrap.execStream([
-    `https://www.youtube.com/watch?v=${id}`,
-    '-f',
-    'bestaudio',
-  ]);
-  readableStream.pipe(res)
+  let file
+  file = fs.readdirSync('./temp').find(x => x.startsWith(id))
+  if (!file) {
+    await new Promise((resolve, reject) => {
+      let readableStream = ytDlpWrap.execStream([
+        `https://www.youtube.com/watch?v=${id}`,
+        '-f',
+        'bestaudio',
+      ]);
+      let writeStream = fs.createWriteStream(`./temp/${id}.m4a`);
+      readableStream
+        .pipe(writeStream)
+        .on('close', () => {
+          resolve()
+        })
+        .on('error', (err) => {
+          reject(err)
+        })
+    })
+  }
+  res.status(206);
+  file = fs.readdirSync('./temp').find(x => x.startsWith(id))
+
+  res.sendFile(path.resolve(`./temp/${file}`))
   return
 }
 async function getLyric(id) {
