@@ -9,13 +9,8 @@ const fs = require("fs-extra");
 const axios = require('axios');
 const { wrapper } = require('axios-cookiejar-support');
 
-let cookie = null;
-try {
-    cookie = fs.readFileSync(COOKIE_FILE_PATH);
-} catch (e) {
-    fs.writeFileSync(COOKIE_FILE_PATH, "");
-    cookie = "";
-}
+fs.ensureFileSync(COOKIE_FILE_PATH);
+let cookie = fs.readFileSync(COOKIE_FILE_PATH);
 
 const client = async x => (await wrapper(axios.create({ baseURL: SERVER_URL }))(x)).data;
 const { parseLyric, chnToTw } = require('./lyricUtils')
@@ -27,7 +22,7 @@ const qrcode = require('qrcode-terminal');
 try {
     fs.readJsonSync(PIN_FILE_PATH, "utf8");
 } catch (e) {
-    fs.writeFile(PIN_FILE_PATH, "[]");
+    fs.writeFileSync(PIN_FILE_PATH, "[]");
 }
 const defaultImage = config.isPremium ? "https://i.imgur.com/ZFaycMw.gif" : "/img/icons/apple-touch-icon.png";
 
