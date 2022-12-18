@@ -3,22 +3,21 @@ const INTELLIGENCE_PLAYLIST_PREFIX = "_int";
 const config = require(__dirname + "/../config.json").Netease2;
 const SERVER_URL = config.server || "http://localhost:4000/";
 const PIN_FILE_PATH = __dirname + "/netease2Pin.json";
-const COOKIE_FILE_PATH = "./cookie.json";
+const COOKIE_FILE_PATH = "./cookie.txt";
 
 const fs = require("fs-extra");
 const axios = require('axios');
 const { wrapper } = require('axios-cookiejar-support');
-const { CookieJar } = require('tough-cookie');
 
-let jar;
+let cookie = null;
 try {
-    const file = fs.readJsonSync(COOKIE_FILE_PATH);
-    jar = CookieJar.fromJSON(file);
+    cookie = fs.readFileSync(COOKIE_FILE_PATH);
 } catch (e) {
-    jar = new CookieJar();
+    fs.writeFileSync(COOKIE_FILE_PATH, "");
+    cookie = "";
 }
 
-const client = async x => (await wrapper(axios.create({ jar, baseURL: SERVER_URL }))(x)).data;
+const client = async x => (await wrapper(axios.create({ baseURL: SERVER_URL }))(x)).data;
 const { parseLyric, chnToTw } = require('./lyricUtils')
 
 const pokaLog = require("../log"); // 可愛控制台輸出
@@ -83,14 +82,15 @@ function randomUserAgent() {
 }
 const userAgent = randomUserAgent();
 
-const options = (url, qs = {}, resolveWithFullResponse = false, cookie = true) => {
+const options = (url, qs = {}, resolveWithFullResponse = false) => {
     if (!url.match(/login/)) {
-        url = `${url}${url.includes("?") ? "&" : "?"}realIP=${chinaIP}${config.proxy ? "&proxy=" + encodeURIComponent(config.proxy) : ""}`
+        url = `${url}${url.includes("?") ? "&" : "?"}realIP=${chinaIP}`
+        + `${config.proxy ? "&proxy=" + encodeURIComponent(config.proxy) : ""}`
+        + `${cookie ? "&cookie=" + encodeURIComponent(cookie) : ""}`
     }
     return ({
         url: url,
         params: qs,
-        jar: cookie ? jar : null,
         resolveWithFullResponse
     })
 }
@@ -165,7 +165,7 @@ async function qrLogin() {
                 clearInterval(checkInterval)
             }
             if (checkQr.code == 803) {
-                resolve({ code: 200 })
+                resolve({ code: 200, cookie: checkQr.cookie })
             }
             if (checkQr.code != 801) { reject() }
             if (count > 60) {
@@ -197,7 +197,10 @@ async function login(config) {
     }
     if (result.code === 200) {
         pokaLog.logDM('Netease2', `登入成功`)
-        fs.writeJSONSync('./cookie.json', jar.toJSON());
+        if (result.cookie) {
+            cookie = result.cookie;
+            fs.writeFileSync(COOKIE_FILE_PATH, result.cookie);
+        }
     } else {
         pokaLog.logDMErr('Netease2', `登入失敗`)
     }
@@ -206,7 +209,9 @@ async function login(config) {
 //自動重新登入
 schedule.scheduleJob("0 0 * * *", async function () {
     let result = await client(options(`/login/refresh`));
-    if (result.code == 200) {
+    if (result.code === 200 && result.cookie) {
+        cookie = result.cookie;
+        fs.writeFileSync(COOKIE_FILE_PATH, result.cookie);
         pokaLog.logDM('Netease2', `Refresh cookie success`)
     } else {
         pokaLog.logDMErr('Netease2', `Refresh cookie failed`)
@@ -333,7 +338,7 @@ async function getSongs(songs, br = 999000) {
     let isArray = Array.isArray(songs);
     songs = isArray ? songs : [songs];
     let result = await parseSongs(
-        await Promise.all(songs.map(async x => (await client(options(`/song/detail?ids=${x}`, {}, false, false))).songs[0])),
+        await Promise.all(songs.map(async x => (await client(options(`/song/detail?ids=${x}`, {}, false))).songs[0])),
         br
     );
     return isArray ? result : result[0];
@@ -428,7 +433,7 @@ async function search(keywords, limit = 30) {
         let typeNum = typeNums[type];
         let result;
         try {
-            result = (await client(options(`/search?keywords=${encodeURIComponent(keywords)}&type=${typeNum}&limit=${limit}`, {}, false, false))).result[
+            result = (await client(options(`/search?keywords=${encodeURIComponent(keywords)}&type=${typeNum}&limit=${limit}`, {}))).result[
                 types
             ];
         } catch (e) {
@@ -833,7 +838,7 @@ async function getPlaylistSongs(id, br = 999000) {
 }
 
 async function getLyric(id) {
-    let result = await client(options(`/lyric?id=${encodeURIComponent(id)}`, {}, false, false));
+    let result = await client(options(`/lyric?id=${encodeURIComponent(id)}`, {}, false));
     let lyric;
     if (result.code == 200) {
         if (result.nolyric) lyric = "[0:0] 純音樂";
