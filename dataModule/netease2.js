@@ -214,13 +214,18 @@ schedule.scheduleJob("0 0 * * *", async function () {
 });
 
 async function getStatus() {
-    let status = await client(options(`/login/status`));
-    if (status.data.account) {
-        pokaLog.logDM('Netease2', `已登入`)
-        userId = status.data.account.id;
-        return true;
+    try {
+        let status = await client(options(`/login/status`));
+        if (status.data.profile) {
+            pokaLog.logDM('Netease2', `已登入`)
+            userId = status.data.profile.userId;
+            return true;
+        }
+        return false;
+    } catch (e) {
+        pokaLog.logDMErr('Netease2', `getStatus error: ${e.response}`)
+        return false;
     }
-    return false;
 }
 
 async function onLoaded() {
@@ -233,6 +238,7 @@ async function onLoaded() {
             if (status) {
                 pokaLog.logDM('Netease2', `已登入`);
             } else {
+                pokaLog.logDM('Netease2', `正在登入...`);
                 let result = await login(config);
                 if ((await result.code) == 200) {
                     status = await getStatus()
@@ -512,7 +518,7 @@ async function resolvedailyRecommendStack(dailyRecommendStack) {
         ...flatMap(
             x => x,
             (await Promise.all(dailyRecommendStack)).map(x => (Array.isArray(x) ? [x[0], x[1].recommend] : x.recommend))
-        ).map(x =>
+        ).filter(x => x).map(x =>
             Array.isArray(x) ? {
                 name: chnToTw(x[1].name),
                 id: `${x[1].id}`,
@@ -917,7 +923,7 @@ async function getHome() {
     if (config.dailyRecommendSongs.enabled) {
         if (!await getStatus()) {
             try {
-                await login();
+                await login(config);
                 r.push({
                     name: "每日推薦歌曲",
                     source: "Netease2",
