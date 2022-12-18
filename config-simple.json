@@ -13,6 +13,9 @@
         "account": "YOUR_DSM_ACCOUNT",
         "password": "YOUR_DSM_PASSWORD"
     },
+    "YouTube": {
+        "enabled": true
+    },
     "QQMusic": {
         "//": "enabled QQMusic as lyric provider",
         "enabled": true
