@@ -2,9 +2,9 @@
 [![GitHub issues](https://img.shields.io/github/issues/gnehs/PokaPlayer.svg?style=flat-square)](https://github.com/gnehs/PokaPlayer/issues)
 [![GitHub forks](https://img.shields.io/github/forks/gnehs/PokaPlayer.svg?style=flat-square)](https://github.com/gnehs/PokaPlayer/network)
 [![GitHub stars](https://img.shields.io/github/stars/gnehs/PokaPlayer.svg?style=flat-square)](https://github.com/gnehs/PokaPlayer/stargazers)
-[![GitHub license](https://img.shields.io/github/license/gnehs/PokaPlayer.svg?style=flat-square)](https://github.com/gnehs/PokaPlayer/blob/master/LICENSE)
+[![GitHub license](https://img.shields.io/github/license/gnehs/PokaPlayer.svg?style=flat-square)](https://github.com/gnehs/PokaPlayer/blob/master-3/LICENSE)
 [![GitHub tag (latest Ver)](https://img.shields.io/github/package-json/v/gnehs/PokaPlayer.svg?style=flat-square)](https://github.com/gnehs/PokaPlayer/releases/latest)
-[![GitHub repo size in bytes](https://img.shields.io/github/repo-size/gnehs/PokaPlayer.svg?style=flat-square)](https://github.com/gnehs/PokaPlayer/archive/master.zip)
+[![GitHub repo size in bytes](https://img.shields.io/github/repo-size/gnehs/PokaPlayer.svg?style=flat-square)](https://github.com/gnehs/PokaPlayer/archive/master-3.zip)
 [![Docker Build Status](https://img.shields.io/docker/build/gnehs/pokaplayer.svg?style=flat-square)](https://hub.docker.com/r/gnehs/pokaplayer/)
 
 # PokaPlayer

@@ -22,7 +22,7 @@ const qrcode = require('qrcode-terminal');
 try {
     fs.readJsonSync(PIN_FILE_PATH, "utf8");
 } catch (e) {
-    fs.writeFileSync(PIN_FILE_PATH, "[]");
+    fs.writeJsonSync(PIN_FILE_PATH, []);
 }
 const defaultImage = config.isPremium ? "https://i.imgur.com/ZFaycMw.gif" : "/img/icons/apple-touch-icon.png";
 
@@ -730,13 +730,13 @@ async function getPlaylists(uid) {
     };
 }
 
-async function getPlaylistSongs(id, br = 999000) {
+async function getPlaylistSongs(id, userId) {
     let name;
     if (isIdName(id)) [id, name] = decomposeIdName(id);
     if (id == "dailyRecommendSongs") {
         let result = await client(options(`/recommend/songs`));
         if (result.code == 200) {
-            let r = result.data.dailySongs.map((x, index) => ({
+            let r = result.data.dailySongs.map(x => ({
                 name: x.name,
                 artist: x.ar.map(x => x.name).join(", "),
                 artistId: x.ar[0].id,
