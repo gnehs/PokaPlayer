@@ -77,28 +77,26 @@ if (config.PokaPlayer.debug) {
 // 檢查 branch
 git.raw(["symbolic-ref", "--short", "HEAD"]).then(branch => {
     branch = branch.slice(0, -1); // 結果會多一個換行符
-    if (branch != (config.PokaPlayer.debug ? "dev" : "master")) {
+    if (branch != (config.PokaPlayer.debug ? "dev" : "master-3")) {
         git.fetch(["--all"])
             .then(() =>
-                git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? "dev" : "master")])
+                git.reset(["--hard", "origin/" + (config.PokaPlayer.debug ? "dev" : "master-3")])
             )
-            .then(() => git.checkout(config.PokaPlayer.debug ? "dev" : "master"))
+            .then(() => git.checkout(config.PokaPlayer.debug ? "dev" : "master-3"))
             .then(() => process.exit())
             .catch(err => {
                 console.error("failed: ", err);
-                socket.emit("err", err.toString());
             });
     }
 });
 
-//
 app.use(express.json());
 app.use(express.static("public"))
 app.use(helmet({ contentSecurityPolicy: false, }))
 app.use(compression())
 // disable X-Powered-By
 app.set('x-powered-by', false);
-//session
+// session
 app.use(session)
 io.use(sharedsession(session, {
     autoSave: true
