@@ -14,6 +14,8 @@ try {
     let file = fs.readFileSync("./cookie.json")
     jar = CookieJar.fromJSON(JSON.parse(file))
 } catch (e) {
+    pokaLog.logDM('Netease2', 'Load cookie from file failed')
+    console.log(e)
     jar = new CookieJar();
 }
 
@@ -205,7 +207,6 @@ schedule.scheduleJob("0 0 * * *", async function () {
 async function getStatus() {
     let status = await client(options(`/login/status`));
     if (status.data.profile) {
-        pokaLog.logDM('Netease2', `已登入`);
         userId = status.data.profile.userId;
         return true;
     }
@@ -225,10 +226,10 @@ async function onLoaded() {
                     status = await getStatus()
                 }
             }
-            return status;
+            return true;
         } catch (e) {
             pokaLog.logDMErr('Netease2', `登入失敗`)
-            pokaLog.logDMErr('Netease2', e.toString())
+            pokaLog.logDMErr('Netease2', e)
             return false;
         }
     } else {
