@@ -14,7 +14,6 @@ try {
     let file = fs.readFileSync("./cookie.json")
     jar = CookieJar.fromJSON(JSON.parse(file))
 } catch (e) {
-    pokaLog.logDM('Netease2', 'Load cookie from file failed')
     console.log(e)
     jar = new CookieJar();
 }
