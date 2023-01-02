@@ -18,6 +18,9 @@ const sharedsession = require("express-socket.io-session");
 
 const { addLog } = require("./db/log");
 const updateDatabase = require("./update-database");
+
+
+const delay = interval => new Promise(resolve => setTimeout(resolve, interval));
 //
 // config init
 //
@@ -95,7 +98,7 @@ git.raw(["symbolic-ref", "--short", "HEAD"]).then(branch => {
 //
 app.use(express.json());
 app.use(express.static("public"))
-app.use(helmet({ contentSecurityPolicy: false, }))
+app.use(helmet({ contentSecurityPolicy: false }))
 app.use(compression())
 // disable X-Powered-By
 app.set('x-powered-by', false);
@@ -105,28 +108,12 @@ io.use(sharedsession(session, {
     autoSave: true
 }))
 
-// 取得狀態
-app.get("/status", async (req, res) => {
-    res.json({
-        login: req.session.user,
-        version: req.session.user ? packageData.version : '0.0.0',
-        debug: config.PokaPlayer.debug && req.session.user ? (await git.raw(["rev-parse", "--short", "HEAD"])).slice(0, -1) : false
-    })
-});
 
 app.use(async (req, res, next) => {
     if (req.session.user && await User.isUserAdmin(req.session.user)) next()
     else res.sendFile(path.join(__dirname + '/public/index.html'))
 });
-// get info
-app.get("/info", async (req, res) => {
-    let _p = {}
-    _p.version = packageData.version
-    _p.debug = config.PokaPlayer.debug ? (await git.raw(["rev-parse", "--short", "HEAD"])).slice(0, -1) : false
-    res.json(_p)
-});
 
-app.post("/restart", (req, res) => process.exit());
 
 app.use((req, res, next) => {
     res.sendFile(path.join(__dirname + '/public/index.html'))
@@ -182,11 +169,6 @@ io.on("connection", socket => {
                 .then(() => socket.emit("git", "package_updated"))
                 .then(() => socket.emit("restart"))
                 .then(async () => {
-                    const delay = interval => {
-                        return new Promise(resolve => {
-                            setTimeout(resolve, interval);
-                        });
-                    };
                     await delay(3000)
                 })
                 .then(() => process.exit())
@@ -196,11 +178,6 @@ io.on("connection", socket => {
                 });
         } else if (config.PokaPlayer.debug) {
             // for ui test
-            const delay = interval => {
-                return new Promise(resolve => {
-                    setTimeout(resolve, interval);
-                });
-            };
             socket.emit("git", "fetch")
             await delay(1500)
             socket.emit("git", "reset")
@@ -210,6 +187,21 @@ io.on("connection", socket => {
             socket.emit("restart")
             await delay(3000)
             socket.emit("hello");
+        } else {
+            socket.emit("err", "Permission Denied Desu");
+        }
+    });
+    socket.on("restart", async () => {
+        if (await User.isUserAdmin(socket.handshake.session.userdata)) {
+            addLog({
+                level: "info",
+                type: "system",
+                event: "Restart",
+                description: `PokaPlayer restart.`
+            })
+            socket.emit("restart")
+            await delay(3000)
+            process.exit()
         } else {
             socket.emit("err", "Permission Denied Desu");
         }
