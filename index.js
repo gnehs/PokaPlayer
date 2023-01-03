@@ -14,7 +14,6 @@ const compression = require('compression')
 const app = express();
 const server = require("http").createServer(app)
 const io = require("socket.io")(server)
-const sharedsession = require("express-socket.io-session");
 
 const { addLog } = require("./db/log");
 const updateDatabase = require("./update-database");
@@ -102,11 +101,12 @@ app.use(helmet({ contentSecurityPolicy: false }))
 app.use(compression())
 // disable X-Powered-By
 app.set('x-powered-by', false);
-//session
+// session
 app.use(session)
-io.use(sharedsession(session, {
-    autoSave: true
-}))
+
+// convert a connect middleware to a Socket.IO middleware
+const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
+io.use(wrap(session));
 
 
 app.use(async (req, res, next) => {
@@ -121,19 +121,6 @@ app.use((req, res, next) => {
 
 io.on("connection", socket => {
     socket.emit("hello");
-    // Accept a login event with user's data
-    socket.on("login", async userdata => {
-        let { user } = await User.login(userdata)
-        socket.join(user);
-        socket.handshake.session.userdata = user;
-        socket.handshake.session.save();
-    });
-    socket.on("logout", () => {
-        if (socket.handshake.session.userdata) {
-            delete socket.handshake.session.userdata;
-            socket.handshake.session.save();
-        }
-    });
     socket.on('send-nickname', nickname => {
         socket.nickname = nickname;
     });
@@ -145,54 +132,57 @@ io.on("connection", socket => {
                 git.raw(['config', '--global', 'user.name', 'pokaUpdater'])
             }
         })
-        if (await User.isUserAdmin(socket.handshake.session.userdata) && !config.PokaPlayer.debug) {
-            addLog({
-                level: "info",
-                type: "system",
-                event: "Update",
-                description: `PokaPlayer update.`
-            })
-            socket.emit("init");
-            git.reset(["--hard", "HEAD"])
-                .then(() => socket.emit("git", "fetch"))
-                .then(() => git.remote(["set-url", "origin", "https://github.com/gnehs/PokaPlayer.git"]))
-                .then(() => git.fetch())
-                .then(() => git.pull())
-                .then(() => socket.emit("git", "reset"))
-                .then(() => {
-                    if (process.env.NODE_ENV == 'production') {
-                        child_process.execSync('npm install --production', { stdio: [0, 1, 2], cwd: "/app/" });
-                    } else {
-                        child_process.execSync('npm install --production', { stdio: [0, 1, 2] });
-                    }
+        if (await User.isUserAdmin(socket.request.session.user)) {
+            if (!config.PokaPlayer.debug) {
+                addLog({
+                    level: "info",
+                    type: "system",
+                    event: "Update",
+                    description: `PokaPlayer update.`
                 })
-                .then(() => socket.emit("git", "package_updated"))
-                .then(() => socket.emit("restart"))
-                .then(async () => {
-                    await delay(3000)
-                })
-                .then(() => process.exit())
-                .catch(err => {
-                    console.error("failed: ", err);
-                    socket.emit("err", err.toString());
-                });
-        } else if (config.PokaPlayer.debug) {
-            // for ui test
-            socket.emit("git", "fetch")
-            await delay(1500)
-            socket.emit("git", "reset")
-            await delay(1500)
-            socket.emit("git", "package_updated")
-            await delay(1500)
-            socket.emit("restart")
-            await delay(3000)
-            socket.emit("hello");
-        } else {
+                socket.emit("init");
+                git.reset(["--hard", "HEAD"])
+                    .then(() => socket.emit("git", "fetch"))
+                    .then(() => git.remote(["set-url", "origin", "https://github.com/gnehs/PokaPlayer.git"]))
+                    .then(() => git.fetch())
+                    .then(() => git.pull())
+                    .then(() => socket.emit("git", "reset"))
+                    .then(() => {
+                        if (process.env.NODE_ENV == 'production') {
+                            child_process.execSync('npm install --production', { stdio: [0, 1, 2], cwd: "/app/" });
+                        } else {
+                            child_process.execSync('npm install --production', { stdio: [0, 1, 2] });
+                        }
+                    })
+                    .then(() => socket.emit("git", "package_updated"))
+                    .then(() => socket.emit("restart"))
+                    .then(async () => {
+                        await delay(3000)
+                    })
+                    .then(() => process.exit())
+                    .catch(err => {
+                        console.error("failed: ", err);
+                        socket.emit("err", err.toString());
+                    });
+            } else if (config.PokaPlayer.debug) {
+                // for ui test
+                socket.emit("git", "fetch")
+                await delay(1500)
+                socket.emit("git", "reset")
+                await delay(1500)
+                socket.emit("git", "package_updated")
+                await delay(1500)
+                socket.emit("restart")
+                await delay(3000)
+                socket.emit("hello");
+            }
+        }
+        else {
             socket.emit("err", "Permission Denied Desu");
         }
     });
     socket.on("restart", async () => {
-        if (await User.isUserAdmin(socket.handshake.session.userdata)) {
+        if (await User.isUserAdmin(socket.request.session.user)) {
             addLog({
                 level: "info",
                 type: "system",
