@@ -14,7 +14,7 @@ try {
     let file = fs.readFileSync("./cookie.json")
     jar = CookieJar.fromJSON(JSON.parse(file))
 } catch (e) {
-    console.log(e)
+    console.log("[Netease2] Cookie file not found. Initing empty cookie.")
     jar = new CookieJar();
 }
 
