@@ -92,12 +92,14 @@ function parseComposers(data) {
     return parseArtists(data, type = "composer")
 }
 
-//自動重新登入
-schedule.scheduleJob("0 0 * * *", function () {
-    pokaLog.logDM('DSM', '正在重新登入...')
-    login();
-});
+
 async function onLoaded() {
+    //自動重新登入
+    schedule.scheduleJob("0 0 * * *", function () {
+        pokaLog.logDM('DSM', '正在重新登入...')
+        login();
+    });
+
     return await login();
 }
 async function login() {
