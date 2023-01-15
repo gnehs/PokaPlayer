@@ -237,30 +237,21 @@ async function onLoaded() {
     }
 }
 
+function genReq(link) {
+    return Buffer.from(link).toString("base64")
+}
+function deReq(x) {
+    return Buffer.from(x, "base64").toString("utf8");
+}
 async function req(x) {
-    function deReq(x) {
-        const b2a = x => Buffer.from(x, "base64").toString("utf8");
-        const decode = x => /(.{5})(.+)3C4C7CB3(.+)/.exec(x);
-
-        let [_, rand, link, checkSum] = decode(x);
-        [_, rand, link, checkSum] = [_, rand, b2a(link), b2a(checkSum)];
-        if (!Number.isInteger(Math.log10(rand.charCodeAt(0) + checkSum.charCodeAt(0)))) {
-            return false;
-        }
-        return link;
-    }
     let link = deReq(x);
     if (!link) return false;
+
     const re = /^(http|https)\:\/\/p(\d+)\.music\.126\.net\/(?:.+)/;
     if (!re.test(link)) return false;
-    else return client(await normalOptions(link));
-}
 
-function genReq(link) {
-    const a2b = x => Buffer.from(x).toString("base64");
-    const rand = Math.random().toString(36).substring(2, 7)
-    const checkSum = N => 10 ** Number(N).toString().length - N;
-    return `${rand}${a2b(link)}3C4C7CB3${a2b(String.fromCharCode(checkSum(rand.charCodeAt(0))))}`;
+    // return client(await normalOptions(link));
+    return link;
 }
 
 async function parseSongs(songs, br = 999000) {

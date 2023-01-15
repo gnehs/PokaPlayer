@@ -435,7 +435,21 @@ router.get("/req/", async (req, res) => {
     //http://localhost:3000/pokaapi/req/?moduleName=Netease2&data=http%3A%2F%2Fp3.music.126.net%2FJB1yLZyVMPsbbSlSkfJdRw%3D%3D%2F6630055116648156.jpg
     // -> Image
     let cover = await _module.req(req.query.data);
-    return cover ? cover.pipe(res) : false;
+    if (!cover) return res.sendStatus(404);
+
+    if (typeof cover == "string" && cover.startsWith("http")) return res.redirect(cover);
+
+    if (cover.pipe) {
+        res.header("Cache-Control", "max-age=7200") //快取 2hr
+        return cover.pipe(res);
+    }
+
+    if (cover instanceof Buffer) {
+        res.header("Cache-Control", "max-age=7200") //快取 2hr
+        return res.send(cover);
+    }
+
+    return res.sendStatus(500);
 });
 //-----------------------------> 歌詞
 // 搜尋歌詞
