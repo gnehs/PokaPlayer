@@ -244,8 +244,14 @@ function deReq(x) {
     return Buffer.from(x, "base64").toString("utf8");
 }
 async function req(x) {
-    let link = deReq(x);
-    if (!link) return false;
+    let link;
+    if (x.match(/(.{5})(.+)3C4C7CB3(.+)/)) {
+        const decode = x => /(.{5})(.+)3C4C7CB3(.+)/.exec(x);
+        let [_, rand, _link, checkSum] = decode(x);
+        link = deReq(_link);
+    } else {
+        link = deReq(x);
+    }
 
     const re = /^(http|https)\:\/\/p(\d+)\.music\.126\.net\/(?:.+)/;
     if (!re.test(link)) return false;
