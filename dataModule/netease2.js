@@ -171,7 +171,7 @@ async function qrLogin() {
     })
 }
 async function login(config) {
-    let result;
+    let result = null;
     try {
         if (config.login.method == 'phone') {
             if (config.login.countrycode) {
@@ -184,14 +184,22 @@ async function login(config) {
         }
     } catch (e) {
         pokaLog.logDMErr('Netease2', e.response.data)
-        result = await qrLogin()
     }
-    if (result.code === 200) {
+
+    if (result?.code === 200) {
         pokaLog.logDM('Netease2', `登入成功`)
         fs.writeFileSync('./cookie.json', JSON.stringify(jar.toJSON()));
     } else {
-        pokaLog.logDMErr('Netease2', `登入失敗`)
+        pokaLog.logDMErr('Netease2', `登入失敗，使用 QR Code 重試`)
+        result = await qrLogin()
+        if (result.code === 200) {
+            pokaLog.logDM('Netease2', `登入成功`)
+            fs.writeFileSync('./cookie.json', JSON.stringify(jar.toJSON()));
+        } else {
+            pokaLog.logDMErr('Netease2', `QR Code 重試登入失敗`)
+        }
     }
+    
     return result;
 }
 //自動重新登入
