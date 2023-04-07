@@ -137,7 +137,7 @@ const imageUrl = x => `/pokaapi/req/?moduleName=Netease2&data=${encodeURICompone
 async function qrLogin() {
     return new Promise(async (resolve, reject) => {
         let qrKey = await client(options(`/login/qr/key?t=${Date.now()}`))
-        let createQr = await client(options(`/login/qr/create?key=${qrKey.data.unikey}`))
+        let createQr = await client(options(`/login/qr/create?key=${qrKey.data.unikey}&t=${Date.now()}`))
         console.log(`=~=`.repeat(20))
         console.log('请使用网易云音乐 APP 扫描二维码登录')
         console.log(`請使用網易雲音樂 APP 掃描 QR Code 登入`)
@@ -199,7 +199,7 @@ async function login(config) {
             pokaLog.logDMErr('Netease2', `QR Code 重試登入失敗`)
         }
     }
-    
+
     return result;
 }
 //自動重新登入
