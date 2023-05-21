@@ -18,6 +18,10 @@ try {
     jar = new CookieJar();
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 const client = async x => (await wrapper(axios.create({ jar, baseURL: server }))(x)).data;
 
 const { parseLyric, chnToTw } = require('./lyricUtils')
@@ -135,40 +139,34 @@ const normalOptions = async (url, req = {}) => {
 const imageUrl = x => `/pokaapi/req/?moduleName=Netease2&data=${encodeURIComponent(genReq(x))}`;
 
 async function qrLogin() {
-    return new Promise(async (resolve, reject) => {
-        let qrKey = await client(options(`/login/qr/key?t=${Date.now()}`))
-        let createQr = await client(options(`/login/qr/create?key=${qrKey.data.unikey}&t=${Date.now()}`))
-        console.log(`=~=`.repeat(20))
-        console.log('请使用网易云音乐 APP 扫描二维码登录')
-        console.log(`請使用網易雲音樂 APP 掃描 QR Code 登入`)
-        console.log(`please use Netease Music APP to scan the QR code to login`)
-        qrcode.generate(createQr.data.qrurl, { small: true })
-        console.log(`或以浏览器开启以下链接进行扫描`)
-        console.log(`或以瀏覽器開啟以下連結進行掃描`)
-        console.log(`or open the following link in the browser to scan`)
-        console.log(`https://chart.apis.google.com/chart?cht=qr&&chs=500x500&chl=${encodeURIComponent(createQr.data.qrurl)}`)
-        console.log(`=~=`.repeat(20))
-        let count = 0
-        let checkInterval = setInterval(async () => {
-            let checkQr = await client(options(`/login/qr/check?key=${qrKey.data.unikey}&t=${Date.now()}`))
-            count++
-            if (checkQr.code != 801) {
-                console.log(checkQr.message)
-                clearInterval(checkInterval)
-            }
-            if (checkQr.code == 803) {
-                resolve({ code: 200 })
-            }
-            if (checkQr.code != 801) { reject() }
-            if (count > 60) {
-                console.log('二维码已过期，请重新登录')
-                console.log('QR Code 已過期，請重新登入')
-                console.log('QR Code has expired, please login again')
+    const qrKey = await client(options(`/login/qr/key?t=${Date.now()}`))
+    const createQr = await client(options(`/login/qr/create?key=${qrKey.data.unikey}&t=${Date.now()}`))
 
-                reject()
-            }
-        }, 7500)
-    })
+    console.log(`=~=`.repeat(20))
+    console.log('请使用网易云音乐 APP 扫描二维码登录')
+    console.log(`請使用網易雲音樂 APP 掃描 QR Code 登入`)
+    console.log(`please use Netease Music APP to scan the QR code to login`)
+    qrcode.generate(createQr.data.qrurl, { small: true })
+    console.log(`或以浏览器开启以下链接进行扫描`)
+    console.log(`或以瀏覽器開啟以下連結進行掃描`)
+    console.log(`or open the following link in the browser to scan`)
+    console.log(`https://chart.apis.google.com/chart?cht=qr&&chs=500x500&chl=${encodeURIComponent(createQr.data.qrurl)}`)
+    console.log(`=~=`.repeat(20))
+
+    for(let count = 0; count < 60; count++){
+        const checkQr = await client(options(`/login/qr/check?key=${qrKey.data.unikey}&t=${Date.now()}`));
+        if (checkQr.code == 803) {
+            return ({ code: 200 });
+        }
+        if (count > 60 || checkQr.code == 800) {
+            console.log('二维码已过期，请重新登录')
+            console.log('QR Code 已過期，請重新登入')
+            console.log('QR Code has expired, please login again')
+
+            throw new Error('QR Code has expired, please login again');
+        }
+        await sleep(2000);
+    }
 }
 async function login(config) {
     let result = null;
