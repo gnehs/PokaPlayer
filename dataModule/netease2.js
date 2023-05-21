@@ -212,7 +212,7 @@ schedule.scheduleJob("0 0 * * *", async function () {
     }
 });
 async function getStatus() {
-    let status = await client(options(`/login/status`));
+    let status = await client(options(`/login/status?t=${Date.now()}`));
     if (status.data.profile) {
         userId = status.data.profile.userId;
         return true;
